@@ -1,0 +1,482 @@
+
+     _________________________________________________________________
+
+                         Using Password Gorilla
+
+Table of Contents
+
+     * Help Using Password Gorilla
+          + Starting
+          + Choosing a Master Password
+          + Organization Into Groups
+          + Logins
+          + Preferences
+          + Information about the "V3" Database Format
+     * Risks
+          + The Software Itself
+          + System Failure
+          + Other Users on a Shared Computer
+          + Your System Administrator
+          + Viruses, Backdoors, etc.
+          + Putting Risk In Perspective
+     _________________________________________________________________
+
+                        Help Using Password Gorilla
+     _________________________________________________________________
+
+  Starting
+
+   Upon start-up, Password Gorilla shows the "Open Password Database"
+   dialog. It shows a list of recently used password database files,
+   allows you to browse for a different password database file, and asks
+   for the database's master password. Once a file is chosen, and the
+   master password is entered correctly, the password database is opened,
+   and its contents are shown.
+
+   To create a new, empty password database, click the "Cancel" button,
+   and then select "New" from the "File" menu. You will be asked for an
+   initial master password for the new password database.
+
+  Choosing a Master Password
+
+   It goes without saying that the master password should be non-trivial.
+   I.e., the master password should not be a word in any language nor a
+   name. Such trivial passwords are subject to dictionary attacks, in
+   which an attacker could gain access to your master password by simply
+   using "brute force," by trying all the words in the dictionary.
+
+   Equally important is that the master password should not be kept in
+   the same place as the password database. Ideally, the master password
+   should not be written down at all, so that it remains in your personal
+   memory only. If you decide to write down your master password, keep it
+   away from your computer(s), in a location that only you know of.
+
+   Because the password database is encrypted using your master password
+   (using the peer-reviewed and commercially well-accpted Twofish
+   algorithm, for the technically inclined), it is imperative that you do
+   not forget your master password. It is impossible to recover a lost
+   master password. An encrypted password database can not be "cracked,"
+   as long as the master password is not trivial (see above).
+
+   Note that Password Gorilla does not try to second-guess your choice of
+   password. It does not check for or complain about passwords that would
+   generally be considered weak.
+
+  Organization Into Groups
+
+   Logins in the password database are shown as a tree, organized into
+   nested groups. Groups allow you to arrange logins by category. Click
+   on the plus sign next to a group's name in order to view its subgroups
+   and logins that the group contains.
+
+   New groups and subgroups can be added by right-clicking on a group
+   name, and choosing the "Add Subgroup" option. (Macintosh users, hold
+   the Control key, and click on a group name.) In the dialog box that
+   opens, the "Parent Group" name will be set automatically, and the name
+   of the new subgroup can be entered.
+
+   You can also drag both groups and logins, and drop them on a new
+   parent group, to quickly re-arrange the database's organization.
+
+   Note that empty groups are not stored in the password database file.
+   If you save and re-open a file, empty groups will disappear.
+
+  Logins
+
+   Groups can contain any number of logins. To add a new login,
+   right-click on a group, and choose the "Add Login" option. To edit an
+   existing login, right-click on an login, and select the "Edit Login"
+   option. (Macintosh users, hold down the Control key, and click on a
+   group name.)
+
+   The following information is managed for each login:
+
+   Group
+          The name of the group that this login is in. The names of
+          hierarchical groups are concatenated, separated by a dot. A
+          login can be moved to a different group by editing this field
+          -- though dragging the login and dropping it on its new group
+          is more convenient.
+
+   Title
+          The login's title is shown in the main window, so that you can
+          identify the service that this login information belongs to,
+          e.g., "E-Mail."
+
+   URL (V3 format only.)
+          The service's URL, if any. In the tree view, you can
+          right-click on a login and choose "Copy URL to Clipboard" in
+          order to copy this data to the clipboard, for pasting it into
+          your browser's address bar. This field is only available when
+          using the "V3" database format; see the discussion of the
+          V3 format below for more information.
+
+   Username
+          Your username for this service. In the tree view, you can
+          right-click on a login and choose "Copy Username To Clipboard"
+          in order to copy this data to the clipboard, for pasting it
+          into the service's login prompt.
+
+   Password
+          The password that is associated with this login. In the tree
+          view, you can right-click on a login and choose "Copy Password
+          To Clipboard" in order to paste it into the service's login
+          prompt.
+
+   Notes
+          You can use the notes field for arbitrary information that you
+          wish to associate with the login. E.g., you could note
+          questions and answers to a service's security questions (of the
+          "What is your mother's maiden name?" kind). Also, you can use
+          the field for the service's URL. If the notes include a string
+          that starts with "http" or "https", or if they contain the
+          token "url:" followed by a URL (put the URL in quotes, if it
+          contains spaces), then you can right-click on an login and
+          choose "Copy URL To Clipboard" in order to paste the URL into
+          your Web browser.
+
+   When editing a login, the password is not shown, for added protection
+   from curious onlookers. You can click the "Show Password" button to
+   toggle visibility of the password.
+
+   Clicking on "Generate Password" generates a new pseudo-random password
+   according to the current password policy (which is a per-database
+   setting that can be set using the "Password Policy" option in the
+   "Manage" menu). If the "Override Password Policy" box is checked, you
+   can edit the password policy to use for this one password.
+
+   The password policy allows you to set the length of randomly generated
+   passwords, and the characters to use. Check the "use easy to read
+   characters only" option to avoid characters that look similar. This
+   excludes the lower- and uppercase letters 'i', 'j', 'l' and 'o', the
+   digits '0' and '1', and the exclamation mark, pipe symbol, and
+   parentheses. Note: to generate random hexadecimal passwords, the "use
+   hexadecimal digits" option should be checked exclusively, and the
+   password length should be an even number.
+
+   The default password policy for the current database can be set using
+   the "Password Policy" dialog from the "Manage" menu.
+
+  Preferences
+
+   General, database default and export preferences can be configured
+   using the "Preferences" dialog from the "File" menu. Database
+   preferences, which are specific to the current password database, can
+   be configured using "Database Preferences" from the "Manage" menu,
+   when a database is open.
+
+    General Preferences
+
+   Clear clipboard after <nn> seconds
+          If this value is set to a non-zero value, the system clipboard
+          is cleared, the specified number of seconds after copying a
+          user name, password or URL to the clipboard. This ensures that
+          no password remains in the clipboard forever.
+
+   Remember <nn> database names
+          Makes Password Gorilla only remember the given number of most
+          recently used database file names. If set to zero, Password
+          Gorilla will not remember database file names at all. The
+          current list of file names in the most recently used list can
+          be cleared with the button next to this option.
+
+   When double clicking a login
+          Configures what to do when you double-click on a login. The
+          options are to copy the login's password to the clipboard, to
+          open the login for editing, or to do neither.
+
+   Backup database on save
+          If enabled, then a backup file of the password database is made
+          whenever the database is saved. The backup file has the same
+          name as the database itself, but with the ".bak" extension.
+
+   Remember sizes of dialog boxes
+          Password Gorilla allows you to resize its main window, and most
+          of its dialogs, should you find the default sizes inconvenient.
+          If this option is enabled, Password Gorilla will remember the
+          size of dialog boxes across restarts.
+
+    Database Default Preferences
+
+   Database default preferences are applied to new databases, but do not
+   affect existing databases. To change a setting for an existing
+   database, go to "Database Preferences" in the "Manage" menu. See the
+   discussion of Database Preferences below.
+
+    Export Preferences
+
+   Export preferences apply to the exporting of a password database to a
+   plain-text file.
+
+   Include password field
+          If enabled, the password is included in the exported file. If
+          disabled, "********" is substituted for the password.
+
+   Include "Notes" field
+          If enabled, the "Notes" are included in the exported file.
+
+   Field separator
+          Configures the character to separate fields. This character
+          should not appear in any user name or password. Common
+          separators are ":" (colon) and "," (comma).
+
+   Show security warning
+          If enabled, reminds the user, before exporting the database,
+          that the exported plain-text file is not encrypted or password
+          protected.
+
+    Database Preferences
+
+   These database preferences can be configured using "Database
+   Preferences" from the "Manage" menu.
+
+   Lock when idle after <nn> minutes
+          If this preference is set to a non-zero value, Password Gorilla
+          will lock the database after a period of inactivity. In that
+          case, a dialog box opens, prompting for the database's master
+          password. The dialog also allows to exit Password Gorilla. Note
+          that this allows a malicious user to exit the application,
+          discarding changes. However, this is not a security issue: a
+          malicious user, having access to your desktop, could just as
+          well kill the application (e.g., from the console or the the
+          Task Manager). A better choice is to lock your desktop while
+          unattended.
+
+   Auto-save database immediately when changed
+          If enabled, then the database will automatically be saved after
+          each change.
+
+   Use Password Safe 3 format
+          If this option is enabled (i.e., checked), the password
+          database, when saved, will use the new "Password Safe 3"
+          encryption format. The database will be compatible with
+          Password Safe 3, but will not be compatible with versions of
+          Password Safe prior to 3.0, or versions of Password Gorilla
+          prior to 1.4. If this option is disabled (i.e., not checked),
+          the old Password Safe 2 database format is used: the database
+          will be compatible with Password Safe 2.0 or higher, and
+          Password Gorilla 1.0 or higher.
+
+          It is highly recommended to enable this option, and to upgrade
+          existing databases to the Password Safe 3 format, which
+          features enhanced security. See below, Information about
+          the new Database Format, for more information.
+
+   V2 Unicode support
+          Whether the database file uses Unicode. This is the default for
+          the Password Safe 3 format; this option only applies if the
+          "Use Password Safe 3 format" option is disabled (i.e., not
+          checked). If this option is enabled, database files containing
+          international characters can safely be exchanged across
+          locales, e.g., when you want to use the same password database
+          in both a Western European and Russian locale. The caveat is
+          that, if you use both Password Gorilla and Password Safe, the
+          latter will not read accented characters correctly. (The
+          database will open, but non-ASCII characters will not show up
+          correctly.) This option has no effect if your database uses
+          only ASCII characters.
+
+   V3 key stretching iterations
+          The Password Safe 3 format supports "variable key stretching",
+          which is a means of protecting a database against brute-force
+          attacks. Key stretching is a complex operation that must be
+          performed when validating a master password for correctness.
+          When an authorized user enters the correct password, this may
+          take a second and is barely noticeable. But it slows down
+          mass-testing password guesses by an automated program. The
+          "iterations" parameter indicates the complexity of the key
+          stretching: the higher this value, the longer it takes to open
+          a database, and the longer it takes an attacker to test one
+          password. It is recommended to leave the value at its default
+          of 2048, which is a good compromise between promptly opening
+          databases and hampering attackers.
+
+          Note that this option can only be changed on a per-database
+          basis and does not appear in the Database Default Preferences
+          Menu. This prevents a malicious user from changing the
+          preference in the registry and degrading the protection of
+          future databases.
+
+  Information about the new Database Format
+
+    "V3" Format Introduction
+
+   Password Gorilla 1.4 adds support for a new encrypted format for
+   password databases, as introduced by version 3 of Password Safe --
+   therefore also called the "V3" format. This new format is based on the
+   years of experience with and analysis of the prior "V2" database
+   format, and features enhanced security (see below, V2 Format
+   Weakness for details). The new format offers:
+
+     * Support for non-ASCII character sets by default.
+     * A stand-alone field for a URL.
+     * A checksum to detect tampering or truncation.
+     * Use of the improved Twofish encryption algorithm.
+     * Stronger protection against brute-force attacks on the master
+       password.
+
+   It is recommended to use the new format, and to upgrade existing
+   password databases, unless you require compatibility with software
+   that supports the old format only, such as Password Safe 2.x, or
+   versions of Password Gorilla prior to 1.4.
+
+    Switching between the V2 and V3 Formats
+
+   Password Gorilla defaults to the V3 format for newly created
+   databases, but it does not automatically upgrade existing V2
+   databases. Upgrading, as well as downgrading, a database is
+   accomplished by enabling the Use Password Safe 3 format checkbox in
+   the Database Preferences menu (see above).
+
+   Password Safe recommends to use the ".psafe3" extension for V3-format
+   database files, and the ".dat" extension for V2-format files.
+   (Password Gorilla allows password database files in either format to
+   have any extension.)
+
+    V2 Format Weakness
+
+   In the interest of full disclosure, it should be noted that a
+   potential weakness was discovered with the old Password Safe 2 ("V2")
+   file format. This issue affected the "key stretching" process that is
+   intended to slow down a brute force attack against a database's master
+   password (i.e., repeated attempts at guessing the password). The
+   weakness in the file format's design allowed brute force attacks 1000
+   times faster than intended. The number sounds worse than it is: a
+   good, long master password is one among billions of billions of
+   combinations, and a factor of 1000 does not make a practical
+   difference. However, the factor may have an impact on the security of
+   password databases that use a short, more easily guessable master
+   password. The Password Safe 3 format avoids this issue by depending on
+   the result of the key stretching operation (which is computationally
+   expensive) as an input to decryption -- therefore, the operation can
+   not be bypassed.
+     _________________________________________________________________
+
+                                   Risks
+     _________________________________________________________________
+
+   Just like re-using the same passwords over and over again, or keeping
+   passwords written down on a sticker glued to the bottom of your desk,
+   some risks are associated with the use of Password Gorilla. This
+   section is not meant to scare you, but as an educated user, you have
+   the right to know about potential risks, and to make informed
+   decisions. Risks should not be ignored, but evaluated and addressed.
+
+   There are different threat vectors that can be considered:
+
+  The Software Itself
+
+   First of all, the software itself may be a risk. For all you know, the
+   software's author could be a sociopath who tries to talk you into
+   downloading and installing buggy software that secretly broadcasts
+   your passwords. If you want, you can trust the author, third-party
+   recommendations, you can inspect the source code for trap doors, or
+   trust a third-party code inspection.
+
+   Maybe the software is not bug-free. In an extreme scenario, a bug in
+   Password Gorilla could destroy your password database. It is good
+   advice to keep a backup copy of your password database in a safe
+   place.
+
+  System Failure
+
+   Sometimes, computers have the annoying habit to crash at the most
+   unfortunate time. Many users have lost data due to an unpredicted
+   crash. This can be problematic, e.g., when you just added or modified
+   a login, and did not get around to saving the updated password
+   database. If a password was randomly generated, it may be lost.
+
+   The easy workaround is to not confirm your password with the online
+   service before saving the password database. I.e., when creating a new
+   login, first add it in Password Gorilla, and immediately save the
+   database (using "Save" from the "File" menu). Only then go to your
+   online service -- e.g., the Web site that required registration, and
+   complete its signup process. When modifying a login, e.g., changing
+   the password, there is a chance that the computer might crash after
+   saving the database, but before completing the service's password
+   change process. In this case, the old password will still be available
+   in the password database's backup file -- assuming that you have a
+   backup copy, of course.
+
+  Other Users on a Shared Computer
+
+   Common sense will go a long way in protecting your password database
+   from other users that you share a computer with. Never keep Password
+   Gorilla running when you leave the desktop unlocked. Make sure that
+   the database file is not readable by other users -- while the database
+   format is considered secure, this prevents other users from copying
+   the file, and making a brute-force attempt of guessing the master
+   password offline.
+
+   If you follow these precautions, there is nothing to worry about here.
+
+  Your System Administrator
+
+   If your computer is administered by somebody else than you, then you
+   need to trust the administrator(s). An administrator can bypass the
+   operating system's security measures, and inspect a running program's
+   in-memory data. Password Gorilla obviously needs to have the decrypted
+   contents of your password database in memory, so a malicious
+   administrator could access Password Gorilla's memory, and gain access
+   to your passwords. In an attempt to foil naive attackers, Password
+   Gorilla takes some care by not storing data in clear text, but
+   encrypted using a temporary key. However, because the key is also kept
+   in memory by necessity, a motivated attacker could find both the
+   encrypted password and its key.
+
+   Of course, malicious administrators have a wide range of tools at
+   their disposal that invade on your privacy, in order to gain access to
+   your passwords. An administrator could replace the Password Gorilla
+   software with a trojan version that looks and acts the same, but sends
+   your passwords to the administrator's account. Even if you are not
+   using Password Gorilla, the administrator could install a key logger,
+   or monitor your internet connection, to find passwords as you type
+   them.
+
+   The added risk of using Password Gorilla is that a malicious
+   administrator could compromise all passwords at once, instead of only
+   intercepting the few passwords that you actually use and transmit in
+   one session.
+
+  Viruses, Backdoors, etc.
+
+   If your computer is infected by spyware or viruses, then external
+   malicious users may have control over your computer. Such users could
+   use the same attacks as described for a system administrator above. It
+   is a good idea to check for viruses and spyware on a regular basis.
+   Password Gorilla should obviously not be used on a compromised
+   computer.
+
+  Putting Risk In Perspective
+
+   The above does not necessarily imply that Password Gorilla is too
+   unsecure to use. They are merely a set of risks that need to be
+   considered and evaluated in order to make an informed decision, and to
+   take some common sense precautions. The author believes that using
+   Password Gorilla is a better idea than the alternative of writing down
+   passwords, or of reusing passwords.
+
+   As the example of the malicious system administrator shows, there is a
+   wide range of attacks that are possible even if you were not using
+   Password Gorilla.
+
+   Saying that Password Gorilla should not be used on a computer that is
+   infected with spyware, viruses, or backdoors, is good advice, but
+   redundant, as the problem is not limited to Password Gorilla. A
+   compromised computer should not be used for anything, especially not
+   for private communication.
+
+   Also, while technical attacks receive a lot of publicity, it should
+   not be forgotten that social engineering attacks are usually more
+   effective. In a study that I read about, a sizeable fraction of users
+   revealed their passwords to strangers on the street, for a mere piece
+   of chocolate. In one of the Hollywood movies that treat this subject
+   better than others, War Games, the protagonist gains access not by
+   pressing a magic button, or by bypassing security, but by spending
+   countless hours trying to get into the designer's mind, in a social
+   engineering attack to guess the designer's most likely choice of
+   password -- another reason to prefer random passwords.
+     _________________________________________________________________
+
+   Frank Pilhofer, fp@fpx.de
+   Last modified: Sat Jun 12 22:30:00 2006

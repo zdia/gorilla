@@ -1,0 +1,113 @@
+- Password Gorilla 1.5 (29.11.2009)
+	- Add support for msgcat localisation
+	- Added German translation
+	- Added Themed Tk Widgets
+	- Package BWidget no longer included
+	
+- Password Gorilla 1.4
+  - Add support for Password Safe 3 file format.
+  - Add "Find".
+  - Hide main window when coming up and asking to open a file.
+  - Bugfix: fixed alphabetical ordering of entries in nested subgroups.
+  - Improved seed for initializing the pseudo-random number generator.
+  - Bring Password Gorilla window to the foreground after unlocking.
+  - Allow closing a locked database using the "X" button.
+  - Bugfix: fix handling of a database file name on the command line.
+    (Reported by Rudolf Mühlbauer.)
+
+
+- Password Gorilla 1.3 (January 12, 2006)
+  - Bugfix: fix compatibility with Password Safe 2.14 and later.
+    (Fixes "V1 name field looks suspect" error.)
+  - Bugfix: disable the menu when locked (in idle timeout), which
+    on the Mac is not affected by a grab for all events by the
+    unlock dialog.
+
+
+- Password Gorilla 1.2 (June 26, 2005)
+  - Added idle timeout (see Manage->Database Preferences).
+  - Added auto-save.
+  - Revised the exit dialog, if the database was modified. Instead of
+    asking whether to discard changes, it now asks whether to save the
+    modified database before exiting.
+  - Show percentage indicator when loading or saving a database.
+  - Added --rc <name> command-line option to use this configuration
+    file instead of ~/.gorillarc or the Registry.
+  - Bugfix: allow "\t" as a field separator for exporting.
+  - Bugfix: get confirmation when opening a new database, and the
+    current one is modified.
+  - Bugfix: on Windows, show the Windows (native) path name of the
+    database, i.e., using backslashes instead of slashes.
+
+
+- Password Gorilla 1.1 (April 23, 2005)
+  - Added "Export" feature (in the "File" menu) to export the database
+    to a plain-text file (e.g., for backup purposes).
+  - Added "Backup database on save" preference. If enabled, a backup
+    copy will be created with the ".bak" extension.
+  - Consider password database changed if the master password has
+    changed -- and thus enable the "Save" menu item.
+  - Bugfix when using non-Latin character sets.
+  - For the Windows executable, add codeset pages for non-Latin
+    input.
+  - Added "-norc" command-line option. If used, default preferences
+    are used, and no preferences will be loaded or written to a
+    preferences file (Unix, Mac OS X) or the registry (Windows).
+    The option can also be made part of the executable name, e.g.,
+    "gorilla-norc.exe".
+
+
+- Password Gorilla 1.0 (January 15, 2005)
+  - Added Password Gorilla artwork; contributed by Andrew J. Sniezek.
+  - Enabled mouse wheel on Windows.
+  - Unicode support: Encode all strings using UTF-8, so that a
+    database file may be moved between locales. If enabled, non-ASCII
+    characters may not show up correctly when loading the database
+    into Password Safe. If disabled, non-ASCII characters may not show
+    up correctly when opening the database in a different locale.
+  - Added dialog for database-specific preferences. So far, the only
+    configurable preference is "Unicode support".
+  - Merging a database now prompts whether the user wants to see a
+    detailed report of the merged logins (conflicts, added logins,
+    identical logins).
+  - Bug fix: "Edit->Copy Password" now indeed copies the password to
+    the clipboard, instead of the user name.
+  - Effect the "Remember sizes of dialog boxes" only if the version
+    number has not changed, as the size of dialog boxes may change
+    between versions.
+
+
+- Password Gorilla 1.0b1 (December 17, 2004)
+  - Added "Credits" section to "Help->About" dialog.
+  - Fix problem on Windows, when the Page Up and Page Down keys would
+    scroll by two pages, when viewing the Help or License files.
+  - Assign and update "Created", "Last Modified" and "Password Last
+    Changed" timestamps; the latter two are shown in the Entry dialog.
+  - In the tree view, arrange all groups before the entries.
+  - Add "File->Preferences" dialog to configure, for now, the size
+    of the last recently used databases list, a delay for clearing
+    the clipboard, what action to take when double-clicking an entry,
+    and whether to save information about dialog box sizes.
+  - Provide some useful information in the bottom "status" line.
+    Clear the status line after 5 seconds, so that potentially
+    sensible information like "Password copied to clipboard" does
+    not show forever.
+  - Added option to clear the clipboard after a configurable amount
+    of time (see Preferences above), so that passwords don't remain
+    in the clipboard forever.
+  - Implemented "Merge" functionality, to merge entries from a
+    second database into the currently-open database. Duplicate
+    entries are ignored, if they are identical. Otherwise, they
+    will show up with the timestamp of their last modification.
+  - On the Macintosh, use the ~/Library/Preferences/gorilla.rc file
+    to store preferences.
+  - Rename "entry" to "login".
+    
+
+- Password Gorilla 1.0a2 (December 6, 2004)
+  - Repackaged as Starkit and Starpack, to offer a binary download
+    on Windows.
+
+
+- Password Gorilla (December 5, 2004)
+  - Initial release.
