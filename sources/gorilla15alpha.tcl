@@ -29,6 +29,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # gorilla2a.tcl gespeichert 14.11.2009
 # gorilla1.5a1 gespeichert 20.12.2009
 # gorilla1.5a2 gepeichert 14.01.2010
+# pushed to http:/github.com/zdia/gorilla
 
 package provide app-gorilla15alpha 1.0
 
