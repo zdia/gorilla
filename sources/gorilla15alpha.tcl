@@ -28,6 +28,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 # gorilla2a.tcl gespeichert 14.11.2009
 # gorilla1.5a1 gespeichert 20.12.2009
+# gorilla1.5a2 gepeichert 14.01.2010
 
 package provide app-gorilla15alpha 1.0
 
@@ -228,7 +229,7 @@ proc gorilla::Init {} {
 proc gorilla::StatusModified {name1 name2 op} {
 	if {![string equal $::gorilla::status ""] && \
 		![string equal $::gorilla::status "Ready."] && \
-		![string equal $::gorilla::status "Welcome to the Password Gorilla."]} {
+		![string equal $::gorilla::status [mc "Welcome to the Password Gorilla."]]} {
 		if {[info exists ::gorilla::statusClearId]} {
 			after cancel $::gorilla::statusClearId
 		}
@@ -258,74 +259,85 @@ proc gorilla::InitGui {} {
 	. configure -menu .mbar
 
 # Struktur im menu_desc(ription):
-# label	widgetname {item tag command}
+# label	widgetname {item tag command shortcut}
+
+		set meta Control
+		set menu_meta Ctrl
+		
+		if {[tk windowingsystem] == "aqua"}	{
+			set meta Command
+			set menu_meta Cmd
+		}
 
 set ::gorilla::menu_desc {
-	File	file	{"New ..." {} gorilla::New
-							"Open ..." {} "gorilla::Open"
-							"Merge ..." open gorilla::Merge
-							Save save gorilla::Save
-							"Save As ..." open gorilla::SaveAs
-							separator "" ""
-							"Export ..." open gorilla::Export 
-							separator "" ""
-							"Preferences ..." {} gorilla::Preferences
-							separator "" ""
-							Exit {} gorilla::Exit
+	File	file	{"New ..." {} gorilla::New "" ""
+							"Open ..." {} "gorilla::Open" $menu_meta O
+							"Merge ..." open gorilla::Merge "" ""
+							Save save gorilla::Save $menu_meta S
+							"Save As ..." open gorilla::SaveAs "" ""
+							separator "" "" "" ""
+							"Export ..." open gorilla::Export "" ""
+							separator "" "" "" ""
+							"Preferences ..." {} gorilla::Preferences "" ""
+							separator "" "" "" ""
+							Exit {} gorilla::Exit $menu_meta X
 							}	
-	Edit	edit	{"Copy Username" login gorilla::CopyUsername
-							"Copy Password" login gorilla::CopyPassword
-							"Copy URL" login gorilla::CopyURL
-							separator "" ""
-							"Clear Clipboard" "" gorilla::ClearClipboard
-							separator "" ""
-							"Find ..." open gorilla::Find
-							"Find next" open gorilla::RunFind
+	Edit	edit	{"Copy Username" login gorilla::CopyUsername $menu_meta U
+							"Copy Password" login gorilla::CopyPassword $menu_meta P
+							"Copy URL" login gorilla::CopyURL $menu_meta W
+							separator "" "" "" ""
+							"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
+							separator "" "" "" ""
+							"Find ..." open gorilla::Find $menu_meta F
+							"Find next" open gorilla::RunFind $menu_meta G
 							}
-	Datensatz	login	{ "Add Login ..." open gorilla::AddLogin
-							"Edit Login ..." open gorilla::EditLogin
-							"Delete Login" login gorilla::DeleteLogin
-							"Move Login ..." login gorilla::MoveLogin
-							separator "" ""
-							"Add Group ..." open gorilla::AddGroup
-							"Add Subgroup ..." group gorilla::AddSubgroup
-							"Rename Group ..." group gorilla::RenameGroup
-							"Move Group ..." group gorilla::MoveGroup
-							"Delete Group" group gorilla::DeleteGroup
+	Datensatz	login	{ "Add Login ..." open gorilla::AddLogin $menu_meta A
+							"Edit Login ..." open gorilla::EditLogin $menu_meta E
+							"Delete Login" login gorilla::DeleteLogin "" ""
+							"Move Login ..." login gorilla::MoveLogin "" ""
+							separator "" "" "" ""
+							"Add Group ..." open gorilla::AddGroup "" ""
+							"Add Subgroup ..." group gorilla::AddSubgroup "" ""
+							"Rename Group ..." group gorilla::RenameGroup "" ""
+							"Move Group ..." group gorilla::MoveGroup "" ""
+							"Delete Group" group gorilla::DeleteGroup "" ""
 							}
-	Manage	manage { "Password Policy ..." open gorilla::PasswordPolicy
-							"Database Preferences ..." open gorilla::DatabasePreferencesDialog
-							separator "" ""
-							"Change Master Password ..." open gorilla::ChangePassword
+	Manage	manage { "Password Policy ..." open gorilla::PasswordPolicy "" ""
+							"Database Preferences ..." open gorilla::DatabasePreferencesDialog "" ""
+							separator "" "" "" ""
+							"Change Master Password ..." open gorilla::ChangePassword "" ""
 							}
-	Help	help	{ "Help ..." "" gorilla::Help
-							"License ..." "" gorilla::License
-							separator "" ""
-							"About ..." "" gorilla::About
+	Help	help	{ "Help ..." "" gorilla::Help "" ""
+							"License ..." "" gorilla::License "" ""
+							separator "" "" "" ""
+							"About ..." "" gorilla::About "" ""
 							}
 }	
 
-foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
+	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
+		
+		.mbar add cascade -label [mc $menu_name] -menu .mbar.$menu_widget
 	
-	.mbar add cascade -label [mc $menu_name] -menu .mbar.$menu_widget
-
-	menu .mbar.$menu_widget
+		menu .mbar.$menu_widget
+		
+		set taglist ""
+		
+		foreach {menu_item menu_tag menu_command meta_key shortcut} $menu_itemlist {
 	
-	set taglist ""
+			# erstelle für jedes widget eine Tag-Liste
+			lappend taglist $menu_tag
 	
-	foreach {menu_item menu_tag menu_command} $menu_itemlist {
-
-		# erstelle für jedes widget eine Tag-Liste
-		lappend taglist $menu_tag
-
-		if {$menu_item eq "separator"} {
-			.mbar.$menu_widget add separator
-		} else {
-			.mbar.$menu_widget add command -label [mc $menu_item] -command $menu_command
-		} 	
-		set ::gorilla::tag_list($menu_widget) $taglist
-	} 
-}
+			if {$menu_item eq "separator"} {
+				.mbar.$menu_widget add separator
+			} else {
+				eval set meta_key $meta_key
+				set shortcut [join "$meta_key $shortcut" +]
+				.mbar.$menu_widget add command -label [mc $menu_item] \
+					-command $menu_command -accelerator $shortcut
+			} 	
+			set ::gorilla::tag_list($menu_widget) $taglist
+		} 
+	}
 
 # menueintrag deaktivieren mit dem tag "login
 # suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
@@ -374,21 +386,19 @@ foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 	grid rowconfigure .dummy 0 -weight 1
 	
 	bind .tree <Double-Button-1> {gorilla::TreeNodeDouble [.tree focus]}
-	
-	bind $tree <Button-3> {gorilla::TreeNodePopup [.tree focus]}
+	bind $tree <Button-3> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
 	bind .tree <<TreeviewSelect>> gorilla::TreeNodeSelectionChanged
 	
 		# On the Macintosh, make the context menu also pop up on
-		# Control-Left Mousebutton, for those poor souls that only
-		# have one button.
-		# Ergänzen! und testen ...
+		# Control-Left Mousebutton and button 2 <right-click>
+		
 		catch {
-			if {[info exists ::tcl_platform(platform)] && \
-				$::tcl_platform(platform) == "macintosh"} {
-					bind .tree <Control-Button-1> {gorilla::TreeNodePopup [.tree focus]}
-					bind .tree <Button-2> {gorilla::TreeNodePopup [.tree focus]}
+			if {[tk windowingsystem] == "aqua"} {
+					bind .tree <$meta-Button-1> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
+					bind .tree <Button-2> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
 			}
 		}
+		
 		#
 		# remember widgets
 		#
@@ -411,10 +421,24 @@ foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 
 		catch {bind . <MouseWheel> "$tree yview scroll \[expr {-%D/120}\] units"}
 
-		# bind . <Control-L> "gorilla::Reload"
-		# bind . <Control-R> "gorilla::Refresh"
-		# bind . <Control-C> "gorilla::ToggleConsole"
-		# bind . <Control-q> "gorilla::Exit"
+		bind . <$meta-o> {.mbar.file invoke 1}
+		bind . <$meta-s> {.mbar.file invoke 3}
+		bind . <$meta-x> {.mbar.file invoke 10}
+		
+		bind . <$meta-u> {.mbar.edit invoke 0}
+		bind . <$meta-p> {.mbar.edit invoke 1}
+		bind . <$meta-w> {.mbar.edit invoke 2}
+		bind . <$meta-c> {.mbar.edit invoke 4}
+		bind . <$meta-f> {.mbar.edit invoke 6}
+		bind . <$meta-g> {.mbar.edit invoke 7}
+
+		bind . <$meta-a> {.mbar.login invoke 0}
+		bind . <$meta-e> {.mbar.login invoke 1}
+		
+		# bind . <$meta-L> "gorilla::Reload"
+		# bind . <$meta-R> "gorilla::Refresh"
+		# bind . <$meta-C> "gorilla::ToggleConsole"
+		# bind . <$meta-q> "gorilla::Exit"
 
 		#
 		# Handler for the X Selection
@@ -467,10 +491,29 @@ proc setmenustate {widget tag_pattern state} {
 	}
 }
 
+proc gorilla::EvalIfStateNormal {menuentry index} {
+	if {[$menuentry entrycget $index -state] == "normal"} {
+		eval [$menuentry entrycget 0 -command]
+	}
+}
+
 # ----------------------------------------------------------------------
 # Tree Management: Select a node
 # ----------------------------------------------------------------------
 #
+
+proc gorilla::GetSelectedNode { } {
+	# returns node at mouse position
+	set xpos [winfo pointerx .]
+	set ypos [winfo pointery .]
+	set rootx [winfo rootx .]
+	set rooty [winfo rooty .]
+
+	set relx [incr xpos -$rootx]
+	set rely [incr ypos -$rooty]
+
+	return [.tree identify row $relx $rely]
+}
 
 proc gorilla::TreeNodeSelect {node} {
 	ArrangeIdleTimeout
@@ -709,7 +752,7 @@ proc gorilla::TryResizeFromPreference {top} {
 }
 
 proc gorilla::CollectTicks {} {
-		lappend ::gorilla::collectedTicks [clock clicks]
+	lappend ::gorilla::collectedTicks [clock clicks]
 }
 
 proc gorilla::New {} {
@@ -726,6 +769,12 @@ proc gorilla::New {} {
 		-message [ mc "The current password database is modified.\
 		Do you want to save the current database before creating\
 		the new database?"]]
+
+		# switch $answer {}
+		# yes {}
+		# no {aktuelle Datenbank schließen, Variable neu initialisieren}
+		# default {return}
+		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
 				if {![::gorilla::Save]} {
@@ -763,11 +812,12 @@ proc gorilla::New {} {
 
 	wm title . [mc "Password Gorilla - <New Database>"]
 
+	# Aufräumarbeiten
 	if {[info exists ::gorilla::db]} {
 		itcl::delete object $::gorilla::db
 	}
-
 	set ::gorilla::dirty 0
+
 	# create an pwsafe object ::gorilla::db 
 	# with accessible by methods like: GetPreference <name>
 	set ::gorilla::db [namespace current]::[pwsafe::db \#auto $password]
@@ -804,8 +854,10 @@ proc gorilla::New {} {
 		$::gorilla::preference(unicodeSupport)
 	}
 
-	$::gorilla::widgets(tree) selection set {}		;# Baum löschen
-	catch {	$::gorilla::widgets(tree) delete [$::gorilla::widgets(tree) nodes root] }
+	$::gorilla::widgets(tree) selection set {}		
+	# pathname delete itemList ;# Baum löschen
+	catch {	$::gorilla::widgets(tree) delete [$::gorilla::widgets(tree) children {}] }
+	# catch {	$::gorilla::widgets(tree) delete [$::gorilla::widgets(tree) nodes root] }
 	
 # ttk:treeview: pathname insert 	parent index ?-id id? options... 
 # BWidget: pathName insert				index	parent	node	?option value...? 
@@ -855,7 +907,7 @@ proc gorilla::OpenPercentTrace {name1 name2 op} {
 	}
 }
 
-;# proc gorilla::OpenDatabase {title defaultFile} {
+;# proc gorilla::OpenDatabase {title defaultFile} {}
 	
 proc gorilla::OpenDatabase {title {defaultFile ""}} {
 	ArrangeIdleTimeout
@@ -967,6 +1019,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 	lappend myClicks [clock clicks]
 
 	if {$::gorilla::guimutex == 2} {
+			# canceled
 			break
 	} elseif {$::gorilla::guimutex == 1} {
 			set fileName [$aframe.file.cb get]
@@ -1019,6 +1072,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 			-message "Can not open password database\
 			\"$nativeName\": $oops"
 		$aframe.info configure -text $info
+		$aframe.pw.pw delete 0 end
 		continue
 		}
 		# all seems well
@@ -1070,7 +1124,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 
 			focus $aframe.pw.pw
 	}
-		}
+		} ;# end while
 
 		set fileName [$aframe.file.cb get]
 		set nativeName [file nativename $fileName]
@@ -1085,6 +1139,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 		}
 
 		wm withdraw $top
+		update
 
 		if {$::gorilla::guimutex != 1} {
 	return
@@ -1104,10 +1159,6 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 				set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 			}
 		} else {
-				# filter out the Macintosh process serial number
-				if {[string first "-psn" $nativeName] == -1} {
-					set ::gorilla::preference(lru) [list $nativeName]
-				} 
 			set ::gorilla::preference(lru) [list $nativeName]
 		}
 
@@ -2983,7 +3034,7 @@ proc gorilla::SaveAs {} {
 		set ::gorilla::dirty 0
 		$::gorilla::widgets(tree) item "RootNode" -tags black
 		set ::gorilla::fileName $fileName
-		wm title . "Password Gorilla - $	"
+		wm title . "Password Gorilla - $nativeName"
 		$::gorilla::widgets(tree) item "RootNode" -text $nativeName
 		set ::gorilla::status "Password database saved as $nativeName"
 
@@ -4738,8 +4789,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 		# Elsewhere, use $HOME/.gorillarc
 		#
 
-		if {[info exists ::tcl_platform(platform)] && \
-		$::tcl_platform(platform) == "macintosh" && \
+		if {[tk windowingsystem] == "aqua" && \
 		[file isdirectory [file join $homeDir "Library" "Preferences"]]} {
 			set fileName [file join $homeDir "Library" "Preferences" "gorilla.rc"]
 		} else {
@@ -4931,8 +4981,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	# Elsewhere, use $HOME/.gorillarc
 	#
 
-	if {[info exists ::tcl_platform(platform)] && \
-		$::tcl_platform(platform) == "macintosh" && \
+	if {[tk windowingsystem] == "aqua" && \
 		[file isdirectory [file join $homeDir "Library" "Preferences"]]} {
 			set fileName [file join $homeDir "Library" "Preferences" "gorilla.rc"]
 	} else {
@@ -5496,10 +5545,10 @@ proc gorilla::ShowTextFile {top title fileName} {
 #
 
 proc gorilla::CloseFindDialog {} {
-		set top .findDialog
-		if {[info exists ::gorilla::toplevel($top)]} {
-	wm withdraw $top
-		}
+	set top .findDialog
+	if {[info exists ::gorilla::toplevel($top)]} {
+		wm withdraw $top
+	}
 }
 
 proc gorilla::Find {} {
@@ -5580,9 +5629,14 @@ proc gorilla::Find {} {
 		bind $top.text.e <Return> "::gorilla::RunFind"
 
 		set ::gorilla::toplevel($top) $top
+		
+		wm attributes $top -topmost 1
+		update idletasks
 		wm protocol $top WM_DELETE_WINDOW gorilla::CloseFindDialog
+		
 	} else {
 		wm deiconify $top
+		# Dialog_Wait
 	}
 
 	#
@@ -6592,6 +6646,48 @@ proc populateTree {tree node} {
 		$tree set $node type processedDirectory
 }
 
+#
+# ----------------------------------------------------------------------
+# Debugging for the Mac OS
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::writeToLog {logfile message} {
+	# mac Abfrage
+	set log "[clock format [clock seconds] -format %b\ %d\ %H:%M:%S] \
+		gorilla appname(\"Gorilla\"): $message"
+		
+	if [file exists $logfile] {
+		# puts "$logfile exists"
+		set filehandler [open $logfile a+]
+		puts $filehandler $log
+		close $filehandler
+	} else {
+		puts "$logfile does not exist or no access permissions"
+		puts $log
+	}
+}
+
+proc psn_Delete {argv argc} {
+	# debugging
+	gorilla::writeToLog $::gorilla::logfile "argv: $argv"
+	
+	set index 0
+	set new_argv ""
+	
+	puts vorher
+	while { $index < $argc } {
+		puts "while $index $argc"
+		break
+		if {[string first "psn" [lindex $argv $index]] == -1} { 
+			lappend new_argv [lindex $argv $index]
+		}
+		incr index
+	}
+	puts nachher
+	gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $argv"
+	return $new_argv
+}
 
 #
 # ----------------------------------------------------------------------
@@ -6599,6 +6695,14 @@ proc populateTree {tree node} {
 # ----------------------------------------------------------------------
 #
 
+# If we want some error logging
+# set logfile "/home/dia/Projekte/tcl/console.log"
+set ::gorilla::logfile "/private/var/log/console.log"
+
+if {[tk windowingsystem] == "aqua"} {
+		set argv [psn_Delete $argv $argc]
+	}
+	
 proc usage {} {
 		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
 		puts stdout "	Options:"
@@ -6615,7 +6719,7 @@ if {$::gorilla::init == 0} {
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
 
-	set argc [llength $argv]
+	# set argc [llength $argv]	;# obsolete
 
 	for {set i 0} {$i < $argc} {incr i} {
 		switch -- [lindex $argv $i] {
