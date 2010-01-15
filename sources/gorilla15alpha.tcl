@@ -2951,9 +2951,9 @@ proc gorilla::SaveAs {} {
 		}
 
 		if {$majorVersion == 3} {
-	set defaultExtension ".psafe3"
+			set defaultExtension ".psafe3"
 		} else {
-	set defaultExtension ".dat"
+			set defaultExtension ".dat"
 		}
 
 		#
@@ -6656,7 +6656,7 @@ proc populateTree {tree node} {
 proc gorilla::writeToLog {logfile message} {
 	# mac Abfrage
 	set log "[clock format [clock seconds] -format %b\ %d\ %H:%M:%S] \
-		gorilla appname(\"Gorilla\"): $message"
+		\"Password Gorilla\": $message"
 		
 	if [file exists $logfile] {
 		# puts "$logfile exists"
@@ -6686,7 +6686,7 @@ proc psn_Delete {argv argc} {
 		incr index
 	}
 	puts nachher
-	gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $argv"
+	gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
 	return $new_argv
 }
 
