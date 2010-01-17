@@ -100,6 +100,16 @@ puts $oops
 }
 
 #
+# There may be a copy of Itcl in our directory
+#
+
+foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
+    if {[file isdirectory $testitdir]} {
+	lappend auto_path $testitdir
+    }
+}
+
+#
 # Look for Itcl, or, failing that, tcl++
 #
 
@@ -910,7 +920,9 @@ proc gorilla::OpenPercentTrace {name1 name2 op} {
 
 ;# proc gorilla::OpenDatabase {title defaultFile} {}
 	
-proc gorilla::OpenDatabase {title {defaultFile ""}} {
+# proc gorilla::OpenDatabase {title {defaultFile ""}} {
+proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
+	
 	ArrangeIdleTimeout
 	set top .openDialog
 
@@ -918,10 +930,10 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 		toplevel $top
 		TryResizeFromPreference $top
 
-		set aframe [frame $top.right]
+		set aframe [ttk::frame $top.right -padding [list 10 10]]
 
-		ttk::label $aframe.info -anchor w -width 50 -relief sunken -padding [list 5 5 5 5]
-		pack $aframe.info -side bottom	-padx 10 -pady 10 -fill x -expand yes
+		ttk::label $aframe.info -anchor w -width 70 -relief sunken \
+			-background #F6F69E -padding [list 5 5 5 5]
 
 		ttk::labelframe $aframe.file -text [mc "Database:"] -width 40
 
@@ -932,13 +944,10 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 		pack $aframe.file.cb -side left -padx 10 -pady 10 -fill x -expand yes
 		pack $aframe.file.sel -side right -padx 10 
 
-		pack $aframe.file -side top -padx 10 -pady 10 -fill x -expand yes
-
 		ttk::labelframe $aframe.pw -text [mc "Password:"] -width 40
 		ttk::entry $aframe.pw.pw -width 40 -show "*"
 		pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
 
-		pack $aframe.pw -side left -padx 10 -pady 10 -fill x -expand yes
 		bind $aframe.pw.pw <KeyPress> "+::gorilla::CollectTicks"
 		bind $aframe.pw.pw <KeyRelease> "+::gorilla::CollectTicks"
 
@@ -947,13 +956,20 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $aframe.buts.b2 -width 10 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
-		pack $but1 $but2 -side left -pady 5 -padx 20
-		pack $aframe.buts -side left -pady 10
-		
+		set but3 [ttk::button $aframe.buts.b3 -width 10 -text [mc "New"] \
+			-command "set ::gorilla::guimutex 4"]
+		pack $but1 $but2 $but3 -side left -pady 10 -padx 30 -fill x -expand 1
+
+		pack $aframe.file -side top -padx 10 -pady 10 -fill x -expand yes
+		pack $aframe.pw -side top -padx 10 -pady 5  -fill x -expand yes
+		pack $aframe.buts -side top -padx 10 -pady 5 -fill x -expand yes
+		pack $aframe.info -side top	-padx 10 -pady 5 -fill x -expand yes
+	
 		bind $aframe.file.cb <Return> "set ::gorilla::guimutex 1"
 		bind $aframe.pw.pw <Return> "set ::gorilla::guimutex 1"
 		bind $aframe.buts.b1 <Return> "set ::gorilla::guimutex 1"
 		bind $aframe.buts.b2 <Return> "set ::gorilla::guimutex 2"
+		bind $aframe.buts.b3 <Return> "set ::gorilla::guimutex 4"
 		
 		pack $aframe
 		
@@ -971,10 +987,14 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 			&& [llength $::gorilla::preference(lru)] } {
 		$aframe.file.cb configure -values $::gorilla::preference(lru)
 		$aframe.file.cb current 0
+	}
 
-		set info [mc "Select a database, and enter its password."]
+	if {$allowNew} {
+		set info [mc "Select a database, and enter its password. Click \"New\" to create a new database."]
+		$aframe.buts.b3 configure -state normal
 	} else {
-		set info [mc "To create a new database, click cancel, then \"New\" from the \"File\" menu."]
+		set info "Select a database, and enter its password."
+		$aframe.buts.b3 configure -state disabled
 	}
 
 		$aframe.info configure -text $info
@@ -994,7 +1014,14 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 			}
 		}
 
+
 		#
+    # Disable the main menu, so that it is not accessible, even on the Mac.
+    #
+
+    setmenustate $::gorilla::widgets(main) all disabled
+
+    #
 		# Run dialog
 		#
 
@@ -1020,8 +1047,11 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 	lappend myClicks [clock clicks]
 
 	if {$::gorilla::guimutex == 2} {
-			# canceled
-			break
+    # Cancel
+    break
+	} elseif {$::gorilla::guimutex == 4} {
+    # New
+		break
 	} elseif {$::gorilla::guimutex == 1} {
 			set fileName [$aframe.file.cb get]
 			set nativeName [file nativename $fileName]
@@ -1142,8 +1172,18 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 		wm withdraw $top
 		update
 
-		if {$::gorilla::guimutex != 1} {
-	return
+    #
+    # Re-enable the main menu.
+    #
+
+    setmenustate $::gorilla::widgets(main) all enabled
+
+    if {$::gorilla::guimutex == 2} {
+			# Cancel
+			return "Cancel"
+    } elseif {$::gorilla::guimutex == 4} {
+			# New
+			return "New"
 		}
 
 		#
@@ -1182,7 +1222,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""}} {
 		#
 
 		ArrangeIdleTimeout
-		return [list $fileName $newdb]
+		return [list "Open" $fileName $newdb]
 }
 
 #
@@ -1222,16 +1262,19 @@ proc gorilla::Open {{defaultFile ""}} {
 		}
 	 }
 
-	set openInfo [OpenDatabase [mc "Open Password Database"] $defaultFile]
-	if {[llength $openInfo] == 0} {
-		#
-		# Canceled
-		#
-		return
+	set openInfo [OpenDatabase [mc "Open Password Database"] $defaultFile 1]
+	
+	set action [lindex $openInfo 0]
+
+	if {$action == "Cancel"} {
+		return "Cancel"
+	} elseif {$action == "New"} {
+		gorilla::New
+		return "New"
 	}
 
-	set fileName [lindex $openInfo 0]
-	set newdb [lindex $openInfo 1]
+  set fileName [lindex $openInfo 1]
+	set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
 
 	wm title . "Password Gorilla - $nativeName"
@@ -1261,6 +1304,7 @@ proc gorilla::Open {{defaultFile ""}} {
 
 	AddAllRecordsToTree
 	UpdateMenu
+	return "Open"
 }
 
 
@@ -2406,20 +2450,20 @@ variable gorilla::fieldNames [list "" \
 	"last modification time"]
 
 proc gorilla::Merge {} {
-	set openInfo [OpenDatabase [mc "Merge Password Database"]]
+	set openInfo [OpenDatabase [mc "Merge Password Database" "" 0]]
+	# set openInfo [OpenDatabase "Merge Password Database" "" 0]
 	# enthält [list $fileName $newdb]
 	
-	if {[llength $openInfo] == 0} {
-		#
-		# Canceled
-		#
+	set action [lindex $openInfo 0]
+
+	if {$action != "Open"} {
 		return
 	}
 
 	set ::gorilla::status [mc "Merging "]
 
-	set fileName [lindex $openInfo 0]
-	set newdb [lindex $openInfo 1]
+	set fileName [lindex $openInfo 1]
+  set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
 
 	set totalLogins 0
@@ -2462,8 +2506,13 @@ proc gorilla::Merge {} {
 
 		set found 0
 
-		if {[info exists ::gorilla::groupNodes($ngroup)]} {
-			set parent $::gorilla::groupNodes($ngroup)
+		if {$ngroup == "" || [info exists ::gorilla::groupNodes($ngroup)]} {
+	    if {$ngroup != ""} {
+				set parent $::gorilla::groupNodes($ngroup)
+	    } else {
+				set parent "RootNode"
+	    }
+	
 			foreach node [$::gorilla::widgets(tree) children $parent] {
 				set data [$::gorilla::widgets(tree) item $node -values]
 				set type [lindex $data 0]
@@ -2979,6 +3028,7 @@ proc gorilla::SaveAs {} {
 	return 0
 		}
 
+		# Dateiname auf Default Extension testen
 		set nativeName [file nativename $fileName]
 
 		set myOldCursor [. cget -cursor]
@@ -6676,16 +6726,12 @@ proc psn_Delete {argv argc} {
 	set index 0
 	set new_argv ""
 	
-	puts vorher
 	while { $index < $argc } {
-		puts "while $index $argc"
-		break
 		if {[string first "psn" [lindex $argv $index]] == -1} { 
 			lappend new_argv [lindex $argv $index]
 		}
 		incr index
 	}
-	puts nachher
 	gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
 	return $new_argv
 }
@@ -6760,9 +6806,14 @@ if {$::gorilla::init == 0} {
 	destroy .start
 
 	if {$haveDatabaseToLoad} {
-		gorilla::Open $databaseToLoad
+		set action [gorilla::Open $databaseToLoad]
 	} else {
-		gorilla::Open
+		set action [gorilla::Open]
+	}
+
+	if {$action == "Cancel"} {
+		destroy .
+		exit		
 	}
 
 	wm deiconify .
