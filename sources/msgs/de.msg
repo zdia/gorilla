@@ -189,7 +189,8 @@ mcmset de {
 	"New Group Name:" "Name der neuen Gruppe:" \
 	"Notes" "Notizen" \
 	"Find Text:" "Suchtext:" \
-	"To create a new database, click cancel, then \"New\" from the \"File\" menu." "Neue Datenbank anlegen mit <Abbrechen>, dann Klick auf <Neue ...> im Menü <Datenbank>" \
+	"New" "Neu" \
+	"Select a database, and enter its password. Click \"New\" to create a new database." "Bitte Datenbank wählen und Passwort eingeben. Neue Datenbank mit Klick auf \"Neu\"" \
 	}
 	
 mcunknown de "unbekannt"
