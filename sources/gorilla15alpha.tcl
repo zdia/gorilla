@@ -954,7 +954,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		frame $aframe.buts
 		set but1 [ttk::button $aframe.buts.b1 -width 10 -text "OK" \
 			-command "set ::gorilla::guimutex 1"]
-		set but2 [ttk::button $aframe.buts.b2 -width 10 -text [mc "Cancel"] \
+		set but2 [ttk::button $aframe.buts.b2 -width 10 -text [mc "Exit"] \
 			-command "set ::gorilla::guimutex 2"]
 		set but3 [ttk::button $aframe.buts.b3 -width 10 -text [mc "New"] \
 			-command "set ::gorilla::guimutex 4"]
@@ -1260,7 +1260,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		} elseif {$answer != "no"} {
 			return
 		}
-	 }
+	}
 
 	set openInfo [OpenDatabase [mc "Open Password Database"] $defaultFile 1]
 	
