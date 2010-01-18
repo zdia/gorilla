@@ -3031,8 +3031,11 @@ proc gorilla::SaveAs {} {
 		}
 
 		# Dateiname auf Default Extension testen
+		# -defaultextension funktioniert nur auf Windowssystemen
+		set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
 		set nativeName [file nativename $fileName]
-
+	
+		
 		set myOldCursor [. cget -cursor]
 		. configure -cursor watch
 		update idletasks
@@ -6697,6 +6700,14 @@ proc populateTree {tree node} {
 
 		# Stop this code from rerunning on the current node
 		$tree set $node type processedDirectory
+}
+
+proc gorilla::CheckDefaultExtension {name extension} {
+	set res [split $name .]
+	if {[llength $res ] == 1} {
+		set name [join "$res $extension" .]
+	}
+	return $name
 }
 
 #
