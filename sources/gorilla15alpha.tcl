@@ -2389,9 +2389,11 @@ proc gorilla::Export {} {
 
 proc gorilla::MarkDatabaseAsDirty {} {
 	set ::gorilla::dirty 1
+	$::gorilla::widgets(tree) item "RootNode" -tags red
 
 	if {[info exists ::gorilla::db]} {
 		if {[$::gorilla::db getPreference "SaveImmediately"]} {
+			
 			if {[info exists ::gorilla::fileName]} {
 				gorilla::Save
 			} else {
@@ -2401,7 +2403,6 @@ proc gorilla::MarkDatabaseAsDirty {} {
 	}
 
 	UpdateMenu
-	$::gorilla::widgets(tree) item "RootNode" -tags red
 }
 
 # ----------------------------------------------------------------------
@@ -2964,6 +2965,7 @@ proc gorilla::Save {} {
 	set ::gorilla::status [mc "Password database saved."] 
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
+
 	UpdateMenu
 	return 1
 }
