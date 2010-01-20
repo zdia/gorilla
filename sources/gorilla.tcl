@@ -31,7 +31,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla15alpha 1.0
 
-set ::gorillaVersion {$Revision: 1.5alpha $}
+set ::gorillaVersion {$Revision: 1.5b $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -928,12 +928,12 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		toplevel $top
 		TryResizeFromPreference $top
 
-		set aframe [ttk::frame $top.right -padding [list 10 10]]
+		set aframe [ttk::frame $top.main -padding [list 10 5]]
 
-		ttk::label $aframe.info -anchor w -width 70 -relief sunken \
+		ttk::label $aframe.info -anchor w -width 80 -relief sunken \
 			-background #F6F69E -padding [list 5 5 5 5]
 
-		ttk::labelframe $aframe.file -text [mc "Database:"] -width 40
+		ttk::labelframe $aframe.file -text [mc "Database:"] -width 70
 
 		ttk::combobox $aframe.file.cb -width 40
 		ttk::button $aframe.file.sel -image $::gorilla::images(browse) \
@@ -944,32 +944,37 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 		ttk::labelframe $aframe.pw -text [mc "Password:"] -width 40
 		ttk::entry $aframe.pw.pw -width 40 -show "*"
-		pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
-
 		bind $aframe.pw.pw <KeyPress> "+::gorilla::CollectTicks"
 		bind $aframe.pw.pw <KeyRelease> "+::gorilla::CollectTicks"
+		
+		pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
 
 		frame $aframe.buts
-		set but1 [ttk::button $aframe.buts.b1 -width 10 -text "OK" \
+		set but1 [ttk::button $aframe.buts.b1 -width 9 -text "OK" \
 			-command "set ::gorilla::guimutex 1"]
-		set but2 [ttk::button $aframe.buts.b2 -width 10 -text [mc "Exit"] \
+		set but2 [ttk::button $aframe.buts.b2 -width 9 -text [mc "Exit"] \
 			-command "set ::gorilla::guimutex 2"]
-		set but3 [ttk::button $aframe.buts.b3 -width 10 -text [mc "New"] \
+		set but3 [ttk::button $aframe.buts.b3 -width 9 -text [mc "New"] \
 			-command "set ::gorilla::guimutex 4"]
-		pack $but1 $but2 $but3 -side left -pady 10 -padx 30 -fill x -expand 1
-
-		pack $aframe.file -side top -padx 10 -pady 10 -fill x -expand yes
-		pack $aframe.pw -side top -padx 10 -pady 5  -fill x -expand yes
-		pack $aframe.buts -side top -padx 10 -pady 5 -fill x -expand yes
-		pack $aframe.info -side top	-padx 10 -pady 5 -fill x -expand yes
+		pack $but1 $but2 $but3 -side left -pady 10 -padx 5 -expand 1
 	
+		set sep [ttk::separator $aframe.sep -orient horizontal]
+		
+		grid $aframe.file -row 0 -column 0 -columnspan 2 -sticky we
+		grid $aframe.pw $aframe.buts -pady 10
+		grid $sep -sticky we -columnspan 2 -pady 5
+		grid $aframe.info -row 3 -column 0 -columnspan 2 -pady 5 -sticky we 
+		grid configure $aframe.pw  -sticky w
+		grid configure $aframe.buts  -sticky nse
+		
 		bind $aframe.file.cb <Return> "set ::gorilla::guimutex 1"
 		bind $aframe.pw.pw <Return> "set ::gorilla::guimutex 1"
 		bind $aframe.buts.b1 <Return> "set ::gorilla::guimutex 1"
 		bind $aframe.buts.b2 <Return> "set ::gorilla::guimutex 2"
 		bind $aframe.buts.b3 <Return> "set ::gorilla::guimutex 4"
-		
-		pack $aframe
+		pack $aframe -side right -fill both -expand yes
+
+		pack $aframe -expand 1
 		
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyOpenDatabaseDialog
