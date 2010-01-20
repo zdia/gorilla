@@ -27,7 +27,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # ----------------------------------------------------------------------
 #
 # pushed to http:/github.com/zdia/gorilla
-# Version 1.b
+# Version 1.5b
 
 package provide app-gorilla15alpha 1.0
 
