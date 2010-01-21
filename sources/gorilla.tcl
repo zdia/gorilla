@@ -3853,57 +3853,56 @@ proc gorilla::LockDatabase {} {
 	
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
+		
 	toplevel $top
 	TryResizeFromPreference $top
 
 	ttk::label $top.splash -image $::gorilla::images(splash)
+	# Bild packen
 	pack $top.splash -side left -fill both
 
 	ttk::separator $top.vsep -orient vertical
 	pack $top.vsep -side left -fill y -padx 3
 
-	set aframe [ttk::frame $top.right]
-	ttk::label $aframe.title -anchor center
+	set aframe [ttk::frame $top.right -padding {10 10}]
+
+	# Titel packen	
+	ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
 	pack $aframe.title -side top -fill x -pady 10
 
-	set sep1 [ttk::separator $aframe.sep1 -orient horizontal]
-	pack $sep1 -side top -fill x -pady 10
-
-	ttk::frame $aframe.file
-	ttk::label $aframe.file.l -text [mc "Database:"] -width 12
+	ttk::labelframe $aframe.file -text [mc "Database:"]
 	ttk::entry $aframe.file.f -width 50 -state disabled
-	pack $aframe.file.l -side left -padx 5
-	pack $aframe.file.f -side left -padx 5 -fill x -expand yes
+	pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
 	pack $aframe.file -side top -pady 5 -fill x -expand yes
 
-	ttk::frame $aframe.pw
-	ttk::label $aframe.pw.l -text [mc "Password:"] -width 12 
-	# ttk::entry $aframe.pw.pw -width 20 -show "*" -font {Courier}
-	ttk::entry $aframe.pw.pw -width 20 -show "*"
-	pack $aframe.pw.l -side left -padx 5
-	pack $aframe.pw.pw -side left -padx 5 -fill x -expand yes
-	pack $aframe.pw -side top -pady 5 -fill x -expand yes
+	ttk::frame $aframe.mitte
+	ttk::labelframe $aframe.mitte.pw -text [mc "Password:"] 
+	entry $aframe.mitte.pw.pw -width 20 -show "*" -background #FFFFCC
+	pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
+	
+	pack $aframe.mitte.pw -side left -pady 5 -expand 0
 
-	set sep2 [ttk::separator $aframe.sep2 -orient horizontal]
-	pack $sep2 -side top -fill x -pady 10
-
-	ttk::frame $aframe.buts
-	set but1 [ttk::button $aframe.buts.b1 -width 15 -text "OK" \
+	ttk::frame $aframe.mitte.buts
+	set but1 [ttk::button $aframe.mitte.buts.b1 -width 10 -text "OK" \
 		-command "set ::gorilla::lockedMutex 1"]
-	set but2 [ttk::button $aframe.buts.b2 -width 15 -text [mc "Exit"] \
+	set but2 [ttk::button $aframe.mitte.buts.b2 -width 10 -text [mc "Exit"] \
 		-command "set ::gorilla::lockedMutex 2"]
-	pack $but1 $but2 -side left -pady 10 -padx 20
-	pack $aframe.buts -side top
+	pack $but1 $but2 -side left -pady 10 -padx 10
+	pack $aframe.mitte.buts -side right
 
+	pack $aframe.mitte -side top -fill x -expand 1 -pady 15
+	
 	ttk::label $aframe.info -relief sunken -anchor w -padding [list 5 5 5 5]
-	pack $aframe.info -side top -fill x -expand yes
+	pack $aframe.info -side bottom -fill x -expand yes
 
-	bind $aframe.pw.pw <Return> "set ::gorilla::lockedMutex 1"
-	bind $aframe.buts.b1 <Return> "set ::gorilla::lockedMutex 1"
-	bind $aframe.buts.b2 <Return> "set ::gorilla::lockedMutex 2"
+	bind $aframe.mitte.pw.pw <Return> "set ::gorilla::lockedMutex 1"
+	bind $aframe.mitte.buts.b1 <Return> "set ::gorilla::lockedMutex 1"
+	bind $aframe.mitte.buts.b2 <Return> "set ::gorilla::lockedMutex 2"
+		
 	pack $aframe -side right -fill both -expand yes
 
 	set ::gorilla::toplevel($top) $top
+	
 	wm protocol $top WM_DELETE_WINDOW gorilla::CloseLockedDatabaseDialog
 		} else {
 	set aframe $top.right
@@ -3912,7 +3911,7 @@ proc gorilla::LockDatabase {} {
 
 		wm title $top "Password Gorilla"
 		$aframe.title configure -text  [mc "Database Locked"]
-		$aframe.pw.pw delete 0 end
+		$aframe.mitte.pw.pw delete 0 end
 		$aframe.info configure -text [mc "Enter the Master Password."]
 
 		if {[info exists ::gorilla::fileName]} {
@@ -3931,7 +3930,7 @@ proc gorilla::LockDatabase {} {
 		# Run dialog
 		#
 
-		focus $aframe.pw.pw
+		focus $aframe.mitte.pw.pw
 		if {[catch { grab $top } oops]} {
 			set ::gorilla::status "error: $oops"
 		}
@@ -3941,7 +3940,7 @@ proc gorilla::LockDatabase {} {
 	vwait ::gorilla::lockedMutex
 
 	if {$::gorilla::lockedMutex == 1} {
-			if {[$::gorilla::db checkPassword [$aframe.pw.pw get]]} {
+			if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
 		break
 			}
 
