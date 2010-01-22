@@ -200,6 +200,13 @@ if {![info exists ::gorilla::init]} {
 # ----------------------------------------------------------------------
 # GUI and other Initialization
 # ----------------------------------------------------------------------
+proc ::tk_getOpenFile {args} {
+	return [eval ::tk::dialog::file:: open $args]
+}
+
+proc ::tk_getSaveFile {args} {
+	return [eval ::tk::dialog::file:: save $args]
+}
 
 proc gorilla::Init {} {
 		set ::gorilla::status ""
