@@ -938,7 +938,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		set aframe [ttk::frame $top.main -padding [list 10 5]]
 
 		ttk::label $aframe.info -anchor w -width 80 -relief sunken \
-			-background #F6F69E -padding [list 5 5 5 5]
+			 -padding [list 5 5 5 5]
+		# -background #F6F69E ;# helles Gelb
 
 		ttk::labelframe $aframe.file -text [mc "Database:"] -width 70
 
@@ -956,7 +957,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		
 		pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
 
-		frame $aframe.buts
+		ttk::frame $aframe.buts
 		set but1 [ttk::button $aframe.buts.b1 -width 9 -text "OK" \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $aframe.buts.b2 -width 9 -text [mc "Exit"] \
