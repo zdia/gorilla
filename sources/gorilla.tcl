@@ -3865,12 +3865,12 @@ proc gorilla::LockDatabase {} {
 	toplevel $top
 	TryResizeFromPreference $top
 
-	ttk::label $top.splash -image $::gorilla::images(splash)
+	# ttk::label $top.splash -image $::gorilla::images(splash)
 	# Bild packen
-	pack $top.splash -side left -fill both
+	# pack $top.splash -side left -fill both
 
-	ttk::separator $top.vsep -orient vertical
-	pack $top.vsep -side left -fill y -padx 3
+	# ttk::separator $top.vsep -orient vertical
+	# pack $top.vsep -side left -fill y -padx 3
 
 	set aframe [ttk::frame $top.right -padding {10 10}]
 
@@ -3879,13 +3879,14 @@ proc gorilla::LockDatabase {} {
 	pack $aframe.title -side top -fill x -pady 10
 
 	ttk::labelframe $aframe.file -text [mc "Database:"]
-	ttk::entry $aframe.file.f -width 50 -state disabled
+	ttk::entry $aframe.file.f -width 40 -state disabled
 	pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
 	pack $aframe.file -side top -pady 5 -fill x -expand yes
 
 	ttk::frame $aframe.mitte
 	ttk::labelframe $aframe.mitte.pw -text [mc "Password:"] 
-	entry $aframe.mitte.pw.pw -width 20 -show "*" -background #FFFFCC
+	entry $aframe.mitte.pw.pw -width 20 -show "*" 
+	# -background #FFFFCC
 	pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
 	
 	pack $aframe.mitte.pw -side left -pady 5 -expand 0
