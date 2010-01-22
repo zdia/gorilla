@@ -29,7 +29,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # pushed to http:/github.com/zdia/gorilla
 # Version 1.5b
 
-package provide app-gorilla15alpha 1.0
+package provide app-gorilla 1.0
 
 set ::gorillaVersion {$Revision: 1.5b $}
 set ::gorillaDir [file dirname [info script]]
