@@ -2276,25 +2276,30 @@ proc gorilla::Export {} {
 		}
 
 		if {$::gorilla::preference(exportShowWarning)} {
-	set answer [tk_messageBox -parent . \
-			-type yesno -icon warning -default no \
-			-title [mc "Export Security Warning"] \
-			-message [mc "You are about to export the password\
-			database to a plain-text file. The file will\
-			not be encrypted or password-protected. Anybody\
-			with access can read the file, and learn your\
-			user names and passwords. Make sure to store the\
-			file in a secure location. Do you want to\
-			continue?"] ]
-	if {$answer != "yes"} {
-			return
-	}
+			set answer [tk_messageBox -parent . \
+					-type yesno -icon warning -default no \
+					-title [mc "Export Security Warning"] \
+					-message [mc "You are about to export the password\
+					database to a plain-text file. The file will\
+					not be encrypted or password-protected. Anybody\
+					with access can read the file, and learn your\
+					user names and passwords. Make sure to store the\
+					file in a secure location. Do you want to\
+					continue?"] ]
+			if {$answer != "yes"} {
+					return
+			}
 		}
 
 		if {![info exists ::gorilla::dirName]} {
-	set ::gorilla::dirName [pwd]
+			if {[tk windowingsystem] == "aqua"} {
+				set ::gorilla::dirName "~/Documents"
+			} else {
+			# Windows-Abfrage auch nötig ...
+				set ::gorilla::dirName [pwd]
+			}
 		}
-
+			
 		set types {
 	{{Text Files} {.txt}}
 	{{CSV Files} {.csv}}
@@ -3033,7 +3038,12 @@ proc gorilla::SaveAs {} {
 		}
 
 		if {![info exists ::gorilla::dirName]} {
-	set ::gorilla::dirName [pwd]
+			if {[tk windowingsystem] == "aqua"} {
+				set ::gorilla::dirName "~/Documents"
+			} else {
+			# Windows-Abfrage auch nötig ...
+				set ::gorilla::dirName [pwd]
+			}
 		}
 
 		set fileName [tk_getSaveFile -parent . \
@@ -4010,7 +4020,7 @@ proc gorilla::GetPassword {confirm title} {
 	set top .passwordDialog-$confirm
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -background #d9d9d9
 
 		TryResizeFromPreference $top
 
