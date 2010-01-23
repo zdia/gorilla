@@ -813,7 +813,7 @@ proc gorilla::New {} {
 	set ::gorilla::collectedTicks [list [clock clicks]]
 	gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
 
-	if { [catch {set password [GetPassword 1 "New Database: Choose Master Password"]} \
+	if { [catch {set password [GetPassword 1 [mc "New Database: Choose Master Password"]]} \
 		error] } {
 		# canceled
 		return
@@ -935,7 +935,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		toplevel $top
 		TryResizeFromPreference $top
 
-		set aframe [ttk::frame $top.main -padding [list 10 5]]
+		set aframe [ttk::frame $top.right -padding [list 10 5]]
 
 		ttk::label $aframe.info -anchor w -width 80 -relief sunken \
 			 -padding [list 5 5 5 5]
@@ -1128,12 +1128,17 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		break
 	} elseif {$::gorilla::guimutex == 3} {
 			set types {
-		{{Password Database Files} {.psafe3 .dat}}
-		{{All Files} *}
+				{{Password Database Files} {.psafe3 .dat}}
+				{{All Files} *}
 			}
 
 			if {![info exists ::gorilla::dirName]} {
-		set ::gorilla::dirName [pwd]
+				if {[tk windowingsystem] == "aqua"} {
+					set ::gorilla::dirName "~/Documents"
+				} else {
+				# Windows-Abfrage auch nötig ...
+					set ::gorilla::dirName [pwd]
+				}
 			}
 
 			set fileName [tk_getOpenFile -parent $top \
@@ -4013,7 +4018,7 @@ proc gorilla::GetPassword {confirm title} {
 		ttk::entry $top.password.e -show "*" -width 30 -textvariable ::gorilla::passwordDialog.pw
 
 		pack $top.password.e -side left
-		pack $top.password -fill x -pady 15 -padx 15
+		pack $top.password -fill x -pady 15 -padx 15 -expand 1
 		
 		bind $top.password.e <KeyPress> "+::gorilla::CollectTicks"
 		bind $top.password.e <KeyRelease> "+::gorilla::CollectTicks"
@@ -4022,7 +4027,7 @@ proc gorilla::GetPassword {confirm title} {
 			ttk::labelframe $top.confirm -text [mc "Confirm:"] -padding [list 10 10]
 			ttk::entry $top.confirm.e -show "*" -width 30 -textvariable ::gorilla::passwordDialog.c
 			pack $top.confirm.e -side left
-			pack $top.confirm -fill x -pady 5 -padx 15
+			pack $top.confirm -fill x -pady 5 -padx 15 -expand 1
 
 			bind $top.confirm.e <KeyPress> "+::gorilla::CollectTicks"
 			bind $top.confirm.e <KeyRelease> "+::gorilla::CollectTicks"
@@ -4035,7 +4040,7 @@ proc gorilla::GetPassword {confirm title} {
 		set but2 [ttk::button $top.buts.b2 -width 10 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
 		pack $but1 $but2 -side left -pady 15 -padx 30
-		pack $top.buts
+		pack $top.buts -fill x -expand 1
 		
 		bind $top.password.e <Return> "set ::gorilla::guimutex 1"
 		bind $top.buts.b1 <Return> "set ::gorilla::guimutex 1"
