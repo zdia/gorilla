@@ -307,7 +307,7 @@ set ::gorilla::menu_desc {
 							"Find ..." open gorilla::Find $menu_meta F
 							"Find next" open gorilla::RunFind $menu_meta G
 							}
-	Datensatz	login	{ "Add Login ..." open gorilla::AddLogin $menu_meta A
+	Login	login	{ "Add Login ..." open gorilla::AddLogin $menu_meta A
 							"Edit Login ..." open gorilla::EditLogin $menu_meta E
 							"Delete Login" login gorilla::DeleteLogin "" ""
 							"Move Login ..." login gorilla::MoveLogin "" ""
