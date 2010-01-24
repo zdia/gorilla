@@ -1067,20 +1067,20 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			set fileName [$aframe.file.cb get]
 			set nativeName [file nativename $fileName]
 
-			if {$fileName == ""} {
-		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title "No File" \
-			-message "Please select a password database."
-		continue
-			}
+		if {$fileName == ""} {
+			tk_messageBox -parent $top -type ok -icon error -default ok \
+				-title "No File" \
+				-message "Please select a password database."
+			continue
+		}
 
-			if {![file readable $fileName]} {
-		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title "File Not Found" \
-			-message "The password database\
-			\"$nativeName\" does not exists or can not\
-			be read."
-		continue
+		if {![file readable $fileName]} {
+			tk_messageBox -parent $top -type ok -icon error -default ok \
+				-title "File Not Found" \
+				-message "The password database\
+				\"$nativeName\" does not exists or can not\
+				be read."
+			continue
 		}
 
 		$aframe.info configure -text [mc "Please be patient. Verifying password ..."]
@@ -1143,30 +1143,28 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 			set fileName [tk_getOpenFile -parent $top \
 				-title "Browse for a password database ..." \
-				-defaultextension ".psafe3" \
 				-filetypes $types \
 				-initialdir $::gorilla::dirName]
-			
+			# -defaultextension ".psafe3" 
 			if {$fileName == ""} {
 				continue
 			}
 
 			set nativeName [file nativename $fileName]
-
 			catch {
-		set ::gorilla::dirName [file dirname $fileName]
+				set ::gorilla::dirName [file dirname $fileName]
 			}
 
 			set values [$aframe.file.cb cget -values]
 			set found [lsearch -exact $values $nativeName]
 
 			if {$found != -1} {
-		$aframe.file.cb current $found
+				$aframe.file.cb current $found
 			} else {
-		set values [linsert $values 0 $nativeName]
-		$aframe.file.cb configure -values $values
-		$aframe.file.cb current 0
-		# $aframe.file.cb setvalue @0
+				set values [linsert $values 0 $nativeName]
+				$aframe.file.cb configure -values $values
+				$aframe.file.cb current 0
+				# $aframe.file.cb setvalue @0
 			}
 
 			focus $aframe.pw.pw
@@ -1175,14 +1173,13 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 		set fileName [$aframe.file.cb get]
 		set nativeName [file nativename $fileName]
-
 		pwsafe::int::randomizeVar ::gorilla::collectedTicks
 		$aframe.pw.pw configure -text ""
 # set $aframe.pw.entry ""
 		if {$oldGrab != ""} {
-	grab $oldGrab
+			grab $oldGrab
 		} else {
-	grab release $top
+			grab release $top
 		}
 
 		wm withdraw $top
