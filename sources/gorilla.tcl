@@ -4017,8 +4017,11 @@ proc gorilla::GetPassword {confirm title} {
 	set top .passwordDialog-$confirm
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top -background #d9d9d9
-
+		if {[tk windowingsystem] == "aqua" {
+			toplevel $top -background #ededed
+		} else {
+			toplevel $top
+		}
 		TryResizeFromPreference $top
 
 		ttk::labelframe $top.password -text $title -padding [list 10 10]
