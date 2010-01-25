@@ -4017,7 +4017,7 @@ proc gorilla::GetPassword {confirm title} {
 	set top .passwordDialog-$confirm
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		if {[tk windowingsystem] == "aqua" {
+		if {[tk windowingsystem] == "aqua"} {
 			toplevel $top -background #ededed
 		} else {
 			toplevel $top
