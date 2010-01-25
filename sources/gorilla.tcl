@@ -8,7 +8,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # Copyright (c) 2005 Frank Pilhofer
 # modified for use with wish8.5, ttk-Widgets and with German localisation
 # modified GUI to work without bwidget
-# z.dia@gmx.de
+# 
 # tested with ActiveTcl 8.5.7
 #
 # This program is free software; you can redistribute it and/or modify
@@ -26,12 +26,10 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # ----------------------------------------------------------------------
 #
-# pushed to http:/github.com/zdia/gorilla
-# Version 1.5b
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5b $}
+set ::gorillaVersion {$Revision: 1.50 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
