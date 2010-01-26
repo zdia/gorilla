@@ -1105,15 +1105,15 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				::gorilla::OpenPercentTrace
 			unset ::gorilla::openPercent
 		. configure -cursor $dotOldCursor
-		$top configure -cursor $myOldCursor
-
-		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title "Error Opening Database" \
-			-message "Can not open password database\
-			\"$nativeName\": $oops"
-		$aframe.info configure -text $info
-		$aframe.pw.pw delete 0 end
-		continue
+			$top configure -cursor $myOldCursor
+	
+			tk_messageBox -parent $top -type ok -icon error -default ok \
+				-title "Error Opening Database" \
+				-message "Can not open password database\
+				\"$nativeName\": $oops"
+			$aframe.info configure -text $info
+			$aframe.pw.pw delete 0 end
+			continue
 		}
 		# all seems well
 		trace remove variable ::gorilla::openPercent [list "write"] \
@@ -1134,11 +1134,17 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				if {[tk windowingsystem] == "aqua"} {
 					set ::gorilla::dirName "~/Documents"
 				} else {
-				# Windows-Abfrage auch nötig ...
 					set ::gorilla::dirName [pwd]
 				}
 			}
 
+			if {$::tcl_platform(platform) == "windows"} {
+				set ::gorilla::dirName [tk_chooseDirectory -title [mc "Choose a directory ..."]]
+				if {$::gorilla::dirName eq ""} {
+					set ::gorilla::dirName [pwd]
+				}
+			}
+			
 			set fileName [tk_getOpenFile -parent $top \
 				-title "Browse for a password database ..." \
 				-filetypes $types \
