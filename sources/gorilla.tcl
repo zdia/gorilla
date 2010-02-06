@@ -198,13 +198,6 @@ if {![info exists ::gorilla::init]} {
 # ----------------------------------------------------------------------
 # GUI and other Initialization
 # ----------------------------------------------------------------------
-proc ::tk_getOpenFile {args} {
-	return [eval ::tk::dialog::file:: open $args]
-}
-
-proc ::tk_getSaveFile {args} {
-	return [eval ::tk::dialog::file:: save $args]
-}
 
 proc gorilla::Init {} {
 		set ::gorilla::status ""
@@ -1146,7 +1139,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			}
 			
 			set fileName [tk_getOpenFile -parent $top \
-				-title "Browse for a password database ..." \
+				-title [mc "Browse for a password database ..."] \
 				-filetypes $types \
 				-initialdir $::gorilla::dirName]
 			# -defaultextension ".psafe3" 
