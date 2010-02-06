@@ -54,20 +54,6 @@ if {[catch {package require Tk 8.5} oops]} {
 option add *Dialog.msg.font {Sans 9}
 option add *Dialog.msg.wrapLength 6i
 
-# ----------------------------------------------------------------------
-# Let's hurry to show the user an animated gif
-# ----------------------------------------------------------------------
-toplevel .start
-
-ttk::frame .start.frame -padding [list 10 12] -borderwidth 5 -relief ridge
-ttk::progressbar .start.frame.progress -mode indeterminate -maximum 20
-ttk::label .start.frame.info -text "Loading Password Gorilla ..."
-wm overrideredirect .start 1
-wm geometry .start +200+200
-pack .start.frame.progress .start.frame.info -side top -pady 5 -fill x
-pack .start.frame
-.start.frame.progress start 
-
 if {[catch {package require Tcl 8.5}]} {
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
@@ -6496,8 +6482,6 @@ if {$::gorilla::init == 0} {
 	gorilla::LoadPreferences
 	gorilla::InitGui
 	set ::gorilla::init 1
-
-	destroy .start
 
 	if {$haveDatabaseToLoad} {
 		set action [gorilla::Open $databaseToLoad]
