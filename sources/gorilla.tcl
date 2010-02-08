@@ -291,7 +291,7 @@ set ::gorilla::menu_desc {
 							"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
 							separator "" "" "" ""
 							"Find ..." open gorilla::Find $menu_meta F
-							"Find next" open gorilla::RunFind $menu_meta G
+							"Find next" open gorilla::FindNext $menu_meta G
 							}
 	Login	login	{ "Add Login ..." open gorilla::AddLogin $menu_meta A
 							"Edit Login ..." open gorilla::EditLogin $menu_meta E
@@ -5716,10 +5716,13 @@ proc gorilla::Find {} {
 		set ::gorilla::findCurrentNode [lindex $selection 0]
 	} else {
 		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
+puts "current node $::gorilla::findCurrentNode"
 	}
 }
 
 proc gorilla::FindNextNode {node} {
+puts "\nProc FindNextNode ---"
+puts "got node: $node"
 	#
 	# If this node has children, return the first child.
 	#
@@ -5741,6 +5744,7 @@ proc gorilla::FindNextNode {node} {
 # break
 		if {$indexInParent < [llength $children]} {
 				set node [lindex $children $indexInParent]
+puts "parent children node is $node"
 				break
 		}
 
@@ -5749,7 +5753,7 @@ proc gorilla::FindNextNode {node} {
 		#
 
 		set node $parent
-
+puts "parent node: $parent"
 		#
 		# If we are at the root node, return its first child (wrap around).
 		#
@@ -5757,13 +5761,14 @@ proc gorilla::FindNextNode {node} {
 		if {$node == {} } {
 			set node [lindex [$::gorilla::widgets(tree) children {}] 0]
 			break
+puts "breaking search for next node"
 		}
 
 		#
 		# Find the parent's next sibling (Geschwister)
 		#
-	}
-
+	} ;# end while
+puts "returning node $node\n---"
 	return $node
 }
 
@@ -5781,22 +5786,36 @@ proc gorilla::RunFind {} {
 	if {![info exists ::gorilla::findCurrentNode]} {
 		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
 	}
-
 	set text $::gorilla::preference(findThisText)
 	set node $::gorilla::findCurrentNode
+puts "proc Runfind starts with node $node"
+
 	set found 0
 	set recordsSearched 0
 	set totalRecords [llength [$::gorilla::db getAllRecordNumbers]]
+	
  	while {!$found} {
-		set node [::gorilla::FindNextNode $node]
+puts "\n--- while beginns with node $node"
+# puts "\n--- Runfind while-schleife: next node is $node"
+
+		# set node [::gorilla::FindNextNode $node]
+		
 		set data [$::gorilla::widgets(tree) item $node -values]
 		set type [lindex $data 0]
 
+
 		
 		if {$type == "Group" || $type == "Root"} {
+			set node [::gorilla::FindNextNode $node]
+puts "Runfind break condition $node == $::gorilla::findCurrentNode"		
+			if {$node == $::gorilla::findCurrentNode} {
+puts "wrapped around"
+				break
+			}
 			continue
 		}
-
+		
+puts "Runfind searching ..."
 		incr recordsSearched
 		set percent [expr {int(100.*$recordsSearched/$totalRecords)}]
 		set ::gorilla::status "Searching ... ${percent}%"
@@ -5844,15 +5863,18 @@ proc gorilla::RunFind {} {
 			break
 				}
 		}
+
+		set node [::gorilla::FindNextNode $node]
 		
+puts "Runfind break condition 2 $node == $::gorilla::findCurrentNode"		
 		if {$node == $::gorilla::findCurrentNode} {
 			#
 			# Wrapped around.
 			#
 			break
+puts "wrapped around"
 		}
-
-	}
+	} ;# end while loop
 
 	if {!$found} {
 		set ::gorilla::status [mc "Text not found."]
@@ -5912,6 +5934,11 @@ proc gorilla::RunFind {} {
 		set ::gorilla::findCurrentNode $node
 }
 
+proc gorilla::FindNext {} {
+	set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
+puts "findnext node $::gorilla::findCurrentNode"
+	gorilla::RunFind
+}
 
 # ----------------------------------------------------------------------
 # Icons
