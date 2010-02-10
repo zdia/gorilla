@@ -5430,11 +5430,11 @@ proc gorilla::About {} {
 		label $top.top.pg.title -bg "#ffffff" -text "Password Gorilla"
 		pack $top.top.pg.title -side top -fill x -pady 3
 
-	if {![regexp {Revision: ([0-9.]+)(alpha)} $::gorillaVersion fullname revision]} {
+	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion fullname revision]} {
 			set revision "<unknown>"
 	}
 
-	label $top.top.pg.rev -bg "#ffffff" -text $fullname
+	label $top.top.pg.rev -bg "#ffffff" -text $revision
 	pack $top.top.pg.rev -side top -fill x -padx 3
 
 	label $top.top.pg.url -bg "#ffffff" \
