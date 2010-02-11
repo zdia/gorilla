@@ -10,6 +10,7 @@ mcmset de {
 	"Save As ..." "Speichern als ..." \
 	"Export ..." "Exportieren ..." \
 	"Preferences ..." "Einstellungen ..." \
+	"Preferences" "Einstellungen" \
 	"Edit" "Bearbeiten" \
 	"Copy Username" "Benutzernamen kopieren" \
 	"Copy Password" "Passwort kopieren" \
@@ -21,7 +22,9 @@ mcmset de {
 	"Help ..." "Hilfe ..." \
 	"Help" "Hilfe" \
 	"License ..." "Lizenz ..." \
-	"About ..." "Über ..."
+	"License" "Lizenz" \
+	"Contributors" "Mitarbeiter" \
+	"About ..." "Über ..." \
 	"Open Password Database" "Passwort-Datenbank öffnen" \
 	"Select a database, and enter its password." "Wähle eine Datenbank und gib das Passwort ein" \
 	"Create new password database" "Neue Passwort-Datenbank anlegen" \
