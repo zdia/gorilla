@@ -30,7 +30,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.2.0 $}
+set ::gorillaVersion {$Revision: 1.5.2.1 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -5414,8 +5414,7 @@ proc gorilla::contributors {} {
 	# ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
 	tk_messageBox -default ok \
 		-message \
-		"Gorilla artwork contributed by Andrew J. Sniezek.\n\
-		\nExhaustive testing and packaging for the Mac OS X \nwas done by Marcel Scherello."
+		"Gorilla artwork contributed by Andrew J. Sniezek."
 }
 
 proc gorilla::About {} {
