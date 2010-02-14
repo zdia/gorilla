@@ -30,7 +30,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.2.1 $}
+set ::gorillaVersion {$Revision: 1.5.2.2 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
