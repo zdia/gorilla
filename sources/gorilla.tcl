@@ -150,7 +150,7 @@ if {[catch {package require msgcat} oops]} {
 }
 
 namespace import msgcat::*
-mcload [file join $::gorillaDir msgs]
+# mcload [file join $::gorillaDir msgs]
 
 if {[catch {package require pwsafe} oops]} {
 	wm withdraw .
@@ -4556,7 +4556,7 @@ proc gorilla::PreferencesDialog {} {
 		ttk::notebook $top.nb
 
 #
-# First NoteBook tab: general preferences
+# First NoteBook tab: (g)eneral (p)re(f)erences
 #
 
 set gpf $top.nb.gpf
@@ -4663,9 +4663,40 @@ ttk::checkbutton $epf.warning -text [mc "Show security warning"] \
 pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 	-anchor w -side top -pady 3
 
-#
-# End of NoteBook tabs
-#
+		#
+		# Fourth NoteBook tab: Display
+		#
+		
+		set languages [gorilla::getAvailableLanguages]
+		
+		set display $top.nb.display
+		$top.nb add [ttk::frame $display -padding [list 10 10]] -text [mc "Display"]
+		
+		ttk::frame $display.lang -padding {10 10}
+		ttk::label $display.lang.label -text [mc "Language:"] -width 9
+		ttk::menubutton $display.lang.mb -textvariable ::selectedLanguage \
+			-width 8 -direction right
+		set m [menu $display.lang.mb.menu -tearoff 0]
+		$display.lang.mb configure -menu $m
+		
+		foreach {lang name} $languages {
+			$m add radio -label $name -variable ::selectedLanguage -value $name \
+				-command "set ::gorilla::preference(lang) $lang"
+		}
+		
+		if {[info exists ::gorilla::preference(lang)]} {
+			set index [lsearch $languages $::gorilla::preference(lang)]
+			set ::selectedLanguage [lindex $languages [incr index]]
+		}	else {
+			set ::selectedLanguage English
+		}
+		
+		pack $display.lang.label $display.lang.mb -side left
+		pack $display.lang -anchor w
+		
+		#
+		# End of NoteBook tabs
+		#
 
 # $top.nb compute_size
 # $top.nb raise gpf
@@ -4890,7 +4921,8 @@ proc gorilla::SavePreferencesToRCFile {} {
 			lruSize \
 			rememberGeometries \
 			saveImmediatelyDefault \
-			unicodeSupport} {
+			unicodeSupport \
+			lang} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
 		}
@@ -5177,9 +5209,14 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 		}
 			}
 			geometry,* {
-		if {[scan $value "%dx%d" width height] == 2} {
-				set ::gorilla::preference($pref) "${width}x${height}"
-		}
+				if {[scan $value "%dx%d" width height] == 2} {
+						set ::gorilla::preference($pref) "${width}x${height}"
+				}
+			}
+			lang {
+				set ::gorilla::preference($pref) $value
+				mclocale $value
+				mcload [file join $::gorillaDir msgs]
 			}
 	}
 		}
@@ -5883,8 +5920,27 @@ puts "wrapped around"
 
 proc gorilla::FindNext {} {
 	set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
-puts "findnext node $::gorilla::findCurrentNode"
 	gorilla::RunFind
+}
+
+proc gorilla::getAvailableLanguages {  } {
+	set files [glob -tail -path "$::gorillaDir/msgs/" *.msg]
+	set msgList "en"
+	
+	foreach file $files {
+		lappend msgList [lindex [split $file "."] 0]
+	}
+	
+	# Diese Liste muss erweitert werden, vgl. "locale -a"
+	set langFullName [list en English de Deutsch fr Français es Espagnol]
+	
+	# erstelle Liste mit {locale fullname}
+	set langList {}
+	foreach lang $msgList {
+		set res [lsearch $langFullName $lang]
+		lappend langList [lindex $langFullName $res] [lindex $langFullName [incr res]]
+	}
+	return $langList
 }
 
 # ----------------------------------------------------------------------

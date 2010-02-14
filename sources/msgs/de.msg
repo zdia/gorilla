@@ -195,6 +195,8 @@ mcmset de {
 	"New" "Neu" \
 	"Select a database, and enter its password. Click \"New\" to create a new database." "Bitte Datenbank wählen und Passwort eingeben. Neue Datenbank mit Klick auf \"Neu\"" \
 	"New Database: Choose Master Password" "Neue Datenbank: Hauptpasswort wählen" \
+	"Display" "Ansicht" \
+	"Language:" "Sprache:" \
 	}
 	
 mcunknown de "unbekannt"
