@@ -1,0 +1,38 @@
+2010-02-14 : v1.5.2.2
+2010-02-14 : added preference display with choose language
+2010-02-12 : v.1.5.1.2
+2010-02-11 : new <About> Dialog
+2010-02-10 : deleted About bug
+2010-02-09 : revision 1.5.1
+2010-02-08 : native openFileDialog
+2010-02-08 : find bug deleted
+2010-02-06 : no init splash
+2010-01-25 : v15.b5
+2010-01-24 : grey color for mac getPassword
+2010-01-24 : openDatabase without defaultextension
+2010-01-24 : login menu bug fixed
+2010-01-23 : pwd substituted and getpassword layout
+2010-01-23 : updated
+2010-01-23 : -initialdir for mac changed
+2010-01-22 : 	modifying LockDatabase: splash removed
+2010-01-22 : modifying OpenDialog layout for aqua
+2010-01-22 : substituing tk_get*file
+2010-01-22 : deleting folder starkit
+2010-01-21 : v1.5b1
+2010-01-21 : updated Layout LockDatabaseDialog
+2010-01-20 : updated OpenDialog Layout
+2010-01-20 : added original splash
+2010-01-20 : v1.5a8
+2010-01-20 : v1.5b0
+2010-01-20 : v1.5b0
+2010-01-20 : Version 1.5b
+2010-01-19 : exit instead of cancel in OpenDialog
+2010-01-18 : added default extension
+2010-01-18 : black tagging Rootnode ok
+2010-01-18 : message change in OpenDialog
+2010-01-18 : 1.49 without setmenuststate all
+2010-01-15 : last backup before 1.49
+2010-01-15 : Version alpha6
+2010-01-15 : Version alpha6
+2010-01-15 : Starting Point
+2010-01-13 : first commit
