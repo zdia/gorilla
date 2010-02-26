@@ -6446,11 +6446,6 @@ proc psn_Delete {argv argc} {
 	return $new_argv
 }
 
-proc ::tk::mac::ShowPreferences {} {
-	tk_messageBox -type ok -icon info -default ok \
-			-title "Preferences" -message "We can put a Preference Dialog"	
-}
-
 #
 # ----------------------------------------------------------------------
 # Init
@@ -6462,8 +6457,13 @@ proc ::tk::mac::ShowPreferences {} {
 set ::gorilla::logfile "/private/var/log/console.log"
 
 if {[tk windowingsystem] == "aqua"} {
-		set argv [psn_Delete $argv $argc]
+	set argv [psn_Delete $argv $argc]
+
+	proc ::tk::mac::ShowPreferences {} {
+		tk_messageBox -type ok -icon info -default ok \
+				-title "Preferences" -message "We can put a Preference Dialog"	
 	}
+}
 	
 proc usage {} {
 		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
