@@ -6446,6 +6446,11 @@ proc psn_Delete {argv argc} {
 	return $new_argv
 }
 
+proc ::tk::mac::ShowPreferences {} {
+	tk_messageBox -type ok -icon info -default ok \
+			-title "Preferences" -message "We can put a Preference Dialog"	
+}
+
 #
 # ----------------------------------------------------------------------
 # Init
