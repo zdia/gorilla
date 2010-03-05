@@ -30,7 +30,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.2.2 $}
+set ::gorillaVersion {$Revision: 1.5.2.3 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -4775,7 +4775,7 @@ set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 }
 
 proc gorilla::Preferences {} {
-	PreferencesDialog
+	gorilla::PreferencesDialog
 }
 
 
@@ -6460,8 +6460,7 @@ if {[tk windowingsystem] == "aqua"} {
 	set argv [psn_Delete $argv $argc]
 
 	proc ::tk::mac::ShowPreferences {} {
-		tk_messageBox -type ok -icon info -default ok \
-				-title "Preferences" -message "We can put a Preference Dialog"	
+		gorilla::PreferencesDialog
 	}
 }
 	
