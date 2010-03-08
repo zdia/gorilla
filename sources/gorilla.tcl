@@ -69,8 +69,8 @@ if {[catch {package require Tcl 8.5}]} {
 
 foreach file {isaac.tcl} {
 	if {[catch {source [file join $::gorillaDir $file]} oops]} {
-puts "$::gorillaDir $file"
-puts $oops
+# puts "$::gorillaDir $file"
+# puts $oops
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
 			-title "Need $file" \
@@ -4674,21 +4674,21 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		
 		ttk::frame $display.lang -padding {10 10}
 		ttk::label $display.lang.label -text [mc "Language:"] -width 9
-		ttk::menubutton $display.lang.mb -textvariable ::selectedLanguage \
+		ttk::menubutton $display.lang.mb -textvariable ::gorilla::selectedLanguage \
 			-width 8 -direction right
 		set m [menu $display.lang.mb.menu -tearoff 0]
 		$display.lang.mb configure -menu $m
 		
 		foreach {lang name} $languages {
-			$m add radio -label $name -variable ::selectedLanguage -value $name \
+			$m add radio -label $name -variable ::gorilla::selectedLanguage -value $name \
 				-command "set ::gorilla::preference(lang) $lang"
 		}
 		
 		if {[info exists ::gorilla::preference(lang)]} {
 			set index [lsearch $languages $::gorilla::preference(lang)]
-			set ::selectedLanguage [lindex $languages [incr index]]
+			set ::gorilla::selectedLanguage [lindex $languages [incr index]]
 		}	else {
-			set ::selectedLanguage English
+			set ::gorilla::selectedLanguage English
 		}
 		
 		pack $display.lang.label $display.lang.mb -side left
@@ -4769,7 +4769,8 @@ return
 		lruSize \
 		rememberGeometries \
 		saveImmediatelyDefault \
-		unicodeSupport} {
+		unicodeSupport \
+		} {
 set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
 }
