@@ -296,8 +296,8 @@ set ::gorilla::menu_desc {
 							"Move Group ..." group gorilla::MoveGroup "" ""
 							"Delete Group" group gorilla::DeleteGroup "" ""
 							}
-	Manage	manage { "Password Policy ..." open gorilla::PasswordPolicy "" ""
-							"Database Preferences ..." open gorilla::DatabasePreferencesDialog "" ""
+	Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
+							"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
 							separator "" "" "" ""
 							"Change Master Password ..." open gorilla::ChangePassword "" ""
 							}
@@ -794,7 +794,7 @@ proc gorilla::New {} {
 	if { [catch {set password [GetPassword 1 [mc "New Database: Choose Master Password"]]} \
 		error] } {
 		# canceled
-		return
+b		return
 	}
 
 	lappend ::gorilla::collectedTicks [clock clicks]
@@ -4540,7 +4540,8 @@ proc gorilla::PreferencesDialog {} {
 		lockDatabaseAfter 0 \
 		rememberGeometries 1 \
 		saveImmediatelyDefault 0 \
-		unicodeSupport 1} {
+		unicodeSupport 1
+		lang en} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
 		} else {
@@ -4668,27 +4669,22 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		#
 		
 		set languages [gorilla::getAvailableLanguages]
+		# format: {en English de Deutsch ...}
+		set ::gorilla::fullLangName [dict get $languages $::gorilla::prefTemp(lang)]
 		
 		set display $top.nb.display
 		$top.nb add [ttk::frame $display -padding [list 10 10]] -text [mc "Display"]
 		
 		ttk::frame $display.lang -padding {10 10}
 		ttk::label $display.lang.label -text [mc "Language:"] -width 9
-		ttk::menubutton $display.lang.mb -textvariable ::gorilla::selectedLanguage \
+		ttk::menubutton $display.lang.mb -textvariable ::gorilla::fullLangName \
 			-width 8 -direction right
 		set m [menu $display.lang.mb.menu -tearoff 0]
 		$display.lang.mb configure -menu $m
 		
 		foreach {lang name} $languages {
-			$m add radio -label $name -variable ::gorilla::selectedLanguage -value $name \
-				-command "set ::gorilla::preference(lang) $lang"
-		}
-		
-		if {[info exists ::gorilla::preference(lang)]} {
-			set index [lsearch $languages $::gorilla::preference(lang)]
-			set ::gorilla::selectedLanguage [lindex $languages [incr index]]
-		}	else {
-			set ::gorilla::selectedLanguage English
+			$m add radio -label $name -variable ::gorilla::prefTemp(lang) -value $lang \
+				-command "set ::gorilla::fullLangName $name"
 		}
 		
 		pack $display.lang.label $display.lang.mb -side left
@@ -4698,9 +4694,9 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		# End of NoteBook tabs
 		#
 
-# $top.nb compute_size
-# $top.nb raise gpf
-pack $top.nb -side top -fill both -expand yes -pady 10
+		# $top.nb compute_size
+		# $top.nb raise gpf
+		pack $top.nb -side top -fill both -expand yes -pady 10
 
 #
 # Bottom
@@ -4769,10 +4765,13 @@ return
 		lruSize \
 		rememberGeometries \
 		saveImmediatelyDefault \
-		unicodeSupport \
+		unicodeSupport 
+		lang \
 		} {
-set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
+		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
+puts "::gorilla::prefTemp($pref) $::gorilla::prefTemp($pref)"
+puts "gorilla::fullLangName $gorilla::fullLangName:"
 }
 
 proc gorilla::Preferences {} {

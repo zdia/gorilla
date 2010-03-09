@@ -197,6 +197,8 @@ mcmset de {
 	"New Database: Choose Master Password" "Neue Datenbank: Hauptpasswort wählen" \
 	"Display" "Ansicht" \
 	"Language:" "Sprache:" \
+	"Security" "Sicherheit"
+	"Customize ..." "Anpassen ..."
 	}
 	
 mcunknown de "unbekannt"
