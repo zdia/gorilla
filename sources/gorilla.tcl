@@ -304,7 +304,7 @@ set ::gorilla::menu_desc {
 	Help	help	{ "Help ..." "" gorilla::Help "" ""
 							"License ..." "" gorilla::License "" ""
 							separator "" "" "" ""
-							"About ..." "" gorilla::About "" ""
+							"About ..." "" tkAboutDialog "" ""
 							}
 }	
 
@@ -433,6 +433,8 @@ set ::gorilla::menu_desc {
 		# bind . <$meta-R> "gorilla::Refresh"
 		# bind . <$meta-C> "gorilla::ToggleConsole"
 		# bind . <$meta-q> "gorilla::Exit"
+		bind . <$meta-q> "gorilla::msg"
+		# ctrl-x ist auch exit, ctrl-q reicht
 
 		#
 		# Handler for the X Selection
@@ -1019,7 +1021,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		update idletasks
 		raise $top
 		focus $aframe.pw.pw
-		grab $top
+		catch {grab $top}
 
 		#
 		# Timing between clicks is used for our initial random seed
@@ -1155,9 +1157,9 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		$aframe.pw.pw configure -text ""
 # set $aframe.pw.entry ""
 		if {$oldGrab != ""} {
-			grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-			grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -1498,7 +1500,7 @@ proc gorilla::MoveDialog {type} {
 	update idletasks
 	raise $top
 	focus $top.dest.e
-	grab $top
+	catch {grab $top}
 	
 	while {42} {
 		ArrangeIdleTimeout
@@ -1541,9 +1543,9 @@ proc gorilla::MoveDialog {type} {
 	}
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-		grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -1723,7 +1725,7 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	update idletasks
 	raise $top
 	focus $top.group.e
-	grab $top
+	catch {grab $top}
 
 	while {42} {
 		ArrangeIdleTimeout
@@ -1766,9 +1768,9 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	}
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch { grab $oldGrab }
 	} else {
-		grab release $top
+		catch { grab release $top }
 	}
 
 	wm withdraw $top
@@ -2084,7 +2086,7 @@ proc gorilla::RenameGroup {} {
 	update idletasks
 	raise $top
 	focus $top.group.e
-	grab $top
+	catch {grab $top}
 
 	while {42} {
 		ArrangeIdleTimeout
@@ -2129,9 +2131,9 @@ proc gorilla::RenameGroup {} {
 	}
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-		grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -3282,7 +3284,7 @@ proc gorilla::LoginDialog {rn} {
 		update idletasks
 		raise $top
 		focus $top.l.title2
-		grab $top
+		catch {grab $top}
 
 		while {42} {
 			ArrangeIdleTimeout
@@ -3348,9 +3350,9 @@ proc gorilla::LoginDialog {rn} {
 		}
 
 		if {$oldGrab != ""} {
-			grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-			grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -3959,13 +3961,13 @@ proc gorilla::LockDatabase {} {
 		}
 
 		foreach tl [array names withdrawn] {
-	wm state $tl $withdrawn($tl)
+			wm state $tl $withdrawn($tl)
 		}
 
 		if {$oldGrab != ""} {
-	grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-	grab release $top
+			catch {grab release $top}
 		}
 
 		# $::gorilla::widgets(main) setmenustate all normal
@@ -4062,7 +4064,7 @@ proc gorilla::GetPassword {confirm title} {
 		update idletasks
 		raise $top
 		focus $top.password.e
-		grab $top
+		catch {grab $top}
 
 		while {42} {
 			ArrangeIdleTimeout
@@ -4094,9 +4096,9 @@ proc gorilla::GetPassword {confirm title} {
 		set ::gorilla::passwordDialog.pw ""
 
 		if {$oldGrab != ""} {
-			grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-			grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -4263,15 +4265,15 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 		wm title $top $title
 		raise $top
 		focus $top.plen.s
-		grab $top
+		catch {grab $top}
 
 		set ::gorilla::guimutex 0
 		vwait ::gorilla::guimutex
 
 		if {$oldGrab != ""} {
-	grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-	grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -4457,15 +4459,15 @@ proc gorilla::DatabasePreferencesDialog {} {
 	update idletasks
 	raise $top
 	focus $top.buts.b1
-	grab $top
+	catch {grab $top}
 
 	set ::gorilla::guimutex 0
 	vwait ::gorilla::guimutex
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-		grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -4724,7 +4726,7 @@ wm deiconify $top
 	update idletasks
 	raise $top
 	focus $top.buts.b1
-	grab $top
+	catch {grab $top}
 
 	while {42} {
 ArrangeIdleTimeout
@@ -4741,9 +4743,9 @@ if {$::gorilla::guimutex == 1} {
 	}
 
 	if {$oldGrab != ""} {
-grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -5453,6 +5455,11 @@ proc gorilla::contributors {} {
 		-message \
 		"Gorilla artwork contributed by Andrew J. Sniezek."
 }
+
+proc tkAboutDialog {} {
+     ##about dialog code goes here
+     gorilla::About
+} 
 
 proc gorilla::About {} {
 	ArrangeIdleTimeout
@@ -6444,6 +6451,10 @@ proc psn_Delete {argv argc} {
 	}
 	gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
 	return $new_argv
+}
+
+proc gorilla::msg {  } {
+	tk_messageBox -type ok -icon info -message test
 }
 
 #
