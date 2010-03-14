@@ -5,7 +5,8 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 # ----------------------------------------------------------------------
 # Password Gorilla, a password database manager
-# Copyright (c) 2005 Frank Pilhofer
+# Copyright (c) 2005-2009 Frank Pilhofer
+# Copyright (c) 2010 Zbigniew Diaczyszyn
 # modified for use with wish8.5, ttk-Widgets and with German localisation
 # modified GUI to work without bwidget
 # z.dia@gmx.de
@@ -433,7 +434,7 @@ set ::gorilla::menu_desc {
 		# bind . <$meta-R> "gorilla::Refresh"
 		# bind . <$meta-C> "gorilla::ToggleConsole"
 		# bind . <$meta-q> "gorilla::Exit"
-		bind . <$meta-q> "gorilla::msg"
+		# bind . <$meta-q> "gorilla::msg"
 		# ctrl-x ist auch exit, ctrl-q reicht
 
 		#
@@ -6473,6 +6474,10 @@ if {[tk windowingsystem] == "aqua"} {
 	proc ::tk::mac::ShowPreferences {} {
 		gorilla::PreferencesDialog
 	}
+	proc ::tk::mac::Quit {} {
+    gorilla::Exit
+	}
+
 }
 	
 proc usage {} {
