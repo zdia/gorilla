@@ -5,7 +5,8 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 # ----------------------------------------------------------------------
 # Password Gorilla, a password database manager
-# Copyright (c) 2005 Frank Pilhofer
+# Copyright (c) 2005-2009 Frank Pilhofer
+# Copyright (c) 2010 Zbigniew Diaczyszyn
 # modified for use with wish8.5, ttk-Widgets and with German localisation
 # modified GUI to work without bwidget
 # 
@@ -30,7 +31,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.1 $}
+set ::gorillaVersion {$Revision: 1.5.2.4 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -69,8 +70,8 @@ if {[catch {package require Tcl 8.5}]} {
 
 foreach file {isaac.tcl} {
 	if {[catch {source [file join $::gorillaDir $file]} oops]} {
-puts "$::gorillaDir $file"
-puts $oops
+# puts "$::gorillaDir $file"
+# puts $oops
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
 			-title "Need $file" \
@@ -150,7 +151,7 @@ if {[catch {package require msgcat} oops]} {
 }
 
 namespace import msgcat::*
-mcload [file join $::gorillaDir msgs]
+# mcload [file join $::gorillaDir msgs]
 
 if {[catch {package require pwsafe} oops]} {
 	wm withdraw .
@@ -296,15 +297,15 @@ set ::gorilla::menu_desc {
 							"Move Group ..." group gorilla::MoveGroup "" ""
 							"Delete Group" group gorilla::DeleteGroup "" ""
 							}
-	Manage	manage { "Password Policy ..." open gorilla::PasswordPolicy "" ""
-							"Database Preferences ..." open gorilla::DatabasePreferencesDialog "" ""
+	Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
+							"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
 							separator "" "" "" ""
 							"Change Master Password ..." open gorilla::ChangePassword "" ""
 							}
 	Help	help	{ "Help ..." "" gorilla::Help "" ""
 							"License ..." "" gorilla::License "" ""
 							separator "" "" "" ""
-							"About ..." "" gorilla::About "" ""
+							"About ..." "" tkAboutDialog "" ""
 							}
 }	
 
@@ -433,6 +434,8 @@ set ::gorilla::menu_desc {
 		# bind . <$meta-R> "gorilla::Refresh"
 		# bind . <$meta-C> "gorilla::ToggleConsole"
 		# bind . <$meta-q> "gorilla::Exit"
+		# bind . <$meta-q> "gorilla::msg"
+		# ctrl-x ist auch exit, ctrl-q reicht
 
 		#
 		# Handler for the X Selection
@@ -1008,7 +1011,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
     # Disable the main menu, so that it is not accessible, even on the Mac.
     #
 
-    setmenustate $::gorilla::widgets(main) all disabled
+    # setmenustate $::gorilla::widgets(main) all disabled
 
     #
 		# Run dialog
@@ -1019,7 +1022,9 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		update idletasks
 		raise $top
 		focus $aframe.pw.pw
-		grab $top
+		if {[tk windowingsystem] != "aqua"} {
+			catch {grab $top}
+		}
 
 		#
 		# Timing between clicks is used for our initial random seed
@@ -1161,9 +1166,9 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		$aframe.pw.pw configure -text ""
 # set $aframe.pw.entry ""
 		if {$oldGrab != ""} {
-			grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-			grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -1173,7 +1178,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
     # Re-enable the main menu.
     #
 
-    setmenustate $::gorilla::widgets(main) all enabled
+    # setmenustate $::gorilla::widgets(main) all enabled
 
     if {$::gorilla::guimutex == 2} {
 			# Cancel
@@ -1504,7 +1509,7 @@ proc gorilla::MoveDialog {type} {
 	update idletasks
 	raise $top
 	focus $top.dest.e
-	grab $top
+	catch {grab $top}
 	
 	while {42} {
 		ArrangeIdleTimeout
@@ -1547,9 +1552,9 @@ proc gorilla::MoveDialog {type} {
 	}
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-		grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -1729,7 +1734,7 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	update idletasks
 	raise $top
 	focus $top.group.e
-	grab $top
+	catch {grab $top}
 
 	while {42} {
 		ArrangeIdleTimeout
@@ -1772,9 +1777,9 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	}
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch { grab $oldGrab }
 	} else {
-		grab release $top
+		catch { grab release $top }
 	}
 
 	wm withdraw $top
@@ -2090,7 +2095,7 @@ proc gorilla::RenameGroup {} {
 	update idletasks
 	raise $top
 	focus $top.group.e
-	grab $top
+	catch {grab $top}
 
 	while {42} {
 		ArrangeIdleTimeout
@@ -2135,9 +2140,9 @@ proc gorilla::RenameGroup {} {
 	}
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-		grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -3288,7 +3293,7 @@ proc gorilla::LoginDialog {rn} {
 		update idletasks
 		raise $top
 		focus $top.l.title2
-		grab $top
+		catch {grab $top}
 
 		while {42} {
 			ArrangeIdleTimeout
@@ -3354,9 +3359,9 @@ proc gorilla::LoginDialog {rn} {
 		}
 
 		if {$oldGrab != ""} {
-			grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-			grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -3965,13 +3970,13 @@ proc gorilla::LockDatabase {} {
 		}
 
 		foreach tl [array names withdrawn] {
-	wm state $tl $withdrawn($tl)
+			wm state $tl $withdrawn($tl)
 		}
 
 		if {$oldGrab != ""} {
-	grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-	grab release $top
+			catch {grab release $top}
 		}
 
 		# $::gorilla::widgets(main) setmenustate all normal
@@ -4068,7 +4073,7 @@ proc gorilla::GetPassword {confirm title} {
 		update idletasks
 		raise $top
 		focus $top.password.e
-		grab $top
+		catch {grab $top}
 
 		while {42} {
 			ArrangeIdleTimeout
@@ -4100,9 +4105,9 @@ proc gorilla::GetPassword {confirm title} {
 		set ::gorilla::passwordDialog.pw ""
 
 		if {$oldGrab != ""} {
-			grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-			grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -4269,15 +4274,15 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 		wm title $top $title
 		raise $top
 		focus $top.plen.s
-		grab $top
+		catch {grab $top}
 
 		set ::gorilla::guimutex 0
 		vwait ::gorilla::guimutex
 
 		if {$oldGrab != ""} {
-	grab $oldGrab
+			catch {grab $oldGrab}
 		} else {
-	grab release $top
+			catch {grab release $top}
 		}
 
 		wm withdraw $top
@@ -4463,15 +4468,15 @@ proc gorilla::DatabasePreferencesDialog {} {
 	update idletasks
 	raise $top
 	focus $top.buts.b1
-	grab $top
+	catch {grab $top}
 
 	set ::gorilla::guimutex 0
 	vwait ::gorilla::guimutex
 
 	if {$oldGrab != ""} {
-		grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-		grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -4546,7 +4551,8 @@ proc gorilla::PreferencesDialog {} {
 		lockDatabaseAfter 0 \
 		rememberGeometries 1 \
 		saveImmediatelyDefault 0 \
-		unicodeSupport 1} {
+		unicodeSupport 1
+		lang en} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
 		} else {
@@ -4562,7 +4568,7 @@ proc gorilla::PreferencesDialog {} {
 		ttk::notebook $top.nb
 
 #
-# First NoteBook tab: general preferences
+# First NoteBook tab: (g)eneral (p)re(f)erences
 #
 
 set gpf $top.nb.gpf
@@ -4669,13 +4675,39 @@ ttk::checkbutton $epf.warning -text [mc "Show security warning"] \
 pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 	-anchor w -side top -pady 3
 
-#
-# End of NoteBook tabs
-#
+		#
+		# Fourth NoteBook tab: Display
+		#
+		
+		set languages [gorilla::getAvailableLanguages]
+		# format: {en English de Deutsch ...}
+		set ::gorilla::fullLangName [dict get $languages $::gorilla::prefTemp(lang)]
+		
+		set display $top.nb.display
+		$top.nb add [ttk::frame $display -padding [list 10 10]] -text [mc "Display"]
+		
+		ttk::frame $display.lang -padding {10 10}
+		ttk::label $display.lang.label -text [mc "Language:"] -width 9
+		ttk::menubutton $display.lang.mb -textvariable ::gorilla::fullLangName \
+			-width 8 -direction right
+		set m [menu $display.lang.mb.menu -tearoff 0]
+		$display.lang.mb configure -menu $m
+		
+		foreach {lang name} $languages {
+			$m add radio -label $name -variable ::gorilla::prefTemp(lang) -value $lang \
+				-command "set ::gorilla::fullLangName $name"
+		}
+		
+		pack $display.lang.label $display.lang.mb -side left
+		pack $display.lang -anchor w
+		
+		#
+		# End of NoteBook tabs
+		#
 
-# $top.nb compute_size
-# $top.nb raise gpf
-pack $top.nb -side top -fill both -expand yes -pady 10
+		# $top.nb compute_size
+		# $top.nb raise gpf
+		pack $top.nb -side top -fill both -expand yes -pady 10
 
 #
 # Bottom
@@ -4703,7 +4735,7 @@ wm deiconify $top
 	update idletasks
 	raise $top
 	focus $top.buts.b1
-	grab $top
+	catch {grab $top}
 
 	while {42} {
 ArrangeIdleTimeout
@@ -4720,9 +4752,9 @@ if {$::gorilla::guimutex == 1} {
 	}
 
 	if {$oldGrab != ""} {
-grab $oldGrab
+		catch {grab $oldGrab}
 	} else {
-grab release $top
+		catch {grab release $top}
 	}
 
 	wm withdraw $top
@@ -4744,13 +4776,17 @@ return
 		lruSize \
 		rememberGeometries \
 		saveImmediatelyDefault \
-		unicodeSupport} {
-set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
+		unicodeSupport 
+		lang \
+		} {
+		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
+puts "::gorilla::prefTemp($pref) $::gorilla::prefTemp($pref)"
+puts "gorilla::fullLangName $gorilla::fullLangName:"
 }
 
 proc gorilla::Preferences {} {
-	PreferencesDialog
+	gorilla::PreferencesDialog
 }
 
 
@@ -4896,7 +4932,8 @@ proc gorilla::SavePreferencesToRCFile {} {
 			lruSize \
 			rememberGeometries \
 			saveImmediatelyDefault \
-			unicodeSupport} {
+			unicodeSupport \
+			lang} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
 		}
@@ -5183,9 +5220,14 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 		}
 			}
 			geometry,* {
-		if {[scan $value "%dx%d" width height] == 2} {
-				set ::gorilla::preference($pref) "${width}x${height}"
-		}
+				if {[scan $value "%dx%d" width height] == 2} {
+						set ::gorilla::preference($pref) "${width}x${height}"
+				}
+			}
+			lang {
+				set ::gorilla::preference($pref) $value
+				mclocale $value
+				mcload [file join $::gorillaDir msgs]
 			}
 	}
 		}
@@ -5416,115 +5458,75 @@ proc gorilla::DestroyAboutDialog {} {
 		unset ::gorilla::toplevel($top)
 }
 
+proc gorilla::contributors {} {
+	# ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
+	tk_messageBox -default ok \
+		-message \
+		"Gorilla artwork contributed by Andrew J. Sniezek."
+}
+
+proc tkAboutDialog {} {
+     ##about dialog code goes here
+     gorilla::About
+} 
+
 proc gorilla::About {} {
 	ArrangeIdleTimeout
 	set top .about
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top -bg "#ffffff"
-
-		wm title $top "Password Gorilla"
-
-		frame $top.top -bg "#ffffff"
-		frame $top.top.pg -bg "#ffffff"
-		label $top.top.pg.title -bg "#ffffff" -text "Password Gorilla"
-		pack $top.top.pg.title -side top -fill x -pady 3
-
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion fullname revision]} {
+		toplevel $top
+		
+		set w .about.mainframe
+		
+		if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
 			set revision "<unknown>"
-	}
-
-	label $top.top.pg.rev -bg "#ffffff" -text $revision
-	pack $top.top.pg.rev -side top -fill x -padx 3
-
-	label $top.top.pg.url -bg "#ffffff" \
-			-text "http://www.fpx.de/fp/Software/Gorilla/"
-	pack $top.top.pg.url -side top -fill x -pady 10
-	pack $top.top.pg -side left -fill x -expand yes
-
-	label $top.top.splash -bg "#ffffff" \
-			-image $::gorilla::images(splash)
-	pack $top.top.splash -side right
-	pack $top.top -side top -fill both -expand yes
-
-	ttk::separator $top.topsep -orient horizontal
-	pack $top.topsep -side top -fill x
-
-	set midsection [frame $top.mid -bg "#ffffff"]
-
-	set imgframe [frame $midsection.imgs -bg "#ffffff"]
-	label $imgframe.lab \
-			-font {Helvetica 10 bold} -bg "#ffffff" \
-			-text "Copyright \u00a9 2005"
-	label $imgframe.img -bg "#ffffff" \
-			-image $::gorilla::images(splash)
-			# -image $::gorilla::images(wfpxsm)
-	label $imgframe.bot \
-			-font {Helvetica 10 bold} -bg "#ffffff" \
-			-text "Frank Pilhofer"
-	label $imgframe.botbot \
-			-font {Helvetica 10 bold} -bg "#ffffff" \
-			-text "fp@fpx.de"
-	pack $imgframe.lab $imgframe.img $imgframe.bot $imgframe.botbot -side top
-	# pack $imgframe -side left -padx 10 -pady 10
-
-	ttk::separator $midsection.sep -orient vertical
-	pack $midsection.sep -side left -fill both
-
-	set txtframe [frame $midsection.txt -bg "#ffffff"]
-	label $txtframe.t1 -wraplength 450 -justify left \
-			-anchor w -bg "#ffffff" \
-			-text "Based on the \"Password Safe\" program, copyright\
-			\u00a9 1997-1998 by Counterpane Systems, now maintained\
-			as an Open Source project at\
-			http://passwordsafe.sourceforge.net/"
-	label $txtframe.t2 -wraplength 450 -justify left \
-			-anchor w -bg "#ffffff" \
-			-text "Released under the GNU General Public License.\
-			Please read the file \"LICENSE.txt,\" or choose \"License\"\
-			from the \"Help\" menu, for more information."
-	label $txtframe.t3 -wraplength 450 -justify left \
-			-anchor w -bg "#ffffff" \
-			-text "This software would not be possible without the\
-			excellent Open Source tools that it is based on. Uses\
-			Tcl/Tk, \[incr Tcl\], BWidget, and parts of tcllib. May\
-			use Tclkit. All packages are copyrighted by their\
-			respective authors and contributors, and released\
-			under BSD license."
-	label $txtframe.t4 -wraplength 450 -justify left \
-			-anchor w -bg "#ffffff" \
-			-text "Copyright \u00a9 2005 Frank Pillhofer fp@fpx.de\n\
-			\nGorilla artwork contributed by Andrew J. Sniezek.\n\
-			\nVersion 1.5 by Zbigniew Diaczyszyn"
-	pack $txtframe.t1 $txtframe.t2 $txtframe.t3 $txtframe.t4 \
-			-side top -fill both -expand yes \
-			-padx 10 -pady 5
-	pack $txtframe -side left -fill both
-
-	pack $midsection -side top -fill both -expand yes
-
-	ttk::separator $top.botsep -orient horizontal
-	pack $top.botsep -side top -fill x
-
-	set botframe [frame $top.botframe -bg "#ffffff"]
-	button $botframe.but -width 10 -text "OK" \
-			-command "gorilla::DestroyAboutDialog"
-	pack $botframe.but
-	pack $botframe -side top -fill x -pady 10
-
-	bind $top <Return> "gorilla::DestroyAboutDialog"
-
-	set ::gorilla::toplevel($top) $top
-	wm protocol $top WM_DELETE_WINDOW gorilla::DestroyAboutDialog
-		} else {
-	set botframe "$top.botframe"
 		}
+		
+		ttk::frame $w -padding {10 10}
+		ttk::label $w.image -image $::gorilla::images(splash)
+		ttk::label $w.title -text "Password Gorilla $revision" \
+			-font {sans 16 bold} -padding {10 10}
+		ttk::label $w.description -text "Gorilla will protect your passwords and help you \
+		to manage them with a pwsafe 3.2 compatible database" -wraplength 350 -padding {10 0}
+		ttk::label $w.copyright \
+			-text "(c) 2004-2009 Frank Pillhofer  (c) 2010 Zbigniew Diaczyszyn" \
+			-font {sans 8} -padding {10 0}
+		ttk::label $w.url -text "http:/github.com/zdia/gorilla" -foreground blue \
+			-font {sans 9}
+		
+		ttk::frame $w.buttons
+		ttk::button $w.buttons.contrib -text [mc "Contributors"] -command gorilla::contributors
+		ttk::button $w.buttons.license -text [mc License] -command gorilla::License
+		ttk::button $w.buttons.close -text [mc "Close"] -command gorilla::DestroyAboutDialog
+		
+					
+		pack $w.image -side top
+		pack $w.title -side top -pady 5
+		pack $w.description -side top
+		pack $w.copyright -side top -pady 5 -fill x
+		pack $w.url -side top -pady 5 
+		pack $w.buttons.contrib $w.buttons.license $w.buttons.close \
+			-side left -padx 5
+		pack $w.buttons -side bottom -pady 10
+		pack $w
+		
+		wm title $top [mc "About Password Gorilla"]
 
-		update idletasks
-		wm deiconify $top
-		raise $top
-		focus $botframe.but
-		wm resizable $top 0 0
+		
+		bind $top <Return> "gorilla::DestroyAboutDialog"
+	
+		set ::gorilla::toplevel($top) $top
+		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyAboutDialog
+	} else {
+		set w "$top.mainframe"
+	}
+	
+			update idletasks
+			wm deiconify $top
+			raise $top
+			focus $w.buttons.close
+			wm resizable $top 0 0
 }
 
 proc gorilla::Help {} {
@@ -5934,8 +5936,27 @@ puts "wrapped around"
 
 proc gorilla::FindNext {} {
 	set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
-puts "findnext node $::gorilla::findCurrentNode"
 	gorilla::RunFind
+}
+
+proc gorilla::getAvailableLanguages {  } {
+	set files [glob -tail -path "$::gorillaDir/msgs/" *.msg]
+	set msgList "en"
+	
+	foreach file $files {
+		lappend msgList [lindex [split $file "."] 0]
+	}
+	
+	# Diese Liste muss erweitert werden, vgl. "locale -a"
+	set langFullName [list en English de Deutsch fr Français es Espagnol]
+	
+	# erstelle Liste mit {locale fullname}
+	set langList {}
+	foreach lang $msgList {
+		set res [lsearch $langFullName $lang]
+		lappend langList [lindex $langFullName $res] [lindex $langFullName [incr res]]
+	}
+	return $langList
 }
 
 # ----------------------------------------------------------------------
@@ -6426,7 +6447,7 @@ proc gorilla::writeToLog {logfile message} {
 
 proc psn_Delete {argv argc} {
 	# debugging
-	gorilla::writeToLog $::gorilla::logfile "argv: $argv"
+	# gorilla::writeToLog $::gorilla::logfile "argv: $argv"
 	
 	set index 0
 	set new_argv ""
@@ -6437,8 +6458,12 @@ proc psn_Delete {argv argc} {
 		}
 		incr index
 	}
-	gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
+	# gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
 	return $new_argv
+}
+
+proc gorilla::msg {  } {
+	tk_messageBox -type ok -icon info -message test
 }
 
 #
@@ -6452,8 +6477,16 @@ proc psn_Delete {argv argc} {
 set ::gorilla::logfile "/private/var/log/console.log"
 
 if {[tk windowingsystem] == "aqua"} {
-		set argv [psn_Delete $argv $argc]
+	set argv [psn_Delete $argv $argc]
+
+	proc ::tk::mac::ShowPreferences {} {
+		gorilla::PreferencesDialog
 	}
+	proc ::tk::mac::Quit {} {
+    gorilla::Exit
+	}
+
+}
 	
 proc usage {} {
 		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"

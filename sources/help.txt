@@ -296,6 +296,12 @@ Table of Contents
           Menu. This prevents a malicious user from changing the
           preference in the registry and degrading the protection of
           future databases.
+          
+	 Display
+	 
+				Language
+				
+				The menubutton Language offers you all the languages whose dictionary files *.msg are found in the subdirectory msgs. Your choice will be saved on exiting in the rc-file and the next time you start Gorilla it is showing the prefered language.
 
   Information about the new Database Format
 
