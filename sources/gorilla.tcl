@@ -9,7 +9,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # Copyright (c) 2010 Zbigniew Diaczyszyn
 # modified for use with wish8.5, ttk-Widgets and with German localisation
 # modified GUI to work without bwidget
-# 
+# z.dia@gmx.de
 # tested with ActiveTcl 8.5.7
 #
 # This program is free software; you can redistribute it and/or modify
@@ -1090,15 +1090,15 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				::gorilla::OpenPercentTrace
 			unset ::gorilla::openPercent
 		. configure -cursor $dotOldCursor
-			$top configure -cursor $myOldCursor
-	
-			tk_messageBox -parent $top -type ok -icon error -default ok \
-				-title "Error Opening Database" \
-				-message "Can not open password database\
-				\"$nativeName\": $oops"
-			$aframe.info configure -text $info
-			$aframe.pw.pw delete 0 end
-			continue
+		$top configure -cursor $myOldCursor
+
+		tk_messageBox -parent $top -type ok -icon error -default ok \
+			-title "Error Opening Database" \
+			-message "Can not open password database\
+			\"$nativeName\": $oops"
+		$aframe.info configure -text $info
+		$aframe.pw.pw delete 0 end
+		continue
 		}
 		# all seems well
 		trace remove variable ::gorilla::openPercent [list "write"] \
@@ -1119,19 +1119,13 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				if {[tk windowingsystem] == "aqua"} {
 					set ::gorilla::dirName "~/Documents"
 				} else {
+				# Windows-Abfrage auch nötig ...
 					set ::gorilla::dirName [pwd]
 				}
 			}
 
-			if {$::tcl_platform(platform) == "windows"} {
-				set ::gorilla::dirName [tk_chooseDirectory -title [mc "Choose a directory ..."]]
-				if {$::gorilla::dirName eq ""} {
-					set ::gorilla::dirName [pwd]
-				}
-			}
-			
 			set fileName [tk_getOpenFile -parent $top \
-				-title [mc "Browse for a password database ..."] \
+				-title "Browse for a password database ..." \
 				-filetypes $types \
 				-initialdir $::gorilla::dirName]
 			# -defaultextension ".psafe3" 
@@ -4700,6 +4694,8 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		
 		pack $display.lang.label $display.lang.mb -side left
 		pack $display.lang -anchor w
+		
+		# font options
 		
 		#
 		# End of NoteBook tabs
