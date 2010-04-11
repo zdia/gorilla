@@ -68,7 +68,6 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
     # 4c. append 64-bit length
     # Our implementation obviously limits string length to 32bits.
     append msg \0\0\0\0[binary format "I" [expr {8*$msgLen}]]
-    
     #
     # 7. COMPUTING THE MESSAGE DIGEST
     #
@@ -114,7 +113,7 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
 		    [lindex $W [incr t14]] ^ [lindex $W [incr t16]]}]
 	    lappend W [expr {($x << 1) | (($x >> 31) & 1)}]
 	}
-	
+
 	# 7c. Let A = H[0] ....
 	set A $H0
 	set B $H1
@@ -123,47 +122,48 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
 	set E $H4
 	
 	# 7d. For t = 0 to 79 do
+	# because of use in 64bit systems it is important to cut off the lower part
+	# by an AND: value & 0xffffffff)
 	for {set t 0} {$t < 20} {incr t} {
-	    set TEMP [expr {(($A << 5) | (($A >> 27) & 0x1f)) + \
+	    set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
 		    (($B & $C) | ((~$B) & $D)) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]}]
-	    set E $D
+		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+			set E $D
 	    set D $C
-	    set C [expr {($B << 30) | (($B >> 2) & 0x3fffffff)}]
+	    set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
 	    set B $A
 	    set A $TEMP
 	}
 	for {} {$t<40} {incr t} {
-	    set TEMP [expr {(($A << 5) | (($A >> 27) & 0x1f)) + \
+	    set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
 		    ($B ^ $C ^ $D) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]}]
+		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
 	    set E $D
 	    set D $C
-	    set C [expr {($B << 30) | (($B >> 2) & 0x3fffffff)}]
+	    set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
 	    set B $A
 	    set A $TEMP
 	}
 	for {} {$t<60} {incr t} {
-	    set TEMP [expr {(($A << 5) | (($A >> 27) & 0x1f)) + \
+	    set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
 		    (($B & $C) | ($B & $D) | ($C & $D)) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]}]
+		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
 	    set E $D
 	    set D $C
-	    set C [expr {($B << 30) | (($B >> 2) & 0x3fffffff)}]
+	    set C [expr {(($B << 30)  & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
 	    set B $A
 	    set A $TEMP
 	}
 	for {} {$t<80} {incr t} {
-	    set TEMP [expr {(($A << 5) | (($A >> 27) & 0x1f)) + \
+	    set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
 		    ($B ^ $C ^ $D) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]}]
+		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
 	    set E $D
 	    set D $C
-	    set C [expr {($B << 30) | (($B >> 2) & 0x3fffffff)}]
+	    set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
 	    set B $A
 	    set A $TEMP
 	}
-	
 	set H0 [expr {int(($H0 + $A) & 0xffffffff)}]
 	set H1 [expr {int(($H1 + $B) & 0xffffffff)}]
 	set H2 [expr {int(($H2 + $C) & 0xffffffff)}]
@@ -202,7 +202,6 @@ proc pwsafe::int::computeHRND {RND password} {
     append temp "\x00\x00"
     append temp $password
     set tempSalt [pwsafe::int::sha1isz $temp]
-
     set engine [iblowfish::ecb \#auto $tempSalt]
     set cipher [pwsafe::int::genderbender $RND]
     for {set i 0} {$i < 1000} {incr i} {
@@ -268,3 +267,9 @@ proc pwsafe::int::randomizeVar {args} {
     }
 }
 
+# tool for testing purposes!
+
+proc hex { str } {
+	binary scan $str H* hex
+	return $hex			 
+} 
