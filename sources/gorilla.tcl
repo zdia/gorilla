@@ -31,7 +31,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.2.4 $}
+set ::gorillaVersion {$Revision: 1.5.2.5 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -53,6 +53,8 @@ if {[catch {package require Tk 8.5} oops]} {
 
 option add *Dialog.msg.font {Sans 9}
 option add *Dialog.msg.wrapLength 6i
+# option add *Font "Sans 8"
+# option add *Button.Font "Sans 8"
 
 if {[catch {package require Tcl 8.5}]} {
 		wm withdraw .
@@ -206,13 +208,17 @@ proc gorilla::Init {} {
 		}
 
 		# Some default preferences
+		# will be overwritten by LoadPreferencesFromRCFile if set
 
 		set ::gorilla::preference(defaultVersion) 3
 		set ::gorilla::preference(unicodeSupport) 1
 		set ::gorilla::preference(lru) [list]
-		# added 27.11.2009 zdia
+		# added by zdia
 		set ::gorilla::preference(rememberGeometries) 1
-		
+		set ::gorilla::preference(lang) en
+		# set ::gorilla::preference(fontsize) 10 ;# look PreferencesDialog default value
+			# [string trim [lindex $::gorilla::ActualDefaultFont \
+			# [expr {[lsearch $::gorilla::ActualDefaultFont -size] + 1}]] -]
 }
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -243,13 +249,11 @@ proc gorilla::ClearStatus {} {
 }
 
 proc gorilla::InitGui {} {
-
-		# option add *Button.font {Helvetica 10 bold}
-		# option add *title.font {Helvetica 16 bold}
-		option add *Menu.tearOff 0
-		# themed widgets brauchen font etc nicht, wird von styles geregelt
-		# keine Hilfstexte in der unteren Fensterleiste wie in bwidget, ist nicht üblich
-		
+	# themed widgets do'nt know a resource database
+	# option add *Button.font {Helvetica 10 bold}
+	# option add *title.font {Helvetica 16 bold}
+	option add *Menu.tearOff 0
+	
 	menu .mbar
 	. configure -menu .mbar
 
@@ -359,7 +363,7 @@ set ::gorilla::menu_desc {
 	#---------------------------------------------------------------------
 	
 	set tree [ttk::treeview .tree \
-		-yscroll ".vsb set" -xscroll ".hsb set" -show tree]
+		-yscroll ".vsb set" -xscroll ".hsb set" -show tree -style My.Treeview]
 	.tree tag configure red -foreground red
 	.tree tag configure black -foreground black
 
@@ -3870,7 +3874,8 @@ proc gorilla::LockDatabase {} {
 	set aframe [ttk::frame $top.right -padding {10 10}]
 
 	# Titel packen	
-	ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
+	# ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
+	ttk::label $aframe.title -anchor center
 	pack $aframe.title -side top -fill x -pady 10
 
 	ttk::labelframe $aframe.file -text [mc "Database:"]
@@ -4545,8 +4550,9 @@ proc gorilla::PreferencesDialog {} {
 		lockDatabaseAfter 0 \
 		rememberGeometries 1 \
 		saveImmediatelyDefault 0 \
-		unicodeSupport 1
-		lang en} {
+		unicodeSupport 1 \
+		lang en
+		fontsize 10} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
 		} else {
@@ -4675,6 +4681,7 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		
 		set languages [gorilla::getAvailableLanguages]
 		# format: {en English de Deutsch ...}
+		# Fehlerabfrage für falschen prefTemp(lang) Eintrag?
 		set ::gorilla::fullLangName [dict get $languages $::gorilla::prefTemp(lang)]
 		
 		set display $top.nb.display
@@ -4697,6 +4704,25 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		
 		# font options
 		
+		ttk::frame $display.size -padding {10 10}
+		ttk::label $display.size.label -text [mc "Size:"] -width 9
+		ttk::menubutton $display.size.mb -textvariable ::gorilla::prefTemp(fontsize) \
+			-width 8 -direction right
+		set m [menu $display.size.mb.menu -tearoff 0]
+		$display.size.mb configure -menu $m
+		
+		set sizes "8 9 10 11 12 14 16"
+		foreach {size} $sizes {
+			$m add radio -label $size -variable ::gorilla::prefTemp(fontsize) -value $size \
+				-command "
+					font configure TkDefaultFont -size $size
+					font configure TkTextFont -size $size
+					font configure TkMenuFont -size $size"
+		}
+		
+		pack $display.size.label $display.size.mb -side left
+		pack $display.size -anchor w
+		
 		#
 		# End of NoteBook tabs
 		#
@@ -4713,9 +4739,9 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 # pack $top.sep -side top -fill x -pady 7
 
 frame $top.buts
-set but1 [button $top.buts.b1 -width 15 -text "OK" \
+set but1 [ttk::button $top.buts.b1 -width 15 -text "OK" \
 	-command "set ::gorilla::guimutex 1"]
-set but2 [button $top.buts.b2 -width 15 -text [mc "Cancel"] \
+set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 	-command "set ::gorilla::guimutex 2"]
 pack $but1 $but2 -side left -pady 10 -padx 20
 pack $top.buts -side top -pady 10 -fill both
@@ -4774,11 +4800,10 @@ return
 		saveImmediatelyDefault \
 		unicodeSupport 
 		lang \
+		fontsize \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
-puts "::gorilla::prefTemp($pref) $::gorilla::prefTemp($pref)"
-puts "gorilla::fullLangName $gorilla::fullLangName:"
 }
 
 proc gorilla::Preferences {} {
@@ -4929,7 +4954,8 @@ proc gorilla::SavePreferencesToRCFile {} {
 			rememberGeometries \
 			saveImmediatelyDefault \
 			unicodeSupport \
-			lang} {
+			lang \
+			fontsize} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
 		}
@@ -5224,6 +5250,12 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				set ::gorilla::preference($pref) $value
 				mclocale $value
 				mcload [file join $::gorillaDir msgs]
+			}
+			fontsize {
+				set ::gorilla::preference($pref) $value
+				font configure TkDefaultFont -size $value
+				font configure TkTextFont -size $value
+				font configure TkMenuFont -size $value
 			}
 	}
 		}
@@ -6552,5 +6584,8 @@ if {$::gorilla::init == 0} {
 	raise .
 	update
 
-	set ::gorilla::status [mc "Welcome to the Password Gorilla."]
-
+	if {[tk windowingsystem] == "aqua"} {
+		exec say [mc "Welcome to the Password Gorilla."]
+	} else {
+		set ::gorilla::status [mc "Welcome to the Password Gorilla."]
+	}
