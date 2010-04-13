@@ -223,11 +223,16 @@ proc pwsafe::int::computeHRND {RND password} {
 #
 
 proc pwsafe::int::computeStretchedKey {salt password iterations} {
-    set st [sha2::SHA256Init]
+	set st [sha2::SHA256Init] ;# st = stretched key
+puts "st init: [hex $st] given to SHA256Update"
+# puts [info commands ::sha2::*]
+# puts "salt [hex $salt]\npassword $password iterations $iterations"
     sha2::SHA256Update $st $password
+# puts "sha2::Hex [sha2::Hex $st]"
     sha2::SHA256Update $st $salt
     set Xi [sha2::SHA256Final $st]
-
+puts "Xi: [hex $Xi]"	;# falsch
+# exit
     for {set i 0} {$i < $iterations} {incr i} {
 	set Xi [sha2::sha256 -bin $Xi]
     }
@@ -267,7 +272,7 @@ proc pwsafe::int::randomizeVar {args} {
     }
 }
 
-# tool for testing purposes!
+# tool for testing purposes
 
 proc hex { str } {
 	binary scan $str H* hex

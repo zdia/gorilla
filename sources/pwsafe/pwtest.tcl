@@ -1,6 +1,6 @@
 #! /bin/sh
 # the next line restarts using tclsh \
-exec tclsh84 "$0" ${1+"$@"}
+exec tclsh8.5 "$0" ${1+"$@"}
 
 set myDir [file normalize [file dirname [info script]]]
 set myDirDir [file normalize [file dirname $myDir]]
@@ -40,8 +40,9 @@ set b64testfile {
 }
 
 set testfile [base64::decode $b64testfile]
+
 set db [pwsafe::createFromString $testfile TESTKEY]
-# pwsafe::dumpAllRecords $db stdout
+#pwsafe::dumpAllRecords $db stdout
 
 set data [pwsafe::writeToString $db 3]
 set db2 [pwsafe::createFromString $data TESTKEY]

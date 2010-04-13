@@ -93,13 +93,12 @@ proc ::sha2::SHA256Init {} {
 #   If we have a C-based implementation available, then we will use
 #   it here in preference to the pure-Tcl implementation.
 #
+
 proc ::sha2::SHA256Update {token data} {
     upvar #0 $token state
-
     # Update the state values
     incr state(n) [string length $data]
     append state(i) $data
-
     # Calculate the hash for any complete blocks
     set len [string length $state(i)]
     for {set n 0} {($n + 64) <= $len} {} {
@@ -148,7 +147,6 @@ proc ::sha2::SHA256Penultimate {token} {
         incr pad 64
     }
     append state(i) [binary format a$pad \x80]
-
     # Append length in bits as big-endian wide int.
     set dlen [expr {8 * $state(n)}]
     append state(i) [binary format II 0 $dlen]
@@ -287,12 +285,11 @@ set ::sha2::SHA256Transform_body {
         set t15  0
         set t16 -1
         for {set t 16} {$t < 64} {incr t} {
-            lappend W [expr {[sigma1 [lindex $W [incr t2]]] \
+            lappend W [expr {([sigma1 [lindex $W [incr t2]]] \
                                  + [lindex $W [incr t7]] \
                                  + [sigma0 [lindex $W [incr t15]]] \
-                                 + [lindex $W [incr t16]]}]
+                                 + [lindex $W [incr t16]]) & 0xffffffff}]
         }
-        
         # FIPS 180-2: 6.2.2 (2) Initialise the working variables
         set A $state(A)
         set B $state(B)
@@ -310,6 +307,7 @@ set ::sha2::SHA256Transform_body {
         #   h = g; g = f;  f = e;  e = d + T1;  d = c;  c = b; b = a;
         #   a = T1 + T2
         #
+        
         for {set t 0} {$t < 64} {incr t} {
             set T1 [expr {($H + [SIGMA1 $E] + [Ch $E $F $G] 
                           + [lindex $K $t] + [lindex $W $t]) & 0xffffffff}]
@@ -359,7 +357,7 @@ proc ::sha2::SIGMA0 {x} {
 # FIPS 180-2: 4.1.2 equation 4.5
 #  (x >>> 6) ^ (x >>> 11) ^ (x >>> 25)
 proc ::sha2::SIGMA1 {x} {
-    return [expr {[>>> $x 6] ^ [>>> $x 11] ^ [>>> $x 25]}]
+    return [expr {([>>> $x 6] ^ [>>> $x 11] ^ [>>> $x 25]) & 0xFFFFFFFF}]
 }
 
 # FIPS 180-2: 4.1.2 equation 4.6

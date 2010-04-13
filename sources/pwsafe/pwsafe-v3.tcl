@@ -399,7 +399,6 @@ itcl::class pwsafe::v3::reader {
 
 	set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter]
 	set myhskey [sha2::sha256 -bin $myskey]
-
 	if {![string equal $hskey $myhskey]} {
 	    pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
 	    error "wrong password"
@@ -875,4 +874,9 @@ itcl::class pwsafe::v3::writer {
     }
 }
 
+# tool for testing purposes!
 
+proc hex { str } {
+	binary scan $str H* hex
+	return $hex			 
+} 
