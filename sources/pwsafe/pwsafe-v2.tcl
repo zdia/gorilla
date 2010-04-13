@@ -368,7 +368,6 @@ itcl::class pwsafe::v2::reader {
 	#
 
 	set myhrnd [pwsafe::int::computeHRND $rnd [$db getPassword]]
-
 	if {![string equal $hrnd $myhrnd]} {
 	    pwsafe::int::randomizeVar rnd salt ip myhrnd
 	    error "wrong password"
@@ -612,8 +611,7 @@ itcl::class pwsafe::v2::writer {
 			# On Mac, we have to adjust for the different epoch
 			#
 			
-			if {[info exists ::tcl_platform(platform)] && \
-				[string equal $::tcl_platform(platform) "macintosh"]} {
+			if {[tk windowingsystem] == "aqua"} {
 			    incr fieldValue -2082844800
 			}
 

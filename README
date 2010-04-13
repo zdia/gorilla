@@ -1,3 +1,7 @@
+2010-04-11: modified SHA1 for use on 64bit systems
+2010-04-03: adding font comment
+2010-04-03: MacOs Application Menu
+2010-04-03: new menu entry names
 2010-03-09: 1.5.2.3 with Mac Preferences
 2010-03-08: deleted bug in Mac Preferences
 2010-03-05: added PreferencesDialog in mac::ShowPreferences

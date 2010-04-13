@@ -89,6 +89,10 @@ foreach file {isaac.tcl} {
 # There may be a copy of Itcl in our directory
 #
 
+if {[tk windowingsystem] == "aqua"}	{
+	set auto_path /Library/Tcl/teapot/package/macosx-universal/lib/Itcl3.4
+}
+
 foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
     if {[file isdirectory $testitdir]} {
 	lappend auto_path $testitdir
@@ -151,6 +155,8 @@ if {[catch {package require msgcat} oops]} {
 		puts "error: $oops"
 		exit 1
 }
+
+# puts "path: $auto_path"
 
 namespace import msgcat::*
 # mcload [file join $::gorillaDir msgs]
