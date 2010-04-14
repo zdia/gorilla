@@ -1,4 +1,8 @@
+2010-04-13: Merge branch 'encryption'
+2010-04-13: sha256 modified for 64bit systems
+2010-04-11: v1.5.2.5
 2010-04-11: modified SHA1 for use on 64bit systems
+2010-04-11: added font choice
 2010-04-03: adding font comment
 2010-04-03: MacOs Application Menu
 2010-04-03: new menu entry names
