@@ -76,18 +76,17 @@ proc pwsafe::createFromFile {fileName password {percentvar ""}} {
     set stream [namespace current]::[pwsafe::io::streamreader #auto $file $size]
 
     if {[catch {
-	if {[string equal $magic "PWS3"]} {
-	    set db [pwsafe::createFromStream $stream $password 3 $pcvp]
-	} else {
-	    set db [pwsafe::createFromStream $stream $password 2 $pcvp]
-	}
-    } oops]} {
-	set origErrorInfo $::errorInfo
-	itcl::delete object $stream
-	catch {close $file}
-	error $oops $origErrorInfo
+			if {[string equal $magic "PWS3"]} {
+		    set db [pwsafe::createFromStream $stream $password 3 $pcvp]
+			} else {
+		    set db [pwsafe::createFromStream $stream $password 2 $pcvp]
+			}
+						    } oops]} {
+			set origErrorInfo $::errorInfo
+			itcl::delete object $stream
+			catch {close $file}
+			error $oops $origErrorInfo
     }
-
     itcl::delete object $stream
 
     if {[catch {close $file} oops]} {
@@ -225,6 +224,7 @@ proc pwsafe::writeToString {db version {percentvar ""}} {
 	itcl::delete object $writer
 	itcl::delete object $stream
 	catch {close $file}
+puts "writetoFile $oops $origErrorInfo"
 	error $oops $origErrorInfo
     }
 

@@ -72,7 +72,7 @@ if {[catch {package require Tcl 8.5}]} {
 
 foreach file {isaac.tcl} {
 	if {[catch {source [file join $::gorillaDir $file]} oops]} {
-# puts "$::gorillaDir $file"
+puts "[file join $::gorillaDir $file]"
 # puts $oops
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
@@ -86,65 +86,28 @@ foreach file {isaac.tcl} {
 }
 
 #
-# There may be a copy of Itcl in our directory
+# Itcl 3.4 is in an subdirectory available to auto_path
+# The environment variable ::env(ITCL_LIBRARY) is set 
+# to the subdirectory Itcl3.4 in the pkgindex.tcl
+# This is necessary for the embedded standalone version in MacOSX
 #
 
-if {[tk windowingsystem] == "aqua"}	{
-	set auto_path /Library/Tcl/teapot/package/macosx-universal/lib/Itcl3.4
-}
+# if {[tk windowingsystem] == "aqua"}	{
+	# set auto_path /Library/Tcl/teapot/package/macosx-universal/lib/Itcl3.4
+	# set auto_path ""
+# }
 
-foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
-    if {[file isdirectory $testitdir]} {
-	lappend auto_path $testitdir
-    }
-}
-
-#
-# Look for Itcl, or, failing that, tcl++
-#
-
-if {[catch {package require Itcl}]} {
-		#
-		# If we can't have Itcl, can we load tcl++?
-		# Itcl is included in tclkit and ActiveState...
-		#
-
-		foreach testtclppdir [glob -nocomplain [file join $::gorillaDir tcl++*]] {
-	if {[file isdirectory $testtclppdir]} {
-			lappend auto_path $testtclppdir
-	}
-		}
-
-		if {[catch {
-	package require tcl++
-		}]} {
-	wm withdraw .
-	tk_messageBox -type ok -icon error -default ok \
-		-title "Need \[Incr Tcl\]" \
-		-message "The Password Gorilla requires the \[incr Tcl\]\
-		add-on to Tcl. Please install the \[incr Tcl\] package."
-	exit 1
-		}
-
-		#
-		# When using tcl++, fool the other packages (twofish, blowfish
-		# and pwsafe) into thinking that Itcl is present. The original
-		# tcl++ didn't want to be so bold.
-		#
-
-	namespace eval ::itcl {
-	namespace import -force ::tcl++::class
-	namespace import -force ::tcl++::delete
-		}
-
-		package provide Itcl 3.0
-}
+# foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
+	# if {[file isdirectory $testitdir]} {
+		# lappend auto_path $testitdir
+	# }
+# }
 
 #
-# The pwsafe, blowfish, twofish and sha1 packages may be in subdirectories
+# The pwsafe, blowfish, twofish and sha1 packages are in subdirectories
 #
 
-foreach subdir {sha1 blowfish twofish pwsafe msgs} {
+foreach subdir {sha1 blowfish twofish pwsafe itcl3.4 msgs} {
 	set testDir [file join $::gorillaDir $subdir]
 	if {[file isdirectory $testDir]} {
 		lappend auto_path $testDir
@@ -155,11 +118,24 @@ if {[catch {package require msgcat} oops]} {
 		puts "error: $oops"
 		exit 1
 }
-
-# puts "path: $auto_path"
-
 namespace import msgcat::*
 # mcload [file join $::gorillaDir msgs]
+
+#
+# Look for Itcl
+#
+
+if {[catch {package require Itcl} oops]} {
+	#
+	# Itcl is included in tclkit and ActiveState...
+	#
+	wm withdraw .
+	tk_messageBox -type ok -icon error -default ok \
+		-title "Need \[Incr Tcl\]" \
+		-message "The Password Gorilla requires the \[incr Tcl\]\
+		add-on to Tcl. Please install the \[incr Tcl\] package."
+	exit 1
+}
 
 if {[catch {package require pwsafe} oops]} {
 	wm withdraw .
@@ -2988,35 +2964,35 @@ proc gorilla::Save {} {
 #
 
 proc gorilla::SaveAs {} {
-		ArrangeIdleTimeout
+	ArrangeIdleTimeout
 
-		if {![info exists ::gorilla::db]} {
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title "Nothing To Save" \
-				-message "No password database to save."
-	return 1
-		}
-
-		#
-		# Determine file version. If there is a header field of type 0,
-		# it should indicate the version. Otherwise, default to version 2.
-		#
-
-		set majorVersion 2
-
-		if {[$::gorilla::db hasHeaderField 0]} {
-	set version [$::gorilla::db getHeaderField 0]
-
-	if {[lindex $version 0] == 3} {
-			set majorVersion 3
+	if {![info exists ::gorilla::db]} {
+		tk_messageBox -parent . -type ok -icon error -default ok \
+			-title "Nothing To Save" \
+			-message "No password database to save."
+		return 1
 	}
-		}
 
-		if {$majorVersion == 3} {
-			set defaultExtension ".psafe3"
-		} else {
-			set defaultExtension ".dat"
+	#
+	# Determine file version. If there is a header field of type 0,
+	# it should indicate the version. Otherwise, default to version 2.
+	#
+
+	set majorVersion 2
+
+	if {[$::gorilla::db hasHeaderField 0]} {
+		set version [$::gorilla::db getHeaderField 0]
+
+		if {[lindex $version 0] == 3} {
+			set majorVersion 3
 		}
+	}
+puts "majorVersion $majorVersion"
+	if {$majorVersion == 3} {
+		set defaultExtension ".psafe3"
+	} else {
+		set defaultExtension ".dat"
+	}
 
 		#
 		# Query user for file name
@@ -3038,23 +3014,24 @@ proc gorilla::SaveAs {} {
 
 		set fileName [tk_getSaveFile -parent . \
 			-title "Save password database ..." \
-			-defaultextension $defaultExtension \
 			-filetypes $types \
 			-initialdir $::gorilla::dirName]
+						# -defaultextension $defaultExtension \
 
 		if {$fileName == ""} {
 	return 0
 		}
 
-		# Dateiname auf Default Extension testen
-		# -defaultextension funktioniert nur auf Windowssystemen
-		set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
-		set nativeName [file nativename $fileName]
+	# Dateiname auf Default Extension testen 
+	# not necessary
+	# -defaultextension funktioniert nur auf Windowssystemen und Mac
+	# set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
+	set nativeName [file nativename $fileName]
+puts "nativeName $nativeName"
 	
-		
-		set myOldCursor [. cget -cursor]
-		. configure -cursor watch
-		update idletasks
+	set myOldCursor [. cget -cursor]
+	. configure -cursor watch
+	update idletasks
 
 		#
 		# Create backup file, if desired
@@ -4035,7 +4012,8 @@ proc gorilla::GetPassword {confirm title} {
 
 			bind $top.confirm.e <KeyPress> "+::gorilla::CollectTicks"
 			bind $top.confirm.e <KeyRelease> "+::gorilla::CollectTicks"
-			bind $top.confirm.e <Shift-Tab> "after 0 \"focus $top.password.e\""
+			# bind $top.confirm.e <Shift-Tab> "after 0 \"focus $top.password.e\""
+			# bind $top.confirm.e <Tab> "after 0 \"focus $top.password.e\""
 		}
 
 		ttk::frame $top.buts
@@ -6400,56 +6378,8 @@ GIYQHbsz3//KKTEJrAnhHtcYwC300KR4ZccQF7iBD2LQCFYQ4l//s+AFcaQDmEkDFsPwoAdhwYpv
 TIISU8PgCVGYQhWukIX+CwgAOw==
 "]
 
-# --------------------------------EXAMPLE FROM ACTIVESTATE -------------
-# Procedures building the tree
-# ------------------
-
-## Code to populate the roots of the tree (can be more than one on Windows)
-proc populateRoots {tree} {
-		foreach dir [lsort -dictionary [file volumes]] {
-			populateTree $tree [$tree insert {} end -text $dir \
-			-values [list $dir directory]]
-		}
-}
-
-## Code to populate a node of the tree; Baumknoten mit Daten füllen
-proc populateTree {tree node} {
-	if {[$tree set $node type] ne "directory"} {
-		return
-	}
-		set path [$tree set $node fullpath]
-		$tree delete [$tree children $node]
-		foreach f [lsort -dictionary [glob -nocomplain -dir $path *]] {
-	set type [file type $f]
-	set id [$tree insert $node end -text [file tail $f] \
-		-values [list $f $type]]
-
-	if {$type eq "directory"} {
-			## Make it so that this node is openable
-			$tree insert $id 0 -text dummy ;# a dummy
-			$tree item $id -text [file tail $f]/
-
-	} elseif {$type eq "file"} {
-			set size [file size $f]
-			## Format the file size nicely
-			if {$size >= 1024*1024*1024} {
-		set size [format %.1f\ GB [expr {$size/1024/1024/1024.}]]
-			} elseif {$size >= 1024*1024} {
-		set size [format %.1f\ MB [expr {$size/1024/1024.}]]
-			} elseif {$size >= 1024} {
-		set size [format %.1f\ kB [expr {$size/1024.}]]
-			} else {
-		append size " bytes"
-			}
-			$tree set $id size $size
-	}
-		}
-
-		# Stop this code from rerunning on the current node
-		$tree set $node type processedDirectory
-}
-
 proc gorilla::CheckDefaultExtension {name extension} {
+puts "CheckDefaultExtension $name $extension"
 	set res [split $name .]
 	if {[llength $res ] == 1} {
 		set name [join "$res $extension" .]
