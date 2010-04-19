@@ -31,7 +31,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.2.6 $}
+set ::gorillaVersion {$Revision: 1.5.2.7 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -4754,6 +4754,7 @@ if {$::gorilla::guimutex == 1} {
 		break
 } elseif {$::gorilla::guimutex == 3} {
 		set ::gorilla::preference(lru) [list]
+		set ::gorilla::status [mc "History deleted. After a restart the list will be empty."]
 }
 	}
 
