@@ -1,3 +1,7 @@
+2010-05-03: setmenustate all disabled for MacOS
+2010-04-19: added message for clearing the file history
+2010-04-19: -defaultextension in Save_as deactivated
+2010-04-14: tag v1.2.5.6
 2010-04-13: Merge branch 'encryption'
 2010-04-13: sha256 modified for 64bit systems
 2010-04-11: v1.5.2.5
