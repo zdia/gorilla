@@ -31,7 +31,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.2.7 $}
+set ::gorillaVersion {$Revision: 1.5.2.8 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -92,10 +92,10 @@ puts "[file join $::gorillaDir $file]"
 # This is necessary for the embedded standalone version in MacOSX
 #
 
-# if {[tk windowingsystem] == "aqua"}	{
+if {[tk windowingsystem] == "aqua"}	{
 	# set auto_path /Library/Tcl/teapot/package/macosx-universal/lib/Itcl3.4
-	# set auto_path ""
-# }
+	set auto_path ""
+}
 
 # foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 	# if {[file isdirectory $testitdir]} {
@@ -156,7 +156,7 @@ catch {package require uuid}
 
 #
 # ----------------------------------------------------------------------
-# Prepare
+# Prepare and hide main window
 # ----------------------------------------------------------------------
 #
 
@@ -198,9 +198,6 @@ proc gorilla::Init {} {
 		# added by zdia
 		set ::gorilla::preference(rememberGeometries) 1
 		set ::gorilla::preference(lang) en
-		# set ::gorilla::preference(fontsize) 10 ;# look PreferencesDialog default value
-			# [string trim [lindex $::gorilla::ActualDefaultFont \
-			# [expr {[lsearch $::gorilla::ActualDefaultFont -size] + 1}]] -]
 }
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -258,10 +255,10 @@ set ::gorilla::menu_desc {
 							"Save As ..." open gorilla::SaveAs "" ""
 							separator "" "" "" ""
 							"Export ..." open gorilla::Export "" ""
-							separator "" "" "" ""
-							"Preferences ..." {} gorilla::Preferences "" ""
-							separator "" "" "" ""
-							Exit {} gorilla::Exit $menu_meta X
+							separator mac "" "" ""
+							"Preferences ..." mac gorilla::Preferences "" ""
+							separator mac "" "" ""
+							Exit mac gorilla::Exit $menu_meta X
 							}	
 	Edit	edit	{"Copy Username" login gorilla::CopyUsername $menu_meta U
 							"Copy Password" login gorilla::CopyPassword $menu_meta P
@@ -290,8 +287,8 @@ set ::gorilla::menu_desc {
 							}
 	Help	help	{ "Help ..." "" gorilla::Help "" ""
 							"License ..." "" gorilla::License "" ""
-							separator "" "" "" ""
-							"About ..." "" tkAboutDialog "" ""
+							separator mac "" "" ""
+							"About ..." mac tkAboutDialog "" ""
 							}
 }	
 
@@ -307,7 +304,7 @@ set ::gorilla::menu_desc {
 	
 			# erstelle für jedes widget eine Tag-Liste
 			lappend taglist $menu_tag
-	
+			if {$menu_tag eq "mac"} {continue}
 			if {$menu_item eq "separator"} {
 				.mbar.$menu_widget add separator
 			} else {
@@ -463,7 +460,15 @@ proc gorilla::InitPRNG {{seed ""}} {
 
 proc setmenustate {widget tag_pattern state} {
 	if {$tag_pattern eq "all"} {
-		# disable all menu_widget in $::gorilla::menu_desc
+		foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
+			set index 0
+			foreach {title a b c d } $menu_itemlist {
+				if { $title ne "separator" } {
+					$widget.$menu_widget entryconfigure $index -state $state
+				}
+				incr index
+			}
+		}
 		return
 	}
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
@@ -996,8 +1001,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		#
     # Disable the main menu, so that it is not accessible, even on the Mac.
     #
-
-    # setmenustate $::gorilla::widgets(main) all disabled
+    
+    setmenustate $::gorilla::widgets(main) all disabled
 
     #
 		# Run dialog
@@ -1158,7 +1163,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
     # Re-enable the main menu.
     #
 
-    # setmenustate $::gorilla::widgets(main) all enabled
+    setmenustate $::gorilla::widgets(main) all normal
 
     if {$::gorilla::guimutex == 2} {
 			# Cancel
@@ -4977,8 +4982,10 @@ proc gorilla::SavePreferencesToRCFile {} {
 		}
 	}
 
-	if {[catch {close $f}]} {return 0}
-
+	if {[catch {close $f}]} {
+		gorilla::msg "Error while saving RC-File"
+		return 0
+	}
 	return 1
 }
 
@@ -6427,8 +6434,8 @@ proc psn_Delete {argv argc} {
 	return $new_argv
 }
 
-proc gorilla::msg {  } {
-	tk_messageBox -type ok -icon info -message test
+proc gorilla::msg { message } {
+	tk_messageBox -type ok -icon info -message $message
 }
 
 #
@@ -6445,6 +6452,9 @@ if {[tk windowingsystem] == "aqua"} {
 	set argv [psn_Delete $argv $argc]
 
 	proc ::tk::mac::ShowPreferences {} {
+		if { ![info exists ::gorilla::fileName] || $::gorilla::fileName eq "" } {
+			return
+		}
 		gorilla::PreferencesDialog
 	}
 	proc ::tk::mac::Quit {} {
@@ -6521,8 +6531,5 @@ if {$::gorilla::init == 0} {
 	raise .
 	update
 
-	if {[tk windowingsystem] == "aqua"} {
-		exec say [mc "Welcome to the Password Gorilla."]
-	} else {
-		set ::gorilla::status [mc "Welcome to the Password Gorilla."]
-	}
+	# exec say [mc "Welcome to the Password Gorilla."]	;# für MacOS
+	set ::gorilla::status [mc "Welcome to the Password Gorilla."]

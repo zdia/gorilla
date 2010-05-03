@@ -150,7 +150,6 @@ proc ::sha2::SHA256Penultimate {token} {
     # Append length in bits as big-endian wide int.
     set dlen [expr {8 * $state(n)}]
     append state(i) [binary format II 0 $dlen]
-
     # Calculate the hash for the remaining block.
     set len [string length $state(i)]
     for {set n 0} {($n + 64) <= $len} {} {

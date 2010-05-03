@@ -398,6 +398,7 @@ itcl::class pwsafe::v3::reader {
 	$db configure -keyStretchingIterations $iter
 
 	set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter]
+puts "myskey"
 	set myhskey [sha2::sha256 -bin $myskey]
 	if {![string equal $hskey $myhskey]} {
 	    pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey

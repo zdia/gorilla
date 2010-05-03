@@ -224,7 +224,6 @@ proc pwsafe::writeToString {db version {percentvar ""}} {
 	itcl::delete object $writer
 	itcl::delete object $stream
 	catch {close $file}
-puts "writetoFile $oops $origErrorInfo"
 	error $oops $origErrorInfo
     }
 

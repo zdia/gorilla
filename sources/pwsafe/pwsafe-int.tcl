@@ -230,10 +230,10 @@ proc pwsafe::int::computeStretchedKey {salt password iterations} {
 # puts "sha2::Hex [sha2::Hex $st]"
     sha2::SHA256Update $st $salt
     set Xi [sha2::SHA256Final $st]
+# puts "Xi [hex $Xi]"
     for {set i 0} {$i < $iterations} {incr i} {
 	set Xi [sha2::sha256 -bin $Xi]
     }
-
     return $Xi
 }
 
