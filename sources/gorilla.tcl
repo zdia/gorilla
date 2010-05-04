@@ -304,7 +304,7 @@ set ::gorilla::menu_desc {
 	
 			# erstelle für jedes widget eine Tag-Liste
 			lappend taglist $menu_tag
-			if {$menu_tag eq "mac"} {continue}
+			if {$menu_tag eq "mac" && [tk windowingsystem] == "aqua"} {continue}
 			if {$menu_item eq "separator"} {
 				.mbar.$menu_widget add separator
 			} else {
