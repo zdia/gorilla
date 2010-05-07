@@ -304,7 +304,9 @@ set ::gorilla::menu_desc {
 	
 			# erstelle für jedes widget eine Tag-Liste
 			lappend taglist $menu_tag
-			if {$menu_tag eq "mac" && [tk windowingsystem] == "aqua"} {continue}
+			if {$menu_tag eq "mac" && [tk windowingsystem] == "aqua"} {
+				continue
+			}
 			if {$menu_item eq "separator"} {
 				.mbar.$menu_widget add separator
 			} else {
@@ -4670,7 +4672,10 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		
 		set languages [gorilla::getAvailableLanguages]
 		# format: {en English de Deutsch ...}
-		# Fehlerabfrage für falschen prefTemp(lang) Eintrag?
+		# Fehlerabfrage für falschen prefTemp(lang) Eintrag in der gorillarc
+		if {[lsearch $languages $::gorilla::prefTemp(lang)] == -1} {
+			set ::gorilla::prefTemp(lang) en
+		}
 		set ::gorilla::fullLangName [dict get $languages $::gorilla::prefTemp(lang)]
 		
 		set display $top.nb.display
