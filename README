@@ -1,4 +1,12 @@
-2010-05-03: setmenustate all disabled for MacOS
+07.05.2010
+	put gorilla.ico as tclkit.ico in vfs (gorilla.exe shows gorilla icon)
+	catch mismatch between gorillarc language preference and *.msg files
+	
+03.05.2010
+	setmenustate all disabled/normal for MacOSX
+	showPreferences deactivated during login or lock state
+	v1.5.3
+	
 2010-04-19: added message for clearing the file history
 2010-04-19: -defaultextension in Save_as deactivated
 2010-04-14: tag v1.2.5.6
