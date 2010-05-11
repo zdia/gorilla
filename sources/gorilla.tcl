@@ -72,7 +72,6 @@ if {[catch {package require Tcl 8.5}]} {
 
 foreach file {isaac.tcl} {
 	if {[catch {source [file join $::gorillaDir $file]} oops]} {
-puts "[file join $::gorillaDir $file]"
 # puts $oops
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
@@ -2994,7 +2993,6 @@ proc gorilla::SaveAs {} {
 			set majorVersion 3
 		}
 	}
-puts "majorVersion $majorVersion"
 	if {$majorVersion == 3} {
 		set defaultExtension ".psafe3"
 	} else {
@@ -3034,7 +3032,6 @@ puts "majorVersion $majorVersion"
 	# -defaultextension funktioniert nur auf Windowssystemen und Mac
 	# set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
 	set nativeName [file nativename $fileName]
-puts "nativeName $nativeName"
 	
 	set myOldCursor [. cget -cursor]
 	. configure -cursor watch
@@ -5741,13 +5738,10 @@ proc gorilla::Find {} {
 		set ::gorilla::findCurrentNode [lindex $selection 0]
 	} else {
 		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
-puts "current node $::gorilla::findCurrentNode"
 	}
 }
 
 proc gorilla::FindNextNode {node} {
-puts "\nProc FindNextNode ---"
-puts "got node: $node"
 	#
 	# If this node has children, return the first child.
 	#
@@ -5769,7 +5763,6 @@ puts "got node: $node"
 # break
 		if {$indexInParent < [llength $children]} {
 				set node [lindex $children $indexInParent]
-puts "parent children node is $node"
 				break
 		}
 
@@ -5778,7 +5771,6 @@ puts "parent children node is $node"
 		#
 
 		set node $parent
-puts "parent node: $parent"
 		#
 		# If we are at the root node, return its first child (wrap around).
 		#
@@ -5786,14 +5778,12 @@ puts "parent node: $parent"
 		if {$node == {} } {
 			set node [lindex [$::gorilla::widgets(tree) children {}] 0]
 			break
-puts "breaking search for next node"
 		}
 
 		#
 		# Find the parent's next sibling (Geschwister)
 		#
 	} ;# end while
-puts "returning node $node\n---"
 	return $node
 }
 
@@ -5813,14 +5803,12 @@ proc gorilla::RunFind {} {
 	}
 	set text $::gorilla::preference(findThisText)
 	set node $::gorilla::findCurrentNode
-puts "proc Runfind starts with node $node"
 
 	set found 0
 	set recordsSearched 0
 	set totalRecords [llength [$::gorilla::db getAllRecordNumbers]]
 	
  	while {!$found} {
-puts "\n--- while beginns with node $node"
 # puts "\n--- Runfind while-schleife: next node is $node"
 
 		# set node [::gorilla::FindNextNode $node]
@@ -5832,15 +5820,12 @@ puts "\n--- while beginns with node $node"
 		
 		if {$type == "Group" || $type == "Root"} {
 			set node [::gorilla::FindNextNode $node]
-puts "Runfind break condition $node == $::gorilla::findCurrentNode"		
 			if {$node == $::gorilla::findCurrentNode} {
-puts "wrapped around"
 				break
 			}
 			continue
 		}
 		
-puts "Runfind searching ..."
 		incr recordsSearched
 		set percent [expr {int(100.*$recordsSearched/$totalRecords)}]
 		set ::gorilla::status "Searching ... ${percent}%"
@@ -5891,13 +5876,11 @@ puts "Runfind searching ..."
 
 		set node [::gorilla::FindNextNode $node]
 		
-puts "Runfind break condition 2 $node == $::gorilla::findCurrentNode"		
 		if {$node == $::gorilla::findCurrentNode} {
 			#
 			# Wrapped around.
 			#
 			break
-puts "wrapped around"
 		}
 	} ;# end while loop
 
@@ -5973,7 +5956,7 @@ proc gorilla::getAvailableLanguages {  } {
 	}
 	
 	# Diese Liste muss erweitert werden, vgl. "locale -a"
-	set langFullName [list en English de Deutsch fr Français es Espagnol]
+	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian]
 	
 	# erstelle Liste mit {locale fullname}
 	set langList {}
@@ -6392,7 +6375,6 @@ TIISU8PgCVGYQhWukIX+CwgAOw==
 "]
 
 proc gorilla::CheckDefaultExtension {name extension} {
-puts "CheckDefaultExtension $name $extension"
 	set res [split $name .]
 	if {[llength $res ] == 1} {
 		set name [join "$res $extension" .]
