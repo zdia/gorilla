@@ -4644,7 +4644,7 @@ pack $dpf.si $dpf.ver $dpf.uni -side top -anchor w -pady 3 -padx 10
 ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
 	-text [mc "Note: these defaults will be applied to\
 	new databases. To change a setting for an existing\
-	database, go to \"Database Preferences\" in the \"Manage\"\
+	database, go to \"Customize\" in the \"Security\"\
 	menu."]
 pack $dpf.note -side bottom -anchor center -pady 3
 
