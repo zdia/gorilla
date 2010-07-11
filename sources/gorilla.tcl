@@ -1441,7 +1441,7 @@ proc gorilla::MoveDialog {type} {
 		wm title $top [mc "Move $type"]
 
 		ttk::labelframe $top.source -text [mc $type] -padding [list 10 10]
-		ttk::entry $top.source.e -width 40 -textvariable ::gorilla::MoveDialogSource
+		ttk::entry $top.source.e -width 40 -textvariable ::gorilla::MoveDialogSource -expand 1
 		ttk::labelframe $top.dest \
 		-text [mc "Destination Group with format <Group.Subgroup> :"] \
 		-padding [list 10 10]
@@ -1450,7 +1450,7 @@ proc gorilla::MoveDialog {type} {
 		pack $top.source.e -side left -expand yes -fill x
 		pack $top.source -side top -expand yes -fill x -pady 10 -padx 10
 		pack $top.dest.e -side left -expand yes -fill x
-		pack $top.dest -side top -expand yes -fill x -pady 10 -padx 10
+		pack $top.dest -side top -expand yes -fill x -fill y -pady 10 -padx 10
 
 		ttk::frame $top.buts
 		set but1 [ttk::button $top.buts.b1 -width 10 -text "OK" \
@@ -1458,7 +1458,7 @@ proc gorilla::MoveDialog {type} {
 		set but2 [ttk::button $top.buts.b2 -width 10 -text [mc "Cancel"] \
 			 -command "set ::gorilla::guimutex 2"]
 		pack $but1 $but2 -side left -pady 10 -padx 20
-		pack $top.buts -side bottom -pady 10
+		pack $top.buts -side bottom -pady 10 -fill y -expand yes
 	
 		bind $top.source.e <Shift-Tab> "after 0 \"focus $top.buts.b1\""
 		bind $top.dest.e <Shift-Tab> "after 0 \"focus $top.source.e\""
