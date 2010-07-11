@@ -1,3 +1,5 @@
+2010-05-11: adding ru.msg + deleting annoying puts commands
+
 07.05.2010
 	put gorilla.ico as tclkit.ico in vfs (gorilla.exe shows gorilla icon)
 	catch mismatch between gorillarc language preference and *.msg files

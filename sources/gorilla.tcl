@@ -2443,6 +2443,13 @@ variable gorilla::fieldNames [list "" \
 	"password policy" \
 	"last modification time"]
 
+proc gorilla::DestroyMergeReport {} {
+		ArrangeIdleTimeout
+		set top .mergeReport
+		catch {destroy $top}
+		unset ::gorilla::toplevel($top)
+}
+
 proc gorilla::Merge {} {
 	set openInfo [OpenDatabase [mc "Merge Password Database" "" 0]]
 	# set openInfo [OpenDatabase "Merge Password Database" "" 0]
@@ -2784,45 +2791,49 @@ proc gorilla::Merge {} {
 		return
 	}
 
-	set ttop ".mergeReport"
+	set top ".mergeReport"
 
-	if {![winfo exists $ttop]} {
-		toplevel $ttop
-		wm title $ttop "Merge Report for $nativeName"
+	if {![info exists ::gorilla::toplevel($top)]} {
+		toplevel $top
+		wm title $top "Merge Report for $nativeName"
 
-		set text [text $ttop.text -relief sunken -width 100 -wrap none \
-		-yscrollcommand "$ttop.vsb set"]
+		set text [text $top.text -relief sunken -width 100 -wrap none \
+		-yscrollcommand "$top.vsb set"]
 
 		if {[tk windowingsystem] ne "aqua"} {
-			ttk::scrollbar $ttop.vsb -orient vertical -command "$ttop.text yview"
+			ttk::scrollbar $top.vsb -orient vertical -command "$top.text yview"
 		} else {
-			scrollbar $ttop.vsb -orient vertical -command "$ttop.text yview"
+			scrollbar $top.vsb -orient vertical -command "$top.text yview"
 		}
 		## Arrange the tree and its scrollbars in the toplevel
-		lower [ttk::frame $ttop.dummy]
-		pack $ttop.dummy -fill both -fill both -expand 1
-		grid $ttop.text $ttop.vsb -sticky nsew -in $ttop.dummy
-		grid columnconfigure $ttop.dummy 0 -weight 1
-		grid rowconfigure $ttop.dummy 0 -weight 1
+		lower [ttk::frame $top.dummy]
+		pack $top.dummy -fill both -fill both -expand 1
+		grid $top.text $top.vsb -sticky nsew -in $top.dummy
+		grid columnconfigure $top.dummy 0 -weight 1
+		grid rowconfigure $top.dummy 0 -weight 1
 		
-		set botframe [ttk::frame $ttop.botframe]
+		set botframe [ttk::frame $top.botframe]
 		set botbut [ttk::button $botframe.but -width 10 -text [mc "Close"] \
-			-command "destroy $ttop"]
+			-command "destroy $top"]
 		pack $botbut
 		pack $botframe -side top -fill x -pady 10
 		
-		bind $ttop <Prior> "$text yview scroll -1 pages; break"
-		bind $ttop <Next> "$text yview scroll 1 pages; break"
-		bind $ttop <Up> "$text yview scroll -1 units"
-		bind $ttop <Down> "$text yview scroll 1 units"
-		bind $ttop <Home> "$text yview moveto 0"
-		bind $ttop <End> "$text yview moveto 1"
-		bind $ttop <Return> "destroy $ttop"
-		} else {
-			wm deiconify $ttop
-			set text "$ttop.text"
-			set botframe "$ttop.botframe"
-		}
+		bind $top <Prior> "$text yview scroll -1 pages; break"
+		bind $top <Next> "$text yview scroll 1 pages; break"
+		bind $top <Up> "$text yview scroll -1 units"
+		bind $top <Down> "$text yview scroll 1 units"
+		bind $top <Home> "$text yview moveto 0"
+		bind $top <End> "$text yview moveto 1"
+		bind $top <Return> "gorilla::DestroyMergeReport"
+		
+		set ::gorilla::toplevel($top) $top
+		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyMergeReport
+				
+	} else {
+		wm deiconify $top
+		set text "$top.text"
+		set botframe "$top.botframe"
+	}
 
 		$text configure -state normal
 		$text delete 1.0 end
@@ -2880,8 +2891,8 @@ proc gorilla::Merge {} {
 		$text configure -state disabled
 
 		update idletasks
-		wm deiconify $ttop
-		raise $ttop
+		wm deiconify $top
+		raise $top
 		focus $botframe.but
 }
 
@@ -3951,7 +3962,7 @@ proc gorilla::LockDatabase {} {
 			# or not.
 			#
 
-			Exit
+			gorilla::Exit
 	}
 		}
 
@@ -4038,9 +4049,9 @@ proc gorilla::GetPassword {confirm title} {
 
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyGetPasswordDialog
-		} else {
+	} else {
 		wm deiconify $top
-		}
+	}
 
 		wm title $top $title
 		# $top.password configure -text ""
