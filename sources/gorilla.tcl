@@ -3152,20 +3152,22 @@ proc gorilla::LoginDialog {rn} {
 			set kind1 [join "$top.l.$child 1" ""]
 			set kind2 [join "$top.l.$child 2" ""]
 			set entry_text ::gorilla::$top.l.$child.e
-			ttk::label $kind1 -text [mc "$childname:"] -width 12 -anchor w 
+			ttk::label $kind1 -text [mc "$childname:"] -anchor w 
 			ttk::entry $kind2 -width 40 -textvariable ::gorilla::loginDialog.$child
-			grid $kind1 $kind2 -sticky nsew -pady 5
+			grid $kind1 $kind2 -sticky ew -pady 5
 		}
 
-		ttk::label $top.l.label_notes -width 12 -text [mc "Notes:"] -anchor w
+		ttk::label $top.l.label_notes -text [mc "Notes:"] -anchor w
 		text $top.l.notes -width 40 -height 5 -wrap word
 		grid $top.l.label_notes $top.l.notes -sticky nsew -pady 5
-
-		ttk::label $top.l.lpwc -text [mc "Last Password Change:"] -width 20 -anchor w
+		grid rowconfigure $top.l $top.l.notes -weight 1
+		grid columnconfigure $top.l $top.l.notes -weight 1
+		
+		ttk::label $top.l.lpwc -text [mc "Last Password Change:"] -anchor w
 		ttk::label $top.l.lpwc_info -text "" -width 40 -anchor w
 		grid $top.l.lpwc $top.l.lpwc_info -sticky nsew -pady 5
 
-		ttk::label $top.l.mod -text [mc "Last Modified:"] -width 20 -anchor w
+		ttk::label $top.l.mod -text [mc "Last Modified:"] -anchor w
 		ttk::label $top.l.mod_info -text "" -width 40 -anchor w
 		grid $top.l.mod $top.l.mod_info -sticky nsew -pady 5
 
@@ -3189,7 +3191,7 @@ proc gorilla::LoginDialog {rn} {
 			-side top -padx 10 -pady 5
 		pack $top.r.pws -side top -pady 20
 
-		pack $top.l -side left -expand yes -pady 10 -padx 15
+		pack $top.l -side left -expand yes -pady 10 -padx 15 -fill both
 		pack $top.r -side right -fill both
 	
 		#
