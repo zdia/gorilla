@@ -343,7 +343,8 @@ set ::gorilla::menu_desc {
 	#---------------------------------------------------------------------
 	
 	set tree [ttk::treeview .tree \
-		-yscroll ".vsb set" -xscroll ".hsb set" -show tree -style My.Treeview]
+		-yscroll ".vsb set" -xscroll ".hsb set" -show tree \
+		-style gorilla.Treeview]
 	.tree tag configure red -foreground red
 	.tree tag configure black -foreground black
 
@@ -3145,41 +3146,41 @@ proc gorilla::LoginDialog {rn} {
 		TryResizeFromPreference $top
 		wm title $top [mc "Add/Edit/View Login"]
 
-		frame $top.l
+		ttk::frame $top.l
 		
 		foreach {child childname} {
 			group Group title Title url URL user Username pass Password} {
 			set kind1 [join "$top.l.$child 1" ""]
 			set kind2 [join "$top.l.$child 2" ""]
 			set entry_text ::gorilla::$top.l.$child.e
-			ttk::label $kind1 -text [mc "$childname:"] -anchor w 
+			ttk::label $kind1 -text [mc "$childname:"] -anchor w -padding {10 0 0 0}
 			ttk::entry $kind2 -width 40 -textvariable ::gorilla::loginDialog.$child
 			grid $kind1 $kind2 -sticky ew -pady 5
 		}
 
-		ttk::label $top.l.label_notes -text [mc "Notes:"] -anchor w
+		ttk::label $top.l.label_notes -text [mc "Notes:"] -anchor w -padding {10 0 0 0}
 		text $top.l.notes -width 40 -height 5 -wrap word
 		grid $top.l.label_notes $top.l.notes -sticky nsew -pady 5
 		grid rowconfigure $top.l $top.l.notes -weight 1
 		grid columnconfigure $top.l $top.l.notes -weight 1
 		
-		ttk::label $top.l.lpwc -text [mc "Last Password Change:"] -anchor w
+		ttk::label $top.l.lpwc -text [mc "Last Password Change:"] -anchor w -padding {10 0 0 0}
 		ttk::label $top.l.lpwc_info -text "" -width 40 -anchor w
 		grid $top.l.lpwc $top.l.lpwc_info -sticky nsew -pady 5
 
-		ttk::label $top.l.mod -text [mc "Last Modified:"] -anchor w
+		ttk::label $top.l.mod -text [mc "Last Modified:"] -anchor w -padding {10 0 0 0}
 		ttk::label $top.l.mod_info -text "" -width 40 -anchor w
 		grid $top.l.mod $top.l.mod_info -sticky nsew -pady 5
 
-		frame $top.r				;# frame right
-		frame $top.r.top
+		ttk::frame $top.r				;# frame right
+		ttk::frame $top.r.top
 		ttk::button $top.r.top.ok -width 16 -text "OK" -command "set ::gorilla::guimutex 1"
 		ttk::button $top.r.top.c -width 16 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"
 		pack $top.r.top.ok $top.r.top.c -side top -padx 10 -pady 5
 		pack $top.r.top -side top -pady 20
 
-		frame $top.r.pws
+		ttk::frame $top.r.pws
 		ttk::button $top.r.pws.show -width 16 -text [mc "Show Password"] \
 			-command "set ::gorilla::guimutex 3"
 		ttk::button $top.r.pws.gen -width 16 -text [mc "Generate Password"] \
@@ -3191,7 +3192,7 @@ proc gorilla::LoginDialog {rn} {
 			-side top -padx 10 -pady 5
 		pack $top.r.pws -side top -pady 20
 
-		pack $top.l -side left -expand yes -pady 10 -padx 15 -fill both
+		pack $top.l -side left -expand yes -fill both
 		pack $top.r -side right -fill both
 	
 		#
@@ -4721,7 +4722,8 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 				-command "
 					font configure TkDefaultFont -size $size
 					font configure TkTextFont -size $size
-					font configure TkMenuFont -size $size"
+					font configure TkMenuFont -size $size
+					ttk::style configure gorilla.Treeview -rowheight [expr {$size * 2}]"
 		}
 		
 		pack $display.size.label $display.size.mb -side left
@@ -5263,6 +5265,8 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				font configure TkDefaultFont -size $value
 				font configure TkTextFont -size $value
 				font configure TkMenuFont -size $value
+				# undocumented option for ttk::treeview
+				ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
 			}
 	}
 		}
