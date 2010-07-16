@@ -1442,7 +1442,7 @@ proc gorilla::MoveDialog {type} {
 		wm title $top [mc "Move $type"]
 
 		ttk::labelframe $top.source -text [mc $type] -padding [list 10 10]
-		ttk::entry $top.source.e -width 40 -textvariable ::gorilla::MoveDialogSource -expand 1
+		ttk::entry $top.source.e -width 40 -textvariable ::gorilla::MoveDialogSource
 		ttk::labelframe $top.dest \
 		-text [mc "Destination Group with format <Group.Subgroup> :"] \
 		-padding [list 10 10]
