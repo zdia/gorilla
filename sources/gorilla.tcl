@@ -2815,7 +2815,7 @@ proc gorilla::Merge {} {
 		
 		set botframe [ttk::frame $top.botframe]
 		set botbut [ttk::button $botframe.but -width 10 -text [mc "Close"] \
-			-command "destroy $top"]
+			-command "gorilla::DestroyMergeReport"]
 		pack $botbut
 		pack $botframe -side top -fill x -pady 10
 		
@@ -3194,7 +3194,7 @@ proc gorilla::LoginDialog {rn} {
 
 		pack $top.l -side left -expand yes -fill both
 		pack $top.r -side right -fill both
-return	
+
 		#
 		# Set up bindings
 		#
