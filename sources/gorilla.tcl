@@ -3194,7 +3194,7 @@ proc gorilla::LoginDialog {rn} {
 
 		pack $top.l -side left -expand yes -fill both
 		pack $top.r -side right -fill both
-	
+return	
 		#
 		# Set up bindings
 		#
@@ -5225,7 +5225,9 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 		}
 			}
 			lru {
-		lappend ::gorilla::preference($pref) $value
+		if { [ file exists $value ] } { 
+			lappend ::gorilla::preference($pref) $value
+		}
 			}
 			lruSize {
 		if {[string is integer $value]} {
