@@ -1054,7 +1054,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			tk_messageBox -parent $top -type ok -icon error -default ok \
 				-title "File Not Found" \
 				-message "The password database\
-				\"$nativeName\" does not exists or can not\
+				\"$nativeName\" does not exist or can not\
 				be read."
 			continue
 		}
