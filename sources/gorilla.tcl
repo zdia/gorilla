@@ -5729,6 +5729,7 @@ proc gorilla::Find {} {
 		pack $top.buts -side bottom -expand yes -fill x -padx 20 -pady 5
 		pack $top.text -side top -expand yes -fill x -pady 5
 		pack $top.find -side left -expand yes -fill x -padx 20 -pady 5
+		
 		bind $top.text.e <Return> "::gorilla::RunFind"
 
 
@@ -5740,6 +5741,7 @@ proc gorilla::Find {} {
 		set ::gorilla::toplevel($top) $top
 		
 		wm attributes $top -topmost 1
+		focus $top.text.e
 		update idletasks
 		wm protocol $top WM_DELETE_WINDOW gorilla::CloseFindDialog
 		
@@ -5819,7 +5821,10 @@ proc gorilla::FindCompare {needle haystack caseSensitive} {
 proc gorilla::RunFind {} {
 	if {![info exists ::gorilla::findCurrentNode]} {
 		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
+	} else {
+		set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
 	}
+	
 	set text $::gorilla::preference(findThisText)
 	set node $::gorilla::findCurrentNode
 

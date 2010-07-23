@@ -1,3 +1,8 @@
+2010-07-22: fixed bug in .mergeReport exit
+2010-07-22: typo fix
+2010-07-22: testing existence of lru file
+2010-07-16: fixed bug in movedialog
+2010-07-13: fixing treeview font resizing issue
 2010/07/12: v. 1.5.3.1
 2010-07-11: menu label consistency
 2010-07-11: minor <Edit Login> layout change
