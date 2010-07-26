@@ -283,6 +283,8 @@ set ::gorilla::menu_desc {
 							"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
 							separator "" "" "" ""
 							"Change Master Password ..." open gorilla::ChangePassword "" ""
+							separator "" "" "" ""
+							"Lock now" open gorilla::LockDatabase "" ""
 							}
 	Help	help	{ "Help ..." "" gorilla::Help "" ""
 							"License ..." "" gorilla::License "" ""
@@ -2540,7 +2542,6 @@ proc gorilla::Merge {} {
 				if {[string equal $ntitle $title] && \
 					[string equal $nuser $user]} {
 					set found 1
-puts "$nuser $user $ntitle $title"
 					break
 				}
 			}

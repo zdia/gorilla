@@ -200,6 +200,7 @@ mcmset de {
 	"Language:" "Sprache:" \
 	"Security" "Sicherheit" \
 	"Customize ..." "Anpassen ..." \
+	"Lock now" "Sofort beenden"
 	}
 	
 mcunknown de "unbekannt"
