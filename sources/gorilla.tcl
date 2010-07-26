@@ -1091,6 +1091,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			\"$nativeName\": $oops"
 		$aframe.info configure -text $info
 		$aframe.pw.pw delete 0 end
+		focus $aframe.pw.pw
 		continue
 		}
 		# all seems well
@@ -2539,6 +2540,7 @@ proc gorilla::Merge {} {
 				if {[string equal $ntitle $title] && \
 					[string equal $nuser $user]} {
 					set found 1
+puts "$nuser $user $ntitle $title"
 					break
 				}
 			}
