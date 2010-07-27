@@ -244,7 +244,11 @@ proc gorilla::InitGui {} {
 		
 		if {[tk windowingsystem] == "aqua"}	{
 			set meta Command
-			set menu_meta Cmd
+			# set menu_meta Cmd
+			# mac is showing the Apple key icon but app is hanging if a procedure
+			# is calling a vwait loop. So we just show the letter. Both meta keys
+			# are working later on (Tk 8.5.8)
+			set menu_meta ""
 		}
 
 set ::gorilla::menu_desc {

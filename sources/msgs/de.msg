@@ -103,7 +103,9 @@ mcmset de {
 	"Note: these defaults will be applied to\
 	new databases. To change a setting for an existing\
 	database, go to \"Customize\" in the \"Security\"\
-	menu." "Die Voreinstellungen werden auf neue Datenbanken angewendet. Um die Einstellungen einer existierenden Datenbank zu ändern, wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\" \
+	menu." "Die Voreinstellungen werden auf neue Datenbanken angewendet. \
+	Um die Einstellungen einer existierenden Datenbank zu ändern, \
+	wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\"." \
 	"Include password field" "Passwort-Feld exportieren" \
 	"Include \"Notes\" field" "Notiz-Feld exportieren" \
 	"Save as Unicode text file" "Als Unicode-Textfeld speichern" \
@@ -200,7 +202,7 @@ mcmset de {
 	"Language:" "Sprache:" \
 	"Security" "Sicherheit" \
 	"Customize ..." "Anpassen ..." \
-	"Lock now" "Sofort beenden"
+	"Lock now" "Sofort sperren"
 	}
 	
 mcunknown de "unbekannt"

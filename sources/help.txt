@@ -317,7 +317,23 @@ Table of Contents
 					time it will greet you.
 					
 	Shortcuts
-				...
+					for the Mac:
+					
+					Command-o			Open Database
+					Command-s			Save Database
+					Command-x			Quit Password Gorilla
+					
+					Command-u			Copy Username to Clipboard
+					Command-p			Copy Password to Clipboard
+					Command-u			Copy Url to Clipboard
+					Command-c			Clear Clipboard
+					Command-f			Find
+					Command-g			Find next
+					
+					Command-a			Add Login
+					Command-e			Edit Login
+					
+					Linux and Windows shortcuts work with the Control key.
 
   Information about the new Database Format
 
