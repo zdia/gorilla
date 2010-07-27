@@ -197,6 +197,7 @@ proc gorilla::Init {} {
 		# added by zdia
 		set ::gorilla::preference(rememberGeometries) 1
 		set ::gorilla::preference(lang) en
+		set ::gorilla::preference(gorillaIcon) 0
 }
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -909,10 +910,17 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top
-		TryResizeFromPreference $top
+		
+		# TryResizeFromPreference $top
 
 		set aframe [ttk::frame $top.right -padding [list 10 5]]
-
+		
+		if {$::gorilla::preference(gorillaIcon)} {
+			# label $top.splash -bg "#ffffff" -image $::gorilla::images(splash)
+			ttk::label $top.splash -image $::gorilla::images(splash)
+			pack $top.splash -side left -fill both -padx 10 -pady 10
+		}
+		
 		ttk::label $aframe.info -anchor w -width 80 -relief sunken \
 			 -padding [list 5 5 5 5]
 		# -background #F6F69E ;# helles Gelb
@@ -962,6 +970,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyOpenDatabaseDialog
+
 		} else {
 			set aframe $top.right
 			wm deiconify $top
@@ -4556,8 +4565,10 @@ proc gorilla::PreferencesDialog {} {
 		rememberGeometries 1 \
 		saveImmediatelyDefault 0 \
 		unicodeSupport 1 \
-		lang en
-		fontsize 10} {
+		lang en \
+		fontsize 10 \
+		gorillaIcon 0 \
+		} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
 		} else {
@@ -4732,6 +4743,16 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		pack $display.size.label $display.size.mb -side left
 		pack $display.size -anchor w
 		
+		# gorilla icon in OpenDatabase
+		
+		ttk::frame $display.icon -padding {10 10}
+		ttk::label $display.icon.label -text [mc "Show Gorilla Icon"]
+		ttk::checkbutton $display.icon.check -variable ::gorilla::prefTemp(gorillaIcon) 
+		
+		pack $display.icon.label -side left
+		pack $display.icon.check -padx 10
+		pack $display.icon -anchor w
+		
 		#
 		# End of NoteBook tabs
 		#
@@ -4811,6 +4832,7 @@ return
 		unicodeSupport 
 		lang \
 		fontsize \
+		gorillaIcon \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
@@ -4965,7 +4987,9 @@ proc gorilla::SavePreferencesToRCFile {} {
 			saveImmediatelyDefault \
 			unicodeSupport \
 			lang \
-			fontsize} {
+			fontsize \
+			gorillaIcon \
+			} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
 		}
@@ -5272,6 +5296,9 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				font configure TkMenuFont -size $value
 				# undocumented option for ttk::treeview
 				ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
+			}
+			gorillaIcon {
+				set ::gorilla::preference($pref) $value
 			}
 	}
 		}
