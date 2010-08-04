@@ -31,7 +31,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.1 $}
+set ::gorillaVersion {$Revision: 1.5.3.2 $}
 set ::gorillaDir [file dirname [info script]]
 
 # ----------------------------------------------------------------------
@@ -273,8 +273,9 @@ set ::gorilla::menu_desc {
 							"Find ..." open gorilla::Find $menu_meta F
 							"Find next" open gorilla::FindNext $menu_meta G
 							}
-	Login	login	{ "Add Login ..." open gorilla::AddLogin $menu_meta A
-							"Edit Login ..." open gorilla::EditLogin $menu_meta E
+	Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
+							"Edit Login" open gorilla::EditLogin $menu_meta E
+							"View Login" open gorilla::ViewLogin $menu_meta V
 							"Delete Login" login gorilla::DeleteLogin "" ""
 							"Move Login ..." login gorilla::MoveLogin "" ""
 							separator "" "" "" ""
@@ -316,7 +317,7 @@ set ::gorilla::menu_desc {
 			if {$menu_item eq "separator"} {
 				.mbar.$menu_widget add separator
 			} else {
-				eval set meta_key $meta_key
+			  eval set meta_key $meta_key
 				set shortcut [join "$meta_key $shortcut" +]
 				.mbar.$menu_widget add command -label [mc $menu_item] \
 					-command $menu_command -accelerator $shortcut
@@ -421,6 +422,7 @@ set ::gorilla::menu_desc {
 
 		bind . <$meta-a> {.mbar.login invoke 0}
 		bind . <$meta-e> {.mbar.login invoke 1}
+		bind . <$meta-v> {.mbar.login invoke 2}
 		
 		# bind . <$meta-L> "gorilla::Reload"
 		# bind . <$meta-R> "gorilla::Refresh"
@@ -689,7 +691,10 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Edit Login"] \
 		-command "gorilla::PopupEditLogin"
-	$::gorilla::widgets(popup,Login) add separator
+	$::gorilla::widgets(popup,Login) add command \
+		-label [mc "View Login"] \
+		-command "gorilla::PopupViewLogin"
+	$::gorilla::widgets(popup,Login) add separator 
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Delete Login"] \
 		-command "gorilla::PopupDeleteLogin"
@@ -700,6 +705,10 @@ proc gorilla::LoginPopup {node xpos ypos} {
 
 proc gorilla::PopupEditLogin {} {
 		gorilla::EditLogin
+}
+
+proc gorilla::PopupViewLogin {} {
+	gorilla::ViewLogin
 }
 
 proc gorilla::PopupCopyUsername {} {
@@ -2461,10 +2470,16 @@ variable gorilla::fieldNames [list "" \
 	"last modification time"]
 
 proc gorilla::DestroyMergeReport {} {
-		ArrangeIdleTimeout
-		set top .mergeReport
-		catch {destroy $top}
-		unset ::gorilla::toplevel($top)
+	ArrangeIdleTimeout
+	set top .mergeReport
+	catch {destroy $top}
+	unset ::gorilla::toplevel($top)
+}
+
+proc gorilla::DestroyDialog { top } {
+	ArrangeIdleTimeout
+	catch {destroy $top}
+	unset ::gorilla::toplevel($top)
 }
 
 proc gorilla::Merge {} {
@@ -3314,7 +3329,6 @@ proc gorilla::LoginDialog {rn} {
 			ArrangeIdleTimeout
 			set ::gorilla::guimutex 0
 			vwait ::gorilla::guimutex
-
 			if {$::gorilla::guimutex == 1} {
 				if {[$top.l.title2 get] == ""} {
 					tk_messageBox -parent $top \
@@ -6439,6 +6453,149 @@ proc gorilla::CheckDefaultExtension {name extension} {
 	}
 	return $name
 }
+
+proc gorilla::ViewLogin {} {
+	ArrangeIdleTimeout
+
+	# proc gorilla::GetRnFromSelectedNode
+	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
+		return
+	 }
+	set node [lindex $sel 0]
+	set data [$::gorilla::widgets(tree) item $node -values]
+	set type [lindex $data 0]
+
+	if {$type == "Group" || $type == "Root"} {
+		return
+	}
+
+	set rn [lindex $data 1]
+	# ... error management
+	
+	# return $rn
+
+ gorilla::ViewEntry $rn
+ 
+}
+
+proc gorilla::ViewEntry {rn} {
+	# proposed by Richard Ellis, 04.08.2010
+	# ViewLogin: non modal and everything disabled
+	# EditLogin: modal dialog with changes saved
+	
+	ArrangeIdleTimeout
+
+	#
+	# Set up dialog
+	#
+
+	# sequence generator - this relies on tcl 8.5's incr that will not
+	# error on an undefined variable
+	variable seq
+	incr seq
+
+	set top .view$seq
+	
+	if {[info exists ::gorilla::toplevel($top)]} {
+		
+		wm deiconify $top
+		
+	} else {
+	
+		toplevel $top
+		wm title $top [ mc "View Login" ]
+		set ::gorilla::toplevel($top) $top
+		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
+		
+		# position the view windows in a somehow stacky order ... to be improved
+		set xpos 100
+		set ypos 200
+		set diff [expr $rn * 15]
+		wm geometry $top "+[incr xpos $diff]+[incr ypos $diff]"
+		
+		set if [ ttk::frame $top.if -padding {5 5} ]
+		
+		foreach {child childname} { group Group title Title url URL 
+						user Username pass Password 
+						lpc {Last Password Change}
+						mod {Last Modified} } {
+			
+			ttk::label $if.${child}L -text [mc ${childname}]:
+			ttk::label $if.${child}E -width 40 -background white
+	
+			grid $if.${child}L $if.${child}E -sticky ew -pady 5
+			
+		}
+		
+		ttk::label $if.notesL -text [mc Notes]:
+		ttk::label $if.notesE -width 40 -background white \
+			-wraplength [expr {40 * [font measure "Helvetica 10" 0]}]
+	
+		grid $if.notesL $if.notesE -sticky ew -pady 5                
+	
+		if {[$::gorilla::db existsRecord $rn]} {
+			if {[$::gorilla::db existsField $rn 2]} {
+				$if.groupE configure -text [$::gorilla::db getFieldValue $rn 2]
+			}
+			if {[$::gorilla::db existsField $rn 3]} {
+				$if.titleE configure -text [$::gorilla::db getFieldValue $rn 3]
+			}
+			if {[$::gorilla::db existsField $rn 4]} {
+				$if.userE configure -text [$::gorilla::db getFieldValue $rn 4]
+			}
+			if {[$::gorilla::db existsField $rn 5]} {
+				$if.notesE configure -text [$::gorilla::db getFieldValue $rn 5]
+			}
+			if {[$::gorilla::db existsField $rn 6]} {
+				# $if.passE configure -text [$::gorilla::db getFieldValue $rn 6]
+				$if.passE configure -text "********"
+			}
+			if {[$::gorilla::db existsField $rn 8]} {
+				$if.lpcE configure -text \
+					[clock format [$::gorilla::db getFieldValue $rn 8] \
+					-format "%Y-%m-%d %H:%M:%S"]
+			}
+			if {[$::gorilla::db existsField $rn 12]} {
+				$if.modE configure -text \
+					[clock format [$::gorilla::db getFieldValue $rn 12] \
+					-format "%Y-%m-%d %H:%M:%S"]
+			}
+			if {[$::gorilla::db existsField $rn 13]} {
+				$if.urlE configure -text [$::gorilla::db getFieldValue $rn 13]
+			}
+		}
+	
+		set bf [ ttk::frame $top.bf -padding {10 10} ]
+		
+		
+		ttk::button $bf.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
+		ttk::button $bf.showpassw -text [mc "Show Password"] \
+			-command [ list ::gorilla::ViewEntryShowPWHelper $bf.showpassw $if.passE $rn ]
+		
+		pack $bf.showpassw -side top -fill x
+		pack $bf.close -side top -fill x -pady 5
+		
+		pack $if -side left -expand true -fill both
+		pack $bf -side left -expand true -fill y
+	}
+}
+
+#
+# ----------------------------------------------------------------------
+# A helper proc to make the show password button an actual toggle button
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::ViewEntryShowPWHelper { button entry rn } {
+  if { [ $button cget -text ] eq [ mc "Show Password" ] } {
+    $entry configure -text [$::gorilla::db getFieldValue $rn 6]
+    $button configure -text [ mc "Hide Password" ]
+  } else {
+    $entry configure -text "********"
+    $button configure -text [ mc "Show Password" ]
+  }
+
+} ; # end proc gorilla::ViewEntryShowPWHelper
 
 #
 # ----------------------------------------------------------------------

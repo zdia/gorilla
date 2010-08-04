@@ -202,7 +202,12 @@ mcmset de {
 	"Language:" "Sprache:" \
 	"Security" "Sicherheit" \
 	"Customize ..." "Anpassen ..." \
-	"Lock now" "Sofort sperren"
+	"Lock now" "Sofort sperren" \
+	"View Login" "Login zeigen" \
+	"Password" "Passwort" \
+	"Last Password Change" "Letzte Passwortänderung" \
+	"Last Modified" "Zuletzt geändert" \
+	"Notes" "Notizen" \
 	}
 	
 mcunknown de "unbekannt"
