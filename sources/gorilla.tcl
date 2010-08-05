@@ -7,10 +7,13 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # Password Gorilla, a password database manager
 # Copyright (c) 2005-2009 Frank Pilhofer
 # Copyright (c) 2010 Zbigniew Diaczyszyn
+#
 # modified for use with wish8.5, ttk-Widgets and with German localisation
 # modified GUI to work without bwidget
-# z.dia@gmx.de
-# tested with ActiveTcl 8.5.7
+# z_dot_dia_at_gmx_dot_de
+#
+# tested with ActiveTcl 8.5.7, 8.5.8
+# Mac Version compiled from official sources at Sourceforge
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,6 +31,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # ----------------------------------------------------------------------
 #
 # pushed to http:/github.com/zdia/gorilla
+#
 
 package provide app-gorilla 1.0
 
@@ -42,11 +46,10 @@ set ::gorillaDir [file dirname [info script]]
 
 if {[catch {package require Tk 8.5} oops]} {
 		#
-		# Someone's trying to run this application with pure Tcl and no Tk.
+		# Because of using Themed Widgets we need Tk 8.5
 		#
 
-		puts "This application requires Tk 8.5, which does not seem to be available. \
-			You are working with [info patchlevel]"
+		puts "This application requires Tk 8.5, which does not seem to be available."
 		puts $oops
 		exit 1
 }
