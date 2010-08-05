@@ -166,7 +166,7 @@ mcmset ru {
 	"New Group Name:" "Новое имя группы:" \
 	"Find Text:" "Найти:" \
 	"New" "Новая" \
-	"Select a database, and enter its password. Click \"New\" to create a new database." "Выберите БД и введите её пароль.Выберите \"Новая\" для создания новой БД." \
+	"Select a database, and enter its password. Click \"New\" to create a new database." "Выберите БД и введите её пароль. Нажмите \"Новая\" для создания новой БД." \
 	"New Database: Choose Master Password" "Новая БД: выберите мастер-пароль" \
         "Customize ..." "Настроить ..." \
         "Login" "Логин" \
@@ -181,6 +181,8 @@ mcmset ru {
         "Username:" "Логин:" \
         "Last Password Change:" "Смена пароля:" \
         "Last Modified:" "Изменение:" \
+        "Lock Now" "Заблокировать сейчас" \
+        "View Login" "Просмотреть логин" \
 	}
 	
 mcunknown de "unbekannt"
