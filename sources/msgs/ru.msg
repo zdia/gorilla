@@ -181,6 +181,8 @@ mcmset ru {
         "Username:" "Логин:" \
         "Last Password Change:" "Смена пароля:" \
         "Last Modified:" "Изменение:" \
+        "Lock Now" "Заблокировать сейчас" \
+        "View Login" "Просмотреть логин" \
 	}
 	
 mcunknown de "unbekannt"
