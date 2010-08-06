@@ -3898,12 +3898,13 @@ proc gorilla::LockDatabase {} {
 	toplevel $top
 	TryResizeFromPreference $top
 
-	# ttk::label $top.splash -image $::gorilla::images(splash)
-	# Bild packen
-	# pack $top.splash -side left -fill both
+		 if {$::gorilla::preference(gorillaIcon)} {
+			 ttk::label $top.splash -image $::gorilla::images(splash)
+			 pack $top.splash -side left -fill both
 
-	# ttk::separator $top.vsep -orient vertical
-	# pack $top.vsep -side left -fill y -padx 3
+			 ttk::separator $top.vsep -orient vertical
+			 pack $top.vsep -side left -fill y -padx 3
+		 }
 
 	set aframe [ttk::frame $top.right -padding {10 10}]
 
@@ -5554,8 +5555,10 @@ proc gorilla::contributors {} {
 	# ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
 	tk_messageBox -default ok \
 		-message \
-		"Gorilla artwork contributed by Andrew J. Sniezek."
+		"Gorilla artwork contributed by Andrew J. Sniezek. \
+		In-depth testing and code improving by Richard Ellis"
 }
+# Russian translaters see github
 
 proc tkAboutDialog {} {
      ##about dialog code goes here
