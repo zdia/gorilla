@@ -3992,6 +3992,10 @@ proc gorilla::LockDatabase {} {
 		-type ok -icon error -default ok \
 		-title "Wrong Password" \
 		-message "That password is not correct."
+
+		 # clear the PW entry upon invalid PW
+		 $aframe.mitte.pw.pw delete 0 end
+               
 	} elseif {$::gorilla::lockedMutex == 2} {
 			#
 			# This may return, if the database was modified, and the user
@@ -6472,11 +6476,11 @@ proc gorilla::ViewLogin {} {
 	set type [lindex $data 0]
 
 	if {$type == "Group" || $type == "Root"} {
+puts "No Login selected"
 		return
 	}
 
 	set rn [lindex $data 1]
-	# ... error management
 	
 	# return $rn
 
