@@ -3886,14 +3886,14 @@ proc gorilla::LockDatabase {} {
 
 	set oldGrab [grab current .]
 
-	# close all open windows and remember their status
+	# close all open windows and remember their status and location
 	foreach tl [array names ::gorilla::toplevel] {
 		set ws [wm state $tl]
 		switch -- $ws {
 			normal -
 			iconic -
 			zoomed {
-				set withdrawn($tl) $ws
+				set withdrawn($tl) [ list $ws [ wm geometry $tl ] ]
 				wm withdraw $tl
 			}
 		}
@@ -4023,8 +4023,10 @@ proc gorilla::LockDatabase {} {
 	}
 		}
 
+		# restore all closed window statuses and positions
 		foreach tl [array names withdrawn] {
-			wm state $tl $withdrawn($tl)
+			wm state    $tl [ lindex $withdrawn($tl) 0 ]
+			wm geometry $tl [ lindex $withdrawn($tl) 1 ]
 		}
 
 		if {$oldGrab != ""} {
