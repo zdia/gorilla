@@ -4621,7 +4621,7 @@ proc gorilla::PreferencesDialog {} {
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top
-		TryResizeFromPreference $top
+		# TryResizeFromPreference $top
 		wm title $top [mc "Preferences"]
 
 		ttk::notebook $top.nb
@@ -4788,23 +4788,17 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		
 		# gorilla icon in OpenDatabase
 		
-		ttk::frame $display.icon -padding {10 10}
-		ttk::label $display.icon.label -text [mc "Show Gorilla Icon"]
-		ttk::checkbutton $display.icon.check -variable ::gorilla::prefTemp(gorillaIcon) 
-		
-		pack $display.icon.label -side left
-		pack $display.icon.check -padx 10
+		ttk::checkbutton $display.icon \
+			-variable ::gorilla::prefTemp(gorillaIcon) \
+			-text [mc "Show Gorilla Icon"]
 		pack $display.icon -anchor w
 
 		# auto iconify upon lock
 		
-		ttk::frame $display.autoiconify -padding {10 10}
-		ttk::label $display.autoiconify.label -text [mc "Iconify upon auto-lock"]
-		ttk::checkbutton $display.autoiconify.check -variable ::gorilla::prefTemp(iconifyOnAutolock)
-		
-		pack $display.autoiconify.label -side left
-		pack $display.autoiconify.check -padx 10
-		pack $display.autoiconify -anchor w
+		ttk::checkbutton $display.autoiconify \
+			-variable ::gorilla::prefTemp(iconifyOnAutolock) \
+			-text [mc "Iconify upon auto-lock"]
+		pack $display.autoiconify -anchor w -pady 5
 		
 		#
 		# End of NoteBook tabs
