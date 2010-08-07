@@ -1189,7 +1189,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		set ::gorilla::collectedTicks [ list [ clock clicks ] ] 
 
 		$aframe.pw.pw configure -text ""
-# set $aframe.pw.entry ""
+
 		if {$oldGrab != ""} {
 			catch {grab $oldGrab}
 		} else {
