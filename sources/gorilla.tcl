@@ -6502,7 +6502,7 @@ proc gorilla::ViewLogin {} {
 	set type [lindex $data 0]
 
 	if {$type == "Group" || $type == "Root"} {
-puts "No Login selected"
+		puts "No Login selected"
 		return
 	}
 
@@ -6510,7 +6510,7 @@ puts "No Login selected"
 	
 	# return $rn
 
- gorilla::ViewEntry $rn
+	 gorilla::ViewEntry $rn
  
 }
 
@@ -6525,10 +6525,11 @@ proc gorilla::ViewEntry {rn} {
 	# Set up dialog
 	#
 
-	# sequence generator - this relies on tcl 8.5's incr that will not
-	# error on an undefined variable
-	variable seq
-	incr seq
+	# dervive a unique toplevel name
+	set seq 0
+	while { [ winfo exists .view$seq ] } {
+	  incr seq
+	}
 
 	set top .view$seq
 	
@@ -6542,12 +6543,6 @@ proc gorilla::ViewEntry {rn} {
 		wm title $top [ mc "View Login" ]
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
-		
-		# position the view windows in a somehow stacky order ... to be improved
-		set xpos 100
-		set ypos 200
-		set diff [expr $rn * 15]
-		wm geometry $top "+[incr xpos $diff]+[incr ypos $diff]"
 		
 		set if [ ttk::frame $top.if -padding {5 5} ]
 		
@@ -6583,7 +6578,6 @@ proc gorilla::ViewEntry {rn} {
 				$if.notesE configure -text [$::gorilla::db getFieldValue $rn 5]
 			}
 			if {[$::gorilla::db existsField $rn 6]} {
-				# $if.passE configure -text [$::gorilla::db getFieldValue $rn 6]
 				$if.passE configure -text "********"
 			}
 			if {[$::gorilla::db existsField $rn 8]} {
@@ -6603,7 +6597,6 @@ proc gorilla::ViewEntry {rn} {
 	
 		set bf [ ttk::frame $top.bf -padding {10 10} ]
 		
-		
 		ttk::button $bf.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
 		ttk::button $bf.showpassw -text [mc "Show Password"] \
 			-command [ list ::gorilla::ViewEntryShowPWHelper $bf.showpassw $if.passE $rn ]
@@ -6614,7 +6607,8 @@ proc gorilla::ViewEntry {rn} {
 		pack $if -side left -expand true -fill both
 		pack $bf -side left -expand true -fill y
 	}
-}
+
+} ; # end proc gorilla::ViewEntry
 
 #
 # ----------------------------------------------------------------------
