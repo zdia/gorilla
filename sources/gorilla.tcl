@@ -6544,69 +6544,69 @@ proc gorilla::ViewEntry {rn} {
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
 		
-		set if [ ttk::frame $top.if -padding {5 5} ]
+		set infoframe [ ttk::frame $top.if -padding {5 5} ]
 
-                grid columnconfigure $if 1 -weight 1
+                grid columnconfigure $infoframe 1 -weight 1
 		
 		foreach {child childname} { group Group title Title url URL 
 						user Username pass Password 
 						lpc {Last Password Change}
 						mod {Last Modified} } {
 			
-			ttk::label $if.${child}L -text [mc ${childname}]:
-			ttk::label $if.${child}E -width 40 -background white
+			ttk::label $infoframe.${child}L -text [mc ${childname}]:
+			ttk::label $infoframe.${child}E -width 40 -background white
 	
-			grid $if.${child}L $if.${child}E -sticky ew -pady 5
+			grid $infoframe.${child}L $infoframe.${child}E -sticky ew -pady 5
 			
 		}		
 
-		ttk::label $if.notesL -text [mc Notes]:
-		ttk::label $if.notesE -width 40 -background white \
+		ttk::label $infoframe.notesL -text [mc Notes]:
+		ttk::label $infoframe.notesE -width 40 -background white \
 			-wraplength [expr {40 * [font measure "Helvetica 10" 0]}]
 	
-		grid $if.notesL $if.notesE -sticky ew -pady 5                
+		grid $infoframe.notesL $infoframe.notesE -sticky ew -pady 5                
 	
 		if {[$::gorilla::db existsRecord $rn]} {
 			if {[$::gorilla::db existsField $rn 2]} {
-				$if.groupE configure -text [$::gorilla::db getFieldValue $rn 2]
+				$infoframe.groupE configure -text [$::gorilla::db getFieldValue $rn 2]
 			}
 			if {[$::gorilla::db existsField $rn 3]} {
-				$if.titleE configure -text [$::gorilla::db getFieldValue $rn 3]
+				$infoframe.titleE configure -text [$::gorilla::db getFieldValue $rn 3]
 			}
 			if {[$::gorilla::db existsField $rn 4]} {
-				$if.userE configure -text [$::gorilla::db getFieldValue $rn 4]
+				$infoframe.userE configure -text [$::gorilla::db getFieldValue $rn 4]
 			}
 			if {[$::gorilla::db existsField $rn 5]} {
-				$if.notesE configure -text [$::gorilla::db getFieldValue $rn 5]
+				$infoframe.notesE configure -text [$::gorilla::db getFieldValue $rn 5]
 			}
 			if {[$::gorilla::db existsField $rn 6]} {
-				$if.passE configure -text "********"
+				$infoframe.passE configure -text "********"
 			}
 			if {[$::gorilla::db existsField $rn 8]} {
-				$if.lpcE configure -text \
+				$infoframe.lpcE configure -text \
 					[clock format [$::gorilla::db getFieldValue $rn 8] \
 					-format "%Y-%m-%d %H:%M:%S"]
 			}
 			if {[$::gorilla::db existsField $rn 12]} {
-				$if.modE configure -text \
+				$infoframe.modE configure -text \
 					[clock format [$::gorilla::db getFieldValue $rn 12] \
 					-format "%Y-%m-%d %H:%M:%S"]
 			}
 			if {[$::gorilla::db existsField $rn 13]} {
-				$if.urlE configure -text [$::gorilla::db getFieldValue $rn 13]
+				$infoframe.urlE configure -text [$::gorilla::db getFieldValue $rn 13]
 			}
 		}
 	
-		set bf [ ttk::frame $top.bf -padding {10 10} ]
+		set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
 		
-		ttk::button $bf.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
-		ttk::button $bf.showpassw -text [mc "Show Password"] \
-			-command [ list ::gorilla::ViewEntryShowPWHelper $bf.showpassw $if.passE $rn ]
+		ttk::button $buttonframe.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
+		ttk::button $buttonframe.showpassw -text [mc "Show Password"] \
+			-command [ list ::gorilla::ViewEntryShowPWHelper $buttonframe.showpassw $infoframe.passE $rn ]
 		
-		pack $bf.showpassw -side top -fill x
-		pack $bf.close -side top -fill x -pady 5
+		pack $buttonframe.showpassw -side top -fill x
+		pack $buttonframe.close -side top -fill x -pady 5
 		
-		grid $if $bf -sticky news
+		grid $infoframe $buttonframe -sticky news
 		grid columnconfigure $top 0 -weight 1
 	}
 
