@@ -201,6 +201,9 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(rememberGeometries) 1
 		set ::gorilla::preference(lang) en
 		set ::gorilla::preference(gorillaIcon) 0
+		# added by Richard Ellis
+		set ::gorilla::preference(iconifyOnAutolock) 0
+		
 }
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -1178,6 +1181,13 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		set fileName [$aframe.file.cb get]
 		set nativeName [file nativename $fileName]
 		pwsafe::int::randomizeVar ::gorilla::collectedTicks
+
+		# make sure collectedTicks is a proper list again after
+		# having been randomized above - this avoids an error
+		# message from the lappend in gorilla::CollectTicks when
+		# attempting to lappend after randomizing the variable
+		set ::gorilla::collectedTicks [ list [ clock clicks ] ] 
+
 		$aframe.pw.pw configure -text ""
 # set $aframe.pw.entry ""
 		if {$oldGrab != ""} {
@@ -3950,7 +3960,9 @@ proc gorilla::LockDatabase {} {
 	wm protocol $top WM_DELETE_WINDOW gorilla::CloseLockedDatabaseDialog
 		} else {
 	set aframe $top.right
-	wm deiconify $top
+	if { ! $::gorilla::preference(iconifyOnAutolock) } {
+		wm deiconify $top
+	}
 		}
 
 		wm title $top "Password Gorilla"
@@ -3977,6 +3989,10 @@ proc gorilla::LockDatabase {} {
 		focus $aframe.mitte.pw.pw
 		if {[catch { grab $top } oops]} {
 			set ::gorilla::status "error: $oops"
+		}
+		
+		if { $::gorilla::preference(iconifyOnAutolock) } {
+			wm iconify $top
 		}
 		
 		while {42} {
@@ -4594,6 +4610,7 @@ proc gorilla::PreferencesDialog {} {
 		lang en \
 		fontsize 10 \
 		gorillaIcon 0 \
+		iconifyOnAutolock 0 \
 		} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
@@ -4750,7 +4767,7 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		# font options
 		
 		ttk::frame $display.size -padding {10 10}
-		ttk::label $display.size.label -text [mc "Size:"] -width 9
+		ttk::label $display.size.label -text "[mc "Size"]:" -width 9
 		ttk::menubutton $display.size.mb -textvariable ::gorilla::prefTemp(fontsize) \
 			-width 8 -direction right
 		set m [menu $display.size.mb.menu -tearoff 0]
@@ -4778,6 +4795,16 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		pack $display.icon.label -side left
 		pack $display.icon.check -padx 10
 		pack $display.icon -anchor w
+
+		# auto iconify upon lock
+		
+		ttk::frame $display.autoiconify -padding {10 10}
+		ttk::label $display.autoiconify.label -text [mc "Iconify upon auto-lock"]
+		ttk::checkbutton $display.autoiconify.check -variable ::gorilla::prefTemp(iconifyOnAutolock)
+		
+		pack $display.autoiconify.label -side left
+		pack $display.autoiconify.check -padx 10
+		pack $display.autoiconify -anchor w
 		
 		#
 		# End of NoteBook tabs
@@ -4859,6 +4886,7 @@ return
 		lang \
 		fontsize \
 		gorillaIcon \
+		iconifyOnAutolock \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
@@ -5015,6 +5043,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 			lang \
 			fontsize \
 			gorillaIcon \
+			iconifyOnAutolock \
 			} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
@@ -5324,6 +5353,9 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
 			}
 			gorillaIcon {
+				set ::gorilla::preference($pref) $value
+			}
+			iconifyOnAutolock {
 				set ::gorilla::preference($pref) $value
 			}
 	}

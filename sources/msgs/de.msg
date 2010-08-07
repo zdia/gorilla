@@ -208,6 +208,10 @@ mcmset de {
 	"Last Password Change" "Letzte Passwortänderung" \
 	"Last Modified" "Zuletzt geändert" \
 	"Notes" "Notizen" \
+	"Size" "Größe" \
+	"Show Gorilla Icon" "Zeige den Gorilla" \
+	"Iconify upon auto-lock" "Beim Sperren minimieren" \
+	
 	}
 	
 mcunknown de "unbekannt"
