@@ -6545,6 +6545,8 @@ proc gorilla::ViewEntry {rn} {
 		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
 		
 		set if [ ttk::frame $top.if -padding {5 5} ]
+
+                grid columnconfigure $if 1 -weight 1
 		
 		foreach {child childname} { group Group title Title url URL 
 						user Username pass Password 
@@ -6556,8 +6558,8 @@ proc gorilla::ViewEntry {rn} {
 	
 			grid $if.${child}L $if.${child}E -sticky ew -pady 5
 			
-		}
-		
+		}		
+
 		ttk::label $if.notesL -text [mc Notes]:
 		ttk::label $if.notesE -width 40 -background white \
 			-wraplength [expr {40 * [font measure "Helvetica 10" 0]}]
@@ -6604,8 +6606,8 @@ proc gorilla::ViewEntry {rn} {
 		pack $bf.showpassw -side top -fill x
 		pack $bf.close -side top -fill x -pady 5
 		
-		pack $if -side left -expand true -fill both
-		pack $bf -side left -expand true -fill y
+		grid $if $bf -sticky news
+		grid columnconfigure $top 0 -weight 1
 	}
 
 } ; # end proc gorilla::ViewEntry
