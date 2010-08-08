@@ -36,7 +36,14 @@ exec tclsh8.5 "$0" ${1+"$@"}
 package provide app-gorilla 1.0
 
 set ::gorillaVersion {$Revision: 1.5.3.2 $}
-set ::gorillaDir [file dirname [info script]]
+
+# find the location of the install directory even when "executing" a symlink
+# pointing to the gorilla.tcl file
+if { [ file type [ info script ] ] eq "link" } {
+	set ::gorillaDir [ file dirname [ file readlink [ info script ] ] ]
+} else {
+	set ::gorillaDir [ file dirname [ info script ] ]
+}
 
 # ----------------------------------------------------------------------
 # Make sure that our prerequisite packages are available. Don't want
