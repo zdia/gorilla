@@ -6522,7 +6522,7 @@ proc gorilla::ViewEntry {rn} {
 		$infoframe.titleE configure -text [ ::gorilla::dbget title            $rn ]
 		$infoframe.userE  configure -text [ ::gorilla::dbget user             $rn ]
 		$infoframe.notesE configure -text [ ::gorilla::dbget notes            $rn ]
-		$infoframe.passE  configure -text [ ::gorilla::dbget password         $rn "********"  ]
+		$infoframe.passE  configure -text "********"
 		$infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
 		$infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
 		$infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
