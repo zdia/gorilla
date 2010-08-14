@@ -1416,11 +1416,7 @@ proc gorilla::EditLogin {} {
 
 	set rn [lindex $data 1]
 
-	if {[$::gorilla::db existsField $rn 2]} {
-		set oldGroupName [$::gorilla::db getFieldValue $rn 2]
-	} else {
-		set oldGroupName ""
-	}
+	set oldGroupName [ ::gorilla::dbget group $rn ]
 
 	set res [LoginDialog $rn]
 
@@ -1430,24 +1426,16 @@ proc gorilla::EditLogin {} {
 		return
 	}
 
-	if {[$::gorilla::db existsField $rn 2]} {
-		set newGroupName [$::gorilla::db getFieldValue $rn 2]
-	} else {
-		set newGroupName ""
-	}
+	set newGroupName [ ::gorilla::dbget group $rn ]
 
 	if {$oldGroupName != $newGroupName} {
 		$::gorilla::widgets(tree) delete $node
 		AddRecordToTree $rn
 	} else {
-		if {[$::gorilla::db existsField $rn 3]} {
-			set title [$::gorilla::db getFieldValue $rn 3]
-		} else {
-			set title ""
-		}
+		set title [ ::gorilla::dbget title $rn ]
 
-		if {[$::gorilla::db existsField $rn 4]} {
-			append title " \[" [$::gorilla::db getFieldValue $rn 4] "\]"
+		if { [ ::gorilla::dbget user $rn ] ne "" } {
+			append title " \[" [ ::gorilla::dbget user $rn ] "\]"
 		}
 
 		$::gorilla::widgets(tree) item $node -text $title
@@ -1527,7 +1515,7 @@ proc gorilla::MoveDialog {type} {
 	} elseif {$nodetype == "Login"} {
 		set rn [lindex $data 1]
 		if {[$::gorilla::db existsField $rn 3]} {
-			set ::gorilla::MoveDialogSource [$::gorilla::db getFieldValue $rn 3]
+			set ::gorilla::MoveDialogSource [ ::gorilla::dbget title $rn ]
 		}
 	} else {
 		return
@@ -2576,16 +2564,8 @@ proc gorilla::Merge {} {
 
 				set rn [lindex $data 1]
 
-				set title ""
-				set user ""
-
-				if {[$::gorilla::db existsField $rn 3]} {
-					set title [$::gorilla::db getFieldValue $rn 3]
-				}
-
-				if {[$::gorilla::db existsField $rn 4]} {
-					set user [$::gorilla::db getFieldValue $rn 4]
-				}
+				set title [ ::gorilla::dbget title $rn ]
+				set user  [ ::gorilla::dbget user  $rn ]
 
 				if {[string equal $ntitle $title] && \
 					[string equal $nuser $user]} {
@@ -3274,45 +3254,16 @@ proc gorilla::LoginDialog {rn} {
 		# Configure dialog
 		#
 		# Die textvariable für das entry muss global sein!!!
-		set ::gorilla::loginDialog.group ""
-		set ::gorilla::loginDialog.title ""
-		set ::gorilla::loginDialog.url ""
-		set ::gorilla::loginDialog.user ""
-		set ::gorilla::loginDialog.pass ""
+		set ::gorilla::loginDialog.group [ ::gorilla::dbget group    $rn ]
+		set ::gorilla::loginDialog.title [ ::gorilla::dbget title    $rn ]
+		set ::gorilla::loginDialog.url   [ ::gorilla::dbget url      $rn ]
+		set ::gorilla::loginDialog.user  [ ::gorilla::dbget user     $rn ]
+		set ::gorilla::loginDialog.pass  [ ::gorilla::dbget password $rn ]
+		set ::gorilla::loginDialog.url   [ ::gorilla::dbget url      $rn ]
 		$top.l.notes delete 1.0 end
-		$top.l.lpwc_info configure -text "<unknown>"
-		$top.l.mod_info configure -text "<unknown>"
-
-		if {[$::gorilla::db existsRecord $rn]} {
-			if {[$::gorilla::db existsField $rn 2]} {
-				set ::gorilla::loginDialog.group	[$::gorilla::db getFieldValue $rn 2]
-			}
-			if {[$::gorilla::db existsField $rn 3]} {
-				set ::gorilla::loginDialog.title [$::gorilla::db getFieldValue $rn 3]
-			}
-			if {[$::gorilla::db existsField $rn 4]} {
-				set ::gorilla::loginDialog.user [$::gorilla::db getFieldValue $rn 4]
-			}
-			if {[$::gorilla::db existsField $rn 5]} {
-				$top.l.notes insert 1.0 [$::gorilla::db getFieldValue $rn 5]
-			}
-			if {[$::gorilla::db existsField $rn 6]} {
-				set ::gorilla::loginDialog.pass [$::gorilla::db getFieldValue $rn 6]
-			}
-			if {[$::gorilla::db existsField $rn 8]} {
-				$top.l.lpwc_info configure -text \
-					[clock format [$::gorilla::db getFieldValue $rn 8] \
-					-format "%Y-%m-%d %H:%M:%S"]
-			}
-			if {[$::gorilla::db existsField $rn 12]} {
-				$top.l.mod_info configure -text \
-					[clock format [$::gorilla::db getFieldValue $rn 12] \
-					-format "%Y-%m-%d %H:%M:%S"]
-			}
-			if {[$::gorilla::db existsField $rn 13]} {
-				set ::gorilla::loginDialog.url [$::gorilla::db getFieldValue $rn 13]
-			}
-		}
+		$top.l.notes insert 1.0 [ ::gorilla::dbget notes $rn ]
+		$top.l.lpwc_info configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ]
+		$top.l.mod_info  configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
 
 		if {[$::gorilla::db existsRecord $rn] && [$::gorilla::db existsField $rn 6]} {
 			$top.l.pass2 configure -show "*"
@@ -3543,23 +3494,15 @@ proc gorilla::LoginDialog {rn} {
 		}
 }
 
-proc gorilla::AddRecordToTree {rn} {
-		if {[$::gorilla::db existsField $rn 2]} {
-	set groupName [$::gorilla::db getFieldValue $rn 2]
-		} else {
-	set groupName ""
-		}
+	proc gorilla::AddRecordToTree {rn} {
+		set groupName [ ::gorilla::dbget group $rn ]
 
 		set parentNode [AddGroupToTree $groupName]
 
-		if {[$::gorilla::db existsField $rn 3]} {
-	set title [$::gorilla::db getFieldValue $rn 3]
-		} else {
-	set title ""
-		}
+		set title [ ::gorilla::dbget title $rn ]
 
-		if {[$::gorilla::db existsField $rn 4]} {
-	append title " \[" [$::gorilla::db getFieldValue $rn 4] "\]"
+		if { [ ::gorilla::dbget user $rn ] ne "" } {
+			append title " \[" [ ::gorilla::dbget user $rn ] "\]"
 		}
 
 		#
@@ -5475,7 +5418,7 @@ proc gorilla::GetSelectedURL {} {
 		#
 
 	if {[$::gorilla::db existsField $rn 13]} {
-		return [$::gorilla::db getFieldValue $rn 13]
+		return [ ::gorilla::dbget url $rn ]
 	}
 
 		#
@@ -5486,7 +5429,7 @@ proc gorilla::GetSelectedURL {} {
 		return
 	}
 
-	set notes [$::gorilla::db getFieldValue $rn 5]
+	set notes [ ::gorilla::dbget notes $rn ]
 	if {[set index [string first "url:" $notes]] != -1} {
 		incr index 4
 		while {$index < [string length $notes] && \
@@ -5533,7 +5476,7 @@ proc gorilla::GetSelectedPassword {} {
 		return
 	}
 
-	return [$::gorilla::db getFieldValue $rn 6]
+	return [ ::gorilla::dbget password $rn ]
 }
 
 proc gorilla::CopyPassword {} {
@@ -5575,7 +5518,7 @@ proc gorilla::GetSelectedUsername {} {
 		return
 	}
 
-	return [$::gorilla::db getFieldValue $rn 4]
+	return [ ::gorilla::dbget user $rn ]
 }
 
 # ----------------------------------------------------------------------
@@ -5953,7 +5896,7 @@ proc gorilla::RunFind {} {
 		set cs $::gorilla::preference(caseSensitiveFind)
 		if {($fa || $::gorilla::preference(findInTitle)) && \
 			[$::gorilla::db existsField $rn 3]} {
-				if {[FindCompare $text [$::gorilla::db getFieldValue $rn 3] $cs]} {
+				if {[FindCompare $text [ ::gorilla::dbget title $rn ] $cs]} {
 					set found 3
 					break
 				}
@@ -5961,7 +5904,7 @@ proc gorilla::RunFind {} {
 
 		if {($fa || $::gorilla::preference(findInUsername)) && \
 			[$::gorilla::db existsField $rn 4]} {
-				if {[FindCompare $text [$::gorilla::db getFieldValue $rn 4] $cs]} {
+				if {[FindCompare $text [ ::gorilla::dbget user $rn ] $cs]} {
 			set found 4
 			break
 				}
@@ -5969,7 +5912,7 @@ proc gorilla::RunFind {} {
 
 		if {($fa || $::gorilla::preference(findInPassword)) && \
 			[$::gorilla::db existsField $rn 6]} {
-				if {[FindCompare $text [$::gorilla::db getFieldValue $rn 6] $cs]} {
+				if {[FindCompare $text [ ::gorilla::dbget password $rn ] $cs]} {
 			set found 6
 			break
 				}
@@ -5977,7 +5920,7 @@ proc gorilla::RunFind {} {
 
 		if {($fa || $::gorilla::preference(findInNotes)) && \
 			[$::gorilla::db existsField $rn 5]} {
-				if {[FindCompare $text [$::gorilla::db getFieldValue $rn 5] $cs]} {
+				if {[FindCompare $text [ ::gorilla::dbget notes $rn ] $cs]} {
 			set found 5
 			break
 				}
@@ -5985,7 +5928,7 @@ proc gorilla::RunFind {} {
 
 		if {($fa || $::gorilla::preference(findInURL)) && \
 			[$::gorilla::db existsField $rn 13]} {
-				if {[FindCompare $text [$::gorilla::db getFieldValue $rn 13] $cs]} {
+				if {[FindCompare $text [ ::gorilla::dbget url $rn ] $cs]} {
 			set found 13
 			break
 				}
@@ -6575,36 +6518,14 @@ proc gorilla::ViewEntry {rn} {
 	
 		grid $infoframe.notesL $infoframe.notesE -sticky ew -pady 5                
 	
-		if {[$::gorilla::db existsRecord $rn]} {
-			if {[$::gorilla::db existsField $rn 2]} {
-				$infoframe.groupE configure -text [$::gorilla::db getFieldValue $rn 2]
-			}
-			if {[$::gorilla::db existsField $rn 3]} {
-				$infoframe.titleE configure -text [$::gorilla::db getFieldValue $rn 3]
-			}
-			if {[$::gorilla::db existsField $rn 4]} {
-				$infoframe.userE configure -text [$::gorilla::db getFieldValue $rn 4]
-			}
-			if {[$::gorilla::db existsField $rn 5]} {
-				$infoframe.notesE configure -text [$::gorilla::db getFieldValue $rn 5]
-			}
-			if {[$::gorilla::db existsField $rn 6]} {
-				$infoframe.passE configure -text "********"
-			}
-			if {[$::gorilla::db existsField $rn 8]} {
-				$infoframe.lpcE configure -text \
-					[clock format [$::gorilla::db getFieldValue $rn 8] \
-					-format "%Y-%m-%d %H:%M:%S"]
-			}
-			if {[$::gorilla::db existsField $rn 12]} {
-				$infoframe.modE configure -text \
-					[clock format [$::gorilla::db getFieldValue $rn 12] \
-					-format "%Y-%m-%d %H:%M:%S"]
-			}
-			if {[$::gorilla::db existsField $rn 13]} {
-				$infoframe.urlE configure -text [$::gorilla::db getFieldValue $rn 13]
-			}
-		}
+		$infoframe.groupE configure -text [ ::gorilla::dbget group            $rn ]
+		$infoframe.titleE configure -text [ ::gorilla::dbget title            $rn ]
+		$infoframe.userE  configure -text [ ::gorilla::dbget user             $rn ]
+		$infoframe.notesE configure -text [ ::gorilla::dbget notes            $rn ]
+		$infoframe.passE  configure -text [ ::gorilla::dbget password         $rn "********"  ]
+		$infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
+		$infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
+		$infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
 	
 		set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
 		
@@ -6629,7 +6550,7 @@ proc gorilla::ViewEntry {rn} {
 
 proc gorilla::ViewEntryShowPWHelper { button entry rn } {
   if { [ $button cget -text ] eq [ mc "Show Password" ] } {
-    $entry configure -text [$::gorilla::db getFieldValue $rn 6]
+    $entry configure -text [ ::gorilla::dbget password $rn ]
     $button configure -text [ mc "Hide Password" ]
   } else {
     $entry configure -text "********"
@@ -6680,6 +6601,91 @@ proc psn_Delete {argv argc} {
 proc gorilla::msg { message } {
 	tk_messageBox -type ok -icon info -message $message
 }
+
+# A namespace ensemble to make retrieval from the gorilla::db object more
+# straightforward (retrieval of record elements by name instead of number). 
+# This also consolidates almost all of the "if record exists" and "if field
+# exists" checks into one place, simplifying the dialog builder code above,
+# as well as consolidating the date formatting code into one single
+# location.
+
+# At the moment there is a dependency upon the global ::gorilla::db
+# variable/object.  A future change might be to pass in the database object
+# into which to perform the lookup as well.
+
+namespace eval ::gorilla::dbget {
+
+        # Generate a set of procs which will be the subcommands of the dbget
+        # ensemble, the procs simply chain over to a generic "get-record"
+        # proc, passing "get-record" the record number value that corresponds
+        # to the field the subcommand name represents.
+        
+        # The "get-date-record" proc is the same idea, except it formats
+        # returning data as a date instead of returning the integer value
+        # representing seconds from epoch.
+        
+        # As all of the subcommand procs are identical (except for calling
+        # get-record vs get-date-record) generate them in a loop instead of
+        # enumerating them.
+
+	foreach {procname recnum} [ list  uuid 1  group 2  title 3  user 4 \
+					notes 5  password 6  url 13 ] {
+
+		proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
+			get-record %recnum $rn $default
+		} ]
+
+	} ; # end foreach procname,recnum
+
+        foreach {procname recnum} [ list  create-time 7  last-pass-change 8  last-access 9 \
+        				 lifetime 10 last-modified 12 ] {
+
+		proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
+			get-date-record %recnum $rn $default
+		} ]
+
+	} ; # end foreach procname,recnum
+
+	namespace export uuid group title user notes password url create-time last-pass-change last-access lifetime last-modified
+
+	# get-record -> a helper proc for the ensemble that hides in one place all
+	# the complexity of checking for a records/fields existance and returning
+	# a default value when something does not exist
+  
+ 	proc get-record { element recnum default } {
+
+		if { ( [ $::gorilla::db existsRecord $recnum ] ) \
+			&& ( [ $::gorilla::db existsField  $recnum $element ] ) } {
+				return [ $::gorilla::db getFieldValue $recnum $element ]
+		}
+
+		return $default
+
+	} ; # end proc get-record
+
+	# get-date-record -> a second helper proc to consolidate formatting of
+	# date values in one place.  This calls the get-record helper, and
+	# then either formats a date value or returns the default if the
+	# formatting fails.  A future modification could be to provide
+	# custom language specific date formatting.
+
+	proc get-date-record { element recnum default } {
+
+		set datetime [ get-record $element $recnum $default ]
+
+		if { [ catch { set formatted [ clock format $datetime \
+				-format "%Y-%m-%d %H:%M:%S" ] } ] } {
+	 		return $default
+	 	} else {
+	 		return $formatted
+	 	}
+
+	} ; # end proc get-date-record
+	
+  	namespace ensemble create
+
+} ; # end namespace eval ::gorilla::dbget
+
 
 #
 # ----------------------------------------------------------------------
