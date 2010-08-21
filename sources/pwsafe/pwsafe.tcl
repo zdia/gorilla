@@ -188,14 +188,17 @@ proc pwsafe::writeToFile {db fileName version {percentvar ""}} {
 	#
 
 	if {[file exists $fileName]} {
-          set old_attrs [ file attributes $fileName ]
+		set old_attrs [ file attributes $fileName ]
 		file delete -- $fileName
 	}
 
 	file rename -- $tmpFileName $fileName
 	
 	if { [ info exists old_attrs ] } {
-	  file attributes $fileName {*}$old_attrs
+		# the dict filter below only keeps either -permissions or
+		# -readonly attributes, because attempting to set -owner or -group
+		# to the same value on MacOS results in an error
+		file attributes $fileName {*}[ dict filter $old_attrs script {key value} { regexp {^(-permissions|-readonly)$} $key } ]
         }
 	
 }
