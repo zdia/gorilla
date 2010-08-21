@@ -179,19 +179,26 @@ proc pwsafe::writeToFile {db fileName version {percentvar ""}} {
 	error $oops $origErrorInfo
     }
 
-    itcl::delete object $writer
-    itcl::delete object $stream
-    close $file
+	itcl::delete object $writer
+	itcl::delete object $stream
+	close $file
 
-    #
-    # Done writing to temporary file.
-    #
+	#
+	# Done writing to temporary file.
+	#
 
-    if {[file exists $fileName]} {
-	file delete -- $fileName
-    }
+	if {[file exists $fileName]} {
+		file delete -- $fileName
+	}
 
-    file rename -- $tmpFileName $fileName
+	file rename -- $tmpFileName $fileName
+	
+	# set readonly file permission for the database
+	if {[tk windowingsystem] eq "win32"} {
+		file attributes $fileName -readonly 1
+	} else {
+		exec chmod 400 $fileName
+	}
 }
 
 #
