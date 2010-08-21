@@ -6458,10 +6458,10 @@ proc gorilla::ViewEntry {rn} {
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
 		
+		# now create infoframe and populate it
+
 		set infoframe [ ttk::frame $top.if -padding {5 5} ]
 
-                grid columnconfigure $infoframe 1 -weight 1
-		
 		foreach {child childname} { group Group title Title url URL 
 						user Username pass Password 
 						lpc {Last Password Change}
@@ -6475,11 +6475,25 @@ proc gorilla::ViewEntry {rn} {
 		}		
 
 		ttk::label $infoframe.notesL -text [mc Notes]:
-		ttk::label $infoframe.notesE -width 40 -background white \
-			-wraplength [expr {40 * [font measure "Helvetica 10" 0]}]
+		ttk::label $infoframe.notesE -width 40 -background white -anchor nw -justify left
+
+		# automatic word wrap width adjustment of the notes widget
+		# based upon window width
+                
+		bind $infoframe.notesE <Configure> "$infoframe.notesE configure -wraplength \[ expr \[ winfo width $infoframe.notesE \] - 2 \]"
+
+		# the minus 2 in the bind command above is to work around
+		# bug # 3049971 in the ttk::label implementation in tk 8.5.5
+		# where if the wraplength is equal to the window width, or
+		# one less than the widow width, then certain pixel widths
+		# result in no word wrapping at all, see
+		# https://sourceforge.net/tracker/index.php?func=detail&aid=3049971&group_id=11464&atid=111464
 	
-		grid $infoframe.notesL $infoframe.notesE -sticky ew -pady 5                
+		grid $infoframe.notesL $infoframe.notesE -sticky news -pady 5                
 	
+		grid columnconfigure $infoframe 1 -weight 1
+		grid rowconfigure $infoframe $infoframe.notesE -weight 1
+		
 		$infoframe.groupE configure -text [ ::gorilla::dbget group            $rn ]
 		$infoframe.titleE configure -text [ ::gorilla::dbget title            $rn ]
 		$infoframe.userE  configure -text [ ::gorilla::dbget user             $rn ]
@@ -6488,7 +6502,9 @@ proc gorilla::ViewEntry {rn} {
 		$infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
 		$infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
 		$infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
-	
+
+		# now create button frame and populate it
+                	
 		set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
 		
 		ttk::button $buttonframe.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
@@ -6500,6 +6516,7 @@ proc gorilla::ViewEntry {rn} {
 		
 		grid $infoframe $buttonframe -sticky news
 		grid columnconfigure $top 0 -weight 1
+		grid rowconfigure    $top 0 -weight 1
 	}
 
 } ; # end proc gorilla::ViewEntry
