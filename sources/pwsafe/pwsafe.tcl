@@ -188,17 +188,16 @@ proc pwsafe::writeToFile {db fileName version {percentvar ""}} {
 	#
 
 	if {[file exists $fileName]} {
+          set old_attrs [ file attributes $fileName ]
 		file delete -- $fileName
 	}
 
 	file rename -- $tmpFileName $fileName
 	
-	# set readonly file permission for the database
-	if {[tk windowingsystem] eq "win32"} {
-		file attributes $fileName -readonly 1
-	} else {
-		exec chmod 400 $fileName
-	}
+	if { [ info exists old_attrs ] } {
+	  file attributes $fileName {*}$old_attrs
+        }
+	
 }
 
 #
