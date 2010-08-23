@@ -77,10 +77,10 @@ if {[catch {package require Tcl 8.5}]} {
 }
 
 #
-# The isaac package should be in the current directory
+# The isaac and viewhelp packages should be in the current directory
 #
 
-foreach file {isaac.tcl} {
+foreach file {isaac.tcl viewhelp.tcl} {
 	if {[catch {source [file join $::gorillaDir $file]} oops]} {
 # puts $oops
 		wm withdraw .
@@ -5607,8 +5607,12 @@ proc gorilla::About {} {
 }
 
 proc gorilla::Help {} {
-		ArrangeIdleTimeout
-		ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
+	ArrangeIdleTimeout
+	# ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
+	# ReadHelpFiles is looking in the given directory 
+	# for a file named help.txt
+	::Help::ReadHelpFiles $::gorillaDir
+	::Help::Help Overview
 }
 
 proc gorilla::License {} {
