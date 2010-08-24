@@ -17,7 +17,7 @@
     variable pages                              ;# All the help pages
     variable alias                              ;# Alias to help pages
     variable state
-    variable font {Helvetica 10}
+    variable font TkTextFont
  
     array unset pages
     array unset alias
@@ -46,6 +46,7 @@
  #   a line starting with "   - " gets a dash
  #   a line starting with "   1. " will be a numbered list
  #    repeating the initial *,- or "1" will indent the list
+ #   a line starting with "   | " will simply be an indented block paragraph (only one level of indent at the moment)
  #
  #   text enclosed by '''<text>''' is embolden
  #   text enclosed by ''<text>'' is italics
@@ -211,7 +212,8 @@
     $w.t tag bind link <Enter> "$w.t config -cursor hand2"
     $w.t tag bind link <Leave> "$w.t config -cursor {}"
     $w.t tag bind link <1> "::Help::Click $w.t %x %y"
-    $w.t tag config hdr -font {Times 18 bold}
+    $w.t tag config hdr -font \
+        "[font actual [$w.t cget -font]] -size 18"
     $w.t tag config fix -font \
         "[font actual [$w.t cget -font]] -family Courier"
     $w.t tag config bold -font \
@@ -226,6 +228,7 @@
     $w.t tag config bullet -lmargin1 $l1 -lmargin2 $l2
     $w.t tag config number -lmargin1 $l1 -lmargin2 $l2
     $w.t tag config dash -lmargin1 $l1 -lmargin2 $l2
+    $w.t tag config bar -lmargin1 $l2 -lmargin2 $l2
  
     bind $w.t <n> [list ::Help::Next $w.t 1]
     bind $w.t <p> [list ::Help::Next $w.t -1]
@@ -421,7 +424,7 @@
     foreach line $lines {
         set tag {}
         set op1 ""
-        if {[regexp {^ +([1*-]+)\s*(.*)} $line -> op txt]} {
+        if {[regexp {^ +([1*-|]+)\s*(.*)} $line -> op txt]} {
             set op1 [string index $op 0]
             set lvl [expr {[string length $op] - 1}]
             set indent [string repeat "     " $lvl]
@@ -436,6 +439,8 @@
             } elseif {$op1 eq "-"} {            ;# Dash
                 set tag dash
                 $w insert end "$indent $endash " $tag
+            } elseif { $op1 eq "|" } {          ; # Bar
+                set tag bar
             }
             set line $txt
         } elseif {[string match " *" $line]} {  ;# Line beginning w/ a space
