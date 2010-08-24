@@ -13,7 +13,7 @@ alias: TOC
 	---- [Database Preferences]
 	--- [Display]
 	-- [Shortcuts]
-	-- [Information about the "V3" Database Format]
+	-- [The "V3" Database Format]
 
 - [Risks] 
 	-- [The Software Itself]
@@ -33,7 +33,7 @@ alias: Overview
  - [Logins]
  - [Preferences]
  - [Shortcuts]
- - [Information about the "V3" Database Format]
+ - [The "V3" Database Format]
 
  Author: Frank Pilhofer, fp@fpx.de
  Last modified: 2010/08/23 (Zbigniew Diaczyszyn)
@@ -382,7 +382,7 @@ The Meta key for Linux and Windows shortcuts is the ''Control'' key, whereas the
  Meta-x			Quit Password Gorilla
  Meta-u			Copy Username to Clipboard
  Meta-p			Copy Password to Clipboard
- Meta-u			Copy Url to Clipboard
+ Meta-w			Copy Url to Clipboard
  Meta-c			Clear Clipboard
  Meta-f			Find
  Meta-g			Find next
@@ -394,7 +394,7 @@ The Meta key for Linux and Windows shortcuts is the ''Control'' key, whereas the
 ...
 
 -------------------
-title: Information about the "V3" Database Format
+title: The "V3" Database Format
 
 '''"V3" Format Introduction'''
 
