@@ -82,7 +82,6 @@ if {[catch {package require Tcl 8.5}]} {
 
 foreach file {isaac.tcl viewhelp.tcl} {
 	if {[catch {source [file join $::gorillaDir $file]} oops]} {
-# puts $oops
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
 			-title "Need $file" \
@@ -2488,6 +2487,12 @@ proc gorilla::DestroyDialog { top } {
 	ArrangeIdleTimeout
 	catch {destroy $top}
 	unset ::gorilla::toplevel($top)
+}
+
+proc gorilla::CloseDialog { top } {
+	if {[info exists ::gorilla::toplevel($top)]} {
+		wm withdraw $top
+	}
 }
 
 proc gorilla::Merge {} {
@@ -5608,7 +5613,7 @@ proc gorilla::About {} {
 
 proc gorilla::Help {} {
 	ArrangeIdleTimeout
-	# ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
+
 	# ReadHelpFiles is looking in the given directory 
 	# for a file named help.txt
 	::Help::ReadHelpFiles $::gorillaDir
