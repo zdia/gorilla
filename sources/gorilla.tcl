@@ -2728,6 +2728,7 @@ proc gorilla::Merge {} {
 		#
 
 		if {!$found || !$identical} {
+			set oldrn $rn
 			set rn [$::gorilla::db createRecord]
 
 			foreach field [$newdb getFieldsForRecord $nrn] {
@@ -2749,7 +2750,7 @@ proc gorilla::Merge {} {
 					append report " (in group $ngroup)"
 				}
 				append report ": " $reason "."
-				lappend conflictReport $report
+				lappend conflictReport [ list $report $rn $oldrn ]
 
 				#
 				# Make sure that this node is visible
@@ -2769,7 +2770,7 @@ proc gorilla::Merge {} {
 					append report " (in Group $ngroup)"
 				}
 				append report "."
-				lappend addedReport $report
+				lappend addedReport [ list $report $rn ]
 			}
 		} else {
 			incr identicalLogins
@@ -2875,6 +2876,7 @@ proc gorilla::Merge {} {
 
 		$text configure -state normal
 		$text delete 1.0 end
+		$text tag delete {*}[ $text tag names ]
 
 		$text insert end $message
 		$text insert end "\n\n"
@@ -2885,14 +2887,26 @@ proc gorilla::Merge {} {
 		$text insert end [string repeat "-" 70]
 		$text insert end "\n"
 		$text insert end "\n"
+
+		set seq 0
+		set default_cursor [ lindex [ $text configure -cursor ] 3 ]
+
 		if {[llength $conflictReport] > 0} {
 			foreach report $conflictReport {
-				$text insert end $report
-				$text insert end "\n"
+				$text tag configure link$seq -foreground blue -underline true
+
+				$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
+				$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
+				$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ]
+									::gorilla::ViewEntry [ lindex $report 2 ]"
+
+				$text insert end "[ lindex $report 0 ]\n" link$seq
+				incr seq
 			}
 		} else {
 			$text insert end "None.\n"
 		}
+
 		$text insert end "\n"
 		$text insert end [string repeat "-" 70]
 		$text insert end "\n"
@@ -2900,10 +2914,17 @@ proc gorilla::Merge {} {
 		$text insert end [string repeat "-" 70]
 		$text insert end "\n"
 		$text insert end "\n"
+
 		if {[llength $addedReport] > 0} {
 			foreach report $addedReport {
-				$text insert end $report
-				$text insert end "\n"
+			        $text tag configure link$seq -foreground blue -underline true
+
+				$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
+				$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
+				$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ] "
+
+				$text insert end "[ lindex $report 0 ]\n" link$seq
+				incr seq
 			}
 		} else {
 			$text insert end "None.\n"
