@@ -40,9 +40,9 @@ set ::gorillaVersion {$Revision: 1.5.3.2 $}
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
 if { [ file type [ info script ] ] eq "link" } {
-	set ::gorillaDir [ file dirname [ file readlink [ info script ] ] ]
+	set ::gorillaDir [ file normalize [ file dirname [ file join [ file dirname [ info script ] ] [ file readlink [ info script ] ] ] ] ]
 } else {
-	set ::gorillaDir [ file dirname [ info script ] ]
+	set ::gorillaDir [ file normalize [ file dirname [ info script ] ] ]
 }
 
 # ----------------------------------------------------------------------
