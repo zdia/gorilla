@@ -13,7 +13,7 @@ alias: TOC
 	---- [Database Preferences]
 	--- [Display]
 	-- [Keyboard Shortcuts]
-	-- [Information about the "V3" Database Format]
+	-- [The "V3" Database Format]
 
 - [Risks] 
 	-- [The Software Itself]
@@ -33,11 +33,11 @@ alias: Overview
  - [Logins]
  - [Preferences]
  - [Keyboard Shortcuts]
- - [Information about the "V3" Database Format]
+ - [The "V3" Database Format]
 
  Author: Frank Pilhofer, fp@fpx.de
  Last modified: 2010/08/23 (Zbigniew Diaczyszyn)
- This help written using Keith Vetter's Hypertext Help System.
+ Written with Keith Vetter's Hypertext Help System.
 
 -------------------
 title: Risks
