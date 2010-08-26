@@ -5613,6 +5613,7 @@ proc gorilla::About {} {
 
 proc gorilla::Help {} {
 	ArrangeIdleTimeout
+
 	# ReadHelpFiles is looking in the given directory 
 	# for a file named help.txt
 	::Help::ReadHelpFiles $::gorillaDir
