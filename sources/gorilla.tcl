@@ -2462,7 +2462,7 @@ proc gorilla::SavePercentTrace {name1 name2 op} {
 # ----------------------------------------------------------------------
 #
 
-variable gorilla::fieldNames [list "" \
+variable gorilla::fieldNames [ list "" \
 	"UUID" \
 	"group name" \
 	"title" \
@@ -2474,7 +2474,8 @@ variable gorilla::fieldNames [list "" \
 	"last access time" \
 	"password lifetime" \
 	"password policy" \
-	"last modification time"]
+	"last modification time" \
+	"URL" ]
 
 proc gorilla::DestroyMergeReport {} {
 	ArrangeIdleTimeout
