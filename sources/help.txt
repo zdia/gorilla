@@ -13,7 +13,7 @@ alias: TOC
 	---- [Database Preferences]
 	--- [Display]
 	-- [Keyboard Shortcuts]
-	-- [Information about the "V3" Database Format]
+	-- [The "V3" Database Format]
 
 - [Risks] 
 	-- [The Software Itself]
@@ -33,7 +33,7 @@ alias: Overview
  - [Logins]
  - [Preferences]
  - [Keyboard Shortcuts]
- - [Information about the "V3" Database Format]
+ - [The "V3" Database Format]
 
  Author: Frank Pilhofer, fp@fpx.de
  Last modified: 2010/08/23 (Zbigniew Diaczyszyn)
@@ -302,7 +302,7 @@ with Password Safe 2.0 or higher, and Password Gorilla 1.0 or higher.
 
  | It is highly recommended to enable this option, and to upgrade existing
 databases to the Password Safe 3 format, which features enhanced security.
-See below, [Information about the "V3" Database Format], for more information.
+See below, Information about the new Database Format, for more information.
 
 '''V2 Unicode support'''
 
@@ -408,7 +408,7 @@ For the notes box only:
  | C-y		Inserts clipboard at cursor position
 
 -------------------
-title: Information about the "V3" Database Format
+title: The "V3" Database Format
 alias: V3
 
 '''"V3" Format Introduction'''
