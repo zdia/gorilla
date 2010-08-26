@@ -12,7 +12,7 @@ alias: TOC
 	---- [Export Preferences]
 	---- [Database Preferences]
 	--- [Display]
-	-- [Shortcuts]
+	-- [Keyboard Shortcuts]
 	-- [The "V3" Database Format]
 
 - [Risks] 
@@ -32,12 +32,12 @@ alias: Overview
  - [Organization Into Groups]
  - [Logins]
  - [Preferences]
- - [Shortcuts]
+ - [Keyboard Shortcuts]
  - [The "V3" Database Format]
 
  Author: Frank Pilhofer, fp@fpx.de
  Last modified: 2010/08/23 (Zbigniew Diaczyszyn)
- Written with Keith Vetter's Hypertext Help System.
+ This help written using Keith Vetter's Hypertext Help System.
 
 -------------------
 title: Risks
@@ -51,12 +51,12 @@ decisions. Risks should not be ignored, but evaluated and addressed.
 
 There are different threat vectors that can be considered:
 
- - The Software Itself
- - System Failure
- - Other Users on a Shared Computer
- - Your System Administrator
- - Viruses, Backdoors, etc.
- - Putting Risk In Perspective
+ - [The Software Itself]
+ - [System Failure]
+ - [Other Users on a Shared Computer]
+ - [Your System Administrator]
+ - [Viruses, Backdoors, etc.]
+ - [Putting Risk In Perspective]
 
 -------------------
 title: Starting
@@ -68,7 +68,7 @@ for the database's master password. Once a file is chosen, and the
 master password is entered correctly, the password database is opened,
 and its contents are shown.
    
-To create a new, empty password database, click the "New" button from the "File" menu. You will be asked for an initial master password for the new password database.
+To create a new, empty password database, click the ''New'' button on the ''Open Password Database'' dialog. You will be asked for an initial master password for the new password database.  Alternately a new database can be created by choosing the ''File'' menu and selecting ''New ...''.
    
 -------------------
 title: Choosing a Master Password
@@ -101,11 +101,11 @@ title: Organization Into Groups
 
 Logins in the password database are shown as a tree, organized into
 nested groups. Groups allow you to arrange logins by category. Click
-on the plus sign next to a group's name in order to view its subgroups
-and logins that the group contains.
+on the symbol next to a group's name (or double click the group
+name) in order to view subgroups and logins that the group contains.
 
 New groups and subgroups can be added by right-clicking on a group
-name, and choosing the "Add Subgroup" option. (Macintosh users, hold
+name, and choosing the ''Add Subgroup'' option. (Macintosh users, hold
 the Control key, and click on a group name.) In the dialog box that
 opens, the "Parent Group" name will be set automatically, and the name
 of the new subgroup can be entered.
@@ -120,65 +120,63 @@ If you save and re-open a file, empty groups will disappear.
 title: Logins
 
 Groups can contain any number of logins. To add a new login,
-right-click on a group, and choose the "Add Login" option. To edit an
-existing login, right-click on an login, and select the "Edit Login"
+right-click on a group, and choose the ''Add Login'' option. To edit an
+existing login, right-click on a login, and select the ''Edit Login''
 option. (Macintosh users, hold down the Control key, and click on a
 group name.)
 
 The following information is managed for each login:
 
-Group
-	The name of the group that this login is in. The names of
-	hierarchical groups are concatenated, separated by a dot. A
-	login can be moved to a different group by editing this field
-	-- though dragging the login and dropping it on its new group
-	is more convenient.
+'''Group'''
 
-Title
-	The login's title is shown in the main window, so that you can
-	identify the service that this login information belongs to,
-	e.g., "E-Mail."
+ | The name of the group to which this login belongs. The names of
+hierarchical groups are concatenated, separated by a dot. A login can be
+moved to a different group by editing this field.
 
-URL (V3 format only.)
-	The service's URL, if any. In the tree view, you can
-	right-click on a login and choose "Copy URL to Clipboard" in
-	order to copy this data to the clipboard, for pasting it into
-	your browser's address bar. This field is only available when
-	using the "V3" database format; see the discussion of the
-	V3 format below for more information.
+'''Title'''
 
-Username
-	Your username for this service. In the tree view, you can
-	right-click on a login and choose "Copy Username To Clipboard"
-	in order to copy this data to the clipboard, for pasting it
-	into the service's login prompt.
+ | The login's title is shown in the main window, so that you can identify
+the service that this login information belongs to, e.g., "E-Mail."
 
-Password
-	The password that is associated with this login. In the tree
-	view, you can right-click on a login and choose "Copy Password
-	To Clipboard" in order to paste it into the service's login
-	prompt.
+'''URL (V3 format only.)'''
 
-Notes
-	You can use the notes field for arbitrary information that you
-	wish to associate with the login. E.g., you could note
-	questions and answers to a service's security questions (of the
-	"What is your mother's maiden name?" kind). Also, you can use
-	the field for the service's URL. If the notes include a string
-	that starts with "http" or "https", or if they contain the
-	token "url:" followed by a URL (put the URL in quotes, if it
-	contains spaces), then you can right-click on an login and
-	choose "Copy URL To Clipboard" in order to paste the URL into
-	your Web browser.
+ | The service's URL, if any. In the tree view, you can right-click on a
+login and choose ''Copy URL to Clipboard'' in order to copy this data to the
+clipboard, for pasting it into your browser's address bar. This field is
+only available when using the "V3" database format; see the discussion of
+the [V3] format below for more information.
+
+'''Username'''
+
+ | Your username for this service. In the tree view, you can right-click on
+a login and choose ''Copy Username To Clipboard'' in order to copy this data
+to the clipboard, for pasting it into the service's login prompt.
+
+'''Password'''
+
+ | The password that is associated with this login. In the tree view, you
+can right-click on a login and choose ''Copy Password To Clipboard'' in order
+to paste it into the service's password prompt.
+
+'''Notes'''
+
+ | You can use the notes field for arbitrary information that you wish to
+associate with the login. E.g., you could note questions and answers to a
+service's security questions (of the "What is your mother's maiden name?"
+kind). Also, you can use the field for the service's URL. If the notes
+include a string that starts with "http" or "https", or if they contain the
+token "url:" followed by a URL (put the URL in quotes, if it contains
+spaces), then you can right-click on an login and choose ''Copy URL To
+Clipboard'' in order to paste the URL into your Web browser.
 
 When editing a login, the password is not shown, for added protection
-from curious onlookers. You can click the "Show Password" button to
+from curious onlookers. You can click the ''Show Password'' button to
 toggle visibility of the password.
 
-Clicking on "Generate Password" generates a new pseudo-random password
+Clicking on ''Generate Password'' generates a new pseudo-random password
 according to the current password policy (which is a per-database
-setting that can be set using the "Password Policy" option in the
-"Manage" menu). If the "Override Password Policy" box is checked, you
+setting that can be set using the ''Password Policy'' option in the
+''Security'' menu). If the ''Override Password Policy'' box is checked, you
 can edit the password policy to use for this one password.
 
 The password policy allows you to set the length of randomly generated
@@ -191,16 +189,16 @@ hexadecimal digits" option should be checked exclusively, and the
 password length should be an even number.
 
 The default password policy for the current database can be set using
-the "Password Policy" dialog from the "Manage" menu.
+the "Password Policy" dialog from the ''Manage'' menu.
 
 
 -------------------
 title: Preferences
 
 General, database default and export preferences can be configured
-using the "Preferences" dialog from the "File" menu. Database
+using the ''Preferences'' dialog from the ''File'' menu. Database
 preferences, which are specific to the current password database, can
-be configured using "Customize ..." from the "Security" menu,
+be configured using ''Customize ...'' from the ''Security'' menu,
 when a database is open.
 
 -------------------
@@ -208,45 +206,44 @@ title: General Preferences
 
 '''Clear clipboard after <nn> seconds'''
 
-	If this value is set to a non-zero value, the system clipboard
-	is cleared, the specified number of seconds after copying a
-	user name, password or URL to the clipboard. This ensures that
-	no password remains in the clipboard forever.
+ | If this value is set to a non-zero value, the system clipboard is
+cleared, the specified number of seconds after copying a user name, password
+or URL to the clipboard. This ensures that no password remains in the
+clipboard forever.
 
 '''Remember <nn> database names'''
   
-	Makes Password Gorilla only remember the given number of most
-	recently used database file names. If set to zero, Password
-	Gorilla will not remember database file names at all. The
-	current list of file names in the most recently used list can
-	be cleared with the button next to this option.
+ | Makes Password Gorilla only remember the given number of most recently
+used database file names. If set to zero, Password Gorilla will not remember
+database file names at all. The current list of file names in the most
+recently used list can be cleared with the button next to this option.
 
 '''When double clicking a login'''
   
-	Configures what to do when you double-click on a login. The
-	options are to copy the login's password to the clipboard, to
-	open the login for editing, or to do neither.
+ | Configures what to do when you double-click on a login. The options are
+to copy the login's password to the clipboard, to open the login for
+editing, or to do neither.
 
 '''Backup database on save'''
 
-	If enabled, then a backup file of the password database is made
-	whenever the database is saved. The backup file has the same
-	name as the database itself, but with the ".bak" extension.
+ | If enabled, then a backup file of the password database is made whenever
+the database is saved. The backup file has the same name as the database
+itself, but with the ".bak" extension.
 
 '''Remember sizes of dialog boxes'''
 
-	Password Gorilla allows you to resize its main window, and most
-	of its dialogs, should you find the default sizes inconvenient.
-	If this option is enabled, Password Gorilla will remember the
-	size of dialog boxes across restarts.
+ | Password Gorilla allows you to resize its main window, and most of its
+dialogs, should you find the default sizes inconvenient. If this option is
+enabled, Password Gorilla will remember the size of dialog boxes across
+restarts.
 
 -------------------
 title: Database Default Preferences
 
 Database default preferences are applied to new databases, but do not
 affect existing databases. To change a setting for an existing
-database, go to "Customize" in the "Security" menu. See the
-discussion of Database Preferences below.
+database, go to ''Customize'' in the ''Security'' menu. See the
+discussion of [Database Preferences] below.
 
 -------------------
 title: Export Preferences
@@ -256,149 +253,170 @@ plain-text file.
 
 '''Include password field'''
 
-	If enabled, the password is included in the exported file. If
-	disabled, "********" is substituted for the password.
+ | If enabled, the password is included in the exported file. If disabled,
+"********" is substituted for the password.
 
 '''Include "Notes" field'''
 
-	If enabled, the "Notes" are included in the exported file.
+ | If enabled, the "Notes" are included in the exported file.
 
 '''Field separator'''
 
-	Configures the character to separate fields. This character
-	should not appear in any user name or password. Common
-	separators are ":" (colon) and "," (comma).
+ | Configures the character to separate fields. This character should not
+appear in any user name or password. Common separators are ":" (colon) and
+"," (comma).
 
 '''Show security warning'''
 
-	If enabled, reminds the user, before exporting the database,
-	that the exported plain-text file is not encrypted or password
-	protected.
+ | If enabled, reminds the user, before exporting the database, that the
+exported plain-text file is not encrypted or password protected.
 
 -------------------
 title: Database Preferences
 
-These database preferences can be configured using "Customize" from the "Security" menu.
+These database preferences can be configured using ''Customize'' from the
+''Security'' menu.
 
 '''Lock when idle after <nn> minutes'''
 
-	If this preference is set to a non-zero value, Password Gorilla
-	will lock the database after a period of inactivity. In that
-	case, a dialog box opens, prompting for the database's master
-	password. The dialog also allows to exit Password Gorilla. Note
-	that this allows a malicious user to exit the application,
-	discarding changes. However, this is not a security issue: a
-	malicious user, having access to your desktop, could just as
-	well kill the application (e.g., from the console or the the
-	Task Manager). A better choice is to lock your desktop while
-	unattended.
+ | If this preference is set to a non-zero value, Password Gorilla will lock
+the database after a period of inactivity. In that case, a dialog box opens,
+prompting for the database's master password. The dialog also allows to exit
+Password Gorilla. Note that this allows a malicious user to exit the
+application, discarding changes. However, this is not a security issue: a
+malicious user, having access to your desktop, could just as well kill the
+application (e.g., from the console or the the Task Manager). A better
+choice is to lock your desktop while unattended.
 
 '''Auto-save database immediately when changed'''
 
-	If enabled, then the database will automatically be saved after
-	each change.
+ | If enabled, then the database will automatically be saved after each
+change.
 
 '''Use Password Safe 3 format'''
 
-	If this option is enabled (i.e., checked), the password
-	database, when saved, will use the new "Password Safe 3"
-	encryption format. The database will be compatible with
-	Password Safe 3, but will not be compatible with versions of
-	Password Safe prior to 3.0, or versions of Password Gorilla
-	prior to 1.4. If this option is disabled (i.e., not checked),
-	the old Password Safe 2 database format is used: the database
-	will be compatible with Password Safe 2.0 or higher, and
-	Password Gorilla 1.0 or higher.
+ | If this option is enabled (i.e., checked), the password database, when
+saved, will use the new "Password Safe 3" encryption format. The database
+will be compatible with Password Safe 3, but will not be compatible with
+versions of Password Safe prior to 3.0, or versions of Password Gorilla
+prior to 1.4. If this option is disabled (i.e., not checked), the old
+Password Safe 2 database format is used: the database will be compatible
+with Password Safe 2.0 or higher, and Password Gorilla 1.0 or higher.
 
-	It is highly recommended to enable this option, and to upgrade
-	existing databases to the Password Safe 3 format, which
-	features enhanced security. See below, Information about
-	the new Database Format, for more information.
+ | It is highly recommended to enable this option, and to upgrade existing
+databases to the Password Safe 3 format, which features enhanced security.
+See below, Information about the new Database Format, for more information.
 
 '''V2 Unicode support'''
-	Whether the database file uses Unicode. This is the default for
-	the Password Safe 3 format; this option only applies if the
-	"Use Password Safe 3 format" option is disabled (i.e., not
-	checked). If this option is enabled, database files containing
-	international characters can safely be exchanged across
-	locales, e.g., when you want to use the same password database
-	in both a Western European and Russian locale. The caveat is
-	that, if you use both Password Gorilla and Password Safe, the
-	latter will not read accented characters correctly. (The
-	database will open, but non-ASCII characters will not show up
-	correctly.) This option has no effect if your database uses
-	only ASCII characters.
+
+ | Whether the database file uses Unicode. This is the default for the
+Password Safe 3 format; this option only applies if the "Use Password Safe 3
+format" option is disabled (i.e., not checked). If this option is enabled,
+database files containing international characters can safely be exchanged
+across locales, e.g., when you want to use the same password database in
+both a Western European and Russian locale. The caveat is that, if you use
+both Password Gorilla and Password Safe, the latter will not read accented
+characters correctly. (The database will open, but non-ASCII characters will
+not show up correctly.) This option has no effect if your database uses only
+ASCII characters.
 
 '''V3 key stretching iterations'''
-	The Password Safe 3 format supports "variable key stretching",
-	which is a means of protecting a database against brute-force
-	attacks. Key stretching is a complex operation that must be
-	performed when validating a master password for correctness.
-	When an authorized user enters the correct password, this may
-	take a second and is barely noticeable. But it slows down
-	mass-testing password guesses by an automated program. The
-	"iterations" parameter indicates the complexity of the key
-	stretching: the higher this value, the longer it takes to open
-	a database, and the longer it takes an attacker to test one
-	password. It is recommended to leave the value at its default
-	of 2048, which is a good compromise between promptly opening
-	databases and hampering attackers.
 
-	Note that this option can only be changed on a per-database
-	basis and does not appear in the Database Default Preferences
-	Menu. This prevents a malicious user from changing the
-	preference in the registry and degrading the protection of
-	future databases.
+ | The Password Safe 3 format supports "variable key stretching", which is a
+means of protecting a database against brute-force attacks. Key stretching
+is a complex operation that must be performed when validating a master
+password for correctness. When an authorized user enters the correct
+password, this may take a second and is barely noticeable. But it slows down
+mass-testing password guesses by an automated program. The "iterations"
+parameter indicates the complexity of the key stretching: the higher this
+value, the longer it takes to open a database, and the longer it takes an
+attacker to test one password. It is recommended to leave the value at its
+default of 2048, which is a good compromise between promptly opening
+databases and hampering attackers.
+
+ | Note that this option can only be changed on a per-database basis and
+does not appear in the Database Default Preferences Menu. This prevents a
+malicious user from changing the preference in the registry and degrading
+the protection of future databases.
           
 -------------------
 title: Display
 
 '''Language'''
 
-	The menubutton Language offers you all the languages whose 
-	dictionary files *.msg are found in the subdirectory msgs. 
-	Your choice will be saved on exiting in the rc-file and the 
-	next time you start Gorilla it is showing the prefered language.
+The menubutton Language offers you all the languages whose dictionary
+files *.msg are found in the subdirectory msgs. Your choice will be
+saved on exiting in the rc-file and the next time you start Gorilla it
+is showing the prefered language.
 
 '''Size'''
 
-	Choose the font size which shows the best results on your
-	monitor.
+ | Choose the font size which shows the best results on your monitor.
 
 '''Show Gorilla Icon'''
 
-	If you like the gorilla icon then check the button. The next
-	time it will greet you.
+ | If you like the gorilla icon then check the button. The next time it will
+greet you.
+
+'''Iconify upon auto-lock'''
+
+ | If this option is selected then Password Gorilla will also
+iconify/minimize its windows when the lock after idle timer (see [Database
+Preferences]) expires.
 
 -------------------
-title: Shortcuts
+title: Keyboard Shortcuts
 
 '''Menu shortcuts'''
 
 The Meta key for Linux and Windows shortcuts is the ''Control'' key, whereas the Mac uses the ''Command'' key:
 
- Meta-o			Open Database
- Meta-s			Save Database
- Meta-x			Quit Password Gorilla
- Meta-u			Copy Username to Clipboard
- Meta-p			Copy Password to Clipboard
- Meta-w			Copy Url to Clipboard
- Meta-c			Clear Clipboard
- Meta-f			Find
- Meta-g			Find next
- Meta-a			Add Login
- Meta-e			Edit Login
+ | Meta-o		Open Database
+ | Meta-s		Save Database
+ | Meta-x		Quit Password Gorilla
+ | Meta-u		Copy Username to Clipboard
+ | Meta-p		Copy Password to Clipboard
+ | Meta-u		Copy Url to Clipboard
+ | Meta-c		Clear Clipboard
+ | Meta-f		Find
+ | Meta-g		Find next
+ | Meta-a		Add Login
+ | Meta-e		Edit Login
 
 '''Editing shortcuts'''
 
-...
+For single line entries and the notes box (note, in the lists below, C-
+stands for Control, S- stands for Shift, and M- stands for Meta):
+
+ | C-/ 		Select all text
+ | C-Left 		Move cursor left by one word
+ | C-Right		Move cursor right by one word
+ | C-S-Left		Move cursor left by one word and select the word
+ | C-S-Right		Move cursor right by one word and select the word
+ | C-b		Move cursor left
+ | C-f 		Move cursor right
+ | C-a		Move cursor to start of text
+ | C-e	 	Move cursor to end of text
+ | C-h		Same action as Backspace
+ | C-d		Delete character to right of cursor
+ | C-k		Delete all characters to right of cursor
+
+For the notes box only:
+
+ | M-Backspace 	Delete word to left of cursor
+ | M-Delete 		Delete word to left of cursor
+ | M-d 		Delete word to right of cursor
+ | M-w		Copy selection to clipboard
+ | C-w 		Cuts selection to clipboard
+ | C-y		Inserts clipboard at cursor position
 
 -------------------
 title: The "V3" Database Format
+alias: V3
 
 '''"V3" Format Introduction'''
 
-Password Gorilla 1.4 adds support for a new encrypted format for
+Password Gorilla 1.4 added support for a new encrypted format for
 password databases, as introduced by version 3 of Password Safe --
 therefore also called the "V3" format. This new format is based on the
 years of experience with and analysis of the prior "V2" database
