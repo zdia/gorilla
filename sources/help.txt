@@ -302,7 +302,7 @@ with Password Safe 2.0 or higher, and Password Gorilla 1.0 or higher.
 
  | It is highly recommended to enable this option, and to upgrade existing
 databases to the Password Safe 3 format, which features enhanced security.
-See below, Information about the new Database Format, for more information.
+See below, [Information about the "V3" Database Format], for more information.
 
 '''V2 Unicode support'''
 

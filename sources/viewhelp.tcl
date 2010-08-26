@@ -134,40 +134,46 @@
  # ::Help::DoDisplay -- Creates our help display. If we have tile 0.7.8 then
  # we will also have a TOC pane.
  #
- proc ::Help::DoDisplay {TOP} {
-    variable state
+proc ::Help::DoDisplay { top } {
+  variable state
  
-    destroy $TOP
-    toplevel $TOP
-    wm title $TOP "Help"
-    wm transient $TOP .
-		wm geometry $TOP 800x480
+  if {[info exists ::gorilla::toplevel($top)]} {
+    wm deiconify $top
+  } else {
+
+		toplevel $top
+		wm title $top [ mc "Help" ]
+    wm transient $top .
+		set ::gorilla::toplevel($top) $top
+		wm protocol $top WM_DELETE_WINDOW "gorilla::CloseDialog $top"
 		
-    frame $TOP.bottom -bd 2 -relief ridge
-    button $TOP.b -text "Dismiss" -command [list destroy $TOP]
-    pack $TOP.bottom -side bottom -fill both
-    pack $TOP.b -side bottom -expand 1 -pady 10 -in $TOP.bottom
+    gorilla::TryResizeFromPreference $top
+		
+    frame $top.bottom -bd 2 -relief ridge
+    button $top.b -text [mc "Close"] -command "gorilla::CloseDialog $top"
+    pack $top.bottom -side bottom -fill both
+    pack $top.b -side bottom -expand 1 -pady 10 -in $top.bottom
  
-    set P $TOP.p
+    set P $top.p
     
     ;# Need tags on treeview
 		set state(haveTOC) 1
 		::ttk::panedwindow $P -orient horizontal
 
 		pack $P -side top -fill both -expand 1
-		frame $P.toc -relief ridge
+		ttk::frame $P.toc -relief ridge
 		frame $P.help -bd 2 -relief ridge
 
-		$P add $P.toc
-		$P add $P.help
+		$P add $P.toc -weight 1
+		$P add $P.help -weight 1
 		::Help::CreateTOC $P.toc
 		::Help::CreateHelp $P.help
- 
-    CenterWindow $TOP
+    CenterWindow $top
+    }
  }
  ##+##########################################################################
  #
- # ::Help::CreateTOC -- Creates a TOC display from tile's treeview widget
+ # ::Help::CreateTOC -- Creates a TOC display from the treeview widget
  #
  proc ::Help::CreateTOC {TOC} {
     variable W
