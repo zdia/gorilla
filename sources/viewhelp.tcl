@@ -140,11 +140,11 @@ proc ::Help::DoDisplay { top } {
     wm deiconify $top
   } else {
 
-	toplevel $top
-	wm title $top [ mc "Help" ]
+    toplevel $top
+    wm title $top [ mc "Help" ]
     wm transient $top .
-	set ::gorilla::toplevel($top) $top
-	wm protocol $top WM_DELETE_WINDOW "gorilla::CloseDialog $top"
+    set ::gorilla::toplevel($top) $top
+    wm protocol $top WM_DELETE_WINDOW "gorilla::CloseDialog $top"
 		
     gorilla::TryResizeFromPreference $top
 		
