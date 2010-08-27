@@ -76,6 +76,13 @@ if {[catch {package require Tcl 8.5}]} {
 		exit 1
 }
 
+if {[catch {package require msgcat} oops]} {
+		puts "error: $oops"
+		exit 1
+}
+namespace import msgcat::*
+mcload [file join $::gorillaDir msgs]
+
 #
 # The isaac and viewhelp packages should be in the current directory
 #
@@ -122,12 +129,6 @@ foreach subdir {sha1 blowfish twofish pwsafe itcl3.4 msgs} {
 	}
 }
 
-if {[catch {package require msgcat} oops]} {
-		puts "error: $oops"
-		exit 1
-}
-namespace import msgcat::*
-# mcload [file join $::gorillaDir msgs]
 
 #
 # Look for Itcl
@@ -5336,7 +5337,6 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 			lang {
 				set ::gorilla::preference($pref) $value
 				mclocale $value
-				mcload [file join $::gorillaDir msgs]
 			}
 			fontsize {
 				set ::gorilla::preference($pref) $value

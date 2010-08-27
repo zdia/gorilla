@@ -77,7 +77,7 @@ It goes without saying that the master password should be non-trivial.
 I.e., the master password should not be a word in any language nor a
 name. Such trivial passwords are subject to dictionary attacks, in
 which an attacker could gain access to your master password by simply
-using "brute force," by trying all the words in the dictionary.
+using ''brute force,'' by trying all the words in the dictionary.
 
 Equally important is that the master password should not be kept in
 the same place as the password database. Ideally, the master password
@@ -107,7 +107,7 @@ name) in order to view subgroups and logins that the group contains.
 New groups and subgroups can be added by right-clicking on a group
 name, and choosing the ''Add Subgroup'' option. (Macintosh users, hold
 the Control key, and click on a group name.) In the dialog box that
-opens, the "Parent Group" name will be set automatically, and the name
+opens, the ''Parent Group'' name will be set automatically, and the name
 of the new subgroup can be entered.
 
 Note that empty groups are not stored in the password database file.
@@ -133,14 +133,14 @@ moved to a different group by editing this field.
 '''Title'''
 
  | The login's title is shown in the main window, so that you can identify
-the service that this login information belongs to, e.g., "E-Mail."
+the service that this login information belongs to, e.g., ''E-Mail.''
 
 '''URL (V3 format only.)'''
 
  | The service's URL, if any. In the tree view, you can right-click on a
 login and choose ''Copy URL to Clipboard'' in order to copy this data to the
 clipboard, for pasting it into your browser's address bar. This field is
-only available when using the "V3" database format; see the discussion of
+only available when using the ''V3'' database format; see the discussion of
 the [V3] format below for more information.
 
 '''Username'''
@@ -161,8 +161,8 @@ to paste it into the service's password prompt.
 associate with the login. E.g., you could note questions and answers to a
 service's security questions (of the "What is your mother's maiden name?"
 kind). Also, you can use the field for the service's URL. If the notes
-include a string that starts with "http" or "https", or if they contain the
-token "url:" followed by a URL (put the URL in quotes, if it contains
+include a string that starts with ''http'' or ''https'', or if they contain the
+token ''url:'' followed by a URL (put the URL in quotes, if it contains
 spaces), then you can right-click on an login and choose ''Copy URL To
 Clipboard'' in order to paste the URL into your Web browser.
 
@@ -177,16 +177,16 @@ setting that can be set using the ''Password Policy'' option in the
 can edit the password policy to use for this one password.
 
 The password policy allows you to set the length of randomly generated
-passwords, and the characters to use. Check the "use easy to read
-characters only" option to avoid characters that look similar. This
+passwords, and the characters to use. Check the ''use easy to read
+characters only'' option to avoid characters that look similar. This
 excludes the lower- and uppercase letters 'i', 'j', 'l' and 'o', the
 digits '0' and '1', and the exclamation mark, pipe symbol, and
-parentheses. Note: to generate random hexadecimal passwords, the "use
-hexadecimal digits" option should be checked exclusively, and the
+parentheses. Note: to generate random hexadecimal passwords, the ''use
+hexadecimal digits'' option should be checked exclusively, and the
 password length should be an even number.
 
 The default password policy for the current database can be set using
-the "Password Policy" dialog from the ''Manage'' menu.
+the ''Password Policy'' dialog from the ''Security'' menu.
 
 
 -------------------
@@ -225,7 +225,7 @@ editing, or to do neither.
 
  | If enabled, then a backup file of the password database is made whenever
 the database is saved. The backup file has the same name as the database
-itself, but with the ".bak" extension.
+itself, but with the ''.bak'' extension.
 
 '''Remember sizes of dialog boxes'''
 
@@ -253,9 +253,9 @@ plain-text file.
  | If enabled, the password is included in the exported file. If disabled,
 "********" is substituted for the password.
 
-'''Include "Notes" field'''
+'''Include ''Notes'' field'''
 
- | If enabled, the "Notes" are included in the exported file.
+ | If enabled, the ''Notes'' are included in the exported file.
 
 '''Field separator'''
 
@@ -293,7 +293,7 @@ change.
 '''Use Password Safe 3 format'''
 
  | If this option is enabled (i.e., checked), the password database, when
-saved, will use the new "Password Safe 3" encryption format. The database
+saved, will use the new ''Password Safe 3'' encryption format. The database
 will be compatible with Password Safe 3, but will not be compatible with
 versions of Password Safe prior to 3.0, or versions of Password Gorilla
 prior to 1.4. If this option is disabled (i.e., not checked), the old
@@ -307,8 +307,8 @@ See below, Information about the new Database Format, for more information.
 '''V2 Unicode support'''
 
  | Whether the database file uses Unicode. This is the default for the
-Password Safe 3 format; this option only applies if the "Use Password Safe 3
-format" option is disabled (i.e., not checked). If this option is enabled,
+Password Safe 3 format; this option only applies if the ''Use Password Safe 3
+format'' option is disabled (i.e., not checked). If this option is enabled,
 database files containing international characters can safely be exchanged
 across locales, e.g., when you want to use the same password database in
 both a Western European and Russian locale. The caveat is that, if you use
@@ -319,12 +319,12 @@ ASCII characters.
 
 '''V3 key stretching iterations'''
 
- | The Password Safe 3 format supports "variable key stretching", which is a
+ | The Password Safe 3 format supports ''variable key stretching'', which is a
 means of protecting a database against brute-force attacks. Key stretching
 is a complex operation that must be performed when validating a master
 password for correctness. When an authorized user enters the correct
 password, this may take a second and is barely noticeable. But it slows down
-mass-testing password guesses by an automated program. The "iterations"
+mass-testing password guesses by an automated program. The ''iterations''
 parameter indicates the complexity of the key stretching: the higher this
 value, the longer it takes to open a database, and the longer it takes an
 attacker to test one password. It is recommended to leave the value at its
@@ -415,8 +415,8 @@ alias: V3
 
 Password Gorilla 1.4 added support for a new encrypted format for
 password databases, as introduced by version 3 of Password Safe --
-therefore also called the "V3" format. This new format is based on the
-years of experience with and analysis of the prior "V2" database
+therefore also called the ''V3'' format. This new format is based on the
+years of experience with and analysis of the prior ''V2'' database
 format, and features enhanced security (see below, V2 Format
 Weakness for details). The new format offers:
 
@@ -439,16 +439,16 @@ databases. Upgrading, as well as downgrading, a database is
 accomplished by enabling the Use Password Safe 3 format checkbox in
 the Database Preferences menu (see above).
 
-Password Safe recommends to use the ".psafe3" extension for V3-format
-database files, and the ".dat" extension for V2-format files.
+Password Safe recommends to use the ''.psafe3'' extension for V3-format
+database files, and the ''.dat'' extension for V2-format files.
 (Password Gorilla allows password database files in either format to
 have any extension.)
 
 '''V2 Format Weakness'''
 
 In the interest of full disclosure, it should be noted that a
-potential weakness was discovered with the old Password Safe 2 ("V2")
-file format. This issue affected the "key stretching" process that is
+potential weakness was discovered with the old Password Safe 2 (''V2'')
+file format. This issue affected the ''key stretching'' process that is
 intended to slow down a brute force attack against a database's master
 password (i.e., repeated attempts at guessing the password). The
 weakness in the file format's design allowed brute force attacks 1000
@@ -489,7 +489,7 @@ database. If a password was randomly generated, it may be lost.
 The easy workaround is to not confirm your password with the online
 service before saving the password database. I.e., when creating a new
 login, first add it in Password Gorilla, and immediately save the
-database (using "Save" from the "File" menu). Only then go to your
+database (using ''Save'' from the ''File'' menu). Only then go to your
 online service -- e.g., the Web site that required registration, and
 complete its signup process. When modifying a login, e.g., changing
 the password, there is a chance that the computer might crash after
