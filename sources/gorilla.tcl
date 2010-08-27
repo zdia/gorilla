@@ -2959,6 +2959,27 @@ proc gorilla::Merge {} {
 proc gorilla::Save {} {
 	ArrangeIdleTimeout
 
+	#
+	# Test for write access to the pwsafe database
+	#
+	# If not writable, give user the option to change it to writable and
+	# retry, or to abort the save operation entirely
+	#
+
+	while { ! [ file writable $::gorilla::fileName ] } {
+	
+		# build the message in two stages:
+		set message    "[ mc "Warning: Can not save to" ] '[ file normalize $::gorilla::fileName ]' [ mc "because the file permissions are set for read-only access." ]\n\n"
+		append message "[ mc "Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file." ]\n"
+
+		set answer [ tk_messageBox -icon warning -type retrycancel -title [ mc "Warning: Read-only password file" ] -message $message ]
+
+		if { $answer eq "cancel" } {
+			return 0
+		}
+	
+	} ; # end while gorilla::fileName read-only
+
 	set myOldCursor [. cget -cursor]
 	. configure -cursor watch
 	update idletasks
