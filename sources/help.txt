@@ -513,6 +513,13 @@ format is considered secure, this prevents other users from copying
 the file, and making a brute-force attempt of guessing the master
 password offline.
 
+For Linux/Unix users, Password Gorilla creates and saves database files
+using your login's current file-creation mask ("umask") setting.  If you
+wish to have a specific particular set of access permissions applied to your
+password database files then adjust your "umask" setting before executing
+Password Gorilla.  See "man umask" and your shell's man page for details
+about the umask setting.
+
 If you follow these precautions, there is nothing to worry about here.
 
 -------------------
