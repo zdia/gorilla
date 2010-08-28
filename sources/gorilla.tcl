@@ -6766,6 +6766,37 @@ namespace eval ::gorilla::dbset {
 
 } ; # end namespace eval ::gorilla::dbset
 
+namespace eval ::gorilla::dbunset {
+
+        # Generate a set of procs which will be the subcommands of the dbunset
+        # ensemble, the procs simply chain over to the ::gorilla::db object
+        # with the proper parameters to unset a numeric record number
+        # corresponding to the record name.
+        
+        # As all of the subcommand procs are identical generate them in a
+        # loop instead of enumerating them.
+
+        # note - field #11 is marked as reserved in the pwsafe v3
+        # documentation
+        
+	foreach {procname fieldnum} [ list  uuid 1  group 2  title 3  user 4 \
+					notes 5  password 6  create-time 7 \
+					last-pass-change 8   last-access 9 \
+        				lifetime 10          last-modified 12 \
+        				url 13 ] {
+
+		proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
+			$::gorilla::db unsetFieldValue $rn %fieldnum
+		} ]
+
+	} ; # end foreach procname,fieldnum
+
+	namespace export uuid group title user notes password url create-time last-pass-change last-access lifetime last-modified
+
+  	namespace ensemble create
+
+} ; # end namespace eval ::gorilla::dbunset
+
 #
 # ----------------------------------------------------------------------
 # Init
