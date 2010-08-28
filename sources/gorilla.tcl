@@ -6717,6 +6717,54 @@ namespace eval ::gorilla::dbget {
 
 } ; # end namespace eval ::gorilla::dbget
 
+# A namespace ensemble to make setting fields to the gorilla::db object more
+# straightforward (setting of record elements by name instead of number). 
+
+# At the moment there is a dependency upon the global ::gorilla::db
+# variable/object.  A future change might be to pass in the database object
+# into which to perform the lookup as well.
+
+namespace eval ::gorilla::dbset {
+
+        # Generate a set of procs which will be the subcommands of the dbset
+        # ensemble, the procs simply chain over to the ::gorilla::db object
+        # with the proper parameters to set a numeric record number
+        # corresponding to the record name.
+        
+        # As all of the subcommand procs are identical (except for scanning
+        # a date/time vs. assuming it is an integer generate them in a pair
+        # of loops instead of enumerating them.
+
+        # note - field #11 is marked as reserved in the pwsafe v3
+        # documentation
+        
+	foreach {procname fieldnum} [ list  uuid 1  group 2  title 3  user 4 \
+					notes 5  password 6  create-time 7 \
+					last-pass-change 8   last-access 9 \
+        				lifetime 10          last-modified 12 \
+        				url 13 ] {
+
+		proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
+			$::gorilla::db setFieldValue $rn %fieldnum $value
+
+		} ]
+
+	} ; # end foreach procname,fieldnum
+
+        foreach {procname fieldnum} [ list  create-time-string 7  last-pass-change-string 8  last-access-string 9 \
+        				 lifetime-string 10 last-modified-string 12 ] {
+
+		proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
+			$::gorilla::db setFieldValue $rn %fieldnum [ clock scan $value -format "%Y-%m-%d %H:%M:%S" ]
+		} ]
+
+	} ; # end foreach procname,fieldnum
+
+	namespace export uuid group title user notes password url create-time last-pass-change last-access lifetime last-modified
+
+  	namespace ensemble create
+
+} ; # end namespace eval ::gorilla::dbset
 
 #
 # ----------------------------------------------------------------------
