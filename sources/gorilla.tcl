@@ -655,7 +655,10 @@ proc gorilla::GroupPopup {node xpos ypos} {
 	$::gorilla::widgets(popup,Group) entryconfigure 4 -state normal
 		}
 
-		tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos
+		# this catch is necessary to prevent a "grab failed" error
+		# when opening a menu while another app is holding the
+		# "grab"
+		catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
 }
 
 proc gorilla::PopupAddLogin {} {
@@ -713,7 +716,10 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		-command "gorilla::PopupDeleteLogin"
 		}
 
-		tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos
+		# this catch is necessary to prevent a "grab failed" error
+		# when opening a menu while another app is holding the
+		# "grab"
+		catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
 }
 
 proc gorilla::PopupEditLogin {} {
