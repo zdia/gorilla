@@ -6791,7 +6791,7 @@ namespace eval ::gorilla::dbunset {
         				lifetime 10          last-modified 12 \
         				url 13 ] {
 
-		proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
+		proc $procname { rn } [ string map [ list %fieldnum $fieldnum ] {
 			$::gorilla::db unsetFieldValue $rn %fieldnum
 		} ]
 
