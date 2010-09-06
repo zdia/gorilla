@@ -122,6 +122,10 @@ if {[tk windowingsystem] == "aqua"}	{
 # The pwsafe, blowfish, twofish and sha1 packages are in subdirectories
 #
 
+# Set our own install directory as first element in auto_path, so that local
+# items will be found before system installed items
+set auto_path [ list $::gorillaDir {*}$auto_path ]
+
 foreach subdir {sha1 blowfish twofish pwsafe itcl3.4 msgs} {
 	set testDir [file join $::gorillaDir $subdir]
 	if {[file isdirectory $testDir]} {

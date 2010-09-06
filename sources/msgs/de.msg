@@ -211,7 +211,10 @@ mcmset de {
 	"Size" "Größe" \
 	"Show Gorilla Icon" "Zeige den Gorilla" \
 	"Iconify upon auto-lock" "Beim Sperren minimieren" \
-	
+	"Warning: Can not save to" "Die Datei" \
+	"because the file permissions are set for read-only access." "kann nicht gesichert werden, weil sie schreibgeschützt ist." \
+	"Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file." "Entfernen Sie den Schreibschutz und wählen dann 'Wiederholen' oder brechen Sie den Vorgang ab und speichern Sie die Datei unter einem neuen Namen." \
+	"Warning: Read-only password file" "Warnung: Schreibgeschützte Datei" \
 	}
 	
 mcunknown de "unbekannt"
