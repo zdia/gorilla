@@ -9,8 +9,12 @@
 # This implementation permits incremental updating of the hash and 
 # provides support for external compiled implementations using critcl.
 #
+# This implementation permits incremental updating of the hash and 
+# provides support for external compiled implementations either using
+# critcl (sha256c).
+#
 # Ref: http://csrc.nist.gov/publications/fips/fips180-2/fips180-2.pdf
-#http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf
+#      http://csrc.nist.gov/publications/fips/fips180-2/fips180-2withchangenotice.pdf
 #
 # -------------------------------------------------------------------------
 # See the file "license.terms" for information on usage and redistribution
@@ -18,13 +22,20 @@
 # -------------------------------------------------------------------------
 #
 
+# @mdgen EXCLUDE: sha256c.tcl
+
 package require Tcl 8.2;                # tcl minimum version
 
 namespace eval ::sha2 {
-    variable version 1.0.1
-    variable rcsid {$Id: sha256.tcl,v 1.1 2006/03/22 03:20:39 Owner Exp $}
+    variable version 1.0.2
+    variable rcsid {$Id: sha256.tcl,v 1.6 2007/05/03 21:41:10 andreas_kupries Exp $}
 
-    namespace export sha256 hmac SHA256Init SHA256Update SHA256Final
+    variable  accel
+    array set accel {tcl 0 critcl 0}
+    variable  loaded {}
+
+    namespace export sha256 hmac \
+            SHA256Init SHA256Update SHA256Final
 
     variable uid
     if {![info exists uid]} {
@@ -57,29 +68,176 @@ namespace eval ::sha2 {
 }
 
 # -------------------------------------------------------------------------
+# Management of sha256 implementations.
+
+# LoadAccelerator --
+#
+#	This package can make use of a number of compiled extensions to
+#	accelerate the digest computation. This procedure manages the
+#	use of these extensions within the package. During normal usage
+#	this should not be called, but the test package manipulates the
+#	list of enabled accelerators.
+#
+proc ::sha2::LoadAccelerator {name} {
+    variable accel
+    set r 0
+    switch -exact -- $name {
+        tcl {
+            # Already present (this file)
+            set r 1
+        }
+        critcl {
+            if {![catch {package require tcllibc}]
+                || ![catch {package require sha256c}]} {
+                set r [expr {[info command ::sha2::sha256c_update] != {}}]
+            }
+        }
+        default {
+            return -code error "invalid accelerator $key:\
+                must be one of [join [KnownImplementations] {, }]"
+        }
+    }
+    set accel($name) $r
+    return $r
+}
+
+# ::sha2::Implementations --
+#
+#	Determines which implementations are
+#	present, i.e. loaded.
+#
+# Arguments:
+#	None.
+#
+# Results:
+#	A list of implementation keys.
+
+proc ::sha2::Implementations {} {
+    variable accel
+    set res {}
+    foreach n [array names accel] {
+	if {!$accel($n)} continue
+	lappend res $n
+    }
+    return $res
+}
+
+# ::sha2::KnownImplementations --
+#
+#	Determines which implementations are known
+#	as possible implementations.
+#
+# Arguments:
+#	None.
+#
+# Results:
+#	A list of implementation keys. In the order
+#	of preference, most prefered first.
+
+proc ::sha2::KnownImplementations {} {
+    return {critcl tcl}
+}
+
+proc ::sha2::Names {} {
+    return {
+	critcl   {tcllibc based}
+	tcl      {pure Tcl}
+    }
+}
+
+# ::sha2::SwitchTo --
+#
+#	Activates a loaded named implementation.
+#
+# Arguments:
+#	key	Name of the implementation to activate.
+#
+# Results:
+#	None.
+
+proc ::sha2::SwitchTo {key} {
+    variable accel
+    variable loaded
+
+    if {[string equal $key $loaded]} {
+	# No change, nothing to do.
+	return
+    } elseif {![string equal $key ""]} {
+	# Validate the target implementation of the switch.
+
+	if {![info exists accel($key)]} {
+	    return -code error "Unable to activate unknown implementation \"$key\""
+	} elseif {![info exists accel($key)] || !$accel($key)} {
+	    return -code error "Unable to activate missing implementation \"$key\""
+	}
+    }
+
+    # Deactivate the previous implementation, if there was any.
+
+    if {![string equal $loaded ""]} {
+        foreach c {
+            SHA256Init   SHA224Init
+            SHA256Final  SHA224Final
+            SHA256Update
+        } {
+            rename ::sha2::$c ::sha2::${c}-${loaded}
+        }
+    }
+
+    # Activate the new implementation, if there is any.
+
+    if {![string equal $key ""]} {
+        foreach c {
+            SHA256Init   SHA224Init
+            SHA256Final  SHA224Final
+            SHA256Update
+        } {
+            rename ::sha2::${c}-${key} ::sha2::$c
+        }
+    }
+
+    # Remember the active implementation, for deactivation by future
+    # switches.
+
+    set loaded $key
+    return
+}
+
+# -------------------------------------------------------------------------
 
 # SHA256Init --
 #
 #   Create and initialize an SHA256 state variable. This will be
 #   cleaned up when we call SHA256Final
 #
-proc ::sha2::SHA256Init {} {
+
+proc ::sha2::SHA256Init-tcl {} {
     variable uid
     set token [namespace current]::[incr uid]
     upvar #0 $token tok
 
     # FIPS 180-2: 5.3.2 Setting the initial hash value
     array set tok \
-        [list \
-             A [expr {int(0x6a09e667)}] \
-             B [expr {int(0xbb67ae85)}] \
-             C [expr {int(0x3c6ef372)}] \
-             D [expr {int(0xa54ff53a)}] \
-             E [expr {int(0x510e527f)}] \
-             F [expr {int(0x9b05688c)}] \
-             G [expr {int(0x1f83d9ab)}] \
-             H [expr {int(0x5be0cd19)}] \
-             n 0 i "" v 256]
+            [list \
+            A [expr {int(0x6a09e667)}] \
+            B [expr {int(0xbb67ae85)}] \
+            C [expr {int(0x3c6ef372)}] \
+            D [expr {int(0xa54ff53a)}] \
+            E [expr {int(0x510e527f)}] \
+            F [expr {int(0x9b05688c)}] \
+            G [expr {int(0x1f83d9ab)}] \
+            H [expr {int(0x5be0cd19)}] \
+            n 0 i "" v 256]
+    return $token
+}
+
+proc ::sha2::SHA256Init-critcl {} {
+    variable uid
+    set token [namespace current]::[incr uid]
+    upvar #0 $token tok
+
+    # FIPS 180-2: 5.3.2 Setting the initial hash value
+    set tok(sha256c) [sha256c_init256]
     return $token
 }
 
@@ -94,11 +252,13 @@ proc ::sha2::SHA256Init {} {
 #   it here in preference to the pure-Tcl implementation.
 #
 
-proc ::sha2::SHA256Update {token data} {
+proc ::sha2::SHA256Update-tcl {token data} {
     upvar #0 $token state
+
     # Update the state values
-    incr state(n) [string length $data]
+    incr   state(n) [string length $data]
     append state(i) $data
+
     # Calculate the hash for any complete blocks
     set len [string length $state(i)]
     for {set n 0} {($n + 64) <= $len} {} {
@@ -110,6 +270,13 @@ proc ::sha2::SHA256Update {token data} {
     return
 }
 
+proc ::sha2::SHA256Update-critcl {token data} {
+    upvar #0 $token state
+
+    set state(sha256c) [sha256c_update $data $state(sha256c)]
+    return
+}
+
 # SHA256Final --
 #
 #    This procedure is used to close the current hash and returns the
@@ -118,15 +285,21 @@ proc ::sha2::SHA256Update {token data} {
 #
 #    Note that the output is 256 bits represented as binary data.
 #
-proc ::sha2::SHA256Final {token} {
+
+proc ::sha2::SHA256Final-tcl {token} {
     upvar #0 $token state
-    
     SHA256Penultimate $token
     
     # Output
     set r [bytes $state(A)][bytes $state(B)][bytes $state(C)][bytes $state(D)][bytes $state(E)][bytes $state(F)][bytes $state(G)][bytes $state(H)]
-
     unset state
+    return $r
+}
+
+proc ::sha2::SHA256Final-critcl {token} {
+    upvar #0 $token state
+    set r $state(sha256c)
+    unset  state
     return $r
 }
 
@@ -147,9 +320,11 @@ proc ::sha2::SHA256Penultimate {token} {
         incr pad 64
     }
     append state(i) [binary format a$pad \x80]
+
     # Append length in bits as big-endian wide int.
     set dlen [expr {8 * $state(n)}]
     append state(i) [binary format II 0 $dlen]
+
     # Calculate the hash for the remaining block.
     set len [string length $state(i)]
     for {set n 0} {($n + 64) <= $len} {} {
@@ -159,40 +334,56 @@ proc ::sha2::SHA256Penultimate {token} {
 
 # -------------------------------------------------------------------------
 
-proc ::sha2::SHA224Init {} {
+proc ::sha2::SHA224Init-tcl {} {
     variable uid
     set token [namespace current]::[incr uid]
     upvar #0 $token tok
 
     # FIPS 180-2 (change notice 1) (1): SHA-224 initialization values
     array set tok \
-        [list \
-             A [expr {int(0xc1059ed8)}] \
-             B [expr {int(0x367cd507)}] \
-             C [expr {int(0x3070dd17)}] \
-             D [expr {int(0xf70e5939)}] \
-             E [expr {int(0xffc00b31)}] \
-             F [expr {int(0x68581511)}] \
-             G [expr {int(0x64f98fa7)}] \
-             H [expr {int(0xbefa4fa4)}] \
-             n 0 i "" v 224]
+            [list \
+            A [expr {int(0xc1059ed8)}] \
+            B [expr {int(0x367cd507)}] \
+            C [expr {int(0x3070dd17)}] \
+            D [expr {int(0xf70e5939)}] \
+            E [expr {int(0xffc00b31)}] \
+            F [expr {int(0x68581511)}] \
+            G [expr {int(0x64f98fa7)}] \
+            H [expr {int(0xbefa4fa4)}] \
+            n 0 i "" v 224]
+    return $token
+}
+
+proc ::sha2::SHA224Init-critcl {} {
+    variable uid
+    set token [namespace current]::[incr uid]
+    upvar #0 $token tok
+
+    # FIPS 180-2 (change notice 1) (1): SHA-224 initialization values
+    set tok(sha256c) [sha256c_init224]
     return $token
 }
 
 interp alias {} ::sha2::SHA224Update {} ::sha2::SHA256Update
 
-proc ::sha2::SHA224Final {token} {
+proc ::sha2::SHA224Final-tcl {token} {
     upvar #0 $token state
-    
     SHA256Penultimate $token
     
     # Output
     set r [bytes $state(A)][bytes $state(B)][bytes $state(C)][bytes $state(D)][bytes $state(E)][bytes $state(F)][bytes $state(G)]
-
     unset state
     return $r
 }
 
+proc ::sha2::SHA224Final-critcl {token} {
+    upvar #0 $token state
+    # Trim result down to 224 bits (by 4 bytes).
+    # See output below, A..G, not A..H
+    set r [string range $state(sha256c) 0 end-4]
+    unset state
+    return $r
+}
 
 # -------------------------------------------------------------------------
 # HMAC Hashed Message Authentication (RFC 2104)
@@ -284,11 +475,12 @@ set ::sha2::SHA256Transform_body {
         set t15  0
         set t16 -1
         for {set t 16} {$t < 64} {incr t} {
-            lappend W [expr {([sigma1 [lindex $W [incr t2]]] \
+            lappend W [expr {[sigma1 [lindex $W [incr t2]]] \
                                  + [lindex $W [incr t7]] \
                                  + [sigma0 [lindex $W [incr t15]]] \
-                                 + [lindex $W [incr t16]]) & 0xffffffff}]
+                                 + [lindex $W [incr t16]]}]
         }
+        
         # FIPS 180-2: 6.2.2 (2) Initialise the working variables
         set A $state(A)
         set B $state(B)
@@ -306,7 +498,6 @@ set ::sha2::SHA256Transform_body {
         #   h = g; g = f;  f = e;  e = d + T1;  d = c;  c = b; b = a;
         #   a = T1 + T2
         #
-        
         for {set t 0} {$t < 64} {incr t} {
             set T1 [expr {($H + [SIGMA1 $E] + [Ch $E $F $G] 
                           + [lindex $K $t] + [lindex $W $t]) & 0xffffffff}]
@@ -356,7 +547,7 @@ proc ::sha2::SIGMA0 {x} {
 # FIPS 180-2: 4.1.2 equation 4.5
 #  (x >>> 6) ^ (x >>> 11) ^ (x >>> 25)
 proc ::sha2::SIGMA1 {x} {
-    return [expr {([>>> $x 6] ^ [>>> $x 11] ^ [>>> $x 25]) & 0xFFFFFFFF}]
+    return [expr {[>>> $x 6] ^ [>>> $x 11] ^ [>>> $x 25]}]
 }
 
 # FIPS 180-2: 4.1.2 equation 4.6
@@ -625,6 +816,18 @@ proc ::sha2::hmac {args} {
 
 # -------------------------------------------------------------------------
 
+# Try and load a compiled extension to help.
+namespace eval ::sha2 {
+    variable e {}
+    foreach e [KnownImplementations] {
+	if {[LoadAccelerator $e]} {
+	    SwitchTo $e
+	    break
+	}
+    }
+    unset e
+}
+
 package provide sha256 $::sha2::version
 
 # -------------------------------------------------------------------------
@@ -632,5 +835,3 @@ package provide sha256 $::sha2::version
 #   mode: tcl
 #   indent-tabs-mode: nil
 # End:
-
-
