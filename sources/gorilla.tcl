@@ -6902,3 +6902,5 @@ if {$::gorilla::init == 0} {
 
 	# exec say [mc "Welcome to the Password Gorilla."]	;# für MacOS
 	set ::gorilla::status [mc "Welcome to the Password Gorilla."]
+
+source $::gorillaDir/non-modal.tcl
