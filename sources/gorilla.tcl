@@ -699,6 +699,9 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		if {![info exists ::gorilla::widgets(popup,Login)]} {
 	set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
 	$::gorilla::widgets(popup,Login) add command \
+		-label [mc "Open browser to URL"] \
+		-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
+	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Copy Username to Clipboard"] \
 		-command "gorilla::PopupCopyUsername"
 	$::gorilla::widgets(popup,Login) add command \
@@ -6599,6 +6602,26 @@ proc gorilla::ViewEntryShowPWHelper { button entry rn } {
   }
 
 } ; # end proc gorilla::ViewEntryShowPWHelper
+
+#
+# ----------------------------------------------------------------------
+# Launch a browser to the current selected records URL
+# ----------------------------------------------------------------------
+#
+
+# NOTE - this is incomplete, it is as much proof of concept as anything else
+# at the moment
+
+proc gorilla::LaunchBrowser { rn } {
+
+	set URL [ dbget url $rn ]
+	if { $URL eq "" } { 
+		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
+	} else {
+		exec firefox $URL &
+	}
+
+} ; # end proc gorilla::LaunchBrowser
 
 #
 # ----------------------------------------------------------------------
