@@ -599,6 +599,9 @@ proc gorilla::TreeNodeDouble {node} {
 					editLogin {
 						gorilla::EditLogin
 					}
+					launchBrowser {
+						::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] 
+					}
 				default {
 					# do nothing
 				}
@@ -4672,10 +4675,13 @@ ttk::radiobutton $gpf.dca.cp -text [mc "Copy password to clipboard"] \
 ttk::radiobutton $gpf.dca.ed -text [mc "Edit Login"] \
 	-variable ::gorilla::prefTemp(doubleClickAction) \
 	-value "editLogin"
+ttk::radiobutton $gpf.dca.lb -text [mc "Launch Browser directed to URL"] \
+	-variable ::gorilla::prefTemp(doubleClickAction) \
+	-value "launchBrowser"
 ttk::radiobutton $gpf.dca.nop -text [mc "Do nothing"] \
 	-variable ::gorilla::prefTemp(doubleClickAction) \
 	-value "nothing"
-pack $gpf.dca.cp $gpf.dca.ed $gpf.dca.nop -side top -anchor w -pady 3
+pack $gpf.dca.cp $gpf.dca.ed $gpf.dca.lb $gpf.dca.nop -side top -anchor w -pady 3
 pack $gpf.dca -side top -padx 10 -pady 5 -fill x -expand yes
 
 ttk::frame $gpf.cc -padding [list 8 5]
@@ -4835,15 +4841,21 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		#
 
 		$top.nb add [ set browser [ ttk::frame $top.nb.browser -padding [ list 10 0 ] ] ] -text [ mc "Browser" ]
-		ttk::label $browser.lexe -text [ mc "Browser executable to launch:" ]
+		ttk::label $browser.lexe -text [ mc "Browser executable to launch (required):" ]
 		ttk::entry $browser.exe -textvariable ::gorilla::prefTemp(browser-exe)
-		ttk::label $browser.lparam -text [ mc "Command line parameters (if any) to pass:" ]
+		ttk::label $browser.lparam -text [ mc "Command line parameter (if any) to pass (optional):" ]
 		ttk::entry $browser.param -textvariable ::gorilla::prefTemp(browser-param)
-		grid $browser.lexe   -sticky w  -pady { 5m 0 }
-		grid $browser.exe    -sticky ew -pady { 0 5m }
-		grid $browser.lparam -sticky w
-		grid $browser.param  -sticky ew 
-																				
+		ttk::button $browser.findgui -text [ mc "Find Browser" ] -command "set ::gorilla::prefTemp(browser-exe) \[ tk_getOpenFile -parent $browser \]"
+		ttk::style configure biwrap.TLabel -wraplength 75
+		ttk::label $browser.inst  -style biwrap.TLabel -text [ mc "In the command line parameter string, the character sequence %url% is substituted with the actual URL during launch.  See the help system for details." ]
+		bind $browser.inst <Configure> "ttk::style configure biwrap.TLabel -wraplength \[ winfo width $browser.inst \]"
+		grid $browser.lexe    -sticky nw  -pady { 5m 0 }
+		grid $browser.exe     -sticky new 
+		grid $browser.findgui -sticky ne  -pady { 1m 5m }
+		grid $browser.lparam  -sticky nw
+		grid $browser.param   -sticky new 
+		grid $browser.inst    -sticky new -pady { 7m 0 }
+
 		#
 		# End of NoteBook tabs
 		#
@@ -6649,16 +6661,21 @@ proc gorilla::ViewEntryShowPWHelper { button entry rn } {
 # ----------------------------------------------------------------------
 #
 
-# NOTE - this is incomplete, it is as much proof of concept as anything else
-# at the moment
-
 proc gorilla::LaunchBrowser { rn } {
 
 	set URL [ dbget url $rn ]
 	if { $URL eq "" } { 
 		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
+	} elseif { $::gorilla::preference(browser-exe) eq "" } {
+		set ::gorilla::status [ mc "Launch browser is not configured.  See help." ]
 	} else {
-		exec firefox $URL &
+		set param $::gorilla::preference(browser-param)
+		if { $param ne "" } {
+			set URL [ string map [ list %url% $URL ] $param ]
+		}
+		if { [ catch { exec $::gorilla::preference(browser-exe) $URL & } mesg ] } {
+			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
+		}
 	}
 
 } ; # end proc gorilla::LaunchBrowser

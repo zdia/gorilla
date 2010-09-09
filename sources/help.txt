@@ -12,6 +12,7 @@ alias: TOC
 	---- [Export Preferences]
 	---- [Database Preferences]
 	--- [Display]
+	--- [Launch Browser]
 	-- [Keyboard Shortcuts]
 	-- [The "V3" Database Format]
 
@@ -363,6 +364,46 @@ greet you.
  | If this option is selected then Password Gorilla will also
 iconify/minimize its windows when the lock after idle timer (see [Database
 Preferences]) expires.
+
+-------------------
+title: Launch Browser
+
+Password Gorilla can launch a browser directly to the URL stored within a
+login entry provided that the user preferences have been configured to
+indicate what browser to launch and how to launch the browser.
+
+Under File -> Preferences is a tab labeled ''Browser''.  On this tab are two
+entry fields labeled ''Browser executable to launch'' and ''Command line
+parameter (if any) to pass''.  At a minimum, at least the first field must
+be filled in to enable the ability to launch a browser directly to a URL
+stored in a login entry.
+
+'''Browser executable to launch'''
+
+This field should be filled in with the name of the executable file to
+launch the browser.  I.e., for Firefox on Linux this would usually be
+'''firefox''' and for Firefox on Windows this would usually be
+'''firefox.exe'''.  If the executable is present upon the OS executable search
+path, only the name of the executable is required.  If the executable is not
+present upon the search path, then the full path name to the executable
+should be entered into this field.
+
+'''Command line parameter (if any) to pass'''
+
+This field is optional.  If left blank Password Gorilla will simply pass the
+URL value from the login entry directly to the program executable from the
+first entry.
+
+However, if special command line switches and/or parameters are necessary to
+launch the browser to a particular URL, then those switches and/or
+parameters must be entered into this field.  If this is the case, then the
+special character sequence '''%url%''' should be utilized at the point that
+the actual URL should be placed within the switches and/or parameters.  E.g.
+entering '''parameter(%url%)''' would result in the browser receiving
+'''parameter(http://www.example.com)'''.  What parameters may be required
+for various browsers is beyond the scope of Password Gorilla.  Please
+consult your browser documentation to determine if any special command line
+parameters are required to launch directly to a URL.
 
 -------------------
 title: Keyboard Shortcuts
