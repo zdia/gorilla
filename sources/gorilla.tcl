@@ -214,8 +214,15 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(gorillaIcon) 0
 		# added by Richard Ellis
 		set ::gorilla::preference(iconifyOnAutolock) 0
-		set ::gorilla::preferences(browser-exe) ""
-		set ::gorilla::preferences(browser-param) ""
+		set ::gorilla::preference(browser-exe) ""
+
+		# this trace is to dynamically insert/delete the menu entry
+		# for "launch to url" depending upon changes to the contents
+		# of the ::gorilla::preference(browser-exe) variable
+
+		trace add variable ::gorilla::preference(browser-exe) write [ list ::gorilla::LaunchBrowserManage ] 
+
+		set ::gorilla::preference(browser-param) ""
 		
 }
 
@@ -700,9 +707,14 @@ proc gorilla::PopupRenameGroup {} {
 proc gorilla::LoginPopup {node xpos ypos} {
 		if {![info exists ::gorilla::widgets(popup,Login)]} {
 	set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Open browser to URL"] \
-		-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
+
+	# only install this menu option if we have something to launch
+	if { $::gorilla::preference(browser-exe) ne "" } {
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Open browser to URL"] \
+			-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
+	}
+
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Copy Username to Clipboard"] \
 		-command "gorilla::PopupCopyUsername"
@@ -6651,6 +6663,27 @@ proc gorilla::LaunchBrowser { rn } {
 
 } ; # end proc gorilla::LaunchBrowser
 
+# this proc is called from a write trace on the browser-exe variable, it
+# inserts/removes the launch URL menu entry depending on the contents of the
+# browser-exe field
+
+proc ::gorilla::LaunchBrowserManage args {
+
+	if { ! [ info exists ::gorilla::widgets(popup,Login) ] } {
+		return
+	}
+
+	if { $::gorilla::preference(browser-exe) eq "" } {
+		if { ! [ catch { set idx [ $::gorilla::widgets(popup,Login) index [ mc "Open browser to URL" ] ] } ] } {
+			$::gorilla::widgets(popup,Login) delete $idx
+		} ; # end if catch -- index 
+	} else {
+		if { [ catch { $::gorilla::widgets(popup,Login) index [ mc "Open browser to URL" ] } ] } {
+			$::gorilla::widgets(popup,Login) insert 0 command  -label [mc "Open browser to URL"]  -command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
+		} ; # end inner if catch -- index
+	}
+}
+																					
 #
 # ----------------------------------------------------------------------
 # Debugging for the Mac OS
