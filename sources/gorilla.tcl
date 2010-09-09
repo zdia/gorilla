@@ -214,6 +214,8 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(gorillaIcon) 0
 		# added by Richard Ellis
 		set ::gorilla::preference(iconifyOnAutolock) 0
+		set ::gorilla::preferences(browser-exe) ""
+		set ::gorilla::preferences(browser-param) ""
 		
 }
 
@@ -4625,6 +4627,8 @@ proc gorilla::PreferencesDialog {} {
 		fontsize 10 \
 		gorillaIcon 0 \
 		iconifyOnAutolock 0 \
+		browser-exe "" \
+		browser-param "" \
 		} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
@@ -4813,7 +4817,21 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			-variable ::gorilla::prefTemp(iconifyOnAutolock) \
 			-text [mc "Iconify upon auto-lock"]
 		pack $display.autoiconify -anchor w -pady 5
-		
+
+		#
+		# Fifth NoteBook tab: Browser
+		#
+
+		$top.nb add [ set browser [ ttk::frame $top.nb.browser -padding [ list 10 0 ] ] ] -text [ mc "Browser" ]
+		ttk::label $browser.lexe -text [ mc "Browser executable to launch:" ]
+		ttk::entry $browser.exe -textvariable ::gorilla::prefTemp(browser-exe)
+		ttk::label $browser.lparam -text [ mc "Command line parameters (if any) to pass:" ]
+		ttk::entry $browser.param -textvariable ::gorilla::prefTemp(browser-param)
+		grid $browser.lexe   -sticky w  -pady { 5m 0 }
+		grid $browser.exe    -sticky ew -pady { 0 5m }
+		grid $browser.lparam -sticky w
+		grid $browser.param  -sticky ew 
+																				
 		#
 		# End of NoteBook tabs
 		#
@@ -4895,6 +4913,8 @@ return
 		fontsize \
 		gorillaIcon \
 		iconifyOnAutolock \
+		browser-exe \
+		browser-param \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
@@ -5052,6 +5072,8 @@ proc gorilla::SavePreferencesToRCFile {} {
 			fontsize \
 			gorillaIcon \
 			iconifyOnAutolock \
+			browser-exe \
+			browser-param \
 			} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
@@ -5363,6 +5385,12 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				set ::gorilla::preference($pref) $value
 			}
 			iconifyOnAutolock {
+				set ::gorilla::preference($pref) $value
+			}
+			browser-exe {
+				set ::gorilla::preference($pref) $value
+			}
+			browser-param {
 				set ::gorilla::preference($pref) $value
 			}
 	}
