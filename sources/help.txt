@@ -388,6 +388,12 @@ path, only the name of the executable is required.  If the executable is not
 present upon the search path, then the full path name to the executable
 should be entered into this field.
 
+To simplify the insertion of a full path name to the executable file, the
+'''Find Browser''' button will launch a file browser with which you may
+navigate to and select the proper executable.  Upon selecting the proper
+executable, the full path to that executable will be automatically added to
+the entry.
+
 '''Command line parameter (if any) to pass'''
 
 This field is optional.  If left blank Password Gorilla will simply pass the
@@ -404,6 +410,44 @@ entering '''parameter(%url%)''' would result in the browser receiving
 for various browsers is beyond the scope of Password Gorilla.  Please
 consult your browser documentation to determine if any special command line
 parameters are required to launch directly to a URL.
+
+'''Notes for Windows Users'''
+
+On Windows, Internet Explorer is generally named 'iexplore.exe' and is often
+located in the C:\Program Files\Internet Explorer\ directory (at least on
+Win XP SP3).  In order to launch IE, you will need to enter this full path
+(i.e. C:\Program Files\Internet Explorer\iexplore.exe) in the '''Browser
+executable to launch''' field.  It may be easier to utilize the '''Find
+Browser''' button and then navigate to and select the iexplore.exe
+executable.
+
+'''Notes for Mac Users'''
+
+To open the default Mac browser (Safari) you should enter the single word
+'''open''' in the '''Browser executable to launch''' entry.  If you utilize
+Firefox on the Mac, usually entering '''firefox''' is sufficient to launch
+Firefox from Password Gorilla.
+
+'''Notes for Unix/Linux Users'''
+
+Usually, under most Unix/Linux distributions, the various browser executable
+files are located in standard executable search path directories.  In most
+instances you will simply have to enter the browser name only, i.e.
+'''firefox''' for the Firefox browser, in order to launch a browser from
+inside Password Gorilla.  If this does not work, then please enter a full
+path to your browser of choice, or utilize the '''Find Browser''' button to
+navigate to and select your chosen browser.
+
+'''Notes for all users'''
+
+If the URL fields of your database records store full URL's, including the
+''http://'' prefix, there is nothing special that you should need to do
+unless you utilize a browser that requires extra command line parameters.
+
+However, if the URL fields of your database records store website names,
+i.e. ''www.example.com'' instead of ''http://www.example.com'' then you may
+need to enter '''http://%url%''' in the '''Command line parameter''' entry
+in order to properly launch your browser to the correct location. 
 
 -------------------
 title: Keyboard Shortcuts
