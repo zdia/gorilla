@@ -397,7 +397,7 @@ first entry.
 However, if special command line switches and/or parameters are necessary to
 launch the browser to a particular URL, then those switches and/or
 parameters must be entered into this field.  If this is the case, then the
-special character sequence '''%url%''' should be utilized at the point that
+special character sequence '''%url%''' must be utilized at the point that
 the actual URL should be placed within the switches and/or parameters.  E.g.
 entering '''parameter(%url%)''' would result in the browser receiving
 '''parameter(http://www.example.com)'''.  What parameters may be required
