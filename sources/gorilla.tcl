@@ -6675,6 +6675,8 @@ proc gorilla::LaunchBrowser { rn } {
 		}
 		if { [ catch { exec $::gorilla::preference(browser-exe) $URL & } mesg ] } {
 			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
+		} else {
+			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
 		}
 	}
 
