@@ -704,7 +704,7 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		if {![info exists ::gorilla::widgets(popup,Login)]} {
 	set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
 	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Browse to URL"] \
+		-label [mc "Open URL"] \
 		-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Copy Username to Clipboard"] \
