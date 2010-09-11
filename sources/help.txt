@@ -369,11 +369,20 @@ Password Gorilla can launch a browser directly to the URL stored within a
 login entry provided that the user preferences have been configured to
 indicate what browser to launch and how to launch the browser.
 
-Under File -> Preferences is a tab labeled ''Browser''.  On this tab are two
-entry fields labeled ''Browser executable to launch'' and ''Command line
-parameter (if any) to pass''.  At a minimum, at least the first field must
-be filled in to enable the ability to launch a browser directly to a URL
-stored in a login entry.
+Once configured as described below, to launch a browser directly to a URL,
+right click upon a login entry in the tree and select '''Open URL'''. 
+Alternately, under the '''General''' tab in '''File''' -> '''Preferences'''
+if the selection '''Launch Browser directed to URL''' within '''When double
+clicking a login ...''' is selected then a double click upon a login will
+launch a browser to the URL stored in the login.
+
+'''Configuration of Launch Browser functionality'''
+
+Under '''File''' -> '''Preferences''' is a tab labeled ''Browser''.  On this
+tab are two entry fields labeled ''Browser executable to launch'' and
+''Command line parameter (if any) to pass''.  At a minimum, at least the
+first field must be filled in to enable the ability to launch a browser
+directly to a URL stored in a login entry.
 
 '''Browser executable to launch'''
 
