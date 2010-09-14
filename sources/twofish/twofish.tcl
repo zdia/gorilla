@@ -104,6 +104,34 @@ itcl::class ::itwofish::itwofish {
 
     private common MDS_GF_FDBK 0x169
 
+    # ---------------------------------------------------
+    # load a compiled C extension for f32 - if one exists
+    # ---------------------------------------------------
+
+    set machine $::tcl_platform(machine)
+    set os      $::tcl_platform(os)
+
+    # regularize machine name for ix86 variants
+    switch -glob -- $machine {
+      intel -
+      i*86* { set machine x86 }
+    }
+
+    puts stderr "twofish: gorillaDir = $gorillaDir"
+    set lib [ file join $::gorillaDir twofish f32-$os-$machine[ info sharedlibextension ] ]
+    puts stderr "twofish: lib -> $lib"
+
+    if { [ catch { load $lib f32 } ] } {
+      puts stderr "twofish: Using Tcl only f32"
+      set callmap [ list -m:f32- f32 ]
+    } else {
+      puts stderr "twofish: Using Critcl f32"
+      set callmap [ list -m:f32- f32_critcl ]
+    }
+
+# ---------------------------------------------------
+
+
     public proc f32 {x k32 keyLen} {
 	set b0 [expr {$x & 255}]
 	set b1 [expr {($x >> 8) & 255}]
@@ -266,7 +294,7 @@ itcl::class ::itwofish::itwofish {
 	reKey
     }
 
-    public method reKey {} {
+    public method reKey {} [ string map $callmap {
 	set subkeyCnt [expr {$ROUND_SUBKEYS + 32}]
 	set k64Cnt [expr {($keyLen + 63) / 64}]
 	set sboxKeys [list]
@@ -283,21 +311,23 @@ itcl::class ::itwofish::itwofish {
 	set subkeyCntDiv2 [expr {$subkeyCnt / 2}]
 
 	for {set i 0} {$i < $subkeyCntDiv2} {incr i} {
-	    set A [f32 [expr {$i * $SK_STEP}] $k32e $keyLen]
-	    set B [f32 [expr {$i * $SK_STEP + $SK_BUMP}] $k32o $keyLen]
+#puts stderr "reKey f32: [f32 [expr {$i * $SK_STEP}] $k32e $keyLen] f32_critcl: [f32_critcl [expr {$i * $SK_STEP}] $k32e $keyLen]"
+	    set A [-m:f32- [expr {$i * $SK_STEP}] $k32e $keyLen]
+#puts stderr "reKey f32: [f32 [expr {$i * $SK_STEP + $SK_BUMP}] $k32o $keyLen] f32_critcl: [f32_critcl [expr {$i * $SK_STEP + $SK_BUMP}] $k32o $keyLen]"
+	    set B [-m:f32- [expr {$i * $SK_STEP + $SK_BUMP}] $k32o $keyLen]
 	    set B [expr {(($B << 8) % 0x100000000) | ($B >> 24)}]
 
 	    set Ap2B [expr {($A + 2*$B) % 0x100000000}]
 	    lappend subKeys [expr {($A + $B) % 0x100000000}]
 	    lappend subKeys [expr {(($Ap2B << $SK_ROTL) % 0x100000000) | ($Ap2B >> (32 - $SK_ROTL))}]
 	}
-    }
+    } ]
 
     #
     # Encryption
     #
 
-    public method intEncrypt {x0 x1 x2 x3} {
+    public method intEncrypt {x0 x1 x2 x3} [ string map $callmap {
 	#
 	# INPUT_WHITEN == 0..3
 	#
@@ -311,8 +341,10 @@ itcl::class ::itwofish::itwofish {
 	set skio [expr {$ROUND_SUBKEYS + 1}]
 
 	for {set r 0} {$r < 16} {incr r} {
-	    set t0 [f32 $x0 $sboxKeys $keyLen]
-	    set t1 [f32 [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen]
+#puts stderr "intEncrypt f32: [f32 $x0 $sboxKeys $keyLen] f32_critcl: [f32_critcl $x0 $sboxKeys $keyLen]"
+	    set t0 [-m:f32- $x0 $sboxKeys $keyLen]
+#puts stderr "intEncrypt f32: [f32 [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen] f32_critcl: [f32_critcl [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen]"
+	    set t1 [-m:f32- [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen]
 
 	    set x2 [expr {$x2 ^ (($t0 + $t1 + [lindex $subKeys $skie]) % 0x100000000)}]
 	    set x2 [expr {(($x2 << 31) % 0x100000000) | ($x2 >> 1)}]
@@ -343,13 +375,13 @@ itcl::class ::itwofish::itwofish {
 	set o3 [expr {$x3 ^ [lindex $subKeys 7]}]
 
 	return [list $o0 $o1 $o2 $o3]
-    }
+    } ]
 
     #
     # Decryption
     #
 
-    protected method intDecrypt {x0 x1 x2 x3} {
+    protected method intDecrypt {x0 x1 x2 x3} [ string map $callmap {
 	#
 	# OUTPUT_WHITEN==4..7
 	#
@@ -363,8 +395,11 @@ itcl::class ::itwofish::itwofish {
 	set skio [expr {$ROUND_SUBKEYS + 31}]
 
 	for {set r 16} {$r > 0} {incr r -1} {
-	    set t0 [f32 $x0 $sboxKeys $keyLen]
-	    set t1 [f32 [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen]
+#puts stderr "intDecrypt f32: [f32 $x0 $sboxKeys $keyLen] f32_critcl: [f32_critcl $x0 $sboxKeys $keyLen]"
+	    set t0 [-m:f32- $x0 $sboxKeys $keyLen]
+
+#puts stderr "intDecrypt f32: [f32 [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen] f32_critcl: [f32_critcl [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen]"
+	    set t1 [-m:f32- [expr {(($x1 << 8) % 0x100000000) | ($x1 >> 24)}] $sboxKeys $keyLen]
 
 	    set x2 [expr {(($x2 << 1) % 0x100000000) | ($x2 >> 31)}]
 	    set x2 [expr {$x2 ^ (($t0 + $t1 + [lindex $subKeys $skie]) % 0x100000000)}]
@@ -395,7 +430,7 @@ itcl::class ::itwofish::itwofish {
 	set o3 [expr {$x3 ^ [lindex $subKeys 3]}]
 
 	return [list $o0 $o1 $o2 $o3]
-    }
+    } ]
 }
 
 #

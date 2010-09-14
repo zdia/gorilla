@@ -35,7 +35,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.3 $}
+set ::gorillaVersion {$Revision: 1.5.3.2 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -1123,6 +1123,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		set ::gorilla::openPercentWidget $aframe.info
 		trace add variable ::gorilla::openPercent [list "write"] \
 	::gorilla::OpenPercentTrace
+set a [ clock milliseconds ]
 		if {[catch {set newdb [pwsafe::createFromFile $fileName $password \
 					 ::gorilla::openPercent]} oops]} {
 			pwsafe::int::randomizeVar password
@@ -1141,6 +1142,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		focus $aframe.pw.pw
 		continue
 		}
+set b [ clock milliseconds ]
+puts stderr "elapsed open time: [ expr { $b - $a } ]ms"
 		# all seems well
 		trace remove variable ::gorilla::openPercent [list "write"] \
 	::gorilla::OpenPercentTrace
