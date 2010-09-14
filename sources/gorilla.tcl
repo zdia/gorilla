@@ -219,6 +219,7 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(browser-exe) ""
 		set ::gorilla::preference(browser-param) ""
 		set ::gorilla::preference(autocopyUserid) 0
+		set ::gorilla::preference(autoclearMultiplier) 1
 		
 }
 
@@ -3776,16 +3777,14 @@ proc gorilla::Exit {} {
 		exit
 }
 
-proc gorilla::CopyUsername { {dotimeout true} } {
+proc gorilla::CopyUsername { {mult 1} } {
 		ArrangeIdleTimeout
 		clipboard clear
 		clipboard append -- [::gorilla::GetSelectedUsername]
 		set ::gorilla::activeSelection 1
 		selection clear
 		selection own .
-		if { $dotimeout } {
-			ArrangeToClearClipboard
-		}
+		ArrangeToClearClipboard $mult
 		set ::gorilla::status [mc "Copied user name to clipboard."]
 }
 
@@ -3830,7 +3829,7 @@ proc gorilla::ClearClipboard {} {
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::ArrangeToClearClipboard {} {
+proc gorilla::ArrangeToClearClipboard { {mult 1} } {
 	if {[info exists ::gorilla::clipboardClearId]} {
 		after cancel $::gorilla::clipboardClearId
 	}
@@ -3842,7 +3841,8 @@ proc gorilla::ArrangeToClearClipboard {} {
 	}
 
 	set seconds $::gorilla::preference(clearClipboardAfter)
-	set mseconds [expr {$seconds * 1000}]
+	set mseconds [expr {$seconds * 1000 * $mult }]
+	if { $mseconds == 0 } { return }
 	set ::gorilla::clipboardClearId [after $mseconds ::gorilla::ClearClipboard]
 }
 
@@ -4638,6 +4638,7 @@ proc gorilla::PreferencesDialog {} {
 		browser-exe "" \
 		browser-param "" \
 		autocopyUserid 0 \
+		autoclearMultiplier 1 \
 		} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
@@ -4848,6 +4849,17 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			-text [ mc "Also copy username to clipboard" ]
 		::tooltip::tooltip $browser.autocopyuserid [ mc "When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." ]
 
+		# note - switch to ttk::spinbox when upgrading to tcl/tk 8.5.9 or better
+		set subframe [ ttk::frame $browser.acmf ]
+		::tooltip::tooltip $subframe [ mc "Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." ]
+		spinbox $subframe.spin -from 0 -to 20 -increment 1 -width 3 \
+			-command { set ::gorilla::prefTemp(autoclearMultiplier) %s } \
+			-validatecommand { ::gorilla::PreferencesSpinBoxValidate %P } \
+			-validate all
+		$subframe.spin set $::gorilla::prefTemp(autoclearMultiplier)
+		ttk::label $subframe.spinlbl -text "Clipboard autoclear mulitplier"
+		pack $subframe.spin $subframe.spinlbl -side left -padx {0 2m}
+
 		grid $browser.lexe    -sticky nw  -pady { 5m 0 }
 		grid $browser.exe     -sticky new 
 		grid $browser.findgui -sticky ne  -pady { 1m 5m }
@@ -4855,6 +4867,7 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		grid $browser.param   -sticky new 
 		grid $browser.inst    -sticky new -pady { 2m 0 }
 		grid $browser.autocopyuserid -sticky new -pady {2m 0}
+		grid $subframe        -sticky new -pady { 2m 2m }
 
 		#
 		# End of NoteBook tabs
@@ -4940,6 +4953,7 @@ return
 		browser-exe \
 		browser-param \
 		autocopyUserid \
+		autoclearMultiplier \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
@@ -4948,6 +4962,14 @@ return
 proc gorilla::Preferences {} {
 	gorilla::PreferencesDialog
 }
+
+proc gorilla::PreferencesSpinBoxValidate { value } {
+	if { ( ! [ string is integer -strict $value ] ) || ( ( $value < 0 ) || ( 20 < $value ) ) } { 
+		return 0
+	} else { 
+		return 1
+	} 
+} ; # end proc gorilla::PreferencesSpinBoxValidate
 
 
 # ----------------------------------------------------------------------
@@ -5100,6 +5122,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 			browser-exe \
 			browser-param \
 			autocopyUserid \
+			autoclearMultiplier \
 			} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
@@ -5420,6 +5443,9 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				set ::gorilla::preference($pref) $value
 			}
 			autocopyUserid {
+				set ::gorilla::preference($pref) $value
+			}
+			autoclearMultiplier {
 				set ::gorilla::preference($pref) $value
 			}
 	}
@@ -6688,7 +6714,7 @@ proc gorilla::LaunchBrowser { rn } {
 		} else {
 			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
 			if { $::gorilla::preference(autocopyUserid) } {
-				::gorilla::CopyUsername false
+				::gorilla::CopyUsername $::gorilla::preference(autoclearMultiplier)
 			}
 				
 		}
