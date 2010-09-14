@@ -160,6 +160,8 @@ if {[catch {package require pwsafe} oops]} {
 	exit 1
 }
 
+package require tooltip
+
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
 # UUIDs for new logins, but we don't depend on it.
@@ -216,6 +218,7 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(iconifyOnAutolock) 0
 		set ::gorilla::preference(browser-exe) ""
 		set ::gorilla::preference(browser-param) ""
+		set ::gorilla::preference(autocopyUserid) 0
 		
 }
 
@@ -4632,6 +4635,7 @@ proc gorilla::PreferencesDialog {} {
 		iconifyOnAutolock 0 \
 		browser-exe "" \
 		browser-param "" \
+		autocopyUserid 0 \
 		} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
@@ -4837,12 +4841,18 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		ttk::style configure biwrap.TLabel -wraplength 75
 		ttk::label $browser.inst  -style biwrap.TLabel -text [ mc "If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." ]
 		bind $browser.inst <Configure> "ttk::style configure biwrap.TLabel -wraplength \[ winfo width $browser.inst \]"
+		ttk::checkbutton $browser.autocopyuserid \
+			-variable ::gorilla::prefTemp(autocopyUserid) \
+			-text [ mc "Also copy username to clipboard" ]
+		::tooltip::tooltip $browser.autocopyuserid [ mc "When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." ]
+
 		grid $browser.lexe    -sticky nw  -pady { 5m 0 }
 		grid $browser.exe     -sticky new 
 		grid $browser.findgui -sticky ne  -pady { 1m 5m }
 		grid $browser.lparam  -sticky nw
 		grid $browser.param   -sticky new 
-		grid $browser.inst    -sticky new -pady { 7m 0 }
+		grid $browser.inst    -sticky new -pady { 2m 0 }
+		grid $browser.autocopyuserid -sticky new -pady {2m 0}
 
 		#
 		# End of NoteBook tabs
@@ -4927,6 +4937,7 @@ return
 		iconifyOnAutolock \
 		browser-exe \
 		browser-param \
+		autocopyUserid \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
@@ -5086,6 +5097,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 			iconifyOnAutolock \
 			browser-exe \
 			browser-param \
+			autocopyUserid \
 			} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
@@ -5403,6 +5415,9 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				set ::gorilla::preference($pref) $value
 			}
 			browser-param {
+				set ::gorilla::preference($pref) $value
+			}
+			autocopyUserid {
 				set ::gorilla::preference($pref) $value
 			}
 	}
