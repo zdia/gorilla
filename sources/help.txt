@@ -417,6 +417,17 @@ for various browsers is beyond the scope of Password Gorilla.  Please
 consult your browser documentation to determine if any special command line
 parameters are required to launch directly to a URL.
 
+'''Auto copy username to clipboard'''
+
+If this checkbox is selected, then as part of the launch browser sequence
+Password Gorilla will also copy the username from the selected password
+entry to the clipboard.  This will allow for an immediate paste of the
+username into the related website login form once the browser is open and
+has retreived the website content.  Note that for this one option Password
+Gorilla will not automatically clear the clipboard because it may take an
+indeterminate amount of time for the browser to launch.  This prevents the
+clipboard from being cleared before the browser launches and initializes.
+
 '''Notes for Windows Users'''
 
 On Windows, Internet Explorer is generally named 'iexplore.exe' and is often
