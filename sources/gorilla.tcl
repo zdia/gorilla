@@ -3776,14 +3776,16 @@ proc gorilla::Exit {} {
 		exit
 }
 
-proc gorilla::CopyUsername {} {
+proc gorilla::CopyUsername { {dotimeout true} } {
 		ArrangeIdleTimeout
 		clipboard clear
 		clipboard append -- [::gorilla::GetSelectedUsername]
 		set ::gorilla::activeSelection 1
 		selection clear
 		selection own .
-		ArrangeToClearClipboard
+		if { $dotimeout } {
+			ArrangeToClearClipboard
+		}
 		set ::gorilla::status [mc "Copied user name to clipboard."]
 }
 
@@ -6685,6 +6687,10 @@ proc gorilla::LaunchBrowser { rn } {
 			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
 		} else {
 			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
+			if { $::gorilla::preference(autocopyUserid) } {
+				::gorilla::CopyUsername false
+			}
+				
 		}
 	}
 
