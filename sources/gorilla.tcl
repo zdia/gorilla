@@ -126,7 +126,7 @@ if {[tk windowingsystem] == "aqua"}	{
 # items will be found before system installed items
 set auto_path [ list $::gorillaDir {*}$auto_path ]
 
-foreach subdir {sha1 blowfish twofish pwsafe itcl3.4 msgs} {
+foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 	set testDir [file join $::gorillaDir $subdir]
 	if {[file isdirectory $testDir]} {
 		lappend auto_path $testDir
