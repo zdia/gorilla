@@ -16,7 +16,7 @@
     variable pages                              ;# All the help pages
     variable alias                              ;# Alias to help pages
     variable state
-    variable font {Helvetica 10}
+    variable font TkTextFont
  
     array unset pages
     array unset alias

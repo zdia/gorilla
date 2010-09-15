@@ -111,9 +111,6 @@ the Control key, and click on a group name.) In the dialog box that
 opens, the ''Parent Group'' name will be set automatically, and the name
 of the new subgroup can be entered.
 
-You can also drag both groups and logins, and drop them on a new
-parent group, to quickly re-arrange the database's organization.
-
 Note that empty groups are not stored in the password database file.
 If you save and re-open a file, empty groups will disappear.
 
@@ -420,7 +417,7 @@ for various browsers is beyond the scope of Password Gorilla.  Please
 consult your browser documentation to determine if any special command line
 parameters are required to launch directly to a URL.
 
-'''Auto copy username to clipboard'''
+'''Also copy username to clipboard'''
 
 If this checkbox is selected, then as part of the launch browser sequence
 Password Gorilla will also copy the username from the selected password
@@ -430,6 +427,23 @@ has retreived the website content.  Note that for this one option Password
 Gorilla will not automatically clear the clipboard because it may take an
 indeterminate amount of time for the browser to launch.  This prevents the
 clipboard from being cleared before the browser launches and initializes.
+
+'''Clipboard autoclear multiplier'''
+
+This setting controls how Passoword Gorilla handles clearing of the
+clipboard contents if the '''Also copy username to clipboard''' option is
+selected.  The value set in the '''Clear clipboard after''' box on the
+'''General''' tab of the preferences is multiplied by the value set in this
+box.  As a result there are three possible choices of values:
+
+0 (zero) Do not clear clipboard when opening a url, overriding the time set
+on the '''General''' tab;
+
+1 (one) Clear clipboard after the length of time set on the '''General'''
+tab;
+
+2 ... 20 (two to twenty) Clear clipboard after twice (up to twenty times)
+the length of time set on the '''General''' tab.
 
 '''Notes for Windows Users'''
 
