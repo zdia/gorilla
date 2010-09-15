@@ -205,8 +205,8 @@ mcmset de {
 	"Lock now" "Sofort sperren" \
 	"View Login" "Login zeigen" \
 	"Password" "Passwort" \
-	"Last Password Change" "Letzte Passwortänderung" \
-	"Last Modified" "Zuletzt geändert" \
+	"Last Password Change:" "Letzte Passwortänderung" \
+	"Last Modified:" "Zuletzt geändert" \
 	"Notes" "Notizen" \
 	"Size" "Größe" \
 	"Show Gorilla Icon" "Zeige den Gorilla" \
@@ -215,6 +215,10 @@ mcmset de {
 	"because the file permissions are set for read-only access." "kann nicht gesichert werden, weil sie schreibgeschützt ist." \
 	"Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file." "Entfernen Sie den Schreibschutz und wählen dann 'Wiederholen' oder brechen Sie den Vorgang ab und speichern Sie die Datei unter einem neuen Namen." \
 	"Warning: Read-only password file" "Warnung: Schreibgeschützte Datei" \
+	"Password policy settings invalid." "Password policy settings invalid." \
+	"<unknown>" "<unknown>" \
+	"This login must have a title." "This login must have a title." \
+	"This login's group name is not valid." "This login's group name is not valid." \
 	}
 	
 mcunknown de "unbekannt"
