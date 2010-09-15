@@ -430,7 +430,7 @@ clipboard from being cleared before the browser launches and initializes.
 
 '''Clipboard autoclear multiplier'''
 
-This setting controls how Passoword Gorilla handles clearing of the
+This setting controls how Password Gorilla handles clearing of the
 clipboard contents if the '''Also copy username to clipboard''' option is
 selected.  The value set in the '''Clear clipboard after''' box on the
 '''General''' tab of the preferences is multiplied by the value set in this
