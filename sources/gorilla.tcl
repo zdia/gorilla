@@ -6852,6 +6852,28 @@ if {$::gorilla::init == 0} {
 
 	for {set i 0} {$i < $argc} {incr i} {
 		switch -- [lindex $argv $i] {
+			--sourcedoc {
+					# Need ruff! and struct::list from tcllib - both should be
+					# installed properly for this option to work
+
+					set error false
+					foreach pkg { ruff struct::list } {
+						if { [ catch { package require $pkg } ] } {
+							puts stderr "Could not load package $pkg, aborting documentation processing."
+							set error true 
+						}
+					} ; # end foreach pkg
+
+					if { ! $error } {
+						# document all namespaces, except for tcl/tk system namespaces
+						# (tk, ttk, itcl, etc.)
+						set nslist [ ::struct::list filterfor z [ namespace children :: ] { ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl)$} $z ] } ]
+						::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
+					}
+
+					# cleanup after ourselves
+					unset -nocomplain error nslist pkg z 
+				}
 			--norc -
 			-norc {
 				set ::gorilla::preference(norc) 1
