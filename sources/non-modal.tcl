@@ -1,79 +1,41 @@
 
-# How to test this code:
-# 
-# Step 1 - Place this file in the gorilla/source dir where gorilla.tcl
-#          resides.
-# 
-# Step 2 - Start gorilla.tcl with gorilla/sources as the current working
-#          directory and open a testing database.
-# 
-# Step 3 - Right click on at least one login entry in the tree to cause the
-#          right click context menu to appear.  This step is not strictly
-#          necessary, but if not done then the right click menu will not
-#          exist and "non-modal" will not be able to add entries to the menu
-#          when it initializes.
-# 
-# Step 4 - Locate the tk "rmt" application.  Mine is installed at
-#          "/usr/lib/tk8.5/demos/rmt".  If "slocate" is installed then this
-#          shell command will show rmt's location: "slocate rmt | grep
-#          demo".
-# 
-# Step 5 - Run rmt.
-# 
-# Step 6 - Connect to the running gorilla using File->Select Application in
-#          the rmt window.
-# 
-# Step 7 - Type "source non-modal" into the rmt console, which will cause
-#          the running gorilla.tcl to load the non-modal file from the
-#          current working directory, which should still be gorilla/sources.
-# 
-
-# Step 8 - You will know "non-modal" has loaded successfully when an
-#          additional top level window containing a single button labeled
-#          "Source non-modal" appears.  Once loaded, clicking this button
-#          will remove the elements added by the "non-modal" script, and
-#          then reinitialize and reload the script.  I used this for
-#          development so that I could make an edit and reload the changes
-#          without having to completely restart gorilla.tcl and open a
-#          database.
-# 
-# Step 9 - Experiment and test the new non-modal edit dialog.
-
-
 # setup code - wire the new edit dialog into the menus
 
 if { [ catch { .mbar.login index "New Edit*" } ] } {
-  .mbar.login add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit"
+	.mbar.login add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit"
 }
 
 if { [ catch { .popupForLogin index "New Edit*" } ] } {
-  catch { .popupForLogin add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit" }
+	catch { .popupForLogin add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit" }
 }
 
 if { [ catch { .mbar.login index "New Add*" } ] } {
-  .mbar.login add command -command ::gorilla::LoginDialog::AddLogin -label "New Add"
+	.mbar.login add command -command ::gorilla::LoginDialog::AddLogin -label "New Add"
 }
 
 if { [ catch { .popupForLogin index "New Add*" } ] } {
-  catch { .popupForLogin add command -command ::gorilla::LoginDialog::AddLogin -label "New Add" }
+	catch { .popupForLogin add command -command ::gorilla::LoginDialog::AddLogin -label "New Add" }
 }
 
 # for testing - rl -> reload
 proc rl { script } {
+	# A temporary testing proc for the non-modal edit dialog changes.
+	# Erases all state/windows created by the non-modal code, then sources the code file again.
+	# script - The pathname to the code file to reload
 	foreach win [ winfo children . ] { 
-  	if { [ string match .nmLoginDialog* $win ] } {
-  		destroy $win
+		if { [ string match .nmLoginDialog* $win ] } {
+			destroy $win
 		}
 	}
 	catch { namespace delete ::gorilla::LoginDialog }
-  source $script
+	source $script
 
 }
 
 if { ! [ winfo exists .push ] } {
-  toplevel .push
-  button .push.b1 -text "Source [ info script ]" -command [ list rl [ info script ] ]
-  pack .push.b1 
+	toplevel .push
+	button .push.b1 -text "Source [ info script ]" -command [ list rl [ info script ] ]
+	pack .push.b1 
 } 
 
 # main code begins below, everything above is for development purposes
@@ -100,19 +62,27 @@ namespace eval ::gorilla::LoginDialog {
 	 
 	variable idle-windows [ list ]
 
-  namespace import ::tcl::mathop::+ ::tcl::mathop::* ::tcl::mathop::/ 
+	namespace import ::tcl::mathop::+ ::tcl::mathop::* ::tcl::mathop::/ 
 
-  # arbiter is a dict used to prevent more than one open edit dialog for an
-  # individual db record number
+	# arbiter is a dict used to prevent more than one open edit dialog for an
+	# individual db record number
 
-  variable arbiter [ dict create ]
+	variable arbiter [ dict create ]
   
 # -----------------------------------------------------------------------------
 
 	proc push { win } {
+
+		# add an window name to the end of the namespace variable idle-windows
+		# win - the window name to "push" onto the idle-windows stack variable
+		# Side-effect: Modifes namespace variable idle-windows.
+		#
+		# This is used to maintain a list of "inactive" withdrawn dialogs for
+		# reuse in future edit requests.  Such avoids having to rebuild both the
+		# dialog as well as the dialog state space and GUI handling procs.
+
 		variable idle-windows
 		lappend idle-windows $win
-#		puts stderr [ info ]
 	} ; # end proc push
 
 # -----------------------------------------------------------------------------
@@ -123,15 +93,26 @@ namespace eval ::gorilla::LoginDialog {
 # -----------------------------------------------------------------------------
 
 	proc pop { } {
+
+		# Remove a window name from the stack in the idle-windows namespace variable.
+		# Side-effect: Modifes namespace variable idle-windows.
+		#
+		# This is used to maintain a list of "inactive" withdrawn dialogs for
+		# reuse in future edit requests.  Such avoids having to rebuild both the
+		# dialog as well as the dialog state space and GUI handling procs.
+
 		variable idle-windows
 		return [ K [ lindex ${idle-windows} end ] [ set idle-windows [ lrange ${idle-windows} 0 end-1 ] ] ]
+		# returns the name of the window that was popped from the stack.
 	}
 
 # -----------------------------------------------------------------------------
 
 	proc info { } {
+		# A testing proc for debugging purposes
 		variable idle-windows
 		return "idle-windows -> '${idle-windows}'"
+		# returns the contents of the idle-windows namespace variable stack
 	}
 
 # -----------------------------------------------------------------------------
@@ -145,6 +126,28 @@ namespace eval ::gorilla::LoginDialog {
 	# ===========================================================================
 
 	proc LoginDialog { args } {
+
+		# Open a dialog to edit/create an entry in the login DB.
+		#
+		# -rn - Record number from Itcl login DB to edit.  Magic record number
+		#  -999 is defined to mean edit a new (blank) record.  Defaults to -999
+		#  if not provided.
+		#
+		# -group - Set initial "group" name to apply to a new record.  This
+		#  initializes the "group" field of the edit dialog.
+		#
+		# -treenode - The ttk::treeview node ID of an existing record when a
+		#  user requests editing of an existing record.  This is used to update
+		#  the tree display when a user clicks "Ok" to their changes.
+		#
+		# Requirements: If -rn is not -999 then the record number must exist in
+		# the Itcl DB when called.  In addition, to edit an existing record, the
+		# -treenode value must also be passed in.
+		#
+		# Additionally, a simple check is made such that there is a one to one
+		# mapping of existing record numbers to open edit dialogs.  It is
+		# disallowed to edit the exact same record in two independent dialogs
+		# simultaneously.
 
 		variable arbiter
 
@@ -226,6 +229,13 @@ namespace eval ::gorilla::LoginDialog {
 # -----------------------------------------------------------------------------
 
 	proc DestroyLoginDialog { win } {
+	
+		# Used to withdraw, reset, and store for later an edit dialog from the
+		# screen.
+		#
+		# win - the toplevel name of the edit dialog to withdraw, reset, and
+		#  store.
+	
 		variable arbiter
 		unset -nocomplain ::gorilla::toplevel($win)
 		push $win
@@ -247,8 +257,19 @@ namespace eval ::gorilla::LoginDialog {
 	# the name of the private variable namespace is the numeric suffix of
 	# the toplevel name, so extract the numeric suffix from the toplevel
 	# name
+
 	proc get-pvns-from-toplevel { top } {
+
+		# Extracts the private namespace name for an edit dialog
+		#
+		# top - the toplevel name of an edit dialog from which to extract the
+		#  private variable namespace
+	  
 		return [ namespace current ]::[ lindex [ regexp -inline {([0-9]+)$} $top ] 1 ] 
+		
+		# returns The name of the private variable namespace associated with the
+		# passed toplevel name.
+		
 	} ; # end proc get-pvns-from-toplevel
 
 # -----------------------------------------------------------------------------
@@ -332,7 +353,7 @@ namespace eval ::gorilla::LoginDialog {
 
 		pack $plf -side top -anchor w -padx 10 -pady 3
 
-		foreach {item label} [ list                                                  \
+		foreach {item label} [ list                                            \
 			uselowercase {Use lowercase letters}                                 \
 			useuppercase {Use UPPERCASE letters}                                 \
 			usedigits    {Use digits}                                            \
@@ -388,7 +409,7 @@ namespace eval ::gorilla::LoginDialog {
 # -----------------------------------------------------------------------------
 
 	# calculates a "wraplength" value from the list of integer lengths passed
-	# to the pro.  The resulting length will be an integer representing the
+	# to the proc.  The resulting length will be an integer representing the
 	# mean of the passed in list, rounded up to the next even unit of 10.
   
 	proc calculateWraplength { lengths } {
@@ -397,9 +418,9 @@ namespace eval ::gorilla::LoginDialog {
 
 # -----------------------------------------------------------------------------
 
-	# smacro -> simple macro processor.  The idea is inspired by Lisp
-	# macros, this simple implimentation has more in common with cpp
-	# style macros, a simple string substiution.
+	# smacro -> simple macro processor.  The idea is inspired by Lisp macros,
+	# but this simple implimentation has more in common with cpp style macros,
+	# in that it is a simple string substiution.
 
 	proc smacro { map body } {
 		return [ string map [ convert_map $map ] $body ]
@@ -407,10 +428,10 @@ namespace eval ::gorilla::LoginDialog {
 
 # -----------------------------------------------------------------------------
 
-	# preprocess the macro substitution map.  Each key in the map is
-	# surrounded by curly brackets and m:, i.e. "{m:key}".  This was
-	# chosen because this is highly unlikely to be utilized as valid Tcl
-	# code otherwise.
+	# preprocess the macro substitution map.  Each key in the map is prefixed
+	# by m: and then the result is surrounded by hyphens, i.e. "-m:key-". 
+	# This format was chosen because this is highly unlikely to be utilized as
+	# valid Tcl code otherwise.
 
 	proc convert_map { map } {
 
@@ -426,11 +447,22 @@ namespace eval ::gorilla::LoginDialog {
 
 	proc build-gui-callbacks { pvns widgets } {
 
-		# this builds the callback procs that will handle this dialogs
+		# This builds the callback procs that will handle this dialogs
 		# interaction with the user - generation of these procs borrows a bit of
 		# ideas from Lisp macros to avoid having to pass a bunch of constants
 		# around in proc parameters (i.e., the pvns name or the widget path/proc
-		# names)
+		# names) or having the procs reference a bunch of quasi-global variables
+		#
+		# pvns - the name of the private variable namespace for the dialog.  The
+		#  GUI interaction procs will be built within this namespace.
+		#
+		# widgets - A key/value list (i.e. a dict or a list from array get) of
+		#  descriptive widget names and the actual widget window pathname to
+		#  apply as the "macro" transformations for each proc built.  Each key
+		#  will be substituted for the value of that key in the body of each
+		#  proc, with the result being that the resulting procs are "customized"
+		#  at build time to know which GUI widgets to access for performing
+		#  their relevant functions.
 
 		namespace eval $pvns [ smacro $widgets {
 		
