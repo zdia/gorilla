@@ -6867,7 +6867,8 @@ if {$::gorilla::init == 0} {
 					if { ! $error } {
 						# document all namespaces, except for tcl/tk system namespaces
 						# (tk, ttk, itcl, etc.)
-						set nslist [ ::struct::list filterfor z [ namespace children :: ] { ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl)$} $z ] } ]
+						set nslist [ ::struct::list filterfor z [ namespace children :: ] \
+						{ ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
 						::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
 					}
 
