@@ -201,6 +201,7 @@ when a database is open.
 
 -------------------
 title: General Preferences
+alias: General
 
 '''Clear clipboard after <nn> seconds'''
 
@@ -234,6 +235,19 @@ itself, but with the ''.bak'' extension.
 dialogs, should you find the default sizes inconvenient. If this option is
 enabled, Password Gorilla will remember the size of dialog boxes across
 restarts.
+
+'''Use Gorilla auto-copy'''
+
+ | If this option is selected then Password Gorilla will automatically copy
+the password of a login to the clipboard after a paste of the associated
+username has occurred.  This allows a website's login/password fields to be
+filled in one immediately after the other without returning to Password
+Gorilla in between.
+
+ | If this option is utilized in combination with the '''Also copy username
+to clipboard''' option of the [Browser] tab then it allows logging into a
+website with only one touch of Password Gorilla (for websites that follow
+the username plus password standard).
 
 -------------------
 title: Database Default Preferences
@@ -364,6 +378,7 @@ Preferences]) expires.
 
 -------------------
 title: Launch Browser
+alias: Browser
 
 Password Gorilla can launch a browser directly to the URL stored within a
 login entry provided that the user preferences have been configured to
@@ -378,7 +393,7 @@ launch a browser to the URL stored in the login.
 
 '''Configuration of Launch Browser functionality'''
 
-Under '''File''' -> '''Preferences''' is a tab labeled ''Browser''.  On this
+ | Under '''File''' -> '''Preferences''' is a tab labeled ''Browser''.  On this
 tab are two entry fields labeled ''Browser executable to launch'' and
 ''Command line parameter (if any) to pass''.  At a minimum, at least the
 first field must be filled in to enable the ability to launch a browser
@@ -386,7 +401,7 @@ directly to a URL stored in a login entry.
 
 '''Browser executable to launch'''
 
-This field should be filled in with the name of the executable file to
+ | This field should be filled in with the name of the executable file to
 launch the browser.  I.e., for Firefox on Linux this would usually be
 '''firefox''' and for Firefox on Windows this would usually be
 '''firefox.exe'''.  If the executable is present upon the OS executable search
@@ -394,7 +409,7 @@ path, only the name of the executable is required.  If the executable is not
 present upon the search path, then the full path name to the executable
 should be entered into this field.
 
-To simplify the insertion of a full path name to the executable file, the
+ | To simplify the insertion of a full path name to the executable file, the
 '''Find Browser''' button will launch a file browser with which you may
 navigate to and select the proper executable.  Upon selecting the proper
 executable, the full path to that executable will be automatically added to
@@ -402,11 +417,11 @@ the entry.
 
 '''Command line parameter (if any) to pass'''
 
-This field is optional.  If left blank Password Gorilla will simply pass the
+ | This field is optional.  If left blank Password Gorilla will simply pass the
 URL value from the login entry directly to the program executable from the
 first entry.
 
-However, if special command line switches and/or parameters are necessary to
+ | However, if special command line switches and/or parameters are necessary to
 launch the browser to a particular URL, then those switches and/or
 parameters must be entered into this field.  If this is the case, then the
 special character sequence '''%url%''' must be utilized at the point that
@@ -419,35 +434,40 @@ parameters are required to launch directly to a URL.
 
 '''Also copy username to clipboard'''
 
-If this checkbox is selected, then as part of the launch browser sequence
+ | If this checkbox is selected, then as part of the launch browser sequence
 Password Gorilla will also copy the username from the selected password
 entry to the clipboard.  This will allow for an immediate paste of the
 username into the related website login form once the browser is open and
-has retreived the website content.  Note that for this one option Password
-Gorilla will not automatically clear the clipboard because it may take an
-indeterminate amount of time for the browser to launch.  This prevents the
-clipboard from being cleared before the browser launches and initializes.
+has retreived the website content.  Use the below '''Clipboard autoclear
+multiplier''' setting to control clearing of the clipboard when this option
+is utilized.
+
+ | If this option is utilized in combination with the '''Use Gorilla
+auto-copy''' option of the [General] tab then the '''Clipboard autoclear
+multiplier''' will only apply to the username.  The associated password will
+continue to be cleared from the clipboard after expiration of the '''Clear
+clipboard after <nn> seconds''' timer option from the [General] tab.
 
 '''Clipboard autoclear multiplier'''
 
-This setting controls how Password Gorilla handles clearing of the
+ | This setting controls how Password Gorilla handles clearing of the
 clipboard contents if the '''Also copy username to clipboard''' option is
 selected.  The value set in the '''Clear clipboard after''' box on the
 '''General''' tab of the preferences is multiplied by the value set in this
 box.  As a result there are three possible choices of values:
 
-0 (zero) Do not clear clipboard when opening a url, overriding the time set
+ | 0 (zero) Do not clear clipboard when opening a url, overriding the time set
 on the '''General''' tab;
 
-1 (one) Clear clipboard after the length of time set on the '''General'''
+ | 1 (one) Clear clipboard after the length of time set on the '''General'''
 tab;
 
-2 ... 20 (two to twenty) Clear clipboard after twice (up to twenty times)
+ | 2 ... 20 (two to twenty) Clear clipboard after twice (up to twenty times)
 the length of time set on the '''General''' tab.
 
 '''Notes for Windows Users'''
 
-On Windows, Internet Explorer is generally named 'iexplore.exe' and is often
+ | On Windows, Internet Explorer is generally named 'iexplore.exe' and is often
 located in the C:\Program Files\Internet Explorer\ directory (at least on
 Win XP SP3).  In order to launch IE, you will need to enter this full path
 (i.e. C:\Program Files\Internet Explorer\iexplore.exe) in the '''Browser
@@ -457,14 +477,14 @@ executable.
 
 '''Notes for Mac Users'''
 
-To open the default Mac browser (Safari) you should enter the single word
+ | To open the default Mac browser (Safari) you should enter the single word
 '''open''' in the '''Browser executable to launch''' entry.  If you utilize
 Firefox on the Mac, usually entering '''firefox''' is sufficient to launch
 Firefox from Password Gorilla.
 
 '''Notes for Unix/Linux Users'''
 
-Usually, under most Unix/Linux distributions, the various browser executable
+ | Usually, under most Unix/Linux distributions, the various browser executable
 files are located in standard executable search path directories.  In most
 instances you will simply have to enter the browser name only, i.e.
 '''firefox''' for the Firefox browser, in order to launch a browser from
@@ -474,11 +494,11 @@ navigate to and select your chosen browser.
 
 '''Notes for all users'''
 
-If the URL fields of your database records store full URL's, including the
+ | If the URL fields of your database records store full URL's, including the
 ''http://'' prefix, there is nothing special that you should need to do
 unless you utilize a browser that requires extra command line parameters.
 
-However, if the URL fields of your database records store website names,
+ | However, if the URL fields of your database records store website names,
 i.e. ''www.example.com'' instead of ''http://www.example.com'' then you may
 need to enter '''http://%url%''' in the '''Command line parameter''' entry
 in order to properly launch your browser to the correct location. 

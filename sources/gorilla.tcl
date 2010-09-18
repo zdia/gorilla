@@ -220,6 +220,7 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(browser-param) ""
 		set ::gorilla::preference(autocopyUserid) 0
 		set ::gorilla::preference(autoclearMultiplier) 1
+		set ::gorilla::preference(gorillaAutocopy) 1
 		
 }
 
@@ -4639,6 +4640,7 @@ proc gorilla::PreferencesDialog {} {
 		browser-param "" \
 		autocopyUserid 0 \
 		autoclearMultiplier 1 \
+		gorillaAutocopy 1 \
 		} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
@@ -4704,7 +4706,12 @@ ttk::checkbutton $gpf.bu -text [mc "Backup database on save"] \
 	-variable ::gorilla::prefTemp(keepBackupFile)
 ttk::checkbutton $gpf.geo -text [mc "Remember sizes of dialog boxes"] \
 	-variable ::gorilla::prefTemp(rememberGeometries)
-pack $gpf.bu $gpf.geo -side top -anchor w -padx 10 -pady 5
+ttk::checkbutton $gpf.gac -text [ mc "Use Gorilla auto-copy" ] \
+	-variable ::gorilla::prefTemp(gorillaAutocopy)
+::tooltip::tooltip $gpf.gac [ mc "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." ]
+pack $gpf.bu $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
+
+
 
 #
 # Second NoteBook tab: database defaults
@@ -4954,6 +4961,7 @@ return
 		browser-param \
 		autocopyUserid \
 		autoclearMultiplier \
+		gorillaAutocopy \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
@@ -5123,6 +5131,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 			browser-param \
 			autocopyUserid \
 			autoclearMultiplier \
+			gorillaAutocopy \
 			} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
@@ -5448,6 +5457,9 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 			autoclearMultiplier {
 				set ::gorilla::preference($pref) $value
 			}
+			gorillaAutocopy {
+				set ::gorilla::preference($pref) $value
+			}
 	}
 		}
 
@@ -5532,6 +5544,9 @@ proc gorilla::XSelectionHandler {offset maxChars} {
 		}
 	1 {
 			set data [gorilla::GetSelectedUsername]
+			if { $::gorilla::preference(gorillaAutocopy) } {
+				after idle { after 200 { ::gorilla::CopyPassword } }
+			}
 		}
 	2 {
 			set data [gorilla::GetSelectedPassword]
