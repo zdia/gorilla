@@ -343,6 +343,9 @@ set ::gorilla::menu_desc {
 		} 
 	}
 
+# note - if the help menu widget name changes, this will need to be updated	
+::gorilla::addRufftoHelp .mbar.help
+
 # menueintrag deaktivieren mit dem tag "login
 # suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
 # etwa in $menu_tag(file) = {"" login}, ergibt index=2
@@ -6806,6 +6809,34 @@ namespace eval ::gorilla::dbunset {
   	namespace ensemble create
 
 } ; # end namespace eval ::gorilla::dbunset
+
+# ----------------------------------------------------------------------
+
+proc ::gorilla::addRufftoHelp { menu } {
+
+	# Appends an entry to the menu passed in that will call the Ruff!
+	# documentation processor to produce source docs.
+	#
+	# menu - The menu proc to which to append the ruff command entry
+	#
+	# This needs ruff! and struct::list from tcllib - both should be
+	# installed properly for this option to work
+
+	if { ( ! [ catch { package require ruff         } ] ) \
+	  && ( ! [ catch { package require struct::list } ] ) } {
+	  
+	  	proc ::gorilla::makeRuffdoc { } {
+			# document all namespaces, except for tcl/tk system namespaces
+			# (tk, ttk, itcl, etc.)
+			set nslist [ ::struct::list filterfor z [ namespace children :: ] \
+			{ ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
+			::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
+		}
+		
+		$menu add command -label "Generate gorilladoc.html" -command ::gorilla::makeRuffdoc
+	}
+
+} ; # end proc addRufftoHelp
 
 #
 # ----------------------------------------------------------------------
