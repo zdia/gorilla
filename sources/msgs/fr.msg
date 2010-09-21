@@ -197,6 +197,8 @@ mcmset fr {
 	"<unknown>" "<unknown>" \
 	"This login must have a title." "This login must have a title." \
 	"This login's group name is not valid." "This login's group name is not valid." \
+	"No Database" "No Database" \
+	"Please create a new database,\nor open an existing database first." "Please create a new database,\nor open an existing database first." \
 	}
 	
 mcunknown de "unbekannt"

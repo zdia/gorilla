@@ -290,8 +290,8 @@ set ::gorilla::menu_desc {
 							"Find ..." open gorilla::Find $menu_meta F
 							"Find next" open gorilla::FindNext $menu_meta G
 							}
-	Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
-							"Edit Login" open gorilla::EditLogin $menu_meta E
+	Login	login	{ "Add Login" open gorilla::LoginDialog::AddLogin $menu_meta A
+							"Edit Login" open gorilla::LoginDialog::EditLogin $menu_meta E
 							"View Login" open gorilla::ViewLogin $menu_meta V
 							"Delete Login" login gorilla::DeleteLogin "" ""
 							"Move Login ..." login gorilla::MoveLogin "" ""
@@ -588,7 +588,7 @@ proc gorilla::TreeNodeDouble {node} {
 						gorilla::CopyPassword
 					}
 					editLogin {
-						gorilla::EditLogin
+						gorilla::LoginDialog::EditLogin
 					}
 				default {
 					# do nothing
@@ -635,7 +635,7 @@ proc gorilla::GroupPopup {node xpos ypos} {
 	set ::gorilla::widgets(popup,Group) [menu .popupForGroup]
 	$::gorilla::widgets(popup,Group) add command \
 		-label [mc "Add Login"] \
-		-command "gorilla::PopupAddLogin"
+		-command "gorilla::LoginDialog::AddLogin"
 	$::gorilla::widgets(popup,Group) add command \
 		-label [mc "Add Subgroup"] \
 		-command "gorilla::PopupAddSubgroup"
@@ -665,17 +665,17 @@ proc gorilla::GroupPopup {node xpos ypos} {
 		catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
 }
 
-proc gorilla::PopupAddLogin {} {
-		set node [lindex [$::gorilla::widgets(tree) selection] 0]
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
-
-		if {$type == "Group"} {
-	gorilla::AddLoginToGroup [lindex $data 1]
-		} elseif {$type == "Root"} {
-	gorilla::AddLoginToGroup ""
-		}
-}
+#proc gorilla::PopupAddLogin {} {
+#		set node [lindex [$::gorilla::widgets(tree) selection] 0]
+#		set data [$::gorilla::widgets(tree) item $node -values]
+#		set type [lindex $data 0]
+#
+#		if {$type == "Group"} {
+#	gorilla::AddLoginToGroup [lindex $data 1]
+#		} elseif {$type == "Root"} {
+#	gorilla::AddLoginToGroup ""
+#		}
+#}
 
 proc gorilla::PopupAddSubgroup {} {
 		gorilla::AddSubgroup
@@ -710,7 +710,7 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	$::gorilla::widgets(popup,Login) add separator
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Edit Login"] \
-		-command "gorilla::PopupEditLogin"
+		-command "gorilla::LoginDialog::EditLogin"
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "View Login"] \
 		-command "gorilla::PopupViewLogin"
@@ -726,9 +726,9 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
 }
 
-proc gorilla::PopupEditLogin {} {
-		gorilla::EditLogin
-}
+#proc gorilla::PopupEditLogin {} {
+#		gorilla::EditLogin
+#}
 
 proc gorilla::PopupViewLogin {} {
 	gorilla::ViewLogin
@@ -1358,102 +1358,102 @@ proc gorilla::Open {{defaultFile ""}} {
 # ----------------------------------------------------------------------
 
 
-proc gorilla::AddLogin {} {
-	gorilla::PopupAddLogin
-	# AddLoginToGroup ""
-}
+#proc gorilla::AddLogin {} {
+#	gorilla::PopupAddLogin
+#	# AddLoginToGroup ""
+#}
 
 # ----------------------------------------------------------------------
 # Add a Login to a Group
 # ----------------------------------------------------------------------
 
-proc gorilla::AddLoginToGroup {group} {
-	ArrangeIdleTimeout
-
-	if {![info exists ::gorilla::db]} {
-		tk_messageBox -parent . \
-		-type ok -icon error -default ok \
-		-title "No Database" \
-		-message "Please create a new database, or open an existing\
-		database first."
-		return
-	}
-
-# r-ecord n-umber
-	set rn [$::gorilla::db createRecord]
-
-	if {$group != ""} {
-		$::gorilla::db setFieldValue $rn 2 $group
-	}
-
-	if {![catch {package present uuid}]} {
-		$::gorilla::db setFieldValue $rn 1 [uuid::uuid generate]
-	}
-
-	$::gorilla::db setFieldValue $rn 7 [clock seconds]
-
-	set res [LoginDialog $rn]
-	if {$res == 0} {
-		# canceled
-		$::gorilla::db deleteRecord $rn
-		set ::gorilla::status [mc "Addition of new login canceled."]
-		return
-	}
-
-	set ::gorilla::status [mc "New login added."]
-	AddRecordToTree $rn
-	MarkDatabaseAsDirty
-}
+#proc gorilla::AddLoginToGroup {group} {
+#	ArrangeIdleTimeout
+#
+#	if {![info exists ::gorilla::db]} {
+#		tk_messageBox -parent . \
+#		-type ok -icon error -default ok \
+#		-title "No Database" \
+#		-message "Please create a new database, or open an existing\
+#		database first."
+#		return
+#	}
+#
+## r-ecord n-umber
+#	set rn [$::gorilla::db createRecord]
+#
+#	if {$group != ""} {
+#		$::gorilla::db setFieldValue $rn 2 $group
+#	}
+#
+#	if {![catch {package present uuid}]} {
+#		$::gorilla::db setFieldValue $rn 1 [uuid::uuid generate]
+#	}
+#
+#	$::gorilla::db setFieldValue $rn 7 [clock seconds]
+#
+#	set res [LoginDialog $rn]
+#	if {$res == 0} {
+#		# canceled
+#		$::gorilla::db deleteRecord $rn
+#		set ::gorilla::status [mc "Addition of new login canceled."]
+#		return
+#	}
+#
+#	set ::gorilla::status [mc "New login added."]
+#	AddRecordToTree $rn
+#	MarkDatabaseAsDirty
+#}
 
 # ----------------------------------------------------------------------
 # Edit a Login
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::EditLogin {} {
-	ArrangeIdleTimeout
-
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	 }
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
-
-	if {$type == "Group" || $type == "Root"} {
-		return
-	}
-
-	set rn [lindex $data 1]
-
-	set oldGroupName [ ::gorilla::dbget group $rn ]
-
-	set res [LoginDialog $rn]
-
-	if {$res == 0} {
-		set ::gorilla::status [mc "Login unchanged."]
-		# canceled
-		return
-	}
-
-	set newGroupName [ ::gorilla::dbget group $rn ]
-
-	if {$oldGroupName != $newGroupName} {
-		$::gorilla::widgets(tree) delete $node
-		AddRecordToTree $rn
-	} else {
-		set title [ ::gorilla::dbget title $rn ]
-
-		if { [ ::gorilla::dbget user $rn ] ne "" } {
-			append title " \[" [ ::gorilla::dbget user $rn ] "\]"
-		}
-
-		$::gorilla::widgets(tree) item $node -text $title
-	}
-
-	set ::gorilla::status [mc "Login modified."]
-	MarkDatabaseAsDirty
-}
+#proc gorilla::EditLogin {} {
+#	ArrangeIdleTimeout
+#
+#	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
+#		return
+#	 }
+#	set node [lindex $sel 0]
+#	set data [$::gorilla::widgets(tree) item $node -values]
+#	set type [lindex $data 0]
+#
+#	if {$type == "Group" || $type == "Root"} {
+#		return
+#	}
+#
+#	set rn [lindex $data 1]
+#
+#	set oldGroupName [ ::gorilla::dbget group $rn ]
+#
+#	set res [LoginDialog $rn]
+#
+#	if {$res == 0} {
+#		set ::gorilla::status [mc "Login unchanged."]
+#		# canceled
+#		return
+#	}
+#
+#	set newGroupName [ ::gorilla::dbget group $rn ]
+#
+#	if {$oldGroupName != $newGroupName} {
+#		$::gorilla::widgets(tree) delete $node
+#		AddRecordToTree $rn
+#	} else {
+#		set title [ ::gorilla::dbget title $rn ]
+#
+#		if { [ ::gorilla::dbget user $rn ] ne "" } {
+#			append title " \[" [ ::gorilla::dbget user $rn ] "\]"
+#		}
+#
+#		$::gorilla::widgets(tree) item $node -text $title
+#	}
+#
+#	set ::gorilla::status [mc "Login modified."]
+#	MarkDatabaseAsDirty
+#}
 
 # ----------------------------------------------------------------------
 # Move a Login
@@ -3218,329 +3218,329 @@ proc gorilla::SaveAs {} {
 # Edit a Login
 # ----------------------------------------------------------------------
 
-proc gorilla::DestroyLoginDialog {} {
-	set ::gorilla::guimutex 2
-}
-
-proc gorilla::LoginDialog {rn} {
-	ArrangeIdleTimeout
-
-	#
-	# Set up dialog
-	#
-
-	set top .loginDialog
-
-	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
-		TryResizeFromPreference $top
-		wm title $top [mc "Add/Edit/View Login"]
-
-		ttk::frame $top.l
-		
-		foreach {child childname} {
-			group Group title Title url URL user Username pass Password} {
-			set kind1 [join "$top.l.$child 1" ""]
-			set kind2 [join "$top.l.$child 2" ""]
-			set entry_text ::gorilla::$top.l.$child.e
-			ttk::label $kind1 -text [mc "$childname:"] -anchor w -padding {10 0 0 0}
-			ttk::entry $kind2 -width 40 -textvariable ::gorilla::loginDialog.$child
-			grid $kind1 $kind2 -sticky ew -pady 5
-		}
-
-		ttk::label $top.l.label_notes -text [mc "Notes:"] -anchor w -padding {10 0 0 0}
-		text $top.l.notes -width 40 -height 5 -wrap word
-		grid $top.l.label_notes $top.l.notes -sticky nsew -pady 5
-		grid rowconfigure $top.l $top.l.notes -weight 1
-		grid columnconfigure $top.l $top.l.notes -weight 1
-		
-		ttk::label $top.l.lpwc -text [mc "Last Password Change:"] -anchor w -padding {10 0 0 0}
-		ttk::label $top.l.lpwc_info -text "" -width 40 -anchor w
-		grid $top.l.lpwc $top.l.lpwc_info -sticky nsew -pady 5
-
-		ttk::label $top.l.mod -text [mc "Last Modified:"] -anchor w -padding {10 0 0 0}
-		ttk::label $top.l.mod_info -text "" -width 40 -anchor w
-		grid $top.l.mod $top.l.mod_info -sticky nsew -pady 5
-
-		ttk::frame $top.r				;# frame right
-		ttk::frame $top.r.top
-		ttk::button $top.r.top.ok -width 16 -text "OK" -command "set ::gorilla::guimutex 1"
-		ttk::button $top.r.top.c -width 16 -text [mc "Cancel"] \
-			-command "set ::gorilla::guimutex 2"
-		pack $top.r.top.ok $top.r.top.c -side top -padx 10 -pady 5
-		pack $top.r.top -side top -pady 20
-
-		ttk::frame $top.r.pws
-		ttk::button $top.r.pws.show -width 16 -text [mc "Show Password"] \
-			-command "set ::gorilla::guimutex 3"
-		ttk::button $top.r.pws.gen -width 16 -text [mc "Generate Password"] \
-			-command "set ::gorilla::guimutex 4"
-		ttk::checkbutton $top.r.pws.override -text [mc "Override Password Policy"] \
-			-variable ::gorilla::overridePasswordPolicy 
-			# -justify left
-		pack $top.r.pws.show $top.r.pws.gen $top.r.pws.override \
-			-side top -padx 10 -pady 5
-		pack $top.r.pws -side top -pady 20
-
-		pack $top.l -side left -expand yes -fill both
-		pack $top.r -side right -fill both
-
-		#
-		# Set up bindings
-		#
-
-		bind $top.l.group2 <Shift-Tab> "after 0 \"focus $top.r.top.ok\""
-		bind $top.l.title2 <Shift-Tab> "after 0 \"focus $top.l.group2\""
-		bind $top.l.user2 <Shift-Tab> "after 0 \"focus $top.l.title2\""
-		bind $top.l.pass2 <Shift-Tab> "after 0 \"focus $top.l.user2\""
-		bind $top.l.notes <Tab> "after 0 \"focus $top.r.top.ok\""
-		bind $top.l.notes <Shift-Tab> "after 0 \"focus $top.l.pass2\""
-
-		bind $top.l.group2 <Return> "set ::gorilla::guimutex 1"
-		bind $top.l.title2 <Return> "set ::gorilla::guimutex 1"
-		bind $top.l.user2 <Return> "set ::gorilla::guimutex 1"
-		bind $top.l.pass2 <Return> "set ::gorilla::guimutex 1"
-		bind $top.r.top.ok <Return> "set ::gorilla::guimutex 1"
-		bind $top.r.top.c <Return> "set ::gorilla::guimutex 2"
-
-		set ::gorilla::toplevel($top) $top
-		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyLoginDialog
-	} else {
-		wm deiconify $top
-	}
-
-		#
-		# Configure dialog
-		#
-		# Die textvariable für das entry muss global sein!!!
-		set ::gorilla::loginDialog.group [ ::gorilla::dbget group    $rn ]
-		set ::gorilla::loginDialog.title [ ::gorilla::dbget title    $rn ]
-		set ::gorilla::loginDialog.url   [ ::gorilla::dbget url      $rn ]
-		set ::gorilla::loginDialog.user  [ ::gorilla::dbget user     $rn ]
-		set ::gorilla::loginDialog.pass  [ ::gorilla::dbget password $rn ]
-		set ::gorilla::loginDialog.url   [ ::gorilla::dbget url      $rn ]
-		$top.l.notes delete 1.0 end
-		$top.l.notes insert 1.0 [ ::gorilla::dbget notes $rn ]
-		$top.l.lpwc_info configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ]
-		$top.l.mod_info  configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
-
-		if {[$::gorilla::db existsRecord $rn] && [$::gorilla::db existsField $rn 6]} {
-			$top.l.pass2 configure -show "*"
-			$top.r.pws.show configure -text [mc "Show Password"]
-		} else {
-			$top.l.pass2 configure -show ""
-			$top.r.pws.show configure -text [mc "Hide Password"]
-		}
-
-		if {![info exists ::gorilla::overriddenPasswordPolicy]} {
-			set ::gorilla::overriddenPasswordPolicy [GetDefaultPasswordPolicy]
-		}
-
-		if {[$::gorilla::db hasHeaderField 0] && [lindex [$::gorilla::db getHeaderField 0] 0] >= 3} {
-			$top.l.url2 configure -state normal
-		} else {
-			# Version 2 does not have a separate URL field
-			set ::gorilla::loginDialog.url "(Not available with v2 database format.)"
-			$top.l.url2 configure -state disabled
-		}
-
-		#
-		# Run dialog
-		#
-
-		set oldGrab [grab current .]
-
-		update idletasks
-		raise $top
-		focus $top.l.title2
-		catch {grab $top}
-
-		while {42} {
-			ArrangeIdleTimeout
-			set ::gorilla::guimutex 0
-			vwait ::gorilla::guimutex
-			if {$::gorilla::guimutex == 1} {
-				if {[$top.l.title2 get] == ""} {
-					tk_messageBox -parent $top \
-						-type ok -icon error -default ok \
-						-title "Login Needs Title" \
-						-message "A login must at least have a title.\
-						Please enter a title for this login."
-					continue
-				}
-				if {[ catch {pwsafe::db::splitGroup [$top.l.group2 get]} ]} {
-					tk_messageBox -parent $top \
-						-type ok -icon error -default ok \
-						-title "Invalid Group Name" \
-						-message "This login's group name is not valid."
-					continue
-				}
-				break
-			} elseif {$::gorilla::guimutex == 2} {
-				break
-			} elseif {$::gorilla::guimutex == 3} {
-				#
-				# Show Password
-				#
-				set show [$top.l.pass2 cget -show]
-				if {$show == ""} {
-					$top.l.pass2 configure -show "*"
-					$top.r.pws.show configure -text [mc "Show Password"]
-				} else {
-					$top.l.pass2 configure -show ""
-					$top.r.pws.show configure -text [mc "Hide Password"]
-				}
-			} elseif {$::gorilla::guimutex == 4} {
-				#
-				# Generate Password
-				#
-				if {$::gorilla::overridePasswordPolicy} {
-					set settings [PasswordPolicyDialog \
-						[mc "Override Password Policy"] \
-						$::gorilla::overriddenPasswordPolicy]
-					if {[llength $settings] == 0} {
-						continue
-					}
-					set ::gorilla::overriddenPasswordPolicy $settings
-				} else {
-					set settings [GetDefaultPasswordPolicy]
-				}
-				if {[catch {set newPassword [GeneratePassword $settings]} oops]} {
-					tk_messageBox -parent $top \
-						-type ok -icon error -default ok \
-						-title "Invalid Password Settings" \
-						-message "The password policy settings are invalid."
-					continue
-				}
-				set ::gorilla::loginDialog.pass $newPassword
-				pwsafe::int::randomizeVar newPassword
-			}
-		}
-
-		if {$oldGrab != ""} {
-			catch {grab $oldGrab}
-		} else {
-			catch {grab release $top}
-		}
-
-		wm withdraw $top
-
-		#
-		# Canceled?
-		#
-
-		if {$::gorilla::guimutex != 1} {
-			set ::gorilla::loginDialog.group ""
-			set ::gorilla::loginDialog.url ""
-			set ::gorilla::loginDialog.title ""
-			set ::gorilla::loginDialog.user ""
-			set ::gorilla::loginDialog.pass ""
-			$top.l.notes delete 1.0 end
-			return 0
-		}
-
-		#
-		# Store fields in the database
-		#
-
-		set modified 0
-		set now [clock seconds]
-
-		set group [$top.l.group2 get]
-		if {$group != ""} {
-			if {![$::gorilla::db existsField $rn 2] || \
-				![string equal $group [$::gorilla::db getFieldValue $rn 2]]} {
-				set modified 1
-			}
-			$::gorilla::db setFieldValue $rn 2 $group
-		} elseif {[$::gorilla::db existsField $rn 2]} {
-			$::gorilla::db unsetFieldValue $rn 2
-			set modified 1
-		}
-		set ::gorilla::loginDialog.group ""
-		pwsafe::int::randomizeVar group
-
-		set title [$top.l.title2 get]
-		if {$title != ""} {
-			if {![$::gorilla::db existsField $rn 3] || \
-				![string equal $title [$::gorilla::db getFieldValue $rn 3]]} {
-				set modified 1
-			}
-			$::gorilla::db setFieldValue $rn 3 $title
-		} elseif {[$::gorilla::db existsField $rn 3]} {
-			$::gorilla::db unsetFieldValue $rn 3
-			set modified 1
-		}
-		set ::gorilla::loginDialog.title ""
-		pwsafe::int::randomizeVar title
-
-		set user [$top.l.user2 get]
-		if {$user != ""} {
-			if {![$::gorilla::db existsField $rn 4] || \
-				![string equal $user [$::gorilla::db getFieldValue $rn 4]]} {
-				set modified 1
-			}
-			$::gorilla::db setFieldValue $rn 4 $user
-		} elseif {[$::gorilla::db existsField $rn 4]} {
-			$::gorilla::db unsetFieldValue $rn 4
-			set modified 1
-		}
-		set ::gorilla::loginDialog.user ""
-		pwsafe::int::randomizeVar user
-
-		set pass [$top.l.pass2 get]
-		if {$pass != ""} {
-			if {![$::gorilla::db existsField $rn 6] || \
-				![string equal $pass [$::gorilla::db getFieldValue $rn 6]]} {
-				set modified 1
-				$::gorilla::db setFieldValue $rn 8 $now ;# PW mod time
-			}
-			$::gorilla::db setFieldValue $rn 6 $pass
-		} elseif {[$::gorilla::db existsField $rn 6]} {
-			$::gorilla::db unsetFieldValue $rn 6
-			set modified 1
-		}
-		pwsafe::int::randomizeVar pass
-		set ::gorilla::loginDialog.pass ""
-
-		set notes [string trim [$top.l.notes get 1.0 end]]
-		if {$notes != ""} {
-			if {![$::gorilla::db existsField $rn 5] || \
-				![string equal $notes [$::gorilla::db getFieldValue $rn 5]]} {
-				set modified 1
-			}
-			$::gorilla::db setFieldValue $rn 5 $notes
-		} elseif {[$::gorilla::db existsField $rn 5]} {
-			$::gorilla::db unsetFieldValue $rn 5
-			set modified 1
-		}
-		$top.l.notes delete 1.0 end
-		pwsafe::int::randomizeVar notes
-
-		if {[$top.l.url2 cget -state] == "normal"} {
-			set url [$top.l.url2 get]
-
-			if {$url != ""} {
-				if {![$::gorilla::db existsField $rn 13] || \
-					![string equal $url [$::gorilla::db getFieldValue $rn 13]]} {
-					set modified 1
-					$::gorilla::db setFieldValue $rn 8 $now ;# PW mod time
-				}
-				$::gorilla::db setFieldValue $rn 13 $url
-			} elseif {[$::gorilla::db existsField $rn 13]} {
-				$::gorilla::db unsetFieldValue $rn 13
-				set modified 1
-			}
-			pwsafe::int::randomizeVar url
-		}
-		set ::gorilla::loginDialog.url ""
-
-		if {$modified} {
-			$::gorilla::db setFieldValue $rn 12 $now
-		}
-
-		return $modified
-}
+#proc gorilla::DestroyLoginDialog {} {
+#	set ::gorilla::guimutex 2
+#}
+#
+#proc gorilla::LoginDialog {rn} {
+#	ArrangeIdleTimeout
+#
+#	#
+#	# Set up dialog
+#	#
+#
+#	set top .loginDialog
+#
+#	if {![info exists ::gorilla::toplevel($top)]} {
+#		toplevel $top
+#		TryResizeFromPreference $top
+#		wm title $top [mc "Add/Edit/View Login"]
+#
+#		ttk::frame $top.l
+#		
+#		foreach {child childname} {
+#			group Group title Title url URL user Username pass Password} {
+#			set kind1 [join "$top.l.$child 1" ""]
+#			set kind2 [join "$top.l.$child 2" ""]
+#			set entry_text ::gorilla::$top.l.$child.e
+#			ttk::label $kind1 -text [mc "$childname:"] -anchor w -padding {10 0 0 0}
+#			ttk::entry $kind2 -width 40 -textvariable ::gorilla::loginDialog.$child
+#			grid $kind1 $kind2 -sticky ew -pady 5
+#		}
+#
+#		ttk::label $top.l.label_notes -text [mc "Notes:"] -anchor w -padding {10 0 0 0}
+#		text $top.l.notes -width 40 -height 5 -wrap word
+#		grid $top.l.label_notes $top.l.notes -sticky nsew -pady 5
+#		grid rowconfigure $top.l $top.l.notes -weight 1
+#		grid columnconfigure $top.l $top.l.notes -weight 1
+#		
+#		ttk::label $top.l.lpwc -text [mc "Last Password Change:"] -anchor w -padding {10 0 0 0}
+#		ttk::label $top.l.lpwc_info -text "" -width 40 -anchor w
+#		grid $top.l.lpwc $top.l.lpwc_info -sticky nsew -pady 5
+#
+#		ttk::label $top.l.mod -text [mc "Last Modified:"] -anchor w -padding {10 0 0 0}
+#		ttk::label $top.l.mod_info -text "" -width 40 -anchor w
+#		grid $top.l.mod $top.l.mod_info -sticky nsew -pady 5
+#
+#		ttk::frame $top.r				;# frame right
+#		ttk::frame $top.r.top
+#		ttk::button $top.r.top.ok -width 16 -text "OK" -command "set ::gorilla::guimutex 1"
+#		ttk::button $top.r.top.c -width 16 -text [mc "Cancel"] \
+#			-command "set ::gorilla::guimutex 2"
+#		pack $top.r.top.ok $top.r.top.c -side top -padx 10 -pady 5
+#		pack $top.r.top -side top -pady 20
+#
+#		ttk::frame $top.r.pws
+#		ttk::button $top.r.pws.show -width 16 -text [mc "Show Password"] \
+#			-command "set ::gorilla::guimutex 3"
+#		ttk::button $top.r.pws.gen -width 16 -text [mc "Generate Password"] \
+#			-command "set ::gorilla::guimutex 4"
+#		ttk::checkbutton $top.r.pws.override -text [mc "Override Password Policy"] \
+#			-variable ::gorilla::overridePasswordPolicy 
+#			# -justify left
+#		pack $top.r.pws.show $top.r.pws.gen $top.r.pws.override \
+#			-side top -padx 10 -pady 5
+#		pack $top.r.pws -side top -pady 20
+#
+#		pack $top.l -side left -expand yes -fill both
+#		pack $top.r -side right -fill both
+#
+#		#
+#		# Set up bindings
+#		#
+#
+#		bind $top.l.group2 <Shift-Tab> "after 0 \"focus $top.r.top.ok\""
+#		bind $top.l.title2 <Shift-Tab> "after 0 \"focus $top.l.group2\""
+#		bind $top.l.user2 <Shift-Tab> "after 0 \"focus $top.l.title2\""
+#		bind $top.l.pass2 <Shift-Tab> "after 0 \"focus $top.l.user2\""
+#		bind $top.l.notes <Tab> "after 0 \"focus $top.r.top.ok\""
+#		bind $top.l.notes <Shift-Tab> "after 0 \"focus $top.l.pass2\""
+#
+#		bind $top.l.group2 <Return> "set ::gorilla::guimutex 1"
+#		bind $top.l.title2 <Return> "set ::gorilla::guimutex 1"
+#		bind $top.l.user2 <Return> "set ::gorilla::guimutex 1"
+#		bind $top.l.pass2 <Return> "set ::gorilla::guimutex 1"
+#		bind $top.r.top.ok <Return> "set ::gorilla::guimutex 1"
+#		bind $top.r.top.c <Return> "set ::gorilla::guimutex 2"
+#
+#		set ::gorilla::toplevel($top) $top
+#		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyLoginDialog
+#	} else {
+#		wm deiconify $top
+#	}
+#
+#		#
+#		# Configure dialog
+#		#
+#		# Die textvariable für das entry muss global sein!!!
+#		set ::gorilla::loginDialog.group [ ::gorilla::dbget group    $rn ]
+#		set ::gorilla::loginDialog.title [ ::gorilla::dbget title    $rn ]
+#		set ::gorilla::loginDialog.url   [ ::gorilla::dbget url      $rn ]
+#		set ::gorilla::loginDialog.user  [ ::gorilla::dbget user     $rn ]
+#		set ::gorilla::loginDialog.pass  [ ::gorilla::dbget password $rn ]
+#		set ::gorilla::loginDialog.url   [ ::gorilla::dbget url      $rn ]
+#		$top.l.notes delete 1.0 end
+#		$top.l.notes insert 1.0 [ ::gorilla::dbget notes $rn ]
+#		$top.l.lpwc_info configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ]
+#		$top.l.mod_info  configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
+#
+#		if {[$::gorilla::db existsRecord $rn] && [$::gorilla::db existsField $rn 6]} {
+#			$top.l.pass2 configure -show "*"
+#			$top.r.pws.show configure -text [mc "Show Password"]
+#		} else {
+#			$top.l.pass2 configure -show ""
+#			$top.r.pws.show configure -text [mc "Hide Password"]
+#		}
+#
+#		if {![info exists ::gorilla::overriddenPasswordPolicy]} {
+#			set ::gorilla::overriddenPasswordPolicy [GetDefaultPasswordPolicy]
+#		}
+#
+#		if {[$::gorilla::db hasHeaderField 0] && [lindex [$::gorilla::db getHeaderField 0] 0] >= 3} {
+#			$top.l.url2 configure -state normal
+#		} else {
+#			# Version 2 does not have a separate URL field
+#			set ::gorilla::loginDialog.url "(Not available with v2 database format.)"
+#			$top.l.url2 configure -state disabled
+#		}
+#
+#		#
+#		# Run dialog
+#		#
+#
+#		set oldGrab [grab current .]
+#
+#		update idletasks
+#		raise $top
+#		focus $top.l.title2
+#		catch {grab $top}
+#
+#		while {42} {
+#			ArrangeIdleTimeout
+#			set ::gorilla::guimutex 0
+#			vwait ::gorilla::guimutex
+#			if {$::gorilla::guimutex == 1} {
+#				if {[$top.l.title2 get] == ""} {
+#					tk_messageBox -parent $top \
+#						-type ok -icon error -default ok \
+#						-title "Login Needs Title" \
+#						-message "A login must at least have a title.\
+#						Please enter a title for this login."
+#					continue
+#				}
+#				if {[ catch {pwsafe::db::splitGroup [$top.l.group2 get]} ]} {
+#					tk_messageBox -parent $top \
+#						-type ok -icon error -default ok \
+#						-title "Invalid Group Name" \
+#						-message "This login's group name is not valid."
+#					continue
+#				}
+#				break
+#			} elseif {$::gorilla::guimutex == 2} {
+#				break
+#			} elseif {$::gorilla::guimutex == 3} {
+#				#
+#				# Show Password
+#				#
+#				set show [$top.l.pass2 cget -show]
+#				if {$show == ""} {
+#					$top.l.pass2 configure -show "*"
+#					$top.r.pws.show configure -text [mc "Show Password"]
+#				} else {
+#					$top.l.pass2 configure -show ""
+#					$top.r.pws.show configure -text [mc "Hide Password"]
+#				}
+#			} elseif {$::gorilla::guimutex == 4} {
+#				#
+#				# Generate Password
+#				#
+#				if {$::gorilla::overridePasswordPolicy} {
+#					set settings [PasswordPolicyDialog \
+#						[mc "Override Password Policy"] \
+#						$::gorilla::overriddenPasswordPolicy]
+#					if {[llength $settings] == 0} {
+#						continue
+#					}
+#					set ::gorilla::overriddenPasswordPolicy $settings
+#				} else {
+#					set settings [GetDefaultPasswordPolicy]
+#				}
+#				if {[catch {set newPassword [GeneratePassword $settings]} oops]} {
+#					tk_messageBox -parent $top \
+#						-type ok -icon error -default ok \
+#						-title "Invalid Password Settings" \
+#						-message "The password policy settings are invalid."
+#					continue
+#				}
+#				set ::gorilla::loginDialog.pass $newPassword
+#				pwsafe::int::randomizeVar newPassword
+#			}
+#		}
+#
+#		if {$oldGrab != ""} {
+#			catch {grab $oldGrab}
+#		} else {
+#			catch {grab release $top}
+#		}
+#
+#		wm withdraw $top
+#
+#		#
+#		# Canceled?
+#		#
+#
+#		if {$::gorilla::guimutex != 1} {
+#			set ::gorilla::loginDialog.group ""
+#			set ::gorilla::loginDialog.url ""
+#			set ::gorilla::loginDialog.title ""
+#			set ::gorilla::loginDialog.user ""
+#			set ::gorilla::loginDialog.pass ""
+#			$top.l.notes delete 1.0 end
+#			return 0
+#		}
+#
+#		#
+#		# Store fields in the database
+#		#
+#
+#		set modified 0
+#		set now [clock seconds]
+#
+#		set group [$top.l.group2 get]
+#		if {$group != ""} {
+#			if {![$::gorilla::db existsField $rn 2] || \
+#				![string equal $group [$::gorilla::db getFieldValue $rn 2]]} {
+#				set modified 1
+#			}
+#			$::gorilla::db setFieldValue $rn 2 $group
+#		} elseif {[$::gorilla::db existsField $rn 2]} {
+#			$::gorilla::db unsetFieldValue $rn 2
+#			set modified 1
+#		}
+#		set ::gorilla::loginDialog.group ""
+#		pwsafe::int::randomizeVar group
+#
+#		set title [$top.l.title2 get]
+#		if {$title != ""} {
+#			if {![$::gorilla::db existsField $rn 3] || \
+#				![string equal $title [$::gorilla::db getFieldValue $rn 3]]} {
+#				set modified 1
+#			}
+#			$::gorilla::db setFieldValue $rn 3 $title
+#		} elseif {[$::gorilla::db existsField $rn 3]} {
+#			$::gorilla::db unsetFieldValue $rn 3
+#			set modified 1
+#		}
+#		set ::gorilla::loginDialog.title ""
+#		pwsafe::int::randomizeVar title
+#
+#		set user [$top.l.user2 get]
+#		if {$user != ""} {
+#			if {![$::gorilla::db existsField $rn 4] || \
+#				![string equal $user [$::gorilla::db getFieldValue $rn 4]]} {
+#				set modified 1
+#			}
+#			$::gorilla::db setFieldValue $rn 4 $user
+#		} elseif {[$::gorilla::db existsField $rn 4]} {
+#			$::gorilla::db unsetFieldValue $rn 4
+#			set modified 1
+#		}
+#		set ::gorilla::loginDialog.user ""
+#		pwsafe::int::randomizeVar user
+#
+#		set pass [$top.l.pass2 get]
+#		if {$pass != ""} {
+#			if {![$::gorilla::db existsField $rn 6] || \
+#				![string equal $pass [$::gorilla::db getFieldValue $rn 6]]} {
+#				set modified 1
+#				$::gorilla::db setFieldValue $rn 8 $now ;# PW mod time
+#			}
+#			$::gorilla::db setFieldValue $rn 6 $pass
+#		} elseif {[$::gorilla::db existsField $rn 6]} {
+#			$::gorilla::db unsetFieldValue $rn 6
+#			set modified 1
+#		}
+#		pwsafe::int::randomizeVar pass
+#		set ::gorilla::loginDialog.pass ""
+#
+#		set notes [string trim [$top.l.notes get 1.0 end]]
+#		if {$notes != ""} {
+#			if {![$::gorilla::db existsField $rn 5] || \
+#				![string equal $notes [$::gorilla::db getFieldValue $rn 5]]} {
+#				set modified 1
+#			}
+#			$::gorilla::db setFieldValue $rn 5 $notes
+#		} elseif {[$::gorilla::db existsField $rn 5]} {
+#			$::gorilla::db unsetFieldValue $rn 5
+#			set modified 1
+#		}
+#		$top.l.notes delete 1.0 end
+#		pwsafe::int::randomizeVar notes
+#
+#		if {[$top.l.url2 cget -state] == "normal"} {
+#			set url [$top.l.url2 get]
+#
+#			if {$url != ""} {
+#				if {![$::gorilla::db existsField $rn 13] || \
+#					![string equal $url [$::gorilla::db getFieldValue $rn 13]]} {
+#					set modified 1
+#					$::gorilla::db setFieldValue $rn 8 $now ;# PW mod time
+#				}
+#				$::gorilla::db setFieldValue $rn 13 $url
+#			} elseif {[$::gorilla::db existsField $rn 13]} {
+#				$::gorilla::db unsetFieldValue $rn 13
+#				set modified 1
+#			}
+#			pwsafe::int::randomizeVar url
+#		}
+#		set ::gorilla::loginDialog.url ""
+#
+#		if {$modified} {
+#			$::gorilla::db setFieldValue $rn 12 $now
+#		}
+#
+#		return $modified
+#}
 
 # ----------------------------------------------------------------------
 # Rebuild Tree

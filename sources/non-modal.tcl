@@ -1,21 +1,21 @@
 
-# setup code - wire the new edit dialog into the menus
-
-if { [ catch { .mbar.login index "New Edit*" } ] } {
-	.mbar.login add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit"
-}
-
-if { [ catch { .popupForLogin index "New Edit*" } ] } {
-	catch { .popupForLogin add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit" }
-}
-
-if { [ catch { .mbar.login index "New Add*" } ] } {
-	.mbar.login add command -command ::gorilla::LoginDialog::AddLogin -label "New Add"
-}
-
-if { [ catch { .popupForLogin index "New Add*" } ] } {
-	catch { .popupForLogin add command -command ::gorilla::LoginDialog::AddLogin -label "New Add" }
-}
+## setup code - wire the new edit dialog into the menus
+#
+#if { [ catch { .mbar.login index "New Edit*" } ] } {
+#	.mbar.login add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit"
+#}
+#
+#if { [ catch { .popupForLogin index "New Edit*" } ] } {
+#	catch { .popupForLogin add command -command ::gorilla::LoginDialog::EditLogin -label "New Edit" }
+#}
+#
+#if { [ catch { .mbar.login index "New Add*" } ] } {
+#	.mbar.login add command -command ::gorilla::LoginDialog::AddLogin -label "New Add"
+#}
+#
+#if { [ catch { .popupForLogin index "New Add*" } ] } {
+#	catch { .popupForLogin add command -command ::gorilla::LoginDialog::AddLogin -label "New Add" }
+#}
 
 # for testing - rl -> reload
 proc rl { script } {
@@ -108,12 +108,12 @@ namespace eval ::gorilla::LoginDialog {
 
 # -----------------------------------------------------------------------------
 
-	proc info { } {
-		# A testing proc for debugging purposes
-		variable idle-windows
-		return "idle-windows -> '${idle-windows}'"
-		# returns the contents of the idle-windows namespace variable stack
-	}
+#	proc idle-win-info { } {
+#		# A testing proc for debugging purposes
+#		variable idle-windows
+#		return "idle-windows -> '${idle-windows}'"
+#		# returns the contents of the idle-windows namespace variable stack
+#	}
 
 # -----------------------------------------------------------------------------
 
@@ -786,10 +786,20 @@ namespace eval ::gorilla::LoginDialog {
 		LoginDialog -rn $rn -treenode $node
 
 	} ; # end proc EditLogin
+	
+	namespace export EditLogin
 
 # -----------------------------------------------------------------------------
 
 	proc AddLogin {} {
+
+		if { ! [ info exists ::gorilla::db ] } {
+			tk_messageBox -parent . \
+			-type ok -icon error -default ok \
+			-title [ mc "No Database" ] \
+			-message [ mc "Please create a new database,\nor open an existing database first." ]
+			return
+		}
 
 		set tree $::gorilla::widgets(tree)
 
@@ -808,6 +818,8 @@ namespace eval ::gorilla::LoginDialog {
 		} 
 
 	} ; # end proc AddLogin
+
+	namespace export AddLogin
 
 # -----------------------------------------------------------------------------
 # -----------------------------------------------------------------------------
