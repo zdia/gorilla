@@ -144,6 +144,11 @@ namespace eval ::gorilla::LoginDialog {
 		# the Itcl DB when called.  In addition, to edit an existing record, the
 		# -treenode value must also be passed in.
 		#
+		# This proc is not normally called directly from upper level code. 
+		# Instead it is normally called via the EditLogin or AddLogin procs. 
+		# These two procs perform some consistency checks and pass LoginDialog
+		# the proper arguments to perform the action requested by the user.
+		#
 		# Additionally, a simple check is made such that there is a one to one
 		# mapping of existing record numbers to open edit dialogs.  It is
 		# disallowed to edit the exact same record in two independent dialogs
@@ -767,6 +772,15 @@ namespace eval ::gorilla::LoginDialog {
 # -----------------------------------------------------------------------------
 
 	proc EditLogin {} {
+	
+		# Called to perform an edit of a selected login entry in the
+		# treeview.  Performs a few consistency checks and then
+		# calls LoginDialog with the proper parameters to setup an
+		# edit of an existing login.
+		#
+		# This is the normal interface to the non-modal dialog from
+		# top level code for editing an existing entry.
+	
 		ArrangeIdleTimeout
 
 		if { [ llength [ set sel [ $::gorilla::widgets(tree) selection ] ] ] == 0 } {
@@ -792,6 +806,14 @@ namespace eval ::gorilla::LoginDialog {
 # -----------------------------------------------------------------------------
 
 	proc AddLogin {} {
+
+		# Called to perform an add of a login to a group in the
+		# treeview.  Performs a few consistency checks and then
+		# calls LoginDialog with the proper parameters to setup an
+		# add of a new login.
+		#
+		# This is the normal interface to the non-modal dialog from
+		# top level code for adding a new entry.
 
 		if { ! [ info exists ::gorilla::db ] } {
 			tk_messageBox -parent . \
