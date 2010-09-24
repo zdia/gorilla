@@ -288,9 +288,9 @@ set ::gorilla::menu_desc {
 							separator mac "" "" ""
 							Exit mac gorilla::Exit $menu_meta X
 							}	
-	Edit	edit	{"Copy Username" login gorilla::CopyUsername $menu_meta U
-							"Copy Password" login gorilla::CopyPassword $menu_meta P
-							"Copy URL" login gorilla::CopyURL $menu_meta W
+	Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
+							"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
+							"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
 							separator "" "" "" ""
 							"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
 							separator "" "" "" ""
@@ -459,7 +459,8 @@ set ::gorilla::menu_desc {
 		# Handler for the X Selection
 		#
 
-		selection handle . gorilla::XSelectionHandler
+		selection handle -selection PRIMARY   . gorilla::XSelectionHandler
+		selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
 
 		#
 		# Handler for the WM_DELETE_WINDOW event, which is sent when the
@@ -592,7 +593,7 @@ proc gorilla::TreeNodeDouble {node} {
 		if {[info exists ::gorilla::preference(doubleClickAction)]} {
 				switch -- $::gorilla::preference(doubleClickAction) {
 					copyPassword {
-						gorilla::CopyPassword
+						gorilla::CopyToClipboard Password
 					}
 					editLogin {
 						gorilla::EditLogin
@@ -748,15 +749,15 @@ proc gorilla::PopupViewLogin {} {
 }
 
 proc gorilla::PopupCopyUsername {} {
-		gorilla::CopyUsername
+		gorilla::CopyToClipboard Username
 }
 
 proc gorilla::PopupCopyPassword {} {
-		gorilla::CopyPassword
+		gorilla::CopyToClipboard Password
 }
 
 proc gorilla::PopupCopyURL {} {
-		gorilla::CopyURL
+		gorilla::CopyToClipboard URL
 }
 
 proc gorilla::PopupDeleteLogin {} {
@@ -3778,35 +3779,6 @@ proc gorilla::Exit {} {
 		exit
 }
 
-proc gorilla::CopyUsername { {mult 1} } {
-		ArrangeIdleTimeout
-		clipboard clear
-		clipboard append -- [::gorilla::GetSelectedUsername]
-		set ::gorilla::activeSelection 1
-		selection clear
-		selection own .
-		ArrangeToClearClipboard $mult
-		set ::gorilla::status [mc "Copied user name to clipboard."]
-}
-
-proc gorilla::CopyURL {} {
-	ArrangeIdleTimeout
-	clipboard clear
-	set URL [gorilla::GetSelectedURL]
-
-	if {$URL == ""} {
-		set ::gorilla::status [mc "Can not copy URL to clipboard: no URL defined."]
-	} else {
-		clipboard append -- $URL
-		set ::gorilla::activeSelection 3
-		selection clear
-		selection own .
-		ArrangeToClearClipboard
-		set ::gorilla::status [mc "Copied URL to clipboard."]
-	}
-}
-
-
 # ----------------------------------------------------------------------
 # Clear clipboard
 # ----------------------------------------------------------------------
@@ -3816,8 +3788,10 @@ proc gorilla::ClearClipboard {} {
 	clipboard clear
 	clipboard append -- ""
 
-	if {[selection own] == "."} {
-		selection clear
+	foreach sel { PRIMARY CLIPBOARD } {
+		if {[selection own -selection $sel ] == "."} {
+			selection clear -selection $sel
+		}
 	}
 
 	set ::gorilla::activeSelection 0
@@ -5545,7 +5519,7 @@ proc gorilla::XSelectionHandler {offset maxChars} {
 	1 {
 			set data [gorilla::GetSelectedUsername]
 			if { $::gorilla::preference(gorillaAutocopy) } {
-				after idle { after 200 { ::gorilla::CopyPassword } }
+				after idle { after 200 { ::gorilla::CopyToClipboard Password } }
 			}
 		}
 	2 {
@@ -5563,7 +5537,67 @@ proc gorilla::XSelectionHandler {offset maxChars} {
 }
 
 # ----------------------------------------------------------------------
-# Copy the URL to the Clipboard
+# Copy data to the Clipboard
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::CopyToClipboard { what {mult 1} } {
+
+	# Copies a data value to the clipboard
+	#
+	# what - One of "URL" "Username" or "Password"
+	# mult - Clipboard clear time multiplication factor, optional, defaults to 1
+	#
+	# Consolidates all of the copy to clipboard management code into a
+	# single proc.
+
+	switch -exact -- $what {
+		Username { set ::gorilla::activeSelection 1 }
+		Password { set ::gorilla::activeSelection 2 }
+		URL      { set ::gorilla::activeSelection 3 }
+		default  { error "gorilla::CopyToClipboard: parameter 'what' not one of 'Username', 'Password', 'URL'" }
+	}
+
+	ArrangeIdleTimeout
+
+	set item [ gorilla::GetSelected$what ]
+
+	if {$item == ""} {
+		set ::gorilla::status [ mc "Can not copy $what to clipboard: no $what defined." ]
+	} else {
+		switch -exact -- [ tk windowingsystem ] {
+			win32   { # win32 only supports "clipboard"
+				clipboard clear
+				clipboard append -- $what
+			}
+
+			x11     -
+			aqua    -
+			default { # x11 and MacOS support PRIMARY and
+				  # CLIPBOARD x11 style clipboards
+
+				# setup to return data for both PRIMARY and
+				# CLIPBOARD so that no matter how a user
+				# pastes, they will receive the data they
+				# expect
+
+				foreach sel { PRIMARY CLIPBOARD } {
+					selection clear -selection $sel
+					selection own   -selection $sel .
+				} ; # end foreach sel 
+
+			}
+		}
+
+		ArrangeToClearClipboard $mult
+		set ::gorilla::status [ mc "Copied $what to clipboard." ]
+		
+	} ; # end if item == ""
+
+} ; # end proc gorilla::CopyToClipboard
+
+# ----------------------------------------------------------------------
+# Helper procs to get various items from selected db records
 # ----------------------------------------------------------------------
 #
 
@@ -5623,11 +5657,9 @@ proc gorilla::GetSelectedURL {} {
 
 
 # ----------------------------------------------------------------------
-# Copy the Password to the Clipboard
-# ----------------------------------------------------------------------
-#
 
 proc gorilla::GetSelectedPassword {} {
+	# Retreive the password of the selected item in the treeview
 	if {[catch {set rn [gorilla::GetSelectedRecord]} err]} {
 		return
 	}
@@ -5638,23 +5670,10 @@ proc gorilla::GetSelectedPassword {} {
 	return [ ::gorilla::dbget password $rn ]
 }
 
-proc gorilla::CopyPassword {} {
-	ArrangeIdleTimeout
-	clipboard clear
-	clipboard append -- [::gorilla::GetSelectedPassword]
-	set ::gorilla::activeSelection 2
-	selection clear
-	selection own .
-	ArrangeToClearClipboard
-	set ::gorilla::status [mc "Copied password to clipboard."]
-}
-
 # ----------------------------------------------------------------------
-# Copy the Username to the Clipboard
-# ----------------------------------------------------------------------
-#
 
 proc gorilla::GetSelectedRecord {} {
+	# Obtain the db record number of the selected item in the treeview
 	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
 		error "oops"
 	}
@@ -5669,6 +5688,7 @@ proc gorilla::GetSelectedRecord {} {
 }
 
 proc gorilla::GetSelectedUsername {} {
+	# Retreive the username of the selected item in the treeview
 	if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
 		return
 	}
@@ -6729,7 +6749,7 @@ proc gorilla::LaunchBrowser { rn } {
 		} else {
 			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
 			if { $::gorilla::preference(autocopyUserid) } {
-				::gorilla::CopyUsername $::gorilla::preference(autoclearMultiplier)
+				::gorilla::CopyToClipboard Username $::gorilla::preference(autoclearMultiplier)
 			}
 				
 		}
