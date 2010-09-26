@@ -5568,7 +5568,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 		switch -exact -- [ tk windowingsystem ] {
 			win32   { # win32 only supports "clipboard"
 				clipboard clear
-				clipboard append -- $what
+				clipboard append -- [ ::gorilla::GetSelected$what ]
 			}
 
 			x11     -
