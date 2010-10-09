@@ -2508,7 +2508,7 @@ proc gorilla::CloseDialog { top } {
 }
 
 proc gorilla::Merge {} {
-	set openInfo [OpenDatabase [mc "Merge Password Database" "" 0]]
+	set openInfo [OpenDatabase [mc "Merge Password Database"] "" 0]
 	# set openInfo [OpenDatabase "Merge Password Database" "" 0]
 	# enthält [list $fileName $newdb]
 	
