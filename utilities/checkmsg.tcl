@@ -4,7 +4,7 @@
 # helper utility to pick all msgcat entries in the source file
 # and to check if they are listed in the *.msg files
 #
-# called: tclsh checkmsg.tcl <path/sourcefile> <locale>
+# tclsh checkmsg.tcl ../sources/gorilla.tcl de
 #
 # for definition of <locale> see the Tcl manual for 'msgcat'
 #
@@ -18,9 +18,12 @@
 # im Quellcode alle mc's ohne "" Klammer ergänzen
 #
 # step 1: extract the mc messages
-# step 2: create a new en.msg file as a base for the other languages
+# step 2: create a new ROOT.msg file as a base for the other languages
 # step 3: diff existing *.msg files for completeness
 # step 4: add the missing entries and save the incomplete entries in a *.diff file
+#
+# Hint: 'locale -a' shows all available locale languages
+#
 
 proc initCheckMsg { file lang } {
 	global msgcatDir
@@ -29,32 +32,37 @@ proc initCheckMsg { file lang } {
 	#
 	package require msgcat
 	namespace import msgcat::*
+puts "Searching the msgcat files in '$msgcatDir'"
 	mcload $msgcatDir
-	# mcload "[pwd]/msgs"
+	# mcload "~/Projekte/git/gorilla/sources/msgs"
 
 	if { $lang eq "" } {
-		set selectedLang [mclocale]
+		set lang [lindex [split [mclocale] _] 0]
+	} 
+	
+	set localeMsg [file join $msgcatDir $lang.msg]
+	if { [file exists $localeMsg] } {
+		puts "Package msgcat loaded with resource file '$localeMsg'"
 	} else {
-			set selectedLang [mclocale $lang]
-	}
-	set selectedLang [lindex [split $selectedLang _] 0]
-	# check if there is a file
-	set file [file join $msgcatDir $selectedLang.msg]
-	if { [file exists $file] } {
-		puts "Package msgcat loaded with resource file '$file.'"
-	} else {
-		puts "Did not find '$file'. Aborting."
+		set fh [open $localeMsg w]
+		puts $fh "mcmset $lang \{\n"
+		puts "\}\n"
+		close $fh
+		puts "Did not find '$localeMsg'. Created an empty resource file. Try checkmsg again."
 		exit 1
 	} ;# end if
 
 	if {$file == ""} {
 		puts stderr "need filename as argument"
 	}
+	if { ![file exists $file] } {
+		puts "Could not find '$file'. Aborting."
+		exit 1
+	}
 	set fsize [file size $file]
 	set fh [open $file r]
 	set content [ read $fh $fsize]
 	close $fh
-	
 	return $content
 } ;# end of proc initCheckMsg
 
@@ -106,7 +114,7 @@ proc createBaseMsgFile { data } {
 				puts $fh "$item $item \\"
 			} else {
 				puts $fh "\"$item\" \"$item\" \\"
-			};#
+			}
 	}
 	puts $fh "\}"
 	close $fh
@@ -151,7 +159,7 @@ proc getMsgMissing { entrylist } {
 # puts ">>> $item\n<<< [mc $item]"
 # puts [expr { $item eq [mc $item] } ]
 # puts [expr { $item eq [mc [join $item]] } ]
-		# puts "+++ [lsearch $trans $item]"
+# puts [expr { [join $item] eq [mc [join $item]] } ]
 		
 		# Conditions to define a notfound entry:
 		# 1) normal mc for strings without special characters
@@ -171,27 +179,26 @@ proc getMsgMissing { entrylist } {
 }
 
 proc appendMsgs { msgList file } {
-puts "\n??? msgList $msgList"
-	set file [file join [pwd]/msgs $file]
+	global msgcatDir
+# puts "\n??? msgList $msgList"
+puts $file
 	set fh [open $file r+]
-	# set content [list ]
 	set content ""
-	# lappend content [read $fh]
 	set content [read $fh]
-	puts "=== original content of $file:\n$content==="
-	puts [lindex $content 0]
+	# puts "=== original content of $file:\n$content==="
+# puts [lindex $content 0]
 	set missing ""
 	foreach item $msgList {
 		append missing "\n\"$item\" \"undefined\" \\"
 	}
-puts "missing $missing"
+puts "\n============\nmissing entries:\n============\n$missing"
 	regsub {\n\}(\n*)} $content $missing content
 	append content "\n\}\n"
-	puts "+++ new content:\n$content+++"
+# puts "+++ new content:\n$content+++"
 	seek $fh 0
 	puts $fh $content
 	close $fh
-} ;# end of proc saveDiffMsgFile
+}
 
 proc showMsgUndefined { entrylist file } {
 	set undefined [list ]
@@ -199,8 +206,8 @@ proc showMsgUndefined { entrylist file } {
 	
 	foreach item $entrylist {
 # puts ">>> $item\n<<< [mc $item]"
-# puts [expr { $item eq [mc $item] } ]
-# puts [expr { $item eq [mc [join $item]] } ]
+# puts [expr { $item eq "undefined" } ]
+# puts [expr { [mc [join $item]] eq "undefined" } ]
 		# puts "+++ [lsearch $trans $item]"
 		
 		# Conditions to define a undefined entry:
@@ -209,7 +216,6 @@ proc showMsgUndefined { entrylist file } {
 		# 3) mc for strings with \n
 		
 		if {	[mc $item] eq "undefined" || \
-					[mc [join $item]] eq "undefined" || \
 					[mc [join $item]] eq "undefined" } {
 # puts ">>> $item\n<<< [mc $item]"
 			lappend undefined $item
@@ -218,12 +224,12 @@ proc showMsgUndefined { entrylist file } {
 	return $undefined
 } ;# end of proc showMsgUndefined
 
-proc checkMsg { source msg } {
-	global msgfile 
-	# baseMsg emptyfile
+proc checkMsg { source locale } {
+	global msgcatDir
 	
-	set sourceMsg [ initCheckMsg $source $msg ]
-	set allSourceEntries [getMsgentries $sourceMsg]
+	set localeMsg [file join $msgcatDir $locale.msg]
+	set sourceFile [ initCheckMsg $source $locale ]
+	set allSourceEntries [getMsgentries $sourceFile]
 # puts "--- Rückgabe: $allSourceEntries"
 
 	if { [createBaseMsgFile $allSourceEntries] != "ok" } {
@@ -231,39 +237,40 @@ proc checkMsg { source msg } {
 		exit 1
 	}
 	
-	puts "Checking $msgfile for missing entries ..."
+	puts "Checking '$locale.msg' for missing entries ..."
 	
 	set msgMissingList [ getMsgMissing $allSourceEntries ]
-puts "### missing entries:\n$msgMissingList"
+# puts "### missing entries:\n$msgMissingList"
 
 	if { $msgMissingList == "" } {
 		puts "No msgcat entries missing."
-		
-		set result [showMsgUndefined $allSourceEntries $msgfile]
+		puts "Checking 'localeMsg' for undefined entries ..."
+		set result [showMsgUndefined $allSourceEntries $localeMsg]
 		if { $result eq "" } {
 			puts "All mgscat entries are translated."
 		} else {
-			puts "\nBut the following entries are not defined:\n"
+			puts "\nThe following entries are not defined:\n"
 				foreach item $result {
 					puts $item
 				} ;# end foreach
 		} ;# end if
-	} else {	
-		appendMsgs $msgMissingList $msgfile
-		puts "The following missing msgcat entries have been appended to the file $msgfile."
-		puts "\nPlease edit these entries which are marked in the resource file $msgfile as <undefined>.\nThen try a new check."
+	} else {
+		appendMsgs $msgMissingList $localeMsg
+		puts "The missing msgcat entries have been appended to the file '$localeMsg'."
+		puts "\nPlease edit these entries which are marked in the resource file '$localeMsg' as <undefined>.\nThen try a new check."
 	}
 	
+	# check if any entries in the locale msg file have been deleted in the source code
 	
 } ;# end of proc checkMsg
 
 # ============== Main ===================
 
-########## set the global individual filenamees ############
-set sourcefile [lindex $argv 0]
-set msgfile [lindex $argv 1]
-set baseMsg en.msg
-set msgcatDir "../sources/msgs"
-#####################################################
+########## set the global individual filenamees ##########################
+set sourcefile [lindex $argv 0]	;# must be full pathname
+set locale "[lindex $argv 1]"
+set baseMsg ROOT.msg
+set msgcatDir [file join [file dirname [info script]] "../sources/msgs"]
+##########################################################################
 
-checkMsg $sourcefile $msgfile
+checkMsg $sourcefile $locale

@@ -3243,7 +3243,7 @@ proc gorilla::LoginDialog {rn} {
 			set kind1 [join "$top.l.$child 1" ""]
 			set kind2 [join "$top.l.$child 2" ""]
 			set entry_text ::gorilla::$top.l.$child.e
-			ttk::label $kind1 -text [mc "$childname:"] -anchor w -padding {10 0 0 0}
+			ttk::label $kind1 -text "[mc "$childname"]:" -anchor w -padding {10 0 0 0}
 			ttk::entry $kind2 -width 40 -textvariable ::gorilla::loginDialog.$child
 			grid $kind1 $kind2 -sticky ew -pady 5
 		}
