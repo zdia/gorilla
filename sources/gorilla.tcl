@@ -666,16 +666,40 @@ proc gorilla::GroupPopup {node xpos ypos} {
 }
 
 proc gorilla::PopupAddLogin {} {
-		set node [lindex [$::gorilla::widgets(tree) selection] 0]
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
 
-		if {$type == "Group"} {
-	gorilla::AddLoginToGroup [lindex $data 1]
-		} elseif {$type == "Root"} {
-	gorilla::AddLoginToGroup ""
-		}
-}
+	# Adds a login to Gorilla at the currently selected position in the tree
+
+	set node [ lindex [ $::gorilla::widgets(tree) selection ] 0 ]
+
+	foreach {data type} [ gorilla::LookupNodeData $node ] { break }
+  
+	# if "type" is Login, repeat the data lookup, but for the parent of the
+	# node, to result in an "add to group" action occurring instead.
+
+	if { $type eq "Login" } {
+		foreach {data type} [ gorilla::LookupNodeData [ $::gorilla::widgets(tree) parent $node ] ] { break }
+	}
+
+	switch -- $type {
+		Group { gorilla::AddLoginToGroup [lindex $data 1] }
+		Root  { gorilla::AddLoginToGroup "" }
+	}
+
+} ; # end proc gorilla::PopupAddLogin
+
+proc gorilla::LookupNodeData { node } {
+
+	# Takes a treeview node ID value and returns the node values and the
+	# node type value as a list.
+	#
+	# node - a treeview node identifier
+
+	set data [ $::gorilla::widgets(tree) item $node -values ]
+	set type [ lindex $data 0 ]
+
+	return [ list $data $type ]
+
+} ; # end proc gorilla::LookupNodeData
 
 proc gorilla::PopupAddSubgroup {} {
 		gorilla::AddSubgroup
