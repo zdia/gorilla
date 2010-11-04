@@ -126,7 +126,7 @@ if {[tk windowingsystem] == "aqua"}	{
 # items will be found before system installed items
 set auto_path [ list $::gorillaDir {*}$auto_path ]
 
-foreach subdir {sha1 blowfish twofish pwsafe itcl3.4 msgs} {
+foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 	set testDir [file join $::gorillaDir $subdir]
 	if {[file isdirectory $testDir]} {
 		lappend auto_path $testDir
@@ -159,6 +159,8 @@ if {[catch {package require pwsafe} oops]} {
 		ought to be part of the Password Gorilla distribution."
 	exit 1
 }
+
+package require tooltip
 
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
@@ -214,6 +216,11 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(gorillaIcon) 0
 		# added by Richard Ellis
 		set ::gorilla::preference(iconifyOnAutolock) 0
+		set ::gorilla::preference(browser-exe) ""
+		set ::gorilla::preference(browser-param) ""
+		set ::gorilla::preference(autocopyUserid) 0
+		set ::gorilla::preference(autoclearMultiplier) 1
+		set ::gorilla::preference(gorillaAutocopy) 1
 		
 }
 
@@ -281,9 +288,9 @@ set ::gorilla::menu_desc {
 							separator mac "" "" ""
 							Exit mac gorilla::Exit $menu_meta X
 							}	
-	Edit	edit	{"Copy Username" login gorilla::CopyUsername $menu_meta U
-							"Copy Password" login gorilla::CopyPassword $menu_meta P
-							"Copy URL" login gorilla::CopyURL $menu_meta W
+	Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
+							"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
+							"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
 							separator "" "" "" ""
 							"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
 							separator "" "" "" ""
@@ -452,7 +459,8 @@ set ::gorilla::menu_desc {
 		# Handler for the X Selection
 		#
 
-		selection handle . gorilla::XSelectionHandler
+		selection handle -selection PRIMARY   . gorilla::XSelectionHandler
+		selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
 
 		#
 		# Handler for the WM_DELETE_WINDOW event, which is sent when the
@@ -585,10 +593,13 @@ proc gorilla::TreeNodeDouble {node} {
 		if {[info exists ::gorilla::preference(doubleClickAction)]} {
 				switch -- $::gorilla::preference(doubleClickAction) {
 					copyPassword {
-						gorilla::CopyPassword
+						gorilla::CopyToClipboard Password
 					}
 					editLogin {
 						gorilla::EditLogin
+					}
+					launchBrowser {
+						::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] 
 					}
 				default {
 					# do nothing
@@ -690,6 +701,9 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		if {![info exists ::gorilla::widgets(popup,Login)]} {
 	set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
 	$::gorilla::widgets(popup,Login) add command \
+		-label [mc "Open URL"] \
+		-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
+	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Copy Username to Clipboard"] \
 		-command "gorilla::PopupCopyUsername"
 	$::gorilla::widgets(popup,Login) add command \
@@ -733,15 +747,15 @@ proc gorilla::PopupViewLogin {} {
 }
 
 proc gorilla::PopupCopyUsername {} {
-	::gorilla::CopyUsername
+	gorilla::CopyToClipboard Username
 }
 
 proc gorilla::PopupCopyPassword {} {
-	::gorilla::CopyPassword
+	gorilla::CopyToClipboard Password
 }
 
 proc gorilla::PopupCopyURL {} {
-	::gorilla::CopyURL
+	gorilla::CopyToClipboard URL
 }
 
 proc gorilla::PopupDeleteLogin {} {
@@ -4150,35 +4164,6 @@ proc gorilla::Exit {} {
 		exit
 }
 
-proc gorilla::CopyUsername {} {
-		ArrangeIdleTimeout
-		clipboard clear
-		clipboard append -- [::gorilla::GetSelectedUsername]
-		set ::gorilla::activeSelection 1
-		selection clear
-		selection own .
-		ArrangeToClearClipboard
-		set ::gorilla::status [mc "Copied user name to clipboard."]
-}
-
-proc gorilla::CopyURL {} {
-	ArrangeIdleTimeout
-	clipboard clear
-	set URL [gorilla::GetSelectedURL]
-
-	if {$URL == ""} {
-		set ::gorilla::status [mc "Can not copy URL to clipboard: no URL defined."]
-	} else {
-		clipboard append -- $URL
-		set ::gorilla::activeSelection 3
-		selection clear
-		selection own .
-		ArrangeToClearClipboard
-		set ::gorilla::status [mc "Copied URL to clipboard."]
-	}
-}
-
-
 # ----------------------------------------------------------------------
 # Clear clipboard
 # ----------------------------------------------------------------------
@@ -4188,8 +4173,10 @@ proc gorilla::ClearClipboard {} {
 	clipboard clear
 	clipboard append -- ""
 
-	if {[selection own] == "."} {
-		selection clear
+	foreach sel { PRIMARY CLIPBOARD } {
+		if {[selection own -selection $sel ] == "."} {
+			selection clear -selection $sel
+		}
 	}
 
 	set ::gorilla::activeSelection 0
@@ -4202,7 +4189,7 @@ proc gorilla::ClearClipboard {} {
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::ArrangeToClearClipboard {} {
+proc gorilla::ArrangeToClearClipboard { {mult 1} } {
 	if {[info exists ::gorilla::clipboardClearId]} {
 		after cancel $::gorilla::clipboardClearId
 	}
@@ -4214,7 +4201,8 @@ proc gorilla::ArrangeToClearClipboard {} {
 	}
 
 	set seconds $::gorilla::preference(clearClipboardAfter)
-	set mseconds [expr {$seconds * 1000}]
+	set mseconds [expr {$seconds * 1000 * $mult }]
+	if { $mseconds == 0 } { return }
 	set ::gorilla::clipboardClearId [after $mseconds ::gorilla::ClearClipboard]
 }
 
@@ -5007,6 +4995,11 @@ proc gorilla::PreferencesDialog {} {
 		fontsize 10 \
 		gorillaIcon 0 \
 		iconifyOnAutolock 0 \
+		browser-exe "" \
+		browser-param "" \
+		autocopyUserid 0 \
+		autoclearMultiplier 1 \
+		gorillaAutocopy 1 \
 		} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
@@ -5038,10 +5031,13 @@ ttk::radiobutton $gpf.dca.cp -text [mc "Copy password to clipboard"] \
 ttk::radiobutton $gpf.dca.ed -text [mc "Edit Login"] \
 	-variable ::gorilla::prefTemp(doubleClickAction) \
 	-value "editLogin"
+ttk::radiobutton $gpf.dca.lb -text [mc "Launch Browser directed to URL"] \
+	-variable ::gorilla::prefTemp(doubleClickAction) \
+	-value "launchBrowser"
 ttk::radiobutton $gpf.dca.nop -text [mc "Do nothing"] \
 	-variable ::gorilla::prefTemp(doubleClickAction) \
 	-value "nothing"
-pack $gpf.dca.cp $gpf.dca.ed $gpf.dca.nop -side top -anchor w -pady 3
+pack $gpf.dca.cp $gpf.dca.ed $gpf.dca.lb $gpf.dca.nop -side top -anchor w -pady 3
 pack $gpf.dca -side top -padx 10 -pady 5 -fill x -expand yes
 
 ttk::frame $gpf.cc -padding [list 8 5]
@@ -5069,7 +5065,12 @@ ttk::checkbutton $gpf.bu -text [mc "Backup database on save"] \
 	-variable ::gorilla::prefTemp(keepBackupFile)
 ttk::checkbutton $gpf.geo -text [mc "Remember sizes of dialog boxes"] \
 	-variable ::gorilla::prefTemp(rememberGeometries)
-pack $gpf.bu $gpf.geo -side top -anchor w -padx 10 -pady 5
+ttk::checkbutton $gpf.gac -text [ mc "Use Gorilla auto-copy" ] \
+	-variable ::gorilla::prefTemp(gorillaAutocopy)
+::tooltip::tooltip $gpf.gac [ mc "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." ]
+pack $gpf.bu $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
+
+
 
 #
 # Second NoteBook tab: database defaults
@@ -5195,7 +5196,45 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			-variable ::gorilla::prefTemp(iconifyOnAutolock) \
 			-text [mc "Iconify upon auto-lock"]
 		pack $display.autoiconify -anchor w -pady 5
-		
+
+		#
+		# Fifth NoteBook tab: Browser
+		#
+
+		$top.nb add [ set browser [ ttk::frame $top.nb.browser -padding [ list 10 0 ] ] ] -text [ mc "Browser" ]
+		ttk::label $browser.lexe -text [ mc "Browser executable to launch (required):" ]
+		ttk::entry $browser.exe -textvariable ::gorilla::prefTemp(browser-exe)
+		ttk::label $browser.lparam -text [ mc "Command line parameter (if any) to pass (optional):" ]
+		ttk::entry $browser.param -textvariable ::gorilla::prefTemp(browser-param)
+		ttk::button $browser.findgui -text [ mc "Find Browser" ] -command "set ::gorilla::prefTemp(browser-exe) \[ tk_getOpenFile -parent $browser \]"
+		ttk::style configure biwrap.TLabel -wraplength 75
+		ttk::label $browser.inst  -style biwrap.TLabel -text [ mc "If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." ]
+		bind $browser.inst <Configure> "ttk::style configure biwrap.TLabel -wraplength \[ winfo width $browser.inst \]"
+		ttk::checkbutton $browser.autocopyuserid \
+			-variable ::gorilla::prefTemp(autocopyUserid) \
+			-text [ mc "Also copy username to clipboard" ]
+		::tooltip::tooltip $browser.autocopyuserid [ mc "When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." ]
+
+		# note - switch to ttk::spinbox when upgrading to tcl/tk 8.5.9 or better
+		set subframe [ ttk::frame $browser.acmf ]
+		::tooltip::tooltip $subframe [ mc "Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." ]
+		spinbox $subframe.spin -from 0 -to 20 -increment 1 -width 3 \
+			-command { set ::gorilla::prefTemp(autoclearMultiplier) %s } \
+			-validatecommand { ::gorilla::PreferencesSpinBoxValidate %P } \
+			-validate all
+		$subframe.spin set $::gorilla::prefTemp(autoclearMultiplier)
+		ttk::label $subframe.spinlbl -text "Clipboard autoclear mulitplier"
+		pack $subframe.spin $subframe.spinlbl -side left -padx {0 2m}
+
+		grid $browser.lexe    -sticky nw  -pady { 5m 0 }
+		grid $browser.exe     -sticky new 
+		grid $browser.findgui -sticky ne  -pady { 1m 5m }
+		grid $browser.lparam  -sticky nw
+		grid $browser.param   -sticky new 
+		grid $browser.inst    -sticky new -pady { 2m 0 }
+		grid $browser.autocopyuserid -sticky new -pady {2m 0}
+		grid $subframe        -sticky new -pady { 2m 2m }
+
 		#
 		# End of NoteBook tabs
 		#
@@ -5277,6 +5316,11 @@ return
 		fontsize \
 		gorillaIcon \
 		iconifyOnAutolock \
+		browser-exe \
+		browser-param \
+		autocopyUserid \
+		autoclearMultiplier \
+		gorillaAutocopy \
 		} {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
@@ -5285,6 +5329,14 @@ return
 proc gorilla::Preferences {} {
 	gorilla::PreferencesDialog
 }
+
+proc gorilla::PreferencesSpinBoxValidate { value } {
+	if { ( ! [ string is integer -strict $value ] ) || ( ( $value < 0 ) || ( 20 < $value ) ) } { 
+		return 0
+	} else { 
+		return 1
+	} 
+} ; # end proc gorilla::PreferencesSpinBoxValidate
 
 
 # ----------------------------------------------------------------------
@@ -5434,6 +5486,11 @@ proc gorilla::SavePreferencesToRCFile {} {
 			fontsize \
 			gorillaIcon \
 			iconifyOnAutolock \
+			browser-exe \
+			browser-param \
+			autocopyUserid \
+			autoclearMultiplier \
+			gorillaAutocopy \
 			} {
 		if {[info exists ::gorilla::preference($pref)]} {
 			puts $f "$pref=$::gorilla::preference($pref)"
@@ -5747,6 +5804,21 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 			iconifyOnAutolock {
 				set ::gorilla::preference($pref) $value
 			}
+			browser-exe {
+				set ::gorilla::preference($pref) $value
+			}
+			browser-param {
+				set ::gorilla::preference($pref) $value
+			}
+			autocopyUserid {
+				set ::gorilla::preference($pref) $value
+			}
+			autoclearMultiplier {
+				set ::gorilla::preference($pref) $value
+			}
+			gorillaAutocopy {
+				set ::gorilla::preference($pref) $value
+			}
 	}
 		}
 
@@ -5831,6 +5903,9 @@ proc gorilla::XSelectionHandler {offset maxChars} {
 		}
 	1 {
 			set data [gorilla::GetSelectedUsername]
+			if { $::gorilla::preference(gorillaAutocopy) } {
+				after idle { after 200 { ::gorilla::CopyToClipboard Password } }
+			}
 		}
 	2 {
 			set data [gorilla::GetSelectedPassword]
@@ -5847,7 +5922,67 @@ proc gorilla::XSelectionHandler {offset maxChars} {
 }
 
 # ----------------------------------------------------------------------
-# Copy the URL to the Clipboard
+# Copy data to the Clipboard
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::CopyToClipboard { what {mult 1} } {
+
+	# Copies a data value to the clipboard
+	#
+	# what - One of "URL" "Username" or "Password"
+	# mult - Clipboard clear time multiplication factor, optional, defaults to 1
+	#
+	# Consolidates all of the copy to clipboard management code into a
+	# single proc.
+
+	switch -exact -- $what {
+		Username { set ::gorilla::activeSelection 1 }
+		Password { set ::gorilla::activeSelection 2 }
+		URL      { set ::gorilla::activeSelection 3 }
+		default  { error "gorilla::CopyToClipboard: parameter 'what' not one of 'Username', 'Password', 'URL'" }
+	}
+
+	ArrangeIdleTimeout
+
+	set item [ gorilla::GetSelected$what ]
+
+	if {$item == ""} {
+		set ::gorilla::status [ mc "Can not copy $what to clipboard: no $what defined." ]
+	} else {
+		switch -exact -- [ tk windowingsystem ] {
+			win32   { # win32 only supports "clipboard"
+				clipboard clear
+				clipboard append -- [ ::gorilla::GetSelected$what ]
+			}
+
+			x11     -
+			aqua    -
+			default { # x11 and MacOS support PRIMARY and
+				  # CLIPBOARD x11 style clipboards
+
+				# setup to return data for both PRIMARY and
+				# CLIPBOARD so that no matter how a user
+				# pastes, they will receive the data they
+				# expect
+
+				foreach sel { PRIMARY CLIPBOARD } {
+					selection clear -selection $sel
+					selection own   -selection $sel .
+				} ; # end foreach sel 
+
+			}
+		}
+
+		ArrangeToClearClipboard $mult
+		set ::gorilla::status [ mc "Copied $what to clipboard." ]
+		
+	} ; # end if item == ""
+
+} ; # end proc gorilla::CopyToClipboard
+
+# ----------------------------------------------------------------------
+# Helper procs to get various items from selected db records
 # ----------------------------------------------------------------------
 #
 
@@ -5907,11 +6042,9 @@ proc gorilla::GetSelectedURL {} {
 
 
 # ----------------------------------------------------------------------
-# Copy the Password to the Clipboard
-# ----------------------------------------------------------------------
-#
 
 proc gorilla::GetSelectedPassword {} {
+	# Retreive the password of the selected item in the treeview
 	if {[catch {set rn [gorilla::GetSelectedRecord]} err]} {
 		return
 	}
@@ -5922,23 +6055,10 @@ proc gorilla::GetSelectedPassword {} {
 	return [ ::gorilla::dbget password $rn ]
 }
 
-proc gorilla::CopyPassword {} {
-	ArrangeIdleTimeout
-	clipboard clear
-	clipboard append -- [::gorilla::GetSelectedPassword]
-	set ::gorilla::activeSelection 2
-	selection clear
-	selection own .
-	ArrangeToClearClipboard
-	set ::gorilla::status [mc "Copied password to clipboard."]
-}
-
 # ----------------------------------------------------------------------
-# Copy the Username to the Clipboard
-# ----------------------------------------------------------------------
-#
 
 proc gorilla::GetSelectedRecord {} {
+	# Obtain the db record number of the selected item in the treeview
 	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
 		error "oops"
 	}
@@ -5953,6 +6073,7 @@ proc gorilla::GetSelectedRecord {} {
 }
 
 proc gorilla::GetSelectedUsername {} {
+	# Retreive the username of the selected item in the treeview
 	if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
 		return
 	}
@@ -6984,6 +7105,42 @@ proc gorilla::ViewEntryShowPWHelper { button entry rn } {
   }
 
 } ; # end proc gorilla::ViewEntryShowPWHelper
+
+#
+# ----------------------------------------------------------------------
+# Launch a browser to the current selected records URL
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::LaunchBrowser { rn } {
+
+	set URL [ dbget url $rn ]
+	if { $URL eq "" } { 
+		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
+	} elseif { $::gorilla::preference(browser-exe) eq "" } {
+		set ::gorilla::status [ mc "Browser launching is not configured.  See help." ]
+	} else {
+		set param $::gorilla::preference(browser-param)
+		if { $param ne "" } {
+			if { [ string match "*%url%*" $param ] } {
+				set URL [ string map [ list %url% $URL ] $param ]
+			} else {
+				set ::gorilla::status [ mc "Browser parameter lacks '%url%' string.  See help." ]
+				return
+			}
+		}
+		if { [ catch { exec $::gorilla::preference(browser-exe) $URL & } mesg ] } {
+			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
+		} else {
+			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
+			if { $::gorilla::preference(autocopyUserid) } {
+				::gorilla::CopyToClipboard Username $::gorilla::preference(autoclearMultiplier)
+			}
+				
+		}
+	}
+
+} ; # end proc gorilla::LaunchBrowser
 
 #
 # ----------------------------------------------------------------------
