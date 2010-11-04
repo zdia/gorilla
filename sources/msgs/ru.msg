@@ -183,6 +183,12 @@ mcmset ru {
         "Last Modified:" "Изменение:" \
         "Lock Now" "Заблокировать сейчас" \
         "View Login" "Просмотреть логин" \
+	"Password policy settings invalid." "Password policy settings invalid." \
+	"<unknown>" "<unknown>" \
+	"This login must have a title." "This login must have a title." \
+	"This login's group name is not valid." "This login's group name is not valid." \
+	"No Database" "No Database" \
+	"Please create a new database,\nor open an existing database first." "Please create a new database,\nor open an existing database first." \
 	}
 	
 mcunknown de "unbekannt"

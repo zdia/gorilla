@@ -193,6 +193,12 @@ mcmset fr {
 	"New" "Neu" \
 	"Select a database, and enter its password. Click \"New\" to create a new database." "Bitte Datenbank wählen und Passwort eingeben. Neue Datenbank mit Klick auf \"Neu\"" \
 	"New Database: Choose Master Password" "Neue Datenbank: Hauptpasswort wählen" \
+	"Password policy settings invalid." "Password policy settings invalid." \
+	"<unknown>" "<unknown>" \
+	"This login must have a title." "This login must have a title." \
+	"This login's group name is not valid." "This login's group name is not valid." \
+	"No Database" "No Database" \
+	"Please create a new database,\nor open an existing database first." "Please create a new database,\nor open an existing database first." \
 	}
 	
 mcunknown de "unbekannt"
