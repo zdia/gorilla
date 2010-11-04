@@ -1,75 +1,31 @@
-2010-08-04: added menuitem ViewLogin
-2010-07-27: workaround for mac command shortcut
-2010-07-27: added Preferences:Display:ShowGorillaIcon
-2010-07-26: added menuitem Security:LockNow
-2010-07-26: focus for password login
-2010-07-23: find searches now cycling
-2010-07-22: fixed bug in .mergeReport exit
-2010-07-22: typo fix
-2010-07-22: testing existence of lru file
-2010-07-16: fixed bug in movedialog
-2010-07-13: fixing treeview font resizing issue
-2010/07/12: v. 1.5.3.1
-2010-07-11: menu label consistency
-2010-07-11: minor <Edit Login> layout change
-2010-07-11: added .mergeReport to ::gorilla::toplevel for locking database; DestroyMergeReport
-2010-05-11: adding ru.msg + deleting annoying puts commands
-07.05.2010
-	put gorilla.ico as tclkit.ico in vfs (gorilla.exe shows gorilla icon)
-	catch mismatch between gorillarc language preference and *.msg files
-03.05.2010
-	setmenustate all disabled/normal for MacOSX
-	showPreferences deactivated during login or lock state
-	v1.5.3
-2010-04-19: added message for clearing the file history
-2010-04-19: -defaultextension in Save_as deactivated
-2010-04-14: tag v1.2.5.6
-2010-04-13: Merge branch 'encryption'
-2010-04-13: sha256 modified for 64bit systems
-2010-04-11: v1.5.2.5
-2010-04-11: modified SHA1 for use on 64bit systems
-2010-04-11: added font choice
-2010-04-03: adding font comment
-2010-04-03: MacOs Application Menu
-2010-04-03: new menu entry names
-2010-03-09: 1.5.2.3 with Mac Preferences
-2010-03-08: deleted bug in Mac Preferences
-2010-03-05: added PreferencesDialog in mac::ShowPreferences
-2010-02-14 : v1.5.2.2
-2010-02-14 : added preference display with choose language
-2010-02-12 : v.1.5.1.2
-2010-02-11 : new <About> Dialog
-2010-02-10 : deleted About bug
-2010-02-09 : revision 1.5.1
-2010-02-08 : native openFileDialog
-2010-02-08 : find bug deleted
-2010-02-06 : no init splash
-2010-01-25 : v15.b5
-2010-01-24 : grey color for mac getPassword
-2010-01-24 : openDatabase without defaultextension
-2010-01-24 : login menu bug fixed
-2010-01-23 : pwd substituted and getpassword layout
-2010-01-23 : updated
-2010-01-23 : -initialdir for mac changed
-2010-01-22 : 	modifying LockDatabase: splash removed
-2010-01-22 : modifying OpenDialog layout for aqua
-2010-01-22 : substituing tk_get*file
-2010-01-22 : deleting folder starkit
-2010-01-21 : v1.5b1
-2010-01-21 : updated Layout LockDatabaseDialog
-2010-01-20 : updated OpenDialog Layout
-2010-01-20 : added original splash
-2010-01-20 : v1.5a8
-2010-01-20 : v1.5b0
-2010-01-20 : v1.5b0
-2010-01-20 : Version 1.5b
-2010-01-19 : exit instead of cancel in OpenDialog
-2010-01-18 : added default extension
-2010-01-18 : black tagging Rootnode ok
-2010-01-18 : message change in OpenDialog
-2010-01-18 : 1.49 without setmenuststate all
-2010-01-15 : last backup before 1.49
-2010-01-15 : Version alpha6
-2010-01-15 : Version alpha6
-2010-01-15 : Starting Point
-2010-01-13 : first commit
+
+# Password Gorilla, a password database manager
+# Copyright (c) 2005-2009 Frank Pilhofer
+# Copyright (c) 2010 Zbigniew Diaczyszyn
+#
+# The original version 1.4.7 was modified for use with wish8.5, 
+# the new ttk-expansion and the msgcat localization facility.
+#
+# Email: z_dot_dia_at_gmx_dot_de
+#
+# tested with ActiveTcl 8.5.7, 8.5.8, 8.5.9
+# The executables have been compiled with tclkit 8.5.9 (universal for MacOSX)
+# For further details see http://www.equi4.com/tclkit/download.html
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# For detailed information about "Password Gorilla" see 
+#
+# https://github.com/zdia/gorilla/wiki
