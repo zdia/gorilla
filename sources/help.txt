@@ -117,11 +117,14 @@ If you save and re-open a file, empty groups will disappear.
 -------------------
 title: Logins
 
-Groups can contain any number of logins. To add a new login,
-right-click on a group, and choose the ''Add Login'' option. To edit an
+Groups can contain any number of logins. To add a new login, right-click on
+a group, and choose the ''Add Login'' option, or select ''Login'' -> ''Add
+Login'' from the pull down menu.  Adding a login via the pulldown menu when
+an existing login is selected will result in the new login defaulting to
+initially being added to the same group as the selected login.  To edit an
 existing login, right-click on a login, and select the ''Edit Login''
-option. (Macintosh users, hold down the Control key, and click on a
-group name.)
+option. (Macintosh users, hold down the Control key, and click on a group
+name.)
 
 The following information is managed for each login:
 
