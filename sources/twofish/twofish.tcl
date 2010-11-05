@@ -117,15 +117,15 @@ itcl::class ::itwofish::itwofish {
       i*86* { set machine x86 }
     }
 
-    puts stderr "twofish: gorillaDir = $gorillaDir"
+#    puts stderr "twofish: gorillaDir = $gorillaDir"
     set lib [ file join $::gorillaDir twofish f32-$os-$machine[ info sharedlibextension ] ]
-    puts stderr "twofish: lib -> $lib"
+#    puts stderr "twofish: lib -> $lib"
 
     if { [ catch { load $lib f32 } ] } {
-      puts stderr "twofish: Using Tcl only f32"
+#      puts stderr "twofish: Using Tcl only f32"
       set callmap [ list -m:f32- f32 ]
     } else {
-      puts stderr "twofish: Using Critcl f32"
+#      puts stderr "twofish: Using Critcl f32"
       set callmap [ list -m:f32- f32_critcl ]
     }
 
