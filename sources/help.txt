@@ -87,7 +87,7 @@ memory only. If you decide to write down your master password, keep it
 away from your computer(s), in a location that only you know of.
 
 Because the password database is encrypted using your master password
-(using the peer-reviewed and commercially well-accpted Twofish
+(using the peer-reviewed and commercially well-accepted Twofish
 algorithm, for the technically inclined), it is imperative that you do
 not forget your master password. It is impossible to recover a lost
 master password. An encrypted password database can not be "cracked,"
@@ -252,6 +252,13 @@ to clipboard''' option of the [Browser] tab then it allows logging into a
 website with only one touch of Password Gorilla (for websites that follow
 the username plus password standard).
 
+ | At the present time, this option is operational only for Mac and Linux
+machines.  The Windows clipboard is implemented in a different manner such
+that Windows does not inform Gorilla of the occurrence of a paste operation. 
+Without OS support to determine that a paste operation has occurred, Gorilla
+has no way to know when to subsequently copy a login's password to the
+clipboard.
+
 -------------------
 title: Database Default Preferences
 
@@ -362,7 +369,7 @@ title: Display
 The menubutton Language offers you all the languages whose dictionary
 files *.msg are found in the subdirectory msgs. Your choice will be
 saved on exiting in the rc-file and the next time you start Gorilla it
-is showing the prefered language.
+is showing the preferred language.
 
 '''Size'''
 
@@ -441,7 +448,7 @@ parameters are required to launch directly to a URL.
 Password Gorilla will also copy the username from the selected password
 entry to the clipboard.  This will allow for an immediate paste of the
 username into the related website login form once the browser is open and
-has retreived the website content.  Use the below '''Clipboard autoclear
+has retrieved the website content.  Use the below '''Clipboard autoclear
 multiplier''' setting to control clearing of the clipboard when this option
 is utilized.
 
@@ -707,7 +714,7 @@ computer.
 title: Putting Risk In Perspective
 
 The above does not necessarily imply that Password Gorilla is too
-unsecure to use. They are merely a set of risks that need to be
+insecure to use. They are merely a set of risks that need to be
 considered and evaluated in order to make an informed decision, and to
 take some common sense precautions. The author believes that using
 Password Gorilla is a better idea than the alternative of writing down
