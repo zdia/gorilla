@@ -5109,7 +5109,11 @@ ttk::checkbutton $gpf.geo -text [mc "Remember sizes of dialog boxes"] \
 	-variable ::gorilla::prefTemp(rememberGeometries)
 ttk::checkbutton $gpf.gac -text [ mc "Use Gorilla auto-copy" ] \
 	-variable ::gorilla::prefTemp(gorillaAutocopy)
-::tooltip::tooltip $gpf.gac [ mc "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." ]
+if { $tcl_platform(platform) eq "windows" } {
+	::tooltip::tooltip $gpf.gac [ mc "This option does not function on Windows(TM)\nplatforms.  See the help system for details." ]
+} else {
+	::tooltip::tooltip $gpf.gac [ mc "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." ]
+}
 pack $gpf.bu $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
 
 
