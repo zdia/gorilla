@@ -263,7 +263,6 @@ proc gorilla::InitGui {} {
 	option add *Menu.tearOff 0
 	
 	menu .mbar
-	. configure -menu .mbar
 
 # Struktur im menu_desc(ription):
 # label	widgetname {item tag command shortcut}
@@ -273,11 +272,11 @@ proc gorilla::InitGui {} {
 		
 		if {[tk windowingsystem] == "aqua"}	{
 			set meta Command
-			# set menu_meta Cmd
+			set menu_meta Cmd
 			# mac is showing the Apple key icon but app is hanging if a procedure
 			# is calling a vwait loop. So we just show the letter. Both meta keys
 			# are working later on (Tk 8.5.8)
-			set menu_meta ""
+			# set menu_meta ""
 		}
 
 set ::gorilla::menu_desc {
@@ -354,6 +353,18 @@ set ::gorilla::menu_desc {
 			set ::gorilla::tag_list($menu_widget) $taglist
 		} 
 	}
+	
+	# modify the "About" menuitem in the Apple application menu
+	
+	if {[tk windowingsystem] == "aqua"} {
+		menu .mbar.apple
+		.mbar add cascade -menu .mbar.apple
+		.mbar.apple add command -label "[mc "About"] Password Gorilla" -command gorilla::About
+    # .mbar.apple add separator
+	}
+
+# This command must be last menu oriented command due to TkCocoa for MacOSX
+	. configure -menu .mbar
 
 # note - if the help menu widget name changes, this will need to be updated	
 ::gorilla::addRufftoHelp .mbar.help
