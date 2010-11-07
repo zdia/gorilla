@@ -183,44 +183,45 @@ mcmset ru {
 "Last Modified:" "Изменение:" \
 "Lock Now" "Заблокировать сейчас" \
 "View Login" "Просмотреть логин" \
-"<unknown>" "undefined" \
-"About Password Gorilla" "undefined" \
-"Addition of group canceled." "undefined" \
-"Also copy username to clipboard" "undefined" \
-"Browser" "undefined" \
-"Browser executable to launch (required):" "undefined" \
-"Can not copy $what to clipboard: no $what defined." "undefined" \
-"Command line parameter (if any) to pass (optional):" "undefined" \
-"Copied $what to clipboard." "undefined" \
-"Error" "undefined" \
-"Error launching browser, the OS error message is:" "undefined" \
-"Find Browser" "undefined" \
-"Generate gorilladoc.html" "undefined" \
-"History deleted. After a restart the list will be empty." "undefined" \
-"Iconify upon auto-lock" "undefined" \
-"Launch Browser directed to URL" "undefined" \
-"Launched browser:" "undefined" \
-"Master password changed." "undefined" \
-"Move $type" "undefined" \
-"Moving of $type canceled." "undefined" \
-"New group added." "undefined" \
-"Oh well..." "undefined" \
-"Open URL" "undefined" \
-"Password Gorilla - <New Database>" "undefined" \
-"Password Gorilla License" "undefined" \
-"Password policy settings invalid." "undefined" \
-"Passwords Do Not Match" "undefined" \
-"Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file." "undefined" \
-"Save changes?" "undefined" \
-"Show Gorilla Icon" "undefined" \
-"Size" "undefined" \
-"The confirmed password does not match." "undefined" \
-"The selected login does not contain a URL value." "undefined" \
-"This login must have a title." "undefined" \
-"This login's group name is not valid." "undefined" \
-"Use Gorilla auto-copy" "undefined" \
-"Warning: Can not save to" "undefined" \
-"Warning: Read-only password file" "undefined" \
-"because the file permissions are set for read-only access." "undefined" \
+"<unknown>" "<неизвестно>" \
+"About Password Gorilla" "О Password Gorilla" \
+"Addition of group canceled." "Добавление группы отменено." \
+"Also copy username to clipboard" "Скопировать имя пользователя в буфер обмена" \
+"Browser" "Браузер" \
+"Browser executable to launch (required):" "Путь к браузеру (обязательно)" \
+"Can not copy $what to clipboard: no $what defined." "Не могу скопировать $what в буфер обмена: $what не определён." \
+"Command line parameter (if any) to pass (optional):" "Аргумент(ы) (необязательно)" \
+"Copied $what to clipboard." "$what скопирован(но) в буфер обмена" \
+"Error" "Ошибка" \
+"Error launching browser, the OS error message is:" "Ошибка запуска браузера:" \
+"Find Browser" "Найти браузер" \
+"Generate gorilladoc.html" "Создать gorilladoc.html" \
+"History deleted. After a restart the list will be empty." "История стёрта." \
+"Iconify upon auto-lock" "Сворачивать окно после блокировки" \
+"Launch Browser directed to URL" "Запустить браузер для URL" \
+"Launched browser:" "Запущенный браузер:" \
+"Master password changed." "Мастер-пароль сменён." \
+"Move $type" "Переместить $type" \
+"Moving of $type canceled." "Перемещение $type отменено." \
+"New group added." "Добавлена новая группа." \
+"Oh well..." "Ох..." \
+"Open URL" "Открыть URL" \
+"Password Gorilla - <New Database>" "Password Gorilla - <Новая БД>" \
+"Password Gorilla License" "Лицензия на Password Gorilla" \
+"Password policy settings invalid." "Некорректные настройки политики паролей." \
+"Passwords Do Not Match" "Пароли не совпадают." \
+"Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file."
+"Пожалуйста, смените права доступа на чтение-запись и нажмите 'Повтор' или нажмите 'Отмена' и сохраните БД в другой файл." \
+"Save changes?" "Сохранить изменения?" \
+"Show Gorilla Icon" "Показывать изображение гориллы" \
+"Size" "Размер" \
+"The confirmed password does not match." "Подтверждённый пароль не совпадает." \
+"The selected login does not contain a URL value." "У этого логина нет URL." \
+"This login must have a title." "У логина должно быть название." \
+"This login's group name is not valid." "Имя группы некорректно." \
+"Use Gorilla auto-copy" "Использовать автоматическое копирование" \
+"Warning: Can not save to" "Предупреждение: не могу сохранить в" \
+"Warning: Read-only password file" "Предупреждение: БД в режиме только для чтения" \
+"because the file permissions are set for read-only access." "т.к. есть права лишь на чтение файла." \
 }
 
