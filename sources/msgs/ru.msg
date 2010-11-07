@@ -23,7 +23,7 @@ mcmset ru {
 "License ..." "Лицензия ..." \
 "License" "Лицензия" \
 "Contributors" "Контрибьюторы" \
-"About ..." "О программе ..." \
+"About" "О программе" \
 "Open Password Database" "Открыть БД паролей" \
 "Select a database, and enter its password." "Выберите БД и введите пароль" \
 "Create new password database" "Создать новую БД" \

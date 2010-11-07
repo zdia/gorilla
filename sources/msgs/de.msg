@@ -22,7 +22,7 @@ mcmset de {
 "Help" "Hilfe" \
 "License ..." "Lizenz ..." \
 "License" "Lizenz" \
-"About ..." "Über ..." \
+"About" "Über" \
 "Open Password Database" "Passwort-Datenbank öffnen" \
 "Select a database, and enter its password." "Wähle eine Datenbank und gib das Passwort ein" \
 "Create new password database" "Neue Passwort-Datenbank anlegen" \
