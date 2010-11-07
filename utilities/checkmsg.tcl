@@ -35,17 +35,15 @@ proc initCheckMsg { file lang } {
 	namespace import msgcat::*
 puts "Searching the msgcat files in '$msgcatDir'"
 	# mcload $msgcatDir
-	mcload "~/Projekte/gorilla/msgs"
-	# mcload "~/Projekte/git/gorilla/sources/msgs"
+	# mcload "/home/dia/Projekte/git/gorilla/sources/msgs"
 
 	if { $lang eq "" } {
 		set lang [lindex [split [mclocale] _] 0]
 	} 
 	mclocale $lang
-puts [mc [join "Notes:"]]
-puts [mc "File"]
-puts [mc "Add Login"]
+	mcload "~/Projekte/gorilla/msgs"
 	set localeMsg [file join $msgcatDir $lang.msg]
+	
 	if { [file exists $localeMsg] } {
 		puts "Package msgcat loaded with resource file '$localeMsg'"
 	} else {
@@ -165,6 +163,7 @@ proc getMsgMissing { entrylist } {
 # puts [expr { $item eq [mc $item] } ]
 # puts [expr { $item eq [mc [join $item]] } ]
 # puts [expr { [join $item] eq [mc [join $item]] } ]
+# exit
 		# Conditions to define a notfound entry:
 		# 1) normal mc for strings without special characters
 		# 2) mc for strings with \"
@@ -273,7 +272,7 @@ proc checkMsg { source locale } {
 ########## set the global individual filenamees ##########################
 set sourcefile [lindex $argv 0]	;# must be full pathname
 set locale "[lindex $argv 1]"
-set baseMsg ROOT.msg
+set baseMsg en.msg
 set msgcatDir [file join [file dirname [info script]] "../sources/msgs"]
 ##########################################################################
 

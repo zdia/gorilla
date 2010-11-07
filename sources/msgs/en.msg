@@ -62,6 +62,7 @@ mcmset de {
 "Find Text:" "Find Text:" \
 "General" "General" \
 "Generate Password" "Generate Password" \
+"Generate gorilladoc.html" "Generate gorilladoc.html" \
 "Group deleted." "Group deleted." \
 "Group name unchanged." "Group name unchanged." \
 "Group renamed." "Group renamed." \

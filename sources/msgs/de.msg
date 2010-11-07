@@ -2,7 +2,7 @@ mcmset de {
 "File" "Datenbank" \
 "New ..." "Neue ..."\
 "Open ..." "Öffnen ..." \
-"Merge ..." "Importieren ..."\
+"Merge ..." "Vereinigen ..."\
 "Save" "Speichern"\
 "Add" "neu" \
 "Save As ..." "Speichern als ..." \
@@ -245,5 +245,6 @@ wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\"." \
 "This login must have a title." "Dieser Datensatz benötigt einen Titel-Eintrag." \
 "This login's group name is not valid." "Der Gruppenname für diesen Datensatz ist ungültig." \
 "Use Gorilla auto-copy" "Gorillas auto-copy verwenden" \
+"Generate gorilladoc.html" "Gorilladoc.html erzeugen" \
 }
 

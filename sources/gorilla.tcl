@@ -81,7 +81,12 @@ if {[catch {package require msgcat} oops]} {
 		exit 1
 }
 namespace import msgcat::*
-mcload [file join $::gorillaDir msgs]
+# mcload [file join $::gorillaDir msgs]
+# mcload has to be called after having set 'mclocale' which will happen
+# during initialization of Gorilla's preferences
+#
+# Look out! If you use a file ROOT.msg in the msgs folder it will be used 
+# without regard to the Unix LOCALE configuration
 
 #
 # The isaac and viewhelp packages should be in the current directory
@@ -5831,6 +5836,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 			lang {
 				set ::gorilla::preference($pref) $value
 				mclocale $value
+				mcload [file join $::gorillaDir msgs]
 			}
 			fontsize {
 				set ::gorilla::preference($pref) $value
@@ -7414,7 +7420,7 @@ proc ::gorilla::addRufftoHelp { menu } {
 			::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
 		}
 		
-		$menu add command -label "Generate gorilladoc.html" -command ::gorilla::makeRuffdoc
+		$menu add command -label [mc "Generate gorilladoc.html"] -command ::gorilla::makeRuffdoc
 	}
 
 } ; # end proc addRufftoHelp
