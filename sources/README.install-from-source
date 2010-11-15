@@ -1,0 +1,37 @@
+
+Note, the contents of this document are intended for more knowledgeable users
+wishing to do some form of custom install of Password Gorilla or wishing to
+create an install package for their favorite operating system distribution.
+
+The Password Gorilla source is intended to be a stand-alone bundle from which
+to launch the application.  While it is possible to install tcllib globally
+and install the Password Gorilla specific packages into the Tcl global
+library directory, the exact details of how to do so are beyond the scope of
+this document and are left up to those with sufficient knowledge of the Tcl
+package system.
+
+Even so, after installing all the packages, including Gorilla specific
+packages, globally, there are still a few dependencies where the gorilla.tcl
+file looks to the directory where it is installed to locate external elements.
+
+Additionally, installing all packages globally is untested, and as such your
+mileage may vary if you do attempt to do such an install.
+
+The tested method of launching Password Gorilla is to launch the gorilla.tcl
+file from the source/ directory within the source file from github.  The
+directory does not need to be named "source/" once installed, but the below
+instructions will assume it is named source/.
+
+To "install", move the entire contents of the source/ directory into a
+directory of your choosing.  The top directory name does not matter, but all
+contents should be moved, and none of the names should be changed unless you
+already understand what you are doing.
+
+Once the source/ directory contents are stored somewhere, the next step is
+to create a symlink ( or shortcut for Windows users ) from a binary
+directory on one's executable search path ( or one's desktop ) to the
+"gorilla.tcl" file in the "source/" directory.  Alternately, a shell script
+( batch file for Windows users ) can be created that either performs a "cd"
+to the source/ directory and then launches gorilla.tcl, or directly launches
+gorilla.tcl using an absolute path.
+
