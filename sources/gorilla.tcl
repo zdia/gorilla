@@ -524,6 +524,10 @@ proc setmenustate {widget tag_pattern state} {
 				incr index
 			}
 		}
+		if { [tk windowingsystem] eq "aqua" } {
+			# appmenu's About
+			.mbar.apple entryconfigure 0 -state $state
+		}
 		return
 	}
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
@@ -4339,8 +4343,8 @@ proc gorilla::LockDatabase {} {
 		}
 	}
 	
-	# Ist es wirklich notwendig, die Submenüs zu deaktivieren?
-	# $::gorilla::widgets(main) setmenustate all disabled
+	# MacOSX gives access to the menubar as long as the application is launched
+	setmenustate $::gorilla::widgets(main) all disabled
 	
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
@@ -4475,7 +4479,7 @@ proc gorilla::LockDatabase {} {
 			catch {grab release $top}
 		}
 
-		# $::gorilla::widgets(main) setmenustate all normal
+		setmenustate $::gorilla::widgets(main) all normal
 
 		wm withdraw $top
 		set ::gorilla::status [mc "Welcome back."]
@@ -6014,14 +6018,13 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 		set ::gorilla::status [ mc "Can not copy $what to clipboard: no $what defined." ]
 	} else {
 		switch -exact -- [ tk windowingsystem ] {
-			win32   { # win32 only supports "clipboard"
+			aqua    -
+			win32   { # win32 and aqua only support "clipboard"
 				clipboard clear
 				clipboard append -- [ ::gorilla::GetSelected$what ]
 			}
-
 			x11     -
-			aqua    -
-			default { # x11 and MacOS support PRIMARY and
+			default { # x11 supports PRIMARY and
 				  # CLIPBOARD x11 style clipboards
 
 				# setup to return data for both PRIMARY and
@@ -7455,6 +7458,9 @@ if {[tk windowingsystem] == "aqua"} {
 
 	proc ::tk::mac::ShowPreferences {} {
 		if { ![info exists ::gorilla::fileName] || $::gorilla::fileName eq "" } {
+			return
+		}
+		if {[info exists ::gorilla::isLocked] && $::gorilla::isLocked} {
 			return
 		}
 		gorilla::PreferencesDialog
