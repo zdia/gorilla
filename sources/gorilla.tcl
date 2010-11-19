@@ -162,7 +162,9 @@ if {[catch {package require pwsafe} oops]} {
 		-message "The Password Gorilla requires the \"pwsafe\" package.\
 		This seems to be an installation problem, as the pwsafe package\
 		ought to be part of the Password Gorilla distribution."
-	exit 1
+	exit
+	# exit 1 ;# needs testing on the Mac. It seems that
+	# the parameter 1 is setting gorilla.tcl's filelength to 0
 }
 
 package require tooltip
@@ -4344,7 +4346,11 @@ proc gorilla::LockDatabase {} {
 	}
 	
 	# MacOSX gives access to the menubar as long as the application is launched
-	setmenustate $::gorilla::widgets(main) all disabled
+	# so we grey out the menuitems
+	if {[tk windowingsystem] eq "aqua"} {
+		setmenustate $::gorilla::widgets(main) all disabled
+		rename ::tk::mac::ShowPreferences ""
+	}
 	
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
@@ -4479,8 +4485,11 @@ proc gorilla::LockDatabase {} {
 			catch {grab release $top}
 		}
 
-		setmenustate $::gorilla::widgets(main) all normal
-
+		if { [tk windowingsystem] eq "aqua"} {
+			setmenustate $::gorilla::widgets(main) all normal
+			eval $::gorilla::MacShowPreferences
+		}
+		
 		wm withdraw $top
 		set ::gorilla::status [mc "Welcome back."]
 
@@ -7456,15 +7465,12 @@ set ::gorilla::logfile "/private/var/log/console.log"
 if {[tk windowingsystem] == "aqua"} {
 	set argv [psn_Delete $argv $argc]
 
-	proc ::tk::mac::ShowPreferences {} {
-		if { ![info exists ::gorilla::fileName] || $::gorilla::fileName eq "" } {
-			return
+	set ::gorilla::MacShowPreferences {
+		proc ::tk::mac::ShowPreferences {} {
+			gorilla::PreferencesDialog
 		}
-		if {[info exists ::gorilla::isLocked] && $::gorilla::isLocked} {
-			return
-		}
-		gorilla::PreferencesDialog
 	}
+
 	proc ::tk::mac::Quit {} {
     gorilla::Exit
 	}
@@ -7556,6 +7562,10 @@ if {$::gorilla::init == 0} {
 	if {$action == "Cancel"} {
 		destroy .
 		exit		
+	}
+
+	if { [tk windowingsystem] eq "aqua" } {
+		eval $gorilla::MacShowPreferences
 	}
 
 	wm deiconify .
