@@ -1,0 +1,61 @@
+# gorilla.test:  tests for the Password Gorilla application
+#
+# This file contains a collection of tests for the password manager
+# Password Gorilla.  
+#
+# To make the test type "gorilla.tcl --test". A help menuitem
+# "Gorillatest" will be created which will perform the test after
+# having been clicked.
+#
+# Note: Only test failures will be reported
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+# -------------------------------------------------------------------------
+
+puts "running tests for Password Gorilla"
+
+# old form
+proc TestProcedure {} { return chimpanzee }
+test gorilla-0.1 {initial test} { TestProcedure } gorilla
+
+# new form
+test gorilla-0.2 {initial test} \
+	-setup { proc TestProcedure {} { return goat } } \
+	-body {TestProcedure} \
+	-result {gorilla} \
+	-cleanup {rename TestProcedure ""}
+	
+# -------------------------------------------------------------------------
+
+# create a safe environment for testing purposes
+namespace eval ::gorilla::test {
+	namespace import ::tcltest::*
+	
+test gorilla-0.3 {test in safe environment} \
+	-setup {
+			set ::gorilla::testVar 9
+			puts "Value before test: $::gorilla::testVar"
+			set temp $::gorilla::testVar
+		} \
+	-cleanup {
+			set ::gorilla::testVar $temp
+		} \
+	-body {
+			set ::gorilla::testVar 0
+			return $::gorilla::testVar
+		} \
+	-result 1
+}
+
+puts "Value after test: $::gorilla::testVar"
+
+namespace delete ::gorilla::test

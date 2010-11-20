@@ -363,11 +363,12 @@ set ::gorilla::menu_desc {
     # .mbar.apple add separator
 	}
 
+# note - if the help menu widget name changes, this will need to be updated	
+	::gorilla::addRufftoHelp .mbar.help
+	::gorilla::addTestToHelp .mbar.help
+
 # This command must be last menu oriented command due to TkCocoa for MacOSX
 	. configure -menu .mbar
-
-# note - if the help menu widget name changes, this will need to be updated	
-::gorilla::addRufftoHelp .mbar.help
 
 # menueintrag deaktivieren mit dem tag "login
 # suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
@@ -7443,6 +7444,29 @@ proc ::gorilla::addRufftoHelp { menu } {
 
 } ; # end proc addRufftoHelp
 
+proc ::gorilla::addTestToHelp { menu } {
+
+	# Appends an entry to the menu passed in that will call the tcltest
+	# based tests for Password Gorilla.
+	#
+	# menu - The menu proc to which to append the test command entry
+	#
+
+	if { $::gorilla::CreateGorillaTest } {
+	
+		proc ::gorilla::runGorillaTests { } {
+			source [file join $::gorillaDir/../devtools gorilla.test]
+		}
+		
+		$menu add command -label [mc "Gorillatest"] -command ::gorilla::runGorillaTests
+
+	} ;# end if
+	
+
+} ; # end proc addTestToHelp
+
+
+
 #
 # ----------------------------------------------------------------------
 # Init
@@ -7452,6 +7476,7 @@ proc ::gorilla::addRufftoHelp { menu } {
 # If we want some error logging
 # set logfile "/home/dia/Projekte/tcl/console.log"
 set ::gorilla::logfile "/private/var/log/console.log"
+set ::gorilla::CreateGorillaTest 0
 
 if {[tk windowingsystem] == "aqua"} {
 	set argv [psn_Delete $argv $argc]
@@ -7474,9 +7499,10 @@ if {[tk windowingsystem] == "aqua"} {
 proc usage {} {
 		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
 		puts stdout "	Options:"
-		puts stdout "		--rc <name>	 Use <name> as configuration file (not the Registry)."
+		puts stdout "		--rc <name>	 	Use <name> as configuration file (not the Registry)."
 		puts stdout "		--norc				Do not use a configuration file (or the Registry)."
 		puts stdout "		<database>		Open <database> on startup."
+		puts stdout "		--test				Create a help menuitem 'test'"
 }
 
 if {$::gorilla::init == 0} {
@@ -7491,6 +7517,17 @@ if {$::gorilla::init == 0} {
 
 	for {set i 0} {$i < $argc} {incr i} {
 		switch -- [lindex $argv $i] {
+			--test {
+					# package tcltest is passing per default the contents
+					# of argv to tcltest::configure thus we have to clear argv
+					set argv {}
+					if { [ catch { package require tcltest 2.2 } ] } {
+							puts stderr "Could not load package tcltest 2.2, aborting ..."
+							exit
+						}
+					namespace import -force ::tcltest::*
+					set ::gorilla::CreateGorillaTest 1
+					}
 			--sourcedoc {
 					# Need ruff! and struct::list from tcllib - both should be
 					# installed properly for this option to work
