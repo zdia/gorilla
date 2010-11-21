@@ -21,6 +21,9 @@
 
 # -------------------------------------------------------------------------
 
+package require tcltest 2.2
+namespace import tcltest::*
+
 puts "running tests for Password Gorilla"
 
 # old form
