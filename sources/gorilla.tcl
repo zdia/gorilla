@@ -1232,14 +1232,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				{{All Files} *}
 			}
 
-			if {![info exists ::gorilla::dirName]} {
-				if {[tk windowingsystem] == "aqua"} {
-					set ::gorilla::dirName "~/Documents"
-				} else {
-				# Windows-Abfrage auch nötig ...
-					set ::gorilla::dirName [pwd]
-				}
-			}
+			setup-default-dirname
 
 			set fileName [tk_getOpenFile -parent $top \
 				-title "Browse for a password database ..." \
@@ -3099,14 +3092,7 @@ proc gorilla::Export {} {
 		}
 	}
 
-	if {![info exists ::gorilla::dirName]} {
-		if {[tk windowingsystem] == "aqua"} {
-			set ::gorilla::dirName "~/Documents"
-		} else {
-		# Windows-Abfrage auch nötig ...
-			set ::gorilla::dirName [pwd]
-		}
-	}
+	setup-default-dirname
 		
 	set types {
 		{{Text Files} {.txt}}
@@ -3219,6 +3205,37 @@ proc gorilla::Export {} {
 	set ::gorilla::status [mc "Database exported."]
 
 } ; # end proc gorilla::Export
+
+# ----------------------------------------------------------------------
+# Import Database
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::Import {} {
+
+	ArrangeIdleTimeout
+
+   setup-default-dirname
+
+} ; # end proc gorilla::Import
+
+proc gorilla::setup-default-dirname { } {
+
+	# Makes sure that the global ::gorilla::dirName variable is set to a
+	# sensible default if it does not already exist.
+	#
+	# Side-effect of modifying the global ::gorilla::dirName variable
+
+	if { ! [ info exists ::gorilla::dirName ] } {
+		if { [ tk windowingsystem ] == "aqua" } {
+			set ::gorilla::dirName "~/Documents"
+		} else {
+		# Windows-Abfrage auch nötig ...
+			set ::gorilla::dirName [ pwd ]
+		}
+	}
+
+} ; # end proc setup-default-dirname
 
 # ----------------------------------------------------------------------
 # Mark database as dirty
@@ -3910,14 +3927,7 @@ proc gorilla::SaveAs {} {
 	{{All Files} *}
 		}
 
-		if {![info exists ::gorilla::dirName]} {
-			if {[tk windowingsystem] == "aqua"} {
-				set ::gorilla::dirName "~/Documents"
-			} else {
-			# Windows-Abfrage auch nötig ...
-				set ::gorilla::dirName [pwd]
-			}
-		}
+		setup-default-dirname
 
 		set fileName [tk_getSaveFile -parent . \
 			-title "Save password database ..." \
