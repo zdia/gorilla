@@ -3056,161 +3056,169 @@ proc gorilla::RenameGroup {} {
 #
 
 proc gorilla::DestroyExportDialog {} {
-		set ::gorilla::guimutex 2
+	set ::gorilla::guimutex 2
 }
 
 proc gorilla::Export {} {
-		ArrangeIdleTimeout
-		set top .export
+	ArrangeIdleTimeout
+	set top .export
 
-		if {![info exists ::gorilla::preference(exportIncludePassword)]} {
-	set ::gorilla::preference(exportIncludePassword) 0
-		}
-
-		if {![info exists ::gorilla::preference(exportIncludeNotes)]} {
-	set ::gorilla::preference(exportIncludeNotes) 1
-		}
-
-		if {![info exists ::gorilla::preference(exportAsUnicode)]} {
-	set ::gorilla::preference(exportAsUnicode) 0
-		}
-
-		if {![info exists ::gorilla::preference(exportFieldSeparator)]} {
-	set ::gorilla::preference(exportFieldSeparator) ","
-		}
-
-		if {![info exists ::gorilla::preference(exportShowWarning)]} {
-	set ::gorilla::preference(exportShowWarning) 1
-		}
-
-		if {$::gorilla::preference(exportShowWarning)} {
-			set answer [tk_messageBox -parent . \
-					-type yesno -icon warning -default no \
-					-title [mc "Export Security Warning"] \
-					-message [mc "You are about to export the password\
-					database to a plain-text file. The file will\
-					not be encrypted or password-protected. Anybody\
-					with access can read the file, and learn your\
-					user names and passwords. Make sure to store the\
-					file in a secure location. Do you want to\
-					continue?"] ]
-			if {$answer != "yes"} {
-					return
-			}
-		}
-
-		if {![info exists ::gorilla::dirName]} {
-			if {[tk windowingsystem] == "aqua"} {
-				set ::gorilla::dirName "~/Documents"
-			} else {
-			# Windows-Abfrage auch nötig ...
-				set ::gorilla::dirName [pwd]
-			}
-		}
-			
-		set types {
-	{{Text Files} {.txt}}
-	{{CSV Files} {.csv}}
-	{{All Files} *}
-		}
-
-		set fileName [tk_getSaveFile -parent . \
-			-title [mc "Export password database as text ..."] \
-			-defaultextension ".txt" \
-			-filetypes $types \
-			-initialdir $::gorilla::dirName]
-
-		if {$fileName == ""} {
-	return
-		}
-
-		set nativeName [file nativename $fileName]
-
-		set myOldCursor [. cget -cursor]
-		. configure -cursor watch
-		update idletasks
-
-		if {[catch {
-	set txtFile [open $fileName "w"]
-		} oops]} {
-	. configure -cursor $myOldCursor
-	tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Error Exporting Database" \
-			-message "Failed to export password database to\
-		$nativeName: $oops"
-	return
-		}
-
-		set ::gorilla::status [mc "Exporting ..."]
-		update idletasks
-
-		if {$::gorilla::preference(exportAsUnicode)} {
-	#
-	# Write BOM in binary mode, then switch to Unicode
-	#
-
-	fconfigure $txtFile -encoding binary
-
-	if {[info exists ::tcl_platform(byteOrder)]} {
-			switch -- $::tcl_platform(byteOrder) {
-		littleEndian {
-				puts -nonewline $txtFile "\xff\xfe"
-		}
-		bigEndian {
-				puts -nonewline $txtFile "\xfe\xff"
-		}
-			}
+	if {![info exists ::gorilla::preference(exportIncludePassword)]} {
+		set ::gorilla::preference(exportIncludePassword) 0
 	}
 
-	fconfigure $txtFile -encoding unicode
+	if {![info exists ::gorilla::preference(exportIncludeNotes)]} {
+		set ::gorilla::preference(exportIncludeNotes) 1
+	}
+
+	if {![info exists ::gorilla::preference(exportAsUnicode)]} {
+		set ::gorilla::preference(exportAsUnicode) 0
+	}
+
+	if {![info exists ::gorilla::preference(exportFieldSeparator)]} {
+		set ::gorilla::preference(exportFieldSeparator) ","
+	}
+
+	if {![info exists ::gorilla::preference(exportShowWarning)]} {
+		set ::gorilla::preference(exportShowWarning) 1
+	}
+
+	if {$::gorilla::preference(exportShowWarning)} {
+		set answer [tk_messageBox -parent . \
+				-type yesno -icon warning -default no \
+				-title [mc "Export Security Warning"] \
+				-message [mc "You are about to export the password\
+				database to a plain-text file. The file will\
+				not be encrypted or password-protected. Anybody\
+				with access can read the file, and learn your\
+				user names and passwords. Make sure to store the\
+				file in a secure location. Do you want to\
+				continue?"] ]
+		if {$answer != "yes"} {
+			return
 		}
+	}
 
-		set separator [subst -nocommands -novariables $::gorilla::preference(exportFieldSeparator)]
-
-		foreach rn [$::gorilla::db getAllRecordNumbers] {
-	# UUID
-	if {[$::gorilla::db existsField $rn 1]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 1]
-	}
-	puts -nonewline $txtFile $separator
-	# Group
-	if {[$::gorilla::db existsField $rn 2]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 2]
-	}
-	puts -nonewline $txtFile $separator
-	# Title
-	if {[$::gorilla::db existsField $rn 3]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 3]
-	}
-	puts -nonewline $txtFile $separator
-	# Username
-	if {[$::gorilla::db existsField $rn 4]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 4]
-	}
-	puts -nonewline $txtFile $separator
-	# Password
-	if {$::gorilla::preference(exportIncludePassword)} {
-			if {[$::gorilla::db existsField $rn 6]} {
-		puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 6]
-			}
-	} else {
-			puts -nonewline $txtFile "********"
-	}
-	puts -nonewline $txtFile $separator
-	if {$::gorilla::preference(exportIncludeNotes)} {
-			if {[$::gorilla::db existsField $rn 5]} {
-		puts -nonewline $txtFile \
-				[string map {\\ \\\\ \" \\\" \t \\t \n \\n} \
-			 [$::gorilla::db getFieldValue $rn 5]]
-			}
-	}
-	puts $txtFile ""
+	if {![info exists ::gorilla::dirName]} {
+		if {[tk windowingsystem] == "aqua"} {
+			set ::gorilla::dirName "~/Documents"
+		} else {
+		# Windows-Abfrage auch nötig ...
+			set ::gorilla::dirName [pwd]
 		}
+	}
+		
+	set types {
+		{{Text Files} {.txt}}
+		{{CSV Files} {.csv}}
+		{{All Files} *}
+	}
 
-		catch {close $txtFile}
+	set fileName [tk_getSaveFile -parent . \
+		-title [mc "Export password database as text ..."] \
+		-defaultextension ".txt" \
+		-filetypes $types \
+		-initialdir $::gorilla::dirName]
+
+	if {$fileName == ""} {
+		return
+	}
+
+	set nativeName [file nativename $fileName]
+
+	set myOldCursor [. cget -cursor]
+	. configure -cursor watch
+	update idletasks
+
+	if {[catch {
+		set txtFile [open $fileName "w"]
+	} oops]} {
 		. configure -cursor $myOldCursor
-		set ::gorilla::status [mc "Database exported."]
-}
+		tk_messageBox -parent . -type ok -icon error -default ok \
+			-title [ mc "Error Exporting Database" ] \
+			-message "[ mc "Failed to export password database to" ] ${nativeName}: $oops"
+		return
+	}
+
+	set ::gorilla::status [mc "Exporting ..."]
+	update idletasks
+
+	if {$::gorilla::preference(exportAsUnicode)} {
+		#
+		# Write BOM in binary mode, then switch to Unicode
+		#
+
+		fconfigure $txtFile -encoding binary
+
+		if {[info exists ::tcl_platform(byteOrder)]} {
+			switch -- $::tcl_platform(byteOrder) {
+				littleEndian {
+					puts -nonewline $txtFile "\xff\xfe"
+				}
+				bigEndian {
+					puts -nonewline $txtFile "\xfe\xff"
+				}
+			}
+		}
+
+		fconfigure $txtFile -encoding unicode
+	} ; # end if export as unicode 
+
+	set separator [subst -nocommands -novariables $::gorilla::preference(exportFieldSeparator)]
+
+	foreach rn [$::gorilla::db getAllRecordNumbers] {
+
+		# UUID
+		if {[$::gorilla::db existsField $rn 1]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 1]
+		}
+		puts -nonewline $txtFile $separator
+
+		# Group
+		if {[$::gorilla::db existsField $rn 2]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 2]
+		}
+		puts -nonewline $txtFile $separator
+
+		# Title
+		if {[$::gorilla::db existsField $rn 3]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 3]
+		}
+		puts -nonewline $txtFile $separator
+
+		# Username
+		if {[$::gorilla::db existsField $rn 4]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 4]
+		}
+		puts -nonewline $txtFile $separator
+
+		# Password
+		if {$::gorilla::preference(exportIncludePassword)} {
+			if {[$::gorilla::db existsField $rn 6]} {
+				puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 6]
+			}
+		} else {
+			puts -nonewline $txtFile "********"
+		}
+		puts -nonewline $txtFile $separator
+
+		# Notes
+		if {$::gorilla::preference(exportIncludeNotes)} {
+			if {[$::gorilla::db existsField $rn 5]} {
+				puts -nonewline $txtFile \
+					[string map {\\ \\\\ \" \\\" \t \\t \n \\n} \
+					[$::gorilla::db getFieldValue $rn 5]]
+			}
+		}
+		puts $txtFile ""
+
+	} ; # end foreach rn in gorilla db
+
+	catch {close $txtFile}
+	. configure -cursor $myOldCursor
+	set ::gorilla::status [mc "Database exported."]
+
+} ; # end proc gorilla::Export
 
 # ----------------------------------------------------------------------
 # Mark database as dirty
