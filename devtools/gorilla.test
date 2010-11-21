@@ -22,7 +22,7 @@
 # -------------------------------------------------------------------------
 
 package require tcltest 2.2
-namespace import tcltest::*
+namespace import -force tcltest::*
 
 puts "running tests for Password Gorilla"
 
