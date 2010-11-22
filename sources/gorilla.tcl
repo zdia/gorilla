@@ -3207,17 +3207,221 @@ proc gorilla::Export {} {
 } ; # end proc gorilla::Export
 
 # ----------------------------------------------------------------------
-# Import Database
+# Import data from a CSV file
 # ----------------------------------------------------------------------
 #
 
 proc gorilla::Import {} {
 
+	# Import a csv file and add the entries therein to the currently open
+	# database
+
 	ArrangeIdleTimeout
 
    setup-default-dirname
 
+	set types {
+		{{CSV Files} {.csv}}
+	}
+
+	set input_file [ tk_getOpenFile -parent . \
+		-title [ mc "Import CSV datafile" ] \
+		-defaultextension ".csv" \
+		-filetypes $types \
+		-initialdir $::gorilla::dirName ]
+		
+	if { $input_file eq "" } {
+		return
+	}
+
+	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
+		error-popup [ mc "Error opening import CSV file" ] \
+			"[ mc "Could not access file " ] ${input_file}:\n$oops"
+		return
+	}
+	fconfigure $infd -encoding utf-8
+
+	if { [ catch { package require csv } oops ] } {
+		error-popup [ mc "Error loading CSV parsing package." ] \
+			[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+		return
+	}
+
+	set myOldCursor [. cget -cursor]
+	. configure -cursor watch
+	update idletasks
+
+	set possible_columns { create-time group last-access last-modified
+									last-pass-change lifetime notes password title
+									url user uuid }
+
+	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
+		error-popup [ mc "Error parsing CSV file" ] \
+			" [ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
+		catch { close $infd }
+	  	. configure -cursor $myOldCursor
+		return
+	}
+
+   puts "columns_present: $columns_present"
+   
+   # Must have at least one data column present
+   if { [ llength $columns_present ] == 0 } {
+   	error-popup [ mc "Error, nothing to import." ] \
+   		[ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
+		catch { close $infd }
+	  	. configure -cursor $myOldCursor
+		return
+   }
+   
+   # Make sure that only the possible columns are present.  Note, this does
+   # not test for duplicate columns, that is intentional.  The result of
+   # duplicate columns is that the last duplicate column on a line will
+   # override the value of previous occurrences of the same column on that
+   # line.
+   
+   foreach item $columns_present {
+     if { $item ni $possible_columns } {
+       lappend error_columns $item
+     }
+   }
+   
+   if { [ info exists error_columns ] } {
+   	error-popup [ mc "Error, undefined data columns" ] \
+   		"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
+   	catch { close $infd }
+	  	. configure -cursor $myOldCursor
+   	return
+	}
+
+	# This is utilized below to apply a "default" group to any imports which
+	# do not contain a group column in the input data
+	if { "group" ni $columns_present } {
+		set use_default_group 1
+	} else {
+		set use_default_group 0
+	}
+
+	foreach line [ split [ read $infd [ file size $input_file ] ] "\n" ] {
+
+		puts "line: $line"
+		
+		if { [ catch { set data [ ::csv::split $line ] } oops ] } {
+		  lappend error_lines [ list "Unable to parse as CSV" $line ]
+		  continue
+		} ; # end if catch csv::split
+
+		if { [ llength $data ] == 0 } { 
+			continue
+		}
+		
+		if { [ llength $data ] != [ llength $columns_present ] } {
+			lappend error_lines [ list "Unequal number of columns" $line ]
+			continue
+		}
+
+		set newrn [ $::gorilla::db createRecord ]
+		
+		set no_errors 1
+
+		foreach key $columns_present value $data {
+
+			puts "key: $key value $value"
+			switch -exact -- $key {
+
+				group {
+					if { [ catch { ::pwsafe::db::splitGroup $value } ] } {
+						lappend error_lines [ list "Invalid group name" $line ]
+						set no_errors 0
+					}
+					dbset group $newrn $value
+				}
+
+				uuid {
+					# f29b9ef7-9e62-41e1-7dfd-14ae13986059
+					if { ! [ regexp {[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}} $value ] } {
+					puts "invalid uuid $value"
+						lappend error_lines [ list "Invalid UUID field" $line ]
+						set no_errors 0
+					}
+					dbset uuid $newrn $value
+				}
+
+				create-time -
+				last-access -
+				last-modified -
+				last-pass-change -
+				lifetime {
+					if { [ catch { clock scan $value -format "%Y-%m-%d %k-%M-%S %z" } ] } {
+						lappend error_lines [ list "Invalid time: field $key" $line ]
+						set no_errors 0
+					}
+				}
+
+				notes {
+					dbset notes $newrn [ subst -nocommands -novariables $value ]
+				}
+
+				default { dbset $key $newrn $value }
+
+			} ; # end switch
+
+		} ; # end foreach key/value
+		
+		if { $use_default_group } {
+			dbset group $newrn "Newly Imported"
+		}
+		
+		puts ""
+
+		if { $no_errors } {
+			lappend newly_added_records $newrn
+		} else {
+			$::gorilla::db deleteRecord $newrn
+		}
+
+	} ; # end foreach line in input file
+	
+	if { [ info exists error_lines ] } {
+		puts "errors exist from import: $error_lines"
+		set answer [ tk_messageBox -default yes -icon info \
+							-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
+							-parent . -title [ mc "Some records skipped during import" ] -type yesno ]
+		if { $answer eq "yes" } {
+			set fn [ tk_getSaveFile -parent . -title [ mc "Enter a file into which to save the log" ] ]
+			if { $fn ne "" } {
+				set outfd [ open $fn {WRONLY CREAT TRUNC} ]
+				fconfigure $outfd -encoding utf-8
+				foreach item $error_lines {
+					puts $outfd [ join $item "\t" ] 
+				}
+				close $outfd
+			} ; # end if fn ne ""
+		} ; # end if answer eq yes
+	} ; # end if exists error_lines
+	
+	if { [ info exists newly_added_records ] } {
+		foreach record $newly_added_records {
+			AddRecordToTree $record
+		}
+	}
+
+	catch { close $infd } 
+  	. configure -cursor $myOldCursor
+  	package forget csv
+
 } ; # end proc gorilla::Import
+
+proc gorilla::error-popup {title message} {
+
+	# a small helper proc to encapsulate all the details of opening a
+	# tk_messageBox with a title and message
+	
+	tk_messageBox -parent . -type ok -icon error -default ok \
+		-title $title \
+		-message $message 
+
+} ; # end proc gorilla::error-popup
 
 proc gorilla::setup-default-dirname { } {
 
