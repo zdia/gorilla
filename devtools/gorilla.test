@@ -22,43 +22,89 @@
 # -------------------------------------------------------------------------
 
 package require tcltest 2.2
-namespace import -force tcltest::*
+set argv ""
+eval ::tcltest::configure $argv
 
-puts "running tests for Password Gorilla"
+puts "running tests for Password Gorilla ..."
 
-# old form
-proc TestProcedure {} { return chimpanzee }
-test gorilla-0.1 {initial test} { TestProcedure } gorilla
+# ------------- samples -----------------
 
-# new form
-test gorilla-0.2 {initial test} \
-	-setup { proc TestProcedure {} { return goat } } \
-	-body {TestProcedure} \
-	-result {gorilla} \
-	-cleanup {rename TestProcedure ""}
+# old form:
+# proc TestProcedure {} { return chimpanzee }
+# test gorilla-0.1 {initial test} { TestProcedure } gorilla
+
+# new form:
+# test gorilla-0.2 {initial test} \
+	# -setup { proc TestProcedure {} { return goat } } \
+	# -body {TestProcedure} \
+	# -result {gorilla} \
+	# -cleanup {rename TestProcedure ""}
 	
 # -------------------------------------------------------------------------
-
 # create a safe environment for testing purposes
+
 namespace eval ::gorilla::test {
 	namespace import ::tcltest::*
 	
-test gorilla-0.3 {test in safe environment} \
-	-setup {
-			set ::gorilla::testVar 9
-			puts "Value before test: $::gorilla::testVar"
-			set temp $::gorilla::testVar
+	# CATEGORY: Security
+	# ------------------
+	
+	# database is locked
+	
+	test gorilla-1.1 {isLocked} \
+		-setup {gorilla::LockDatabase} \
+		-body {return $::gorilla::isLocked} \
+		-result 1
+	
+	test gorilla-1.2 {windows withdrawn} \
+		-setup {set actualState withdrawn} \
+		-body {
+			foreach top [array names ::gorilla::toplevel] {
+				if {[wm state .lockedDialog] eq "normal"} {
+					continue
+				} elseif {[wm state $top] ne "$actualState" } {
+					return ERROR
+				}
+			}
+			return OK
 		} \
-	-cleanup {
-			set ::gorilla::testVar $temp
+		-result OK
+		
+	test gorilla-1.3 {MacOSX Preferences menuitem disabled} \
+		-constraints mac \
+		-body { info commands ::tk::mac::ShowPreferences }
+		-result ""
+		
+	test gorilla-1.4 {MacOSX About menuitem disabled} \
+		-constraints mac \
+		-body {	return [.mbar.apple entryconfigure 0 -state] } \
+		-result disabled
+		
+	test gorilla-1.5 {MacOSX menuitems disabled} \
+		-constraints mac \
+		-setup {set widget .mbar}
+		-body {
+			foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
+				set index 0
+				foreach {title a b c d } $menu_itemlist {
+					if { $title ne "separator" } {
+						if { [$widget.$menu_widget entryconfigure $index -state] ne "disabled" } {
+							return ERROR
+						}
+					}
+					incr index
+				}
+			}
+			return OK
 		} \
-	-body {
-			set ::gorilla::testVar 0
-			return $::gorilla::testVar
-		} \
-	-result 1
-}
+		-result OK
+		
+	
+} ;# end of namespace eval ::gorilla::test
 
-puts "Value after test: $::gorilla::testVar"
+
+# ----------------------------------------------------------------------
+# cleanup
 
 namespace delete ::gorilla::test
+puts "Tests for unit Password Gorilla finished."
