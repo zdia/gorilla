@@ -822,7 +822,9 @@ character (0-9a-f).
 group
 
  | This field must be formatted in the manner of group names in the Password
-Safe database format.  That is, group names separated by dots (periods).
+Safe database format.  That is, group names separated by dots (periods). 
+Escape embedded periods with a slash (\) (e.g., \. ).  Escape embedded
+slashes with a slash (e.g., \\).
 
 notes
 

@@ -289,6 +289,7 @@ set ::gorilla::menu_desc {
 							"Save As ..." open gorilla::SaveAs "" ""
 							separator "" "" "" ""
 							"Export ..." open gorilla::Export "" ""
+							"Import ..." open gorilla::Import "" ""
 							separator mac "" "" ""
 							"Preferences ..." mac gorilla::Preferences "" ""
 							separator mac "" "" ""
@@ -971,6 +972,9 @@ proc gorilla::New {} {
 			-image $::gorilla::images(group) 
 	set ::gorilla::status [mc "Add logins using \"Add Login\" in the \"Login\" menu."]
 	. configure -cursor $myOldCursor
+
+	# Must also unset the cache of group names to ttk::treeview node identifiers
+	unset -nocomplain ::gorilla::groupNodes
 
 	if {[$::gorilla::db getPreference "SaveImmediately"]} {
 		gorilla::SaveAs
@@ -3294,12 +3298,13 @@ proc gorilla::Import {} {
    	return
 	}
 
-	# This is utilized below to apply a "default" group to any imports which
-	# do not contain a group column in the input data
+	# This is utilized below to apply a "default" group to any imports
+	# which do not contain a group column in the input data.  It is
+	# setup before the loop so that the "group" name is identical for
+	# all records in the import batch
+	
 	if { "group" ni $columns_present } {
-		set use_default_group 1
-	} else {
-		set use_default_group 0
+		set default_group_name "Newly Imported [ clock format [ clock seconds ] ]"
 	}
 
 	foreach line [ split [ read $infd [ file size $input_file ] ] "\n" ] {
@@ -3321,7 +3326,8 @@ proc gorilla::Import {} {
 		}
 
 		set newrn [ $::gorilla::db createRecord ]
-		
+		puts "newrn: $newrn"		
+
 		set no_errors 1
 
 		foreach key $columns_present value $data {
@@ -3339,7 +3345,7 @@ proc gorilla::Import {} {
 
 				uuid {
 					# f29b9ef7-9e62-41e1-7dfd-14ae13986059
-					if { ! [ regexp {[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}} $value ] } {
+					if { ! [ regexp {^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$} $value ] } {
 					puts "invalid uuid $value"
 						lappend error_lines [ list "Invalid UUID field" $line ]
 						set no_errors 0
@@ -3352,9 +3358,11 @@ proc gorilla::Import {} {
 				last-modified -
 				last-pass-change -
 				lifetime {
-					if { [ catch { clock scan $value -format "%Y-%m-%d %k-%M-%S %z" } ] } {
+					if { [ catch { set time [ clock scan $value -format "%Y-%m-%d %k-%M-%S %z" ] } ] } {
 						lappend error_lines [ list "Invalid time: field $key" $line ]
 						set no_errors 0
+					} else {
+						dbset $key $newrn $time
 					}
 				}
 
@@ -3368,14 +3376,30 @@ proc gorilla::Import {} {
 
 		} ; # end foreach key/value
 		
-		if { $use_default_group } {
-			dbset group $newrn "Newly Imported"
-		}
-		
 		puts ""
 
 		if { $no_errors } {
-			lappend newly_added_records $newrn
+			# setup some reasonable defaults if certain items are not provided
+			# in the CSV file
+
+			if { [ info exists default_group_name ] } {
+				puts "setting a default group"
+				dbset group $newrn $default_group_name
+			}
+			
+			if {  ( "uuid" ni $columns_present ) 
+				&& ( ! [ catch { package present uuid } ] ) } {
+				puts "setting a new uuid"
+				dbset uuid $newrn [uuid::uuid generate]
+			}
+			
+			if { "title" ni $columns_present } {
+				puts "setting a default title"
+				dbset title $newrn "Newly Imported [ clock format [ clock seconds ] ]"
+			}
+
+			AddRecordToTree $newrn
+			
 		} else {
 			$::gorilla::db deleteRecord $newrn
 		}
@@ -3400,12 +3424,6 @@ proc gorilla::Import {} {
 		} ; # end if answer eq yes
 	} ; # end if exists error_lines
 	
-	if { [ info exists newly_added_records ] } {
-		foreach record $newly_added_records {
-			AddRecordToTree $record
-		}
-	}
-
 	catch { close $infd } 
   	. configure -cursor $myOldCursor
   	package forget csv
