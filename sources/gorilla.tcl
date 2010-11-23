@@ -972,6 +972,9 @@ proc gorilla::New {} {
 	set ::gorilla::status [mc "Add logins using \"Add Login\" in the \"Login\" menu."]
 	. configure -cursor $myOldCursor
 
+	# Must also unset the cache of group names to ttk::treeview node identifiers
+	unset -nocomplain ::gorilla::groupNodes
+
 	if {[$::gorilla::db getPreference "SaveImmediately"]} {
 		gorilla::SaveAs
 	}
