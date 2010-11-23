@@ -1,6 +1,7 @@
 mcmset de {
 "<New Database>" "<New Database>" \
 "<unknown>" "<unknown>" \
+"About" "About" \
 "About Password Gorilla" "About Password Gorilla" \
 "Add Login" "Add Login" \
 "Add Subgroup" "Add Subgroup" \
@@ -147,6 +148,7 @@ mcmset de {
 "The selected login does not contain a URL value." "The selected login does not contain a URL value." \
 "This login must have a title." "This login must have a title." \
 "This login's group name is not valid." "This login's group name is not valid." \
+"This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." \
 "Title" "Title" \
 "Use Gorilla auto-copy" "Use Gorilla auto-copy" \
 "Use Password Safe 3 format" "Use Password Safe 3 format" \

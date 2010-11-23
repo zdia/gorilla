@@ -5298,7 +5298,7 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			-validatecommand { ::gorilla::PreferencesSpinBoxValidate %P } \
 			-validate all
 		$subframe.spin set $::gorilla::prefTemp(autoclearMultiplier)
-		ttk::label $subframe.spinlbl -text "Clipboard autoclear mulitplier"
+		ttk::label $subframe.spinlbl -text [mc "Clipboard autoclear multiplier"]
 		pack $subframe.spin $subframe.spinlbl -side left -padx {0 2m}
 
 		grid $browser.lexe    -sticky nw  -pady { 5m 0 }

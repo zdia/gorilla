@@ -175,7 +175,7 @@ wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\"." \
 "Destination Group with format <Group.Subgroup> :" "Zielgruppe im Format <Gruppe.Untergruppe> :" \
 "Database Locked" "Datenbank gesperrt" \
 "Merge Password Database" "Importiere Passwort-Datenbank" \
-"Add logins using <Add Login> in the \"Login\" menu." "Jetzt können Logins angelegt werden." \
+"Add logins using \"Add Login\" in the \"Login\" menu." "Jetzt können Logins angelegt werden." \
 "Password database $nativeName loaded." " Passwort-Datenbank geladen." \
 "Addition of new login canceled." "Ein neuer Login wurde nicht angelegt." \
 "New login added." "Neuer Login angelegt." \
@@ -183,7 +183,7 @@ wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\"." \
 "Group deleted." "Gruppe gelöscht." \
 "Group name unchanged." "Gruppenname unverändert." \
 "Group renamed." "Gruppe umbenannt." \
-"Merging " "Vereinige mit " \
+"Merging" "Vereinige mit" \
 "Welcome back." "Sperre aufgehoben." \
 "Password policy changed." "Passwortrichtlinien geändert." \
 "Text not found." "Text nicht gefunden." \
@@ -246,5 +246,16 @@ wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\"." \
 "This login's group name is not valid." "Der Gruppenname für diesen Datensatz ist ungültig." \
 "Use Gorilla auto-copy" "Gorillas auto-copy verwenden" \
 "Generate gorilladoc.html" "Gorilladoc.html erzeugen" \
+"Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." "Kopiere das Login-Passwort automatisch in die Zwischenablage nach dem Einfügen des Benutzernamens." \
+"Browser launching is not configured.  See help." "Der Browser ist noch nicht definiert." \
+"Browser parameter lacks '%url%' string.  See help." "Browser Parameter ohne '%url%' String." \
+"Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Definiert das Löschintervall der Zwischenablage (0-20).\nMehr in der Hilfe." \
+"If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." "In der Kommandozeile muss der Platzhalter %url% erscheinen, der dem Browser als URL-Adresse übergeben wird. Mehr in der Hilfe." \
+"The current password database is modified.\
+		Do you want to save the current database before creating\
+		the new database?" "Die aktuelle Datenbank wurde modifiziert. Soll sie vor dem Anlegen einer neuen Datenbank gespeichert werden?" \
+"This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." "Diese Option kann auf Windows(TM) \noder MacOS(TM) Systemen nicht eingesetzt werden." \
+"When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "Kopiere den Benutzernamen in die Zwischenablage beim Öffnen des Browsers." \
+"Clipboard autoclear multiplier" "Löschfaktor der Zwischenablage" \
 }
 

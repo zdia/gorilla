@@ -34,14 +34,15 @@ proc initCheckMsg { file lang } {
 	package require msgcat
 	namespace import msgcat::*
 puts "Searching the msgcat files in '$msgcatDir'"
-	# mcload $msgcatDir
-	# mcload "/home/dia/Projekte/git/gorilla/sources/msgs"
 
 	if { $lang eq "" } {
 		set lang [lindex [split [mclocale] _] 0]
 	} 
 	mclocale $lang
-	mcload "~/Projekte/gorilla/msgs"
+	# mcload "~/Projekte/gorilla/msgs"
+	mcload $msgcatDir
+	# mcload "/home/dia/Projekte/git/gorilla/sources/msgs"
+	
 	set localeMsg [file join $msgcatDir $lang.msg]
 	
 	if { [file exists $localeMsg] } {
@@ -159,20 +160,20 @@ proc getMsgMissing { entrylist } {
 # puts "entrylist \n$entrylist"
 	
 	foreach item $entrylist {
-# puts ">>> $item\n<<< [mc $item]"
-# puts [expr { $item eq [mc $item] } ]
-# puts [expr { $item eq [mc [join $item]] } ]
-# puts [expr { [join $item] eq [mc [join $item]] } ]
+		# prepare item for msgcat search
+# puts ">>> [join $item] --- <<< [mc [join $item]]"
+# puts "[expr { [join $item] eq [mc $item] } ] : [join $item] --- [mc [join $item]]"
+# puts "[expr { $item eq [mc [join $item]] } ] : $item --- [mc [join $item]]"
+# puts "[expr { [join $item] eq [mc [join $item]] } ] : [join $item]"
 # exit
 		# Conditions to define a notfound entry:
 		# 1) normal mc for strings without special characters
 		# 2) mc for strings with \"
 		# 3) mc for strings with \n
 		
-		if {	[mc $item] eq $item && \
-					$item eq [mc [join $item]] && \
-					[join $item] eq [mc [join $item]] } {
+		if { [join $item] eq [mc [join $item]] } {
 			lappend notfound $item
+			puts "not found: $item"
 		} else {
 # puts [join $item]
 # puts "[mc [join $item]]"
@@ -192,9 +193,9 @@ puts $file
 # puts [lindex $content 0]
 	set missing ""
 	foreach item $msgList {
-		append missing "\n\"$item\" \"undefined\" \\"
+		append missing "\n\"$item\" \"<undefined>\" \\"
 	}
-puts "\n============\nmissing entries:\n============\n$missing"
+# puts "\n============\nmissing entries:\n============\n$missing"
 	regsub {\n\}(\n*)} $content $missing content
 	append content "\n\}\n"
 # puts "+++ new content:\n$content+++"
@@ -247,7 +248,7 @@ proc checkMsg { source locale } {
 
 	if { $msgMissingList == "" } {
 		puts "No msgcat entries missing."
-		puts "Checking 'localeMsg' for undefined entries ..."
+		puts "Checking '$localeMsg' for undefined entries ...\n"
 		set result [showMsgUndefined $allSourceEntries $localeMsg]
 		if { $result eq "" } {
 			puts "All mgscat entries are translated."
@@ -259,7 +260,7 @@ proc checkMsg { source locale } {
 		} ;# end if
 	} else {
 		appendMsgs $msgMissingList $localeMsg
-		puts "The missing msgcat entries have been appended to the file '$localeMsg'."
+		puts "\nThe missing msgcat entries have been appended to the file '$localeMsg' as <undefined>."
 		puts "\nPlease edit these entries which are marked in the resource file '$localeMsg' as <undefined>.\nThen try a new check."
 	}
 	
