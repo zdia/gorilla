@@ -3306,6 +3306,8 @@ proc gorilla::Import {} {
 	if { "group" ni $columns_present } {
 		set default_group_name "Newly Imported [ clock format [ clock seconds ] ]"
 	}
+	
+	set new_add_counter 0
 
 	foreach line [ split [ read $infd [ file size $input_file ] ] "\n" ] {
 
@@ -3399,6 +3401,7 @@ proc gorilla::Import {} {
 			}
 
 			AddRecordToTree $newrn
+			incr new_add_counter
 			
 		} else {
 			$::gorilla::db deleteRecord $newrn
@@ -3423,6 +3426,11 @@ proc gorilla::Import {} {
 			} ; # end if fn ne ""
 		} ; # end if answer eq yes
 	} ; # end if exists error_lines
+	
+	if { $new_add_counter > 0 } {
+	  set ::gorilla::status "$new_add_counter [ mc "record(s) successfully imported." ]"
+	  MarkDatabaseAsDirty
+	}
 	
 	catch { close $infd } 
   	. configure -cursor $myOldCursor
