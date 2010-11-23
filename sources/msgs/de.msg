@@ -247,10 +247,10 @@ wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\"." \
 "Use Gorilla auto-copy" "Gorillas auto-copy verwenden" \
 "Generate gorilladoc.html" "Gorilladoc.html erzeugen" \
 "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." "Kopiere das Login-Passwort automatisch in die Zwischenablage nach dem Einfügen des Benutzernamens." \
-"Browser launching is not configured.  See help." "Der Browser ist noch nicht definiert." \
-"Browser parameter lacks '%url%' string.  See help." "Browser Parameter ohne '%url%' String." \
+"Browser launching is not configured. See help." "Der Browser ist noch nicht definiert. Mehr in der Hilfe." \
+"Browser parameter lacks '%url%' string. See help." "Browser Parameter ohne '%url%' String. Mehr in der Hilfe." \
 "Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Definiert das Löschintervall der Zwischenablage (0-20).\nMehr in der Hilfe." \
-"If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." "In der Kommandozeile muss der Platzhalter %url% erscheinen, der dem Browser als URL-Adresse übergeben wird. Mehr in der Hilfe." \
+"If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." "In der Kommandozeile muss der Platzhalter %url% erscheinen, der dem Browser als URL-Adresse übergeben wird. Mehr in der Hilfe." \
 "The current password database is modified.\
 		Do you want to save the current database before creating\
 		the new database?" "Die aktuelle Datenbank wurde modifiziert. Soll sie vor dem Anlegen einer neuen Datenbank gespeichert werden?" \

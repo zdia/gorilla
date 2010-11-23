@@ -18,13 +18,14 @@ mcmset de {
 "Backup database on save" "Backup database on save" \
 "Browser" "Browser" \
 "Browser executable to launch (required):" "Browser executable to launch (required):" \
-"Browser launching is not configured.  See help." "Browser launching is not configured.  See help." \
-"Browser parameter lacks '%url%' string.  See help." "Browser parameter lacks '%url%' string.  See help." \
+"Browser launching is not configured. See help." "Browser launching is not configured. See help." \
+"Browser parameter lacks '%url%' string. See help." "Browser parameter lacks '%url%' string. See help." \
 "Can not copy $what to clipboard: no $what defined." "Can not copy $what to clipboard: no $what defined." \
 "Cancel" "Cancel" \
 "Case sensitive find" "Case sensitive find" \
 "Clear" "Clear" \
 "Clear clipboard after" "Clear clipboard after" \
+"Clipboard autoclear multiplier" "Clipboard autoclear multiplier" \
 "Clipboard cleared." "Clipboard cleared." \
 "Close" "Close" \
 "Command line parameter (if any) to pass (optional):" "Command line parameter (if any) to pass (optional):" \
@@ -70,7 +71,7 @@ mcmset de {
 "Hide Password" "Hide Password" \
 "History deleted. After a restart the list will be empty." "History deleted. After a restart the list will be empty." \
 "Iconify upon auto-lock" "Iconify upon auto-lock" \
-"If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." "If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." \
+"If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." \
 "Include \"Notes\" field" "Include \"Notes\" field" \
 "Include password field" "Include password field" \
 "Language:" "Language:" \

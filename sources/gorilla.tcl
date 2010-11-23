@@ -5286,7 +5286,7 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		ttk::entry $browser.param -textvariable ::gorilla::prefTemp(browser-param)
 		ttk::button $browser.findgui -text [ mc "Find Browser" ] -command "set ::gorilla::prefTemp(browser-exe) \[ tk_getOpenFile -parent $browser \]"
 		ttk::style configure biwrap.TLabel -wraplength 75
-		ttk::label $browser.inst  -style biwrap.TLabel -text [ mc "If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." ]
+		ttk::label $browser.inst  -style biwrap.TLabel -text [ mc "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." ]
 		bind $browser.inst <Configure> "ttk::style configure biwrap.TLabel -wraplength \[ winfo width $browser.inst \]"
 		ttk::checkbutton $browser.autocopyuserid \
 			-variable ::gorilla::prefTemp(autocopyUserid) \
@@ -7196,14 +7196,14 @@ proc gorilla::LaunchBrowser { rn } {
 	if { $URL eq "" } { 
 		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
 	} elseif { $::gorilla::preference(browser-exe) eq "" } {
-		set ::gorilla::status [ mc "Browser launching is not configured.  See help." ]
+		set ::gorilla::status [ mc "Browser launching is not configured. See help." ]
 	} else {
 		set param $::gorilla::preference(browser-param)
 		if { $param ne "" } {
 			if { [ string match "*%url%*" $param ] } {
 				set URL [ string map [ list %url% $URL ] $param ]
 			} else {
-				set ::gorilla::status [ mc "Browser parameter lacks '%url%' string.  See help." ]
+				set ::gorilla::status [ mc "Browser parameter lacks '%url%' string. See help." ]
 				return
 			}
 		}

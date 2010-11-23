@@ -161,7 +161,7 @@ proc getMsgMissing { entrylist } {
 	
 	foreach item $entrylist {
 		# prepare item for msgcat search
-# puts ">>> [join $item] --- <<< [mc [join $item]]"
+# puts ">>> ![join $item]! --- <<< ![mc [join $item]]!"
 # puts "[expr { [join $item] eq [mc $item] } ] : [join $item] --- [mc [join $item]]"
 # puts "[expr { $item eq [mc [join $item]] } ] : $item --- [mc [join $item]]"
 # puts "[expr { [join $item] eq [mc [join $item]] } ] : [join $item]"
@@ -259,7 +259,7 @@ proc checkMsg { source locale } {
 				} ;# end foreach
 		} ;# end if
 	} else {
-		appendMsgs $msgMissingList $localeMsg
+		# appendMsgs $msgMissingList $localeMsg
 		puts "\nThe missing msgcat entries have been appended to the file '$localeMsg' as <undefined>."
 		puts "\nPlease edit these entries which are marked in the resource file '$localeMsg' as <undefined>.\nThen try a new check."
 	}
