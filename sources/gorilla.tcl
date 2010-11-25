@@ -283,7 +283,7 @@ proc gorilla::InitGui {} {
 
 set ::gorilla::menu_desc {
 	File	file	{"New ..." {} gorilla::New "" ""
-							"Open ..." {} "gorilla::Open" $menu_meta O
+							"Open ..." {} gorilla::Open $menu_meta O
 							"Merge ..." open gorilla::Merge "" ""
 							Save save gorilla::Save $menu_meta S
 							"Save As ..." open gorilla::SaveAs "" ""
@@ -327,7 +327,7 @@ set ::gorilla::menu_desc {
 							separator mac "" "" ""
 							"About ..." mac tkAboutDialog "" ""
 							}
-}	
+} ;# end ::gorilla::menu_desc
 
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 		
@@ -868,9 +868,7 @@ proc gorilla::New {} {
 		set answer [tk_messageBox -parent . \
 		-type yesnocancel -icon warning -default yes \
 		-title [ mc "Save changes?" ] \
-		-message [ mc "The current password database is modified.\
-		Do you want to save the current database before creating\
-		the new database?"]]
+		-message [ mc "The current password database is modified. Do you want to save the current database before creating the new database?"]]
 
 		# switch $answer {}
 		# yes {}
@@ -3090,13 +3088,7 @@ proc gorilla::Export {} {
 			set answer [tk_messageBox -parent . \
 					-type yesno -icon warning -default no \
 					-title [mc "Export Security Warning"] \
-					-message [mc "You are about to export the password\
-					database to a plain-text file. The file will\
-					not be encrypted or password-protected. Anybody\
-					with access can read the file, and learn your\
-					user names and passwords. Make sure to store the\
-					file in a secure location. Do you want to\
-					continue?"] ]
+					-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
 			if {$answer != "yes"} {
 					return
 			}
@@ -3313,7 +3305,7 @@ proc gorilla::Merge {} {
 		return
 	}
 
-	set ::gorilla::status [mc "Merging "]
+	set ::gorilla::status [mc "Merging"]
 
 	set fileName [lindex $openInfo 1]
   set newdb [lindex $openInfo 2]
@@ -4185,11 +4177,8 @@ proc gorilla::Exit {} {
 		set answer [tk_messageBox -parent $myParent \
 		-type yesnocancel -icon warning -default yes \
 		-title [ mc "Save changes?" ] \
-		-message [ mc "The current password database is modified.\
-		Do you want to save the database?\n\
-		\"Yes\" saves the database, and exits.\n\
-		\"No\" discards all changes, and exits.\n\
-		\"Cancel\" returns to the main menu."]]
+		-message [ mc "The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." ]]
+		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
 				if {![::gorilla::Save]} {
@@ -5177,10 +5166,7 @@ ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
 pack $dpf.si $dpf.ver $dpf.uni -side top -anchor w -pady 3 -padx 10
 
 ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
-	-text [mc "Note: these defaults will be applied to\
-	new databases. To change a setting for an existing\
-	database, go to \"Customize\" in the \"Security\"\
-	menu."]
+	-text [mc "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."]
 pack $dpf.note -side bottom -anchor center -pady 3
 
 #
