@@ -1,0 +1,67 @@
+# gorilla-csv.test:  tests for the CSV module in Password Gorilla
+#
+# This file contains a collection of tests for the password manager
+# Password Gorilla.  
+#
+# To make the test type "tkcon gorilla.tcl". Call the test-unit in the 
+# tkcon Terminal with "source gorilla.test"
+#
+# Note: Only test failures will be reported
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+# -------------------------------------------------------------------------
+
+package require tcltest 2.2
+set argv ""
+eval ::tcltest::configure $argv
+
+puts "running tests for Password Gorilla ..."
+
+# ------------- samples -----------------
+
+# old form:
+# proc TestProcedure {} { return chimpanzee }
+# test gorilla-0.1 {initial test} { TestProcedure } gorilla
+
+# new form:
+# test gorilla-0.2 {initial test} \
+	# -setup { proc TestProcedure {} { return goat } } \
+	# -body {TestProcedure} \
+	# -result {gorilla} \
+	# -cleanup {rename TestProcedure ""}
+	
+# -------------------------------------------------------------------------
+# create a safe environment for testing purposes
+
+namespace eval ::gorilla::test {
+	namespace import ::tcltest::*
+	
+	# CATEGORY: CSV
+	# ------------------
+	
+	# database is locked
+	
+	test gorilla-1.1 {isLocked} \
+		-setup {gorilla::LockDatabase} \
+		-body {return $::gorilla::isLocked} \
+		-result 1
+	
+	
+	
+} ;# end of namespace eval ::gorilla::test
+
+
+# ----------------------------------------------------------------------
+# cleanup
+
+namespace delete ::gorilla::test
+puts "Tests for unit gorilla-csv.test finished."
