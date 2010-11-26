@@ -252,12 +252,12 @@ to clipboard''' option of the [Browser] tab then it allows logging into a
 website with only one touch of Password Gorilla (for websites that follow
 the username plus password standard).
 
- | At the present time, this option is operational only for Mac and Linux
-machines.  The Windows clipboard is implemented in a different manner such
-that Windows does not inform Gorilla of the occurrence of a paste operation. 
-Without OS support to determine that a paste operation has occurred, Gorilla
-has no way to know when to subsequently copy a login's password to the
-clipboard.
+ | At the present time, this option is operational only for Linux or Unix
+X11 based machines.  The Windows and MacOS clipboard is implemented in a
+different manner such that Windows and MacOS do not inform Gorilla of the
+occurrence of a paste operation.  Without OS support to determine that a
+paste operation has occurred, Gorilla has no way to know when to
+subsequently copy a login's password to the clipboard.
 
 -------------------
 title: Database Default Preferences

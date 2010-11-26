@@ -283,7 +283,7 @@ proc gorilla::InitGui {} {
 
 set ::gorilla::menu_desc {
 	File	file	{"New ..." {} gorilla::New "" ""
-							"Open ..." {} "gorilla::Open" $menu_meta O
+							"Open ..." {} gorilla::Open $menu_meta O
 							"Merge ..." open gorilla::Merge "" ""
 							Save save gorilla::Save $menu_meta S
 							"Save As ..." open gorilla::SaveAs "" ""
@@ -327,7 +327,7 @@ set ::gorilla::menu_desc {
 							separator mac "" "" ""
 							"About ..." mac tkAboutDialog "" ""
 							}
-}	
+} ;# end ::gorilla::menu_desc
 
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 		
@@ -868,9 +868,7 @@ proc gorilla::New {} {
 		set answer [tk_messageBox -parent . \
 		-type yesnocancel -icon warning -default yes \
 		-title [ mc "Save changes?" ] \
-		-message [ mc "The current password database is modified.\
-		Do you want to save the current database before creating\
-		the new database?"]]
+		-message [ mc "The current password database is modified. Do you want to save the current database before creating the new database?"]]
 
 		# switch $answer {}
 		# yes {}
@@ -971,6 +969,9 @@ proc gorilla::New {} {
 			-image $::gorilla::images(group) 
 	set ::gorilla::status [mc "Add logins using \"Add Login\" in the \"Login\" menu."]
 	. configure -cursor $myOldCursor
+
+	# Must also unset the cache of group names to ttk::treeview node identifiers
+	unset -nocomplain ::gorilla::groupNodes
 
 	if {[$::gorilla::db getPreference "SaveImmediately"]} {
 		gorilla::SaveAs
@@ -3087,13 +3088,7 @@ proc gorilla::Export {} {
 			set answer [tk_messageBox -parent . \
 					-type yesno -icon warning -default no \
 					-title [mc "Export Security Warning"] \
-					-message [mc "You are about to export the password\
-					database to a plain-text file. The file will\
-					not be encrypted or password-protected. Anybody\
-					with access can read the file, and learn your\
-					user names and passwords. Make sure to store the\
-					file in a secure location. Do you want to\
-					continue?"] ]
+					-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
 			if {$answer != "yes"} {
 					return
 			}
@@ -3310,7 +3305,7 @@ proc gorilla::Merge {} {
 		return
 	}
 
-	set ::gorilla::status [mc "Merging "]
+	set ::gorilla::status [mc "Merging"]
 
 	set fileName [lindex $openInfo 1]
   set newdb [lindex $openInfo 2]
@@ -4182,11 +4177,8 @@ proc gorilla::Exit {} {
 		set answer [tk_messageBox -parent $myParent \
 		-type yesnocancel -icon warning -default yes \
 		-title [ mc "Save changes?" ] \
-		-message [ mc "The current password database is modified.\
-		Do you want to save the database?\n\
-		\"Yes\" saves the database, and exits.\n\
-		\"No\" discards all changes, and exits.\n\
-		\"Cancel\" returns to the main menu."]]
+		-message [ mc "The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." ]]
+		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
 				if {![::gorilla::Save]} {
@@ -5138,10 +5130,10 @@ ttk::checkbutton $gpf.geo -text [mc "Remember sizes of dialog boxes"] \
 	-variable ::gorilla::prefTemp(rememberGeometries)
 ttk::checkbutton $gpf.gac -text [ mc "Use Gorilla auto-copy" ] \
 	-variable ::gorilla::prefTemp(gorillaAutocopy)
-if { $::tcl_platform(platform) eq "windows" } {
-	::tooltip::tooltip $gpf.gac [ mc "This option does not function on Windows(TM)\nplatforms.  See the help system for details." ]
-} else {
+if { $::tcl_platform(platform) eq "x11" } {
 	::tooltip::tooltip $gpf.gac [ mc "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." ]
+} else {
+	::tooltip::tooltip $gpf.gac [ mc "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." ]
 }
 pack $gpf.bu $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
 
@@ -5174,10 +5166,7 @@ ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
 pack $dpf.si $dpf.ver $dpf.uni -side top -anchor w -pady 3 -padx 10
 
 ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
-	-text [mc "Note: these defaults will be applied to\
-	new databases. To change a setting for an existing\
-	database, go to \"Customize\" in the \"Security\"\
-	menu."]
+	-text [mc "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."]
 pack $dpf.note -side bottom -anchor center -pady 3
 
 #
@@ -5283,7 +5272,7 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 		ttk::entry $browser.param -textvariable ::gorilla::prefTemp(browser-param)
 		ttk::button $browser.findgui -text [ mc "Find Browser" ] -command "set ::gorilla::prefTemp(browser-exe) \[ tk_getOpenFile -parent $browser \]"
 		ttk::style configure biwrap.TLabel -wraplength 75
-		ttk::label $browser.inst  -style biwrap.TLabel -text [ mc "If a command line parameter is provided, it must contain the character sequence: %url%.  This sequence will be replaced with the actual URL during launch.  See the help system for details." ]
+		ttk::label $browser.inst  -style biwrap.TLabel -text [ mc "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." ]
 		bind $browser.inst <Configure> "ttk::style configure biwrap.TLabel -wraplength \[ winfo width $browser.inst \]"
 		ttk::checkbutton $browser.autocopyuserid \
 			-variable ::gorilla::prefTemp(autocopyUserid) \
@@ -5298,7 +5287,7 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			-validatecommand { ::gorilla::PreferencesSpinBoxValidate %P } \
 			-validate all
 		$subframe.spin set $::gorilla::prefTemp(autoclearMultiplier)
-		ttk::label $subframe.spinlbl -text "Clipboard autoclear mulitplier"
+		ttk::label $subframe.spinlbl -text [mc "Clipboard autoclear multiplier"]
 		pack $subframe.spin $subframe.spinlbl -side left -padx {0 2m}
 
 		grid $browser.lexe    -sticky nw  -pady { 5m 0 }
@@ -7193,14 +7182,14 @@ proc gorilla::LaunchBrowser { rn } {
 	if { $URL eq "" } { 
 		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
 	} elseif { $::gorilla::preference(browser-exe) eq "" } {
-		set ::gorilla::status [ mc "Browser launching is not configured.  See help." ]
+		set ::gorilla::status [ mc "Browser launching is not configured. See help." ]
 	} else {
 		set param $::gorilla::preference(browser-param)
 		if { $param ne "" } {
 			if { [ string match "*%url%*" $param ] } {
 				set URL [ string map [ list %url% $URL ] $param ]
 			} else {
-				set ::gorilla::status [ mc "Browser parameter lacks '%url%' string.  See help." ]
+				set ::gorilla::status [ mc "Browser parameter lacks '%url%' string. See help." ]
 				return
 			}
 		}
