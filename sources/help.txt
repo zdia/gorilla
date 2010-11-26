@@ -15,6 +15,7 @@ alias: TOC
 	--- [Launch Browser]
 	-- [Keyboard Shortcuts]
 	-- [The "V3" Database Format]
+	-- [Data Import]
 
 - [Risks] 
 	-- [The Software Itself]
@@ -740,4 +741,116 @@ pressing a magic button, or by bypassing security, but by spending
 countless hours trying to get into the designer's mind, in a social
 engineering attack to guess the designer's most likely choice of
 password -- another reason to prefer random passwords.
+
+-------------------
+title: Data Import
+
+Password Gorilla has the ability to import data from CSV (Comma Separated
+Value) files.  Exporting of data from other applications into CSV format is
+beyond the scope of this document or Password Gorilla.
+
+The format of CSV files that Password Gorilla accepts is somewhat flexible. 
+The format of the CSV data itself must adhere to the requirements of the
+TclLib csv module, which documents the format as:
+
+ | 1    Each  record  of a csv file (comma-separated values, as exported
+e.g. by Excel) is a set of ASCII values separated by ",".  For other
+languages it may be ";" however, although this is not important for this
+case as the functions provided here allow any separator character.
+
+ | 2    If  and  only if a value contains itself the separator ",", then it
+(the value) has to be put between "". If the value does not contain the
+separator character then quoting is optional.
+
+ | 3    If  a  value  contains the character ", that character is
+represented by "".
+
+ | 4    The output string "" represents the value ". In other words, it is
+assumed that it was created through rule 3, and only this rule, i.e. that
+the value was not quoted.
+
+The CSV file itself is interpreted as a utf-8 encoded file, this allows for
+transparent handling of plain ASCII files as well as importation of Unicode
+extended characters simultaneously.
+
+There are twelve possible data values (columns) that may be present within
+the CSV file.  The file must contain at least one column.  Other than
+requiring at least one column, the file may contain any number of columns
+from one to twelve.
+
+The first CSV record in the file (which must be the first line of the file)
+defines how many data columns are expected to be present in the remainder of
+the file, and what internal data fields correspond to those columns.
+
+The twelve possible data columns are named: create-time group last-access
+last-modified last-pass-change lifetime notes password title url user uuid
+
+These names, and only these names, must be used as the first record of the
+CSV file to define which data values are present.  I.e., for a CSV file that
+contained user names, passwords, and urls only, in that order, the first
+line of the CSV file would read:
+
+user, password, url
+
+Subsequent lines would contain username, password, and url formatted as per
+the rules above from the TclLib csv module.
+
+There are some restrictions on the formatting of some of the data fields,
+these restrictions are:
+
+create-time, last-access, last-modified, last-pass-change, lifetime
+
+ | These fields contain date and time values.  The format of a date and time
+value for import purposes is:
+
+ | YYYY-MM-DD HH-MM-SS TZ
+
+ | All values except TZ are numerical and contain a number of digits equal
+to the number of letters above.  YYYY stands for year, MM is month, DD is
+day, HH is hour (24 hour clock), MM is minute, SS is seconds.  TZ is the
+timezone within which the date and time should be interpreted.  TZ accepts
+many standard timezone names, however the simpliest option if you know your
+offset from UTC is to simply add +HHMM or -HHMM where HH is hours and MM is
+minutes (e.g., -0500 for five hours before UTC).
+
+uuid
+
+ | This field must be formatted like so:
+xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx where each "x" is a hexadecimal
+character (0-9a-f).
+
+group
+
+ | This field must be formatted in the manner of group names in the Password
+Safe database format.  That is, group names separated by dots (periods). 
+Escape embedded periods with a slash (\) (e.g., \. ).  Escape embedded
+slashes with a slash (e.g., \\).
+
+notes
+
+ | This field has only one special requirement.  Newline characters (Unix
+newline characters, ASCII line feed) ''must'' be encoded as \n.  Other ASCII
+control characters can also be encoded in the same way, i.e., \t for tab,
+etc., but are not required to be so encoded.
+
+Example
+
+uuid,group,title,user,password,notes
+fdc2aff8-04e1-4766-4ef4-ddae08377ba6,Group 1.Sub Group 1,A Title,A User Name,A Password,A note about this entry 
+63a1b066-148a-4bf6-40bc-a2b9afda00c6,Group 1.Sub Group 2,A Title,A User Name,A Password,A note about this entry 
+f29b9ef7-9e62-41e1-7dfd-14ae13986059,Group 2,A Title,A User Name,A Password,A note with \n an embedded newline 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
