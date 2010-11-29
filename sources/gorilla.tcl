@@ -253,6 +253,24 @@ proc gorilla::StatusModified {name1 name2 op} {
 	.status configure -text $::gorilla::status
 }
 
+proc gorilla::Feedback { message } {
+
+	# A proc to place a message string into the Gorilla status line.  This
+	# encapuslates the "set" to a global var plus the update idletasks for
+	# the status line into a single proc, making the code elsewhere slightly
+	# cleaner.
+	#
+	# message - the message string to be placed in the status line.
+	#
+	# returns GORILLA_OK as it should always perform its task
+	
+	set ::gorilla::status $message
+	update idletasks
+	
+	return GORILLA_OK
+
+} ; # end proc gorilla::Feedback
+
 proc gorilla::ClearStatus {} {
 	catch {unset ::gorilla::statusClearId}
 	set ::gorilla::status ""
@@ -3060,25 +3078,16 @@ proc gorilla::Export {} {
 	ArrangeIdleTimeout
 	set top .export
 
-	if {![info exists ::gorilla::preference(exportIncludePassword)]} {
-		set ::gorilla::preference(exportIncludePassword) 0
-	}
+	# make sure that defaults are initialized
 
-	if {![info exists ::gorilla::preference(exportIncludeNotes)]} {
-		set ::gorilla::preference(exportIncludeNotes) 1
-	}
+	foreach {var value} [ list exportIncludePassword 0 exportIncludeNotes    1  \
+	                           exportAsUnicode       0 exportFieldSeparator "," \
+	                           exportShowWarning     1 ] {
+		if { ! [info exists ::gorilla::preference($var) ] } {
+			set ::gorilla::preference($var) $value
+		}
 
-	if {![info exists ::gorilla::preference(exportAsUnicode)]} {
-		set ::gorilla::preference(exportAsUnicode) 0
-	}
-
-	if {![info exists ::gorilla::preference(exportFieldSeparator)]} {
-		set ::gorilla::preference(exportFieldSeparator) ","
-	}
-
-	if {![info exists ::gorilla::preference(exportShowWarning)]} {
-		set ::gorilla::preference(exportShowWarning) 1
-	}
+	} ; # end foreach var,value
 
 	if {$::gorilla::preference(exportShowWarning)} {
 		set answer [tk_messageBox -parent . \
@@ -3091,7 +3100,7 @@ proc gorilla::Export {} {
 				user names and passwords. Make sure to store the\
 				file in a secure location. Do you want to\
 				continue?"] ]
-		if {$answer != "yes"} {
+		if {$answer ne "yes"} {
 			return
 		}
 	}
@@ -3099,16 +3108,16 @@ proc gorilla::Export {} {
 	setup-default-dirname
 		
 	set types {
-		{{Text Files} {.txt}}
 		{{CSV Files} {.csv}}
+		{{Text Files} {.txt}}
 		{{All Files} *}
 	}
 
-	set fileName [tk_getSaveFile -parent . \
-		-title [mc "Export password database as text ..."] \
-		-defaultextension ".txt" \
+	set fileName [ tk_getSaveFile -parent . \
+		-title [ mc "Export password database as text ..." ] \
+		-defaultextension ".csv" \
 		-filetypes $types \
-		-initialdir $::gorilla::dirName]
+		-initialdir $::gorilla::dirName ]
 
 	if {$fileName == ""} {
 		return
@@ -3121,92 +3130,61 @@ proc gorilla::Export {} {
 	update idletasks
 
 	if {[catch {
-		set txtFile [open $fileName "w"]
+		set txtFile [ open $fileName {WRONLY CREAT TRUNC} ]
 	} oops]} {
 		. configure -cursor $myOldCursor
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title [ mc "Error Exporting Database" ] \
-			-message "[ mc "Failed to export password database to" ] ${nativeName}: $oops"
+		error_popup [ mc "Error Exporting Database" ] \
+		            "[ mc "Failed to export password database to" ] ${nativeName}: $oops"
 		return
 	}
 
-	set ::gorilla::status [mc "Exporting ..."]
-	update idletasks
+	if { [ catch { package require csv } oops ] } {
+		error-popup [ mc "Error loading CSV parsing package." ] \
+		            [ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+		return
+	}
 
-	if {$::gorilla::preference(exportAsUnicode)} {
-		#
-		# Write BOM in binary mode, then switch to Unicode
-		#
+	::gorilla::Feedback [ mc "Exporting ..." ]
 
-		fconfigure $txtFile -encoding binary
-
-		if {[info exists ::tcl_platform(byteOrder)]} {
-			switch -- $::tcl_platform(byteOrder) {
-				littleEndian {
-					puts -nonewline $txtFile "\xff\xfe"
-				}
-				bigEndian {
-					puts -nonewline $txtFile "\xfe\xff"
-				}
-			}
-		}
-
-		fconfigure $txtFile -encoding unicode
-	} ; # end if export as unicode 
+	fconfigure $txtFile -encoding utf-8	
 
 	set separator [subst -nocommands -novariables $::gorilla::preference(exportFieldSeparator)]
 
+	# output a csv header describing what data values are present in each
+	# column of the csv file
+
+	set csv_data [ list uuid group title user \
+	                    [ expr { $::gorilla::preference(exportIncludePassword) ? "password" : "" } ] \
+	                    [ expr { $::gorilla::preference(exportIncludeNotes)    ? "notes"    : "" } ] ]
+
+	puts $txtFile [ ::csv::join $csv_data $separator ]
+
+	# now output the contents of the database
+
 	foreach rn [$::gorilla::db getAllRecordNumbers] {
 
-		# UUID
-		if {[$::gorilla::db existsField $rn 1]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 1]
-		}
-		puts -nonewline $txtFile $separator
+		set csv_data [ list [ dbget uuid  $rn ] [ dbget group $rn ] \
+		                    [ dbget title $rn ] [ dbget user  $rn ] ]
 
-		# Group
-		if {[$::gorilla::db existsField $rn 2]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 2]
-		}
-		puts -nonewline $txtFile $separator
-
-		# Title
-		if {[$::gorilla::db existsField $rn 3]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 3]
-		}
-		puts -nonewline $txtFile $separator
-
-		# Username
-		if {[$::gorilla::db existsField $rn 4]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 4]
-		}
-		puts -nonewline $txtFile $separator
-
-		# Password
+		# Password - optional export 
 		if {$::gorilla::preference(exportIncludePassword)} {
-			if {[$::gorilla::db existsField $rn 6]} {
-				puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 6]
-			}
-		} else {
-			puts -nonewline $txtFile "********"
+			lappend csv_data [ dbget password $rn ]
 		}
-		puts -nonewline $txtFile $separator
 
-		# Notes
+		# Notes - need to escape newlines and slashes.  The CSV module will
+		# handle escaping commas and double quotes
+		
 		if {$::gorilla::preference(exportIncludeNotes)} {
-			if {[$::gorilla::db existsField $rn 5]} {
-				puts -nonewline $txtFile \
-					[string map {\\ \\\\ \" \\\" \t \\t \n \\n} \
-					[$::gorilla::db getFieldValue $rn 5]]
-			}
+			lappend csv_data [ string map {\\ \\\\ \n \\n} [ dbget notes $rn ] ]
 		}
-		puts $txtFile ""
+
+		puts $txtFile [ ::csv::join $csv_data $separator ]
 
 	} ; # end foreach rn in gorilla db
 
 	catch {close $txtFile}
 	. configure -cursor $myOldCursor
-	set ::gorilla::status [mc "Database exported."]
+	::gorilla::Feedback [ mc "Database exported." ]
 
 } ; # end proc gorilla::Export
 
@@ -3222,7 +3200,7 @@ proc gorilla::Import {} {
 
 	ArrangeIdleTimeout
 
-   setup-default-dirname
+	setup-default-dirname
 
 	set types {
 		{{CSV Files} {.csv}}
@@ -3240,9 +3218,10 @@ proc gorilla::Import {} {
 
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
 		error-popup [ mc "Error opening import CSV file" ] \
-			"[ mc "Could not access file " ] ${input_file}:\n$oops"
+		            "[ mc "Could not access file " ] ${input_file}:\n$oops"
 		return
 	}
+
 	fconfigure $infd -encoding utf-8
 
 	if { [ catch { package require csv } oops ] } {
@@ -3267,7 +3246,7 @@ proc gorilla::Import {} {
 		return
 	}
 
-   puts "columns_present: $columns_present"
+#   puts "columns_present: $columns_present"
    
    # Must have at least one data column present
    if { [ llength $columns_present ] == 0 } {
@@ -3311,7 +3290,7 @@ proc gorilla::Import {} {
 
 	foreach line [ split [ read $infd [ file size $input_file ] ] "\n" ] {
 
-		puts "line: $line"
+#		puts "line: $line"
 		
 		if { [ catch { set data [ ::csv::split $line ] } oops ] } {
 		  lappend error_lines [ list "Unable to parse as CSV" $line ]
@@ -3328,13 +3307,13 @@ proc gorilla::Import {} {
 		}
 
 		set newrn [ $::gorilla::db createRecord ]
-		puts "newrn: $newrn"		
+#		puts "newrn: $newrn"		
 
 		set no_errors 1
 
 		foreach key $columns_present value $data {
 
-			puts "key: $key value $value"
+#			puts "key: $key value $value"
 			switch -exact -- $key {
 
 				group {
@@ -3346,9 +3325,11 @@ proc gorilla::Import {} {
 				}
 
 				uuid {
-					# f29b9ef7-9e62-41e1-7dfd-14ae13986059
-					if { ! [ regexp {^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$} $value ] } {
-					puts "invalid uuid $value"
+					# uuid is allowed to be empty, but if not empty it must be in
+					# this format: f29b9ef7-9e62-41e1-7dfd-14ae13986059
+					if { ( $value ne "" ) && 
+					     ( ! [ regexp {^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$} $value ] ) } {
+#					puts "invalid uuid $value"
 						lappend error_lines [ list "Invalid UUID field" $line ]
 						set no_errors 0
 					}
@@ -3378,25 +3359,25 @@ proc gorilla::Import {} {
 
 		} ; # end foreach key/value
 		
-		puts ""
+#		puts ""
 
 		if { $no_errors } {
 			# setup some reasonable defaults if certain items are not provided
 			# in the CSV file
 
 			if { [ info exists default_group_name ] } {
-				puts "setting a default group"
+#				puts "setting a default group"
 				dbset group $newrn $default_group_name
 			}
 			
 			if {  ( "uuid" ni $columns_present ) 
 				&& ( ! [ catch { package present uuid } ] ) } {
-				puts "setting a new uuid"
+#				puts "setting a new uuid"
 				dbset uuid $newrn [uuid::uuid generate]
 			}
 			
 			if { "title" ni $columns_present } {
-				puts "setting a default title"
+#				puts "setting a default title"
 				dbset title $newrn "Newly Imported [ clock format [ clock seconds ] ]"
 			}
 
@@ -3410,7 +3391,7 @@ proc gorilla::Import {} {
 	} ; # end foreach line in input file
 	
 	if { [ info exists error_lines ] } {
-		puts "errors exist from import: $error_lines"
+#		puts "errors exist from import: $error_lines"
 		set answer [ tk_messageBox -default yes -icon info \
 							-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
 							-parent . -title [ mc "Some records skipped during import" ] -type yesno ]
