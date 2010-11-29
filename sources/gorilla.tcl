@@ -228,7 +228,15 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(autocopyUserid) 0
 		set ::gorilla::preference(autoclearMultiplier) 1
 		set ::gorilla::preference(gorillaAutocopy) 1
-		
+
+		# Initialization of the DEBUG array
+		# It will be used by the tcltest package
+		# for details look into the folder devtools/
+
+		array set ::DEBUG {
+			CSVIMPORT 0
+			
+		}
 }
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -3207,25 +3215,27 @@ proc gorilla::Export {} {
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::Import {} {
+proc gorilla::Import { {input_file ""} } {
 
 	# Import a csv file and add the entries therein to the currently open
 	# database
 
 	ArrangeIdleTimeout
 
-   setup-default-dirname
+	setup-default-dirname
 
 	set types {
 		{{CSV Files} {.csv}}
 	}
 
-	set input_file [ tk_getOpenFile -parent . \
+	if { $input_file eq "" } {
+		set input_file [ tk_getOpenFile -parent . \
 		-title [ mc "Import CSV datafile" ] \
 		-defaultextension ".csv" \
 		-filetypes $types \
 		-initialdir $::gorilla::dirName ]
-		
+	}
+	
 	if { $input_file eq "" } {
 		return
 	}
@@ -3233,13 +3243,13 @@ proc gorilla::Import {} {
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
 		error-popup [ mc "Error opening import CSV file" ] \
 			"[ mc "Could not access file " ] ${input_file}:\n$oops"
-		return
+		return GORILLA_OPENERROR
 	}
 	fconfigure $infd -encoding utf-8
 
 	if { [ catch { package require csv } oops ] } {
 		error-popup [ mc "Error loading CSV parsing package." ] \
-			[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+			"[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
 		return
 	}
 
@@ -3256,7 +3266,8 @@ proc gorilla::Import {} {
 			" [ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
-		return
+			
+		return GORILLA_FIRSTLINEERROR
 	}
 
    puts "columns_present: $columns_present"
@@ -3267,7 +3278,7 @@ proc gorilla::Import {} {
    		[ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
-		return
+		return GORILLA_NODATA
    }
    
    # Make sure that only the possible columns are present.  Note, this does
@@ -3286,8 +3297,8 @@ proc gorilla::Import {} {
    	error-popup [ mc "Error, undefined data columns" ] \
    		"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
    	catch { close $infd }
-	  	. configure -cursor $myOldCursor
-   	return
+		. configure -cursor $myOldCursor
+   	return GORILLA_UNDEFINEDCOLUMNS
 	}
 
 	# This is utilized below to apply a "default" group to any imports
@@ -3297,6 +3308,10 @@ proc gorilla::Import {} {
 	
 	if { "group" ni $columns_present } {
 		set default_group_name "Newly Imported [ clock format [ clock seconds ] ]"
+		if { $::DEBUG(CSVIMPORT) } {
+			. configure -cursor $myOldCursor
+			return GORILLA_ADDDEFAULTGROUP
+		}
 	}
 	
 	set new_add_counter 0
@@ -3402,6 +3417,11 @@ proc gorilla::Import {} {
 	} ; # end foreach line in input file
 	
 	if { [ info exists error_lines ] } {
+		if { $::DEBUG(CSVIMPORT) } {
+			. configure -cursor $myOldCursor
+			return [lindex $error_lines 0 0]
+		}
+		
 		puts "errors exist from import: $error_lines"
 		set answer [ tk_messageBox -default yes -icon info \
 							-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
@@ -3427,6 +3447,7 @@ proc gorilla::Import {} {
 	catch { close $infd } 
   	. configure -cursor $myOldCursor
   	package forget csv
+		return GORILLA_OK
 
 } ; # end proc gorilla::Import
 
@@ -3434,6 +3455,8 @@ proc gorilla::error-popup {title message} {
 
 	# a small helper proc to encapsulate all the details of opening a
 	# tk_messageBox with a title and message
+
+	if { $::DEBUG(CSVIMPORT) } { return }
 	
 	tk_messageBox -parent . -type ok -icon error -default ok \
 		-title $title \
@@ -7712,11 +7735,11 @@ if {[tk windowingsystem] == "aqua"} {
 }
 	
 proc usage {} {
-		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
-		puts stdout "	Options:"
-		puts stdout "		--rc <name>	 Use <name> as configuration file (not the Registry)."
-		puts stdout "		--norc				Do not use a configuration file (or the Registry)."
-		puts stdout "		<database>		Open <database> on startup."
+	puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
+	puts stdout "Options:"
+	puts stdout "	--rc <name>\t\tUse <name> as configuration file (not the Registry)."
+	puts stdout "	--norc\t\t\tDo not use a configuration file (or the Registry)."
+	puts stdout "	<database>\t\tOpen <database> on startup."
 }
 
 if {$::gorilla::init == 0} {
@@ -7726,8 +7749,6 @@ if {$::gorilla::init == 0} {
 
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
-
-	# set argc [llength $argv]	;# obsolete
 
 	for {set i 0} {$i < $argc} {incr i} {
 		switch -- [lindex $argv $i] {
