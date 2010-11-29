@@ -2,14 +2,14 @@ mcmset ru { \
 "<New Database>" "<Новая БД>" \
 "<unknown>" "<неизвестно>" \
 "About" "О программе" \
-"About ..." "About ..." \
+"About ..." "О программе ..." \
 "About Password Gorilla" "О Password Gorilla" \
 "Add Group ..." "Добавить группу ..." \
 "Add Login" "Добавить логин" \
 "Add Subgroup" "Добавить подгруппу" \
 "Add Subgroup ..." "Добавить подгруппу ..." \
 "Add a new Group" "Добавить группу" \
-"Add logins using \"Add Login\" in the \"Login\" menu." "Add logins using \"Add Login\" in the \"Login\" menu." \
+"Add logins using <Add Login> in the <Login> menu." "Добавьте логины используя <Добавить логин> в меню <Логин>." \
 "Add/Edit/View Login" "Добавить/Редактировать/Просмотреть логин" \
 "Addition of group canceled." "Добавление группы отменено." \
 "Also copy username to clipboard" "Скопировать имя пользователя в буфер обмена" \
@@ -57,6 +57,7 @@ mcmset ru { \
 "Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." \
 "Display" "Отображение" \
 "Do nothing" "Ничего не делать" \
+"Edit" "Правка" \
 "Edit Login" "Редактировать логин" \
 "Enter the Master Password." "Введите мастер-пароль." \
 "Error" "Ошибка" \
@@ -68,6 +69,7 @@ mcmset ru { \
 "Export password database as text ..." "Экспортировать БД как текст ..." \
 "Exporting ..." "Экспорт ..." \
 "Field separator" "Разделитель" \
+"File" "Файл" \
 "Find" "Найти" \
 "Find ..." "Найти ..." \
 "Find Browser" "Найти браузер" \
@@ -80,6 +82,7 @@ mcmset ru { \
 "Group deleted." "Группа удалена." \
 "Group name unchanged." "Имя группы изменено." \
 "Group renamed." "Группа переименована." \
+"Help" "Помощь" \
 "Help ..." "Помощь ..." \
 "Hide Password" "Скрыть" \
 "History deleted. After a restart the list will be empty." "История стёрта." \
@@ -92,14 +95,15 @@ mcmset ru { \
 "Launched browser:" "Запущенный браузер:" \
 "License" "Лицензия" \
 "License ..." "Лицензия ..." \
-"Lock now" "Lock now" \
+"Lock now" "Заблокировать сейчас" \
 "Lock when idle after" "Блокировка при бездействии" \
+"Login" "Логин" \
 "Login deleted." "Логин удалён." \
 "Login modified." "Логин изменён." \
 "Master password changed." "Мастер-пароль сменён." \
 "Merge ..." "Объединить ..." \
 "Merge Password Database" "Объединить БД" \
-"Merging" "Merging" \
+"Merging" "Объединение" \
 "Move $type" "Переместить $type" \
 "Move Group ..." "Перенести группу ..." \
 "Move Login ..." "Перенести логин ..." \
@@ -111,7 +115,7 @@ mcmset ru { \
 "New Master Password:" "Новый мастер-пароль:" \
 "New group added." "Добавлена новая группа." \
 "New login added." "Добавлен новый логин." \
-"Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." \
+"Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." "Эти настройки будут применены к новым БД. Для изменения настроек текущей БД, выберите пункт \"Настройки БД\" в меню \"Безопасность\"" \
 "Notes" "Заметки" \
 "Notes:" "Заметки:" \
 "Oh well..." "Ох..." \
@@ -143,7 +147,8 @@ mcmset ru { \
 "Save As ..." "Сохранить как ..." \
 "Save as Unicode text file" "Сохранить как текстовый файл Unicode" \
 "Save changes?" "Сохранить изменения?" \
-"Select a database, and enter its password. Click \"New\" to create a new database." "Выберите БД и введите её пароль. Нажмите "Новая" для создания новой БД." \
+"Security" "Безопасность" \
+"Select a database, and enter its password. Click \"New\" to create a new database." "Выберите БД и введите её пароль. Нажмите \"Новая\" для создания новой БД." \
 "Show Gorilla Icon" "Показывать изображение гориллы" \
 "Show Password" "Показать" \
 "Show security warning" "Показывать предупреждение безопасности" \
@@ -151,7 +156,7 @@ mcmset ru { \
 "Text not found." "Текст не найден." \
 "The confirmed password does not match." "Подтверждённый пароль не совпадает." \
 "The current password database is modified. Do you want to save the current database before creating the new database?" "The current password database is modified. Do you want to save the current database before creating the new database?" \
-"The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." "The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." \
+"The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." "БД изменена. Хотите сохранить изменения?\n\"Yes\" - сохранить БД и выйти, \"No\" - выйти без сохранения, \"Cancel\" - вернуться в программу." \
 "The selected login does not contain a URL value." "У этого логина нет URL." \
 "This login must have a title." "У логина должно быть название." \
 "This login's group name is not valid." "Имя группы некорректно." \
@@ -161,10 +166,10 @@ mcmset ru { \
 "Use Password Safe 3 format" "Использовать формат Password Safe 3" \
 "Use UPPERCASE letters" "Использовать ВЕРХНИЙ регистр" \
 "Use digits" "Использовать цифры" \
-"Use easy to read characters only (e.g. no \"0\" or \"O\")" "Использовать лёгкие для чтения символы (без "0" и "O" и тп.)" \
+"Use easy to read characters only (e.g. no \"0\" or \"O\")" "Использовать лёгкие для чтения символы (без \"0\" и \"O\" и тп.)" \
 "Use hexadecimal digits" "Использовать шестнадцатиричные цифры" \
 "Use lowercase letters" "Использовать нижний регистр" \
-"Use symbols (%, \$, @, #, etc.)" "Использовать символы (%, $, @, #, ...)" \
+"Use symbols (%, \$, @, #, etc.)" "Использовать символы (%, \$, @, #, ...)" \
 "Username" "Логин" \
 "Using Password Gorilla" "Использование Password Gorilla" \
 "V2 Unicode support" "Поддержка Unicode в V2" \
@@ -176,7 +181,7 @@ mcmset ru { \
 "Welcome to the Password Gorilla." "Добро пожаловать в Password Gorilla" \
 "When double clicking a login ..." "При двойном щелчке по логину ..." \
 "When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." \
-"You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" "Вы собираетесь экспортировать БД паролей в текстовый файл. Он НЕ БУДЕТ зашифрован или защищён паролем. Каждый имеющий допуск сможет прочитать его и узнать ваши логины/пароли.  Убедитесь, что сохраняете файл в надежном месте. Хотите продолжить?" \
+"You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" \
 "because the file permissions are set for read-only access." "т.к. есть права лишь на чтение файла." \
 "database names" "последних БД" \
 "minutes (0=never)" "минут (0=никогда)" \

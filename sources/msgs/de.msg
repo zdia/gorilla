@@ -17,7 +17,8 @@ mcmset de { \
 "Are you sure that you want to delete group and all its contents?" "Soll die Gruppe wirklich mit dem gesamten Inhalt gelöscht werden?" \
 "Are you sure that you want to delete this login?" "Soll der Login wirklich gelöscht werden?" \
 "Auto-save database immediately when changed" "Datenbank sofort nach einer Änderung automatisch speichern" \
-"Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." "Kopiere automatisch das Passwort in die\nZwischenablage nach dem Einfügen des Benutzernamens." \
+"Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." "Kopiere automatisch das Passwort in die
+Zwischenablage nach dem Einfügen des Benutzernamens." \
 "Backup database on save" "Beim Speichern eine Sicherungskopie anlegen" \
 "Browser" "Webbrowser" \
 "Browser executable to launch (required):" "Browser-Programm (erforderlich):" \
@@ -54,9 +55,11 @@ mcmset de { \
 "Delete Group" "Gruppe löschen" \
 "Delete Login" "Login löschen" \
 "Destination Group with format <Group.Subgroup> :" "Zielgruppe im Format <Gruppe.Untergruppe> :" \
-"Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Bestimmt, wie Password Gorilla die Zwischenablage löscht (0-20).\nMehr in der Hilfe." \
+"Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Bestimmt, wie Password Gorilla die Zwischenablage löscht (0-20).
+Mehr in der Hilfe." \
 "Display" "Ansicht" \
 "Do nothing" "Nichts tun" \
+"Edit" "Bearbeiten" \
 "Edit Login" "Login bearbeiten" \
 "Enter the Master Password." "Bitte Master Passwort eingeben." \
 "Error" "Fehler" \
@@ -68,6 +71,7 @@ mcmset de { \
 "Export password database as text ..." "Exportiere die Datenbank unverschlüsselt ..." \
 "Exporting ..." "Exportiere ..." \
 "Field separator" "Feldbegrenzer" \
+"File" "Datenbank" \
 "Find" "Suche" \
 "Find ..." "Suchen ..." \
 "Find Browser" "Browser suchen" \
@@ -80,6 +84,7 @@ mcmset de { \
 "Group deleted." "Gruppe gelöscht." \
 "Group name unchanged." "Gruppenname unverändert." \
 "Group renamed." "Gruppe umbenannt." \
+"Help" "Hilfe" \
 "Help ..." "Hilfe ..." \
 "Hide Password" "Passwort verbergen" \
 "History deleted. After a restart the list will be empty." "Verlauf gelöscht. Nach einem Neustart ist die Liste leer." \
@@ -94,6 +99,7 @@ mcmset de { \
 "License ..." "Lizenz ..." \
 "Lock now" "Sofort sperren" \
 "Lock when idle after" "Sperren bei Untätigkeit nach" \
+"Login" "Datensatz" \
 "Login deleted." "Login gelöscht." \
 "Login modified." "Login bearbeitet." \
 "Master password changed." "Master Passwort geändert." \
@@ -144,6 +150,7 @@ nicht beachten" \
 "Save As ..." "Speichern als ..." \
 "Save as Unicode text file" "Als Unicode-Textfeld speichern" \
 "Save changes?" "Änderungen speichern?" \
+"Security" "Sicherheit" \
 "Select a database, and enter its password. Click \"New\" to create a new database." "Bitte Datenbank wählen und Passwort eingeben. Neue Datenbank mit Klick auf \"Neu\"" \
 "Show Gorilla Icon" "Zeige den Gorilla" \
 "Show Password" "Passwort zeigen" \
@@ -165,7 +172,7 @@ nicht beachten" \
 "Use easy to read characters only (e.g. no \"0\" or \"O\")" "Leicht zu lesende Buchstaben verwenden (z.B. kein \"0\" oder \"O\")" \
 "Use hexadecimal digits" "Hexadezimale Ziffern verwenden" \
 "Use lowercase letters" "Kleinbuchstaben verwenden" \
-"Use symbols (%, $, @, #, etc.)" "Sonderzeichen verwenden (%, $, @, #, etc.)" \
+"Use symbols (%, \$, @, #, etc.)" "Sonderzeichen verwenden (%, $, @, #, etc.)" \
 "Username" "Benutzername" \
 "Using Password Gorilla" "Mit Password Gorilla arbeiten" \
 "V2 Unicode support" "V2 Unicode Unterstützung" \
@@ -176,7 +183,8 @@ nicht beachten" \
 "Welcome back." "Sperre aufgehoben." \
 "Welcome to the Password Gorilla." "Hallo bei Password Gorilla" \
 "When double clicking a login ..." "Beim Doppelklick auf ein Login" \
-"When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "Auch der Benutzername wird nach dem Aufruf\ndes Browsers in die Zwischenablage gelegt." \
+"When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "Auch der Benutzername wird nach dem Aufruf
+des Browsers in die Zwischenablage gelegt." \
 "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" "Die Datenbank wird unverschlüsselt und ohne Passwortschutz zugänglich sein. Sorgen Sie für eine sichere Aufbewahrung Ihrer Daten. Wollen Sie fortfahren?" \
 "because the file permissions are set for read-only access." "kann nicht gesichert werden, weil sie schreibgeschützt ist." \
 "database names" "Datenbanknamen" \

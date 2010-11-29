@@ -967,7 +967,7 @@ proc gorilla::New {} {
 			-text [mc "<New Database>"]\
 			-values [list Root] \
 			-image $::gorilla::images(group) 
-	set ::gorilla::status [mc "Add logins using \"Add Login\" in the \"Login\" menu."]
+	set ::gorilla::status [mc "Add logins using <Add Login> in the <Login> menu."]
 	. configure -cursor $myOldCursor
 
 	# Must also unset the cache of group names to ttk::treeview node identifiers

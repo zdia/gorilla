@@ -21,10 +21,9 @@
 # Todo:
 # intelligent handling of "about ..." and "about" -> source code changes!
 #
-# step 1: extract the mc messages in the source code
-# step 2: load an eventually existing msg file and
-# step 3: create a <locale>.msg.new file where untranslated entries
-# are marked as undefined.
+# step 1: Extract the mc messages in the source code.
+# step 2: Load an eventually existing msg file.
+# step 3: Create a <locale>.msg.new file with the msgcat package.
 #
 # Hint: 'locale -a' shows all available locale languages
 #
@@ -108,6 +107,8 @@ proc getMsgEntriesFrom { source } {
 			lappend msgs [ string trim $item ]
 		}
 	}
+
+	set msgs [append msgs " File Edit Login Security Help"]
 	
 	return [lsort -unique $msgs]
 } ;# end of proc getMsgEntriesFrom
@@ -115,7 +116,8 @@ proc getMsgEntriesFrom { source } {
 proc createMsgFileFrom { entrylist lang} {
 	# create new resource file
 	# mark untranslated entries as "undefined"
-
+# puts $entrylist
+# exit
 	set newMsgEntries ""
 	
 	set fileHandler [open $lang.msg.new w]
@@ -127,11 +129,20 @@ proc createMsgFileFrom { entrylist lang} {
 		
 		if { [join $item] eq [mc [join $item]] } {
 			puts "not found: $item"
-			puts $fileHandler "\"$item\" \"undefined\" \\"
-			# if there is no translation available:
-			# puts $fileHandler "\"$item\" \"$item\" \\"
+			# puts ">>> ![join $item]! --- <<< ![mc $item]!"
+			# puts "[expr {[join $item] == [mc [join $item]]}]"
+			
+			# puts $fileHandler "\"$item\" \"undefined\" \\"
+
+			# setting the original entry will automatically produce a
+			# 'not found' notice during checkrun
+			
+			puts $fileHandler "\"$item\" \"$item\" \\"
+			
 		} else {
-			puts $fileHandler "\"$item\" \"[mc [join $item]]\" \\"
+			
+			puts $fileHandler "\"$item\" \"[mc $item]\" \\"
+			# puts "found: \"$item\" \"[mc $item]\" \\"
 		}
 	}
 	puts $fileHandler "\}"
