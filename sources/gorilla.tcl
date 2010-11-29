@@ -131,7 +131,7 @@ if {[tk windowingsystem] == "aqua"}	{
 # items will be found before system installed items
 set auto_path [ list $::gorillaDir {*}$auto_path ]
 
-foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
+foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip csv } {
 	set testDir [file join $::gorillaDir $subdir]
 	if {[file isdirectory $testDir]} {
 		lappend auto_path $testDir
@@ -3080,9 +3080,8 @@ proc gorilla::Export {} {
 
 	# make sure that defaults are initialized
 
-	foreach {var value} [ list exportIncludePassword 0 exportIncludeNotes    1  \
-	                           exportAsUnicode       0 exportFieldSeparator "," \
-	                           exportShowWarning     1 ] {
+	foreach {var value} [ list exportIncludePassword 0  exportIncludeNotes    1  \
+	                           exportFieldSeparator "," exportShowWarning     1 ] {
 		if { ! [info exists ::gorilla::preference($var) ] } {
 			set ::gorilla::preference($var) $value
 		}
@@ -5279,7 +5278,6 @@ proc gorilla::PreferencesDialog {} {
 		clearClipboardAfter 0 \
 		defaultVersion 3 \
 		doubleClickAction nothing \
-		exportAsUnicode 0 \
 		exportFieldSeparator "," \
 		exportIncludeNotes 0 \
 		exportIncludePassword 0 \
@@ -5420,8 +5418,6 @@ ttk::checkbutton $epf.password -text [mc "Include password field"] \
 		-variable ::gorilla::prefTemp(exportIncludePassword)
 ttk::checkbutton $epf.notes -text [mc "Include \"Notes\" field"] \
 		-variable ::gorilla::prefTemp(exportIncludeNotes) 
-ttk::checkbutton $epf.unicode -text [mc "Save as Unicode text file"] \
-		-variable ::gorilla::prefTemp(exportAsUnicode) 
 		
 ttk::frame $epf.fs
 ttk::label $epf.fs.l -text [mc "Field separator"] -width 16 -anchor w
@@ -5432,7 +5428,7 @@ pack $epf.fs.l $epf.fs.e -side left
 ttk::checkbutton $epf.warning -text [mc "Show security warning"] \
 		-variable ::gorilla::prefTemp(exportShowWarning) 
 		
-pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
+pack $epf.password $epf.notes $epf.warning $epf.fs \
 	-anchor w -side top -pady 3
 
 		#
@@ -5605,7 +5601,6 @@ return
 	foreach pref {clearClipboardAfter \
 		defaultVersion \
 		doubleClickAction \
-		exportAsUnicode \
 		exportFieldSeparator \
 		exportIncludeNotes \
 		exportIncludePassword \
@@ -5674,7 +5669,6 @@ proc gorilla::SavePreferencesToRegistry {} {
 			clearClipboardAfter dword \
 			defaultVersion dword \
 			doubleClickAction sz \
-			exportAsUnicode dword \
 			exportFieldSeparator sz \
 			exportIncludeNotes dword \
 			exportIncludePassword dword \
@@ -5770,7 +5764,6 @@ proc gorilla::SavePreferencesToRCFile {} {
 			clearClipboardAfter \
 			defaultVersion \
 			doubleClickAction \
-			exportAsUnicode \
 			exportIncludeNotes \
 			exportIncludePassword \
 			exportShowWarning \
@@ -5883,7 +5876,6 @@ proc gorilla::LoadPreferencesFromRegistry {} {
 			clearClipboardAfter integer \
 			defaultVersion integer \
 			doubleClickAction ascii \
-			exportAsUnicode boolean \
 			exportFieldSeparator ascii \
 			exportIncludeNotes boolean \
 			exportIncludePassword boolean \
@@ -6022,7 +6014,6 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 		set ::gorilla::preference($pref) $value
 			}
 			caseSensitiveFind -
-			exportAsUnicode -
 			exportIncludeNotes -
 			exportIncludePassword -
 			exportShowWarning -
