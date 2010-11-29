@@ -112,15 +112,15 @@ proc getMsgEntriesFrom { source } {
 	return [lsort -unique $msgs]
 } ;# end of proc getMsgEntriesFrom
 
-proc createMsgFileFrom { entrylist localMsgFile} {
+proc createMsgFileFrom { entrylist lang} {
 	# create new resource file
 	# mark untranslated entries as "undefined"
 
 	set newMsgEntries ""
 	
-	set fileHandler [open $localMsgFile.new w]
+	set fileHandler [open $lang.msg.new w]
 		
-	puts $fileHandler "mcmset de \{ \\"
+	puts $fileHandler "mcmset $lang \{ \\"
 	
 	foreach item $entrylist {
 	# puts ">>> ![join $item]! --- <<< ![mc [join $item]]!"
@@ -128,6 +128,8 @@ proc createMsgFileFrom { entrylist localMsgFile} {
 		if { [join $item] eq [mc [join $item]] } {
 			puts "not found: $item"
 			puts $fileHandler "\"$item\" \"undefined\" \\"
+			# if there is no translation available:
+			# puts $fileHandler "\"$item\" \"$item\" \\"
 		} else {
 			puts $fileHandler "\"$item\" \"[mc [join $item]]\" \\"
 		}
@@ -150,7 +152,7 @@ proc checkMsg { source locale } {
 # puts "--- Rückgabe: $allSourceEntries"
 
 	puts "Creating '$locale.msg.new' ..."
-	createMsgFileFrom $allSourceEntries $locale.msg
+	createMsgFileFrom $allSourceEntries $locale
 		
 } ;# end of proc checkMsg
 
