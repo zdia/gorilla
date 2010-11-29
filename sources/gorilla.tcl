@@ -35,7 +35,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.2 $}
+set ::gorillaVersion {$Revision: 1.5.3.4 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
