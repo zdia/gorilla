@@ -147,6 +147,7 @@ nicht beachten" \
 "Remember sizes of dialog boxes" "Die Größe der Dialogboxen merken" \
 "Rename Group" "Gruppe umbenennen" \
 "Rename Group ..." "Gruppe umbenennen" \
+"Save" "Speichern" \
 "Save As ..." "Speichern als ..." \
 "Save as Unicode text file" "Als Unicode-Textfeld speichern" \
 "Save changes?" "Änderungen speichern?" \

@@ -285,7 +285,7 @@ set ::gorilla::menu_desc {
 	File	file	{"New ..." {} gorilla::New "" ""
 							"Open ..." {} gorilla::Open $menu_meta O
 							"Merge ..." open gorilla::Merge "" ""
-							Save save gorilla::Save $menu_meta S
+							"Save" save gorilla::Save $menu_meta S
 							"Save As ..." open gorilla::SaveAs "" ""
 							separator "" "" "" ""
 							"Export ..." open gorilla::Export "" ""
@@ -4470,7 +4470,7 @@ proc gorilla::LockDatabase {} {
 			wm state    $tl [ lindex $withdrawn($tl) 0 ]
 			wm geometry $tl [ lindex $withdrawn($tl) 1 ]
 		}
-
+		
 		if {$oldGrab != ""} {
 			catch {grab $oldGrab}
 		} else {
@@ -4486,10 +4486,9 @@ proc gorilla::LockDatabase {} {
 		set ::gorilla::status [mc "Welcome back."]
 
 		set ::gorilla::isLocked 0
-
+		wm withdraw .
 		wm deiconify .
 		raise .
-
 		ArrangeIdleTimeout
 }
 
