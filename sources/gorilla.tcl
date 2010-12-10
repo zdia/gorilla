@@ -117,11 +117,11 @@ if {[tk windowingsystem] == "aqua"}	{
 	set auto_path ""
 }
 
-# foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
-	# if {[file isdirectory $testitdir]} {
-		# lappend auto_path $testitdir
-	# }
-# }
+foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
+	if {[file isdirectory $testitdir]} {
+		lappend auto_path $testitdir
+	}
+}
 
 #
 # The pwsafe, blowfish, twofish and sha1 packages are in subdirectories
@@ -137,7 +137,6 @@ foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 		lappend auto_path $testDir
 	}
 }
-
 
 #
 # Look for Itcl
