@@ -80,7 +80,6 @@ proc getMsgEntriesFrom { source } {
 		# begin with bracket and possible spaces non-greedy before mc
 		# save all till the close bracket
 		# subexpression is all between the brackets
-		# if {($index > 2930) && ($index < 3000)} {puts "$index $line"}
 		
 	# +++ extract the [mc string] expressions +++
 	foreach {fullmatch found} [regexp -inline -all -- {\[ *?mc (.*?)\]} $source ] {
@@ -108,8 +107,7 @@ proc getMsgEntriesFrom { source } {
 		}
 	}
 
-	set msgs [append msgs " File Edit Login Security Help"]
-	
+	set msgs [append msgs " File Edit Login Security Help Group: Title: Username: Password:"]
 	return [lsort -unique $msgs]
 } ;# end of proc getMsgEntriesFrom
 

@@ -9,7 +9,7 @@ mcmset de { \
 "Add Subgroup" "Neue Untergruppe" \
 "Add Subgroup ..." "Untergruppe hinzufügen ..." \
 "Add a new Group" "Neue Gruppe hinzufügen" \
-"Add logins using \"Add Login\" in the \"Login\" menu." "Neue Logins können im <Login>-Menü angelegt werden." \
+"Add logins using <Add Login> in the <Login> menu." "Neue Logins können im <Login>-Menü angelegt werden." \
 "Add/Edit/View Login" "Login hinzufügen/bearbeiten/ansehen" \
 "Addition of group canceled." "Keine Gruppe hinzugefügt." \
 "Also copy username to clipboard" "Auch den Benutzernamen in die Ablage kopieren." \
@@ -17,8 +17,7 @@ mcmset de { \
 "Are you sure that you want to delete group and all its contents?" "Soll die Gruppe wirklich mit dem gesamten Inhalt gelöscht werden?" \
 "Are you sure that you want to delete this login?" "Soll der Login wirklich gelöscht werden?" \
 "Auto-save database immediately when changed" "Datenbank sofort nach einer Änderung automatisch speichern" \
-"Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." "Kopiere automatisch das Passwort in die
-Zwischenablage nach dem Einfügen des Benutzernamens." \
+"Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." \
 "Backup database on save" "Beim Speichern eine Sicherungskopie anlegen" \
 "Browser" "Webbrowser" \
 "Browser executable to launch (required):" "Browser-Programm (erforderlich):" \
@@ -37,7 +36,8 @@ Zwischenablage nach dem Einfügen des Benutzernamens." \
 "Command line parameter (if any) to pass (optional):" "(Eventuelle) Parameter für die Kommandozeile (optional):" \
 "Confirm:" "Bestätigung:" \
 "Contributors" "Mitarbeiter" \
-"Copied $what to clipboard." "$what in die Ablage kopiert." \
+"Copied Username to clipboard." "Benutzername in die Ablage kopiert." \
+"Copied Password to clipboard." "Passwort in die Ablage kopiert." \
 "Copy Password" "Passwort kopieren" \
 "Copy Password to Clipboard" "Kopiere Passwort in die Zwischenablage" \
 "Copy URL" "URL kopieren" \
@@ -55,8 +55,7 @@ Zwischenablage nach dem Einfügen des Benutzernamens." \
 "Delete Group" "Gruppe löschen" \
 "Delete Login" "Login löschen" \
 "Destination Group with format <Group.Subgroup> :" "Zielgruppe im Format <Gruppe.Untergruppe> :" \
-"Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Bestimmt, wie Password Gorilla die Zwischenablage löscht (0-20).
-Mehr in der Hilfe." \
+"Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." \
 "Display" "Ansicht" \
 "Do nothing" "Nichts tun" \
 "Edit" "Bearbeiten" \
@@ -84,15 +83,18 @@ Mehr in der Hilfe." \
 "Group deleted." "Gruppe gelöscht." \
 "Group name unchanged." "Gruppenname unverändert." \
 "Group renamed." "Gruppe umbenannt." \
+"Group:" "Gruppe:" \
 "Help" "Hilfe" \
 "Help ..." "Hilfe ..." \
 "Hide Password" "Passwort verbergen" \
 "History deleted. After a restart the list will be empty." "Verlauf gelöscht. Nach einem Neustart ist die Liste leer." \
 "Iconify upon auto-lock" "Beim Sperren minimieren" \
 "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." "Wenn Parameter in der Aufrufzeile angegeben werden, muss der Platzhalter %url% angegeben werden. Er übergibt die URL des Login-Eintrags an den Browser. Mehr in der Hilfe." \
-"Include \"Notes\" field" "Notiz-Feld exportieren" \
+"Include \"Notes\" field" "Include \"Notes\" field" \
 "Include password field" "Passwort-Feld exportieren" \
 "Language:" "Sprache:" \
+"Last Modified:" "Letzte Änderung:" \
+"Last Password Change:" "Letzte Änderung des Passworts:" \
 "Launch Browser directed to URL" "Starte den Browser direkt mit der URL" \
 "Launched browser:" "Gestarteter Browser:" \
 "License" "Lizenz" \
@@ -117,9 +119,9 @@ Mehr in der Hilfe." \
 "New Master Password:" "Neues Master Passwort:" \
 "New group added." "Neue Gruppe hinzugefügt." \
 "New login added." "Neuer Login angelegt." \
-"Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." "Die Voreinstellungen werden auf neue Datenbanken angewendet.  Um die Einstellungen einer existierenden Datenbank zu ändern,  wählen Sie \"Anpassen ...\" im Menü \"Sicherheit\"." \
+"Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." \
 "Notes" "Notizen" \
-"Notes:" "Notizen" \
+"Notes:" "Notizen:" \
 "Oh well..." "Na gut ..." \
 "Open ..." "Öffnen ..." \
 "Open Password Database" "Passwort-Datenbank öffnen" \
@@ -152,7 +154,7 @@ nicht beachten" \
 "Save as Unicode text file" "Als Unicode-Textfeld speichern" \
 "Save changes?" "Änderungen speichern?" \
 "Security" "Sicherheit" \
-"Select a database, and enter its password. Click \"New\" to create a new database." "Bitte Datenbank wählen und Passwort eingeben. Neue Datenbank mit Klick auf \"Neu\"" \
+"Select a database, and enter its password. Click \"New\" to create a new database." "Select a database, and enter its password. Click \"New\" to create a new database." \
 "Show Gorilla Icon" "Zeige den Gorilla" \
 "Show Password" "Passwort zeigen" \
 "Show security warning" "Zeige Sicherheitswarnung" \
@@ -164,17 +166,19 @@ nicht beachten" \
 "The selected login does not contain a URL value." "Der ausgewählte Datensatz enthält keinen URL-Eintrag." \
 "This login must have a title." "Dieser Datensatz benötigt einen Titel-Eintrag." \
 "This login's group name is not valid." "Der Gruppenname für diesen Datensatz ist ungültig." \
-"This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." "Diese Option ist auf Windows(TM) oder MacOS(TM) Plattformen ungültig." \
+"This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." \
 "Title" "Titel" \
+"Title:" "Titel:" \
 "Use Gorilla auto-copy" "Gorillas auto-copy verwenden" \
 "Use Password Safe 3 format" "Passwort Safe 3 Format verwenden" \
 "Use UPPERCASE letters" "Großbuchstaben verwenden" \
 "Use digits" "Ziffern verwenden" \
-"Use easy to read characters only (e.g. no \"0\" or \"O\")" "Leicht zu lesende Buchstaben verwenden (z.B. kein \"0\" oder \"O\")" \
+"Use easy to read characters only (e.g. no \"0\" or \"O\")" "Use easy to read characters only (e.g. no \"0\" or \"O\")" \
 "Use hexadecimal digits" "Hexadezimale Ziffern verwenden" \
 "Use lowercase letters" "Kleinbuchstaben verwenden" \
-"Use symbols (%, \$, @, #, etc.)" "Sonderzeichen verwenden (%, $, @, #, etc.)" \
+"Use symbols (%, \$, @, #, etc.)" "Use symbols (%, \$, @, #, etc.)" \
 "Username" "Benutzername" \
+"Username:" "Benutzername:" \
 "Using Password Gorilla" "Mit Password Gorilla arbeiten" \
 "V2 Unicode support" "V2 Unicode Unterstützung" \
 "V3 key stretching iterations" "Wiederholungen für das V3 <key stretching>" \
@@ -184,9 +188,8 @@ nicht beachten" \
 "Welcome back." "Sperre aufgehoben." \
 "Welcome to the Password Gorilla." "Hallo bei Password Gorilla" \
 "When double clicking a login ..." "Beim Doppelklick auf ein Login" \
-"When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "Auch der Benutzername wird nach dem Aufruf
-des Browsers in die Zwischenablage gelegt." \
-"You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" "Die Datenbank wird unverschlüsselt und ohne Passwortschutz zugänglich sein. Sorgen Sie für eine sichere Aufbewahrung Ihrer Daten. Wollen Sie fortfahren?" \
+"When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." \
+"You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" \
 "because the file permissions are set for read-only access." "kann nicht gesichert werden, weil sie schreibgeschützt ist." \
 "database names" "Datenbanknamen" \
 "minutes (0=never)" "Minuten (0=niemals)" \

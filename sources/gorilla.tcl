@@ -1692,7 +1692,9 @@ namespace eval ::gorilla::LoginDialog {
 		grid rowconfigure    $top $widget(notes) -weight 1
 		grid columnconfigure $top $widget(notes) -weight 1
 
-		foreach {child label} { last-pass-change "Last Password Change:"    last-modified "Last Modified:" } {	
+		set lastChangeList [list last-pass-change [mc "Last Password Change:"] last-modified [mc "Last Modified:"] ]
+		
+		foreach {child label} $lastChangeList {	
 			grid [ ttk::label $top.l-$child -text [ wrap-measure [ mc $label ] ] {*}$std_lbl_opts ] \
 			     [ ttk::label $top.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
 			     -sticky news -pady 5
