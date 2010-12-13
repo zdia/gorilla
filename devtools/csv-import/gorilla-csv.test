@@ -6,7 +6,11 @@
 # There are two ways to use this file:
 #
 # a) Type "tkcon PATH/gorilla.tcl". Tkcon will open and you can call
-# the test-unit in the tkcon terminal with: "source PATH/gorilla-csv.test"
+# the test-unit in the tkcon terminal with:
+#
+# cd INSTALLPATH/devtools/csv-import
+# source gorilla-csv.test
+#
 # All stdout output will be seen in the tkcon terminal.
 #
 # b) You start PWGorilla in one instance and in another the tkcon
@@ -17,7 +21,7 @@
 # Dependencies:
 #		package tcltest 2.2
 # 	devtools/csv-import/import*.csv
-# 	A existing Gorilla db as testing material (devtools/testdb.psafe3)
+# 	"devtools/testdb.psafe3" as reference database
 #
 # Note: Only test failures will be reported
 #
@@ -149,19 +153,43 @@ test $testname-1.1 {General Ok Test} \
     -cleanup { } \
     -result GORILLA_OK
 
-# test db group saved
+# tests after import
+# testdb.psafe3 is supposed to have been loaded
+# ----------------------------------------------------------------------
 
-# test db title saved
+test $testname-2.1 { saved title } \
+    -body {
+			set entries [list ]
+			foreach i {9 10 11} {
+				lappend entries [::gorilla::dbget title $i]
+			}
+			return $entries } \
+    -result "Title11 Title12 Title2"
 
-# test db user saved
+test $testname-2.2 { saved group } \
+    -body {
+			set entries [list ]
+			foreach i {9 10 11} {
+				lappend entries [::gorilla::dbget group $i]
+			}
+			return $entries } \
+    -result "{Group 1.Sub Group 1} {Group 1.Sub Group 2} {Group 2}"
 
+test $testname-2.3 { saved user } \
+    -body {
+			set entries [list ]
+			foreach i {9 10 11} {
+				lappend entries [::gorilla::dbget user $i]
+			}
+			return $entries } \
+    -result "Username11 Username12 Username2"
+
+# TODO: (enlarge import11.csv)
+# create-time last-access last-modified
+# last-pass-change lifetime notes password
+# url uuid
+		
 } ;# end of namespace eval ::gorilla::test
-
-# contained user names, passwords, and urls only, in that order, the first
-# line of the CSV file would read:
-# 
-# user, password, url
-# help.txt -> error
 
 # ----------------------------------------------------------------------
 # cleanup

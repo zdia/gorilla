@@ -3335,7 +3335,7 @@ proc gorilla::Import { {input_file ""} } {
 		}
 
 		set newrn [ $::gorilla::db createRecord ]
-		puts "newrn: $newrn"		
+		# puts "newrn: $newrn"		
 
 		set no_errors 1
 
