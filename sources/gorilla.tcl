@@ -216,7 +216,8 @@ proc gorilla::Init {} {
 		# an anonymous validation proc for use in loading stored preferences
 		# from disk.  The format is name of pref as key, each value being a
 		# two element list.  Each two element list is preference default and
-		# anonymous validation proc in that order.
+		# anonymous validation proc in that order.  The validation proc
+		# returns true for valid, false for invalid.
 		
 		set ::gorilla::preference(all-preferences) {
 
@@ -647,20 +648,18 @@ proc gorilla::TreeNodeDouble {node} {
 		# }
 		return
 	} else {
-		if {[info exists ::gorilla::preference(doubleClickAction)]} {
-				switch -- $::gorilla::preference(doubleClickAction) {
-					copyPassword {
-						gorilla::CopyToClipboard Password
-					}
-					editLogin {
-						gorilla::EditLogin
-					}
-					launchBrowser {
-						::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] 
-					}
-				default {
-					# do nothing
-				}
+		switch -- $::gorilla::preference(doubleClickAction) {
+			copyPassword {
+				gorilla::CopyToClipboard Password
+			}
+			editLogin {
+				gorilla::EditLogin
+			}
+			launchBrowser {
+				::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] 
+			}
+			default {
+				# do nothing
 			}
 		}
 	}
@@ -866,8 +865,7 @@ proc gorilla::PopupDeleteLogin {} {
 #
 
 proc gorilla::TryResizeFromPreference {top} {
-	if {![info exists ::gorilla::preference(rememberGeometries)] || \
-			!$::gorilla::preference(rememberGeometries)} {
+	if {!$::gorilla::preference(rememberGeometries)} {
 		return
 	}
 	if {![info exists ::gorilla::preference(geometry,$top)]} {
@@ -956,35 +954,27 @@ proc gorilla::New {} {
 	pwsafe::int::randomizeVar password
 	catch {unset ::gorilla::fileName}
 
-		#
-		# Apply defaults: auto-save, idle timeout, version, Unicode support
-		#
+	#
+	# Apply defaults: auto-save, idle timeout, version, Unicode support
+	#
 
-	if {[info exists ::gorilla::preference(saveImmediatelyDefault)]} {
-		$::gorilla::db setPreference SaveImmediately \
-		$::gorilla::preference(saveImmediatelyDefault)
+	$::gorilla::db setPreference SaveImmediately \
+	$::gorilla::preference(saveImmediatelyDefault)
+
+	if {$::gorilla::preference(idleTimeoutDefault) > 0} {
+		$::gorilla::db setPreference LockOnIdleTimeout 1
+		$::gorilla::db setPreference IdleTimeout \
+		$::gorilla::preference(idleTimeoutDefault)
+	} else {
+		$::gorilla::db setPreference LockOnIdleTimeout 0
 	}
 
-	if {[info exists ::gorilla::preference(idleTimeoutDefault)]} {
-		if {$::gorilla::preference(idleTimeoutDefault) > 0} {
-			$::gorilla::db setPreference LockOnIdleTimeout 1
-			$::gorilla::db setPreference IdleTimeout \
-			$::gorilla::preference(idleTimeoutDefault)
-		} else {
-			$::gorilla::db setPreference LockOnIdleTimeout 0
-		}
+	if {$::gorilla::preference(defaultVersion) == 3} {
+		$::gorilla::db setHeaderField 0 [list 3 0]
 	}
 
-	if {[info exists ::gorilla::preference(defaultVersion)]} {
-		if {$::gorilla::preference(defaultVersion) == 3} {
-			$::gorilla::db setHeaderField 0 [list 3 0]
-		}
-	}
-
-	if {[info exists ::gorilla::preference(unicodeSupport)]} {
-		$::gorilla::db setPreference IsUTF8 \
-		$::gorilla::preference(unicodeSupport)
-	}
+	$::gorilla::db setPreference IsUTF8 \
+	$::gorilla::preference(unicodeSupport)
 
 	$::gorilla::widgets(tree) selection set {}		
 	# pathname delete itemList ;# Baum löschen
@@ -1121,8 +1111,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	wm title $top $title
 	$aframe.pw.pw delete 0 end
 
-	if {[info exists ::gorilla::preference(lru)] \
-			&& [llength $::gorilla::preference(lru)] } {
+	if { [llength $::gorilla::preference(lru)] } {
 		$aframe.file.cb configure -values $::gorilla::preference(lru)
 		$aframe.file.cb current 0
 	}
@@ -1343,17 +1332,13 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		# Add file to LRU preference
 		#
 
-		if {[info exists ::gorilla::preference(lru)]} {
-			set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
-			if {$found == -1} {
-# not found
-				set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
-			} elseif {$found != 0} {
-				set tmp [lreplace $::gorilla::preference(lru) $found $found]
-				set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
-			}
-		} else {
-			set ::gorilla::preference(lru) [list $nativeName]
+		set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
+		if {$found == -1} {
+			# not found
+			set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
+		} elseif {$found != 0} {
+			set tmp [lreplace $::gorilla::preference(lru) $found $found]
+			set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 		}
 
 		#
@@ -3098,34 +3083,12 @@ proc gorilla::Export {} {
 		ArrangeIdleTimeout
 		set top .export
 
-		if {![info exists ::gorilla::preference(exportIncludePassword)]} {
-	set ::gorilla::preference(exportIncludePassword) 0
-		}
-
-		if {![info exists ::gorilla::preference(exportIncludeNotes)]} {
-	set ::gorilla::preference(exportIncludeNotes) 1
-		}
-
-		if {![info exists ::gorilla::preference(exportAsUnicode)]} {
-	set ::gorilla::preference(exportAsUnicode) 0
-		}
-
-		if {![info exists ::gorilla::preference(exportFieldSeparator)]} {
-	set ::gorilla::preference(exportFieldSeparator) ","
-		}
-
-		if {![info exists ::gorilla::preference(exportShowWarning)]} {
-	set ::gorilla::preference(exportShowWarning) 1
-		}
-
-		if {$::gorilla::preference(exportShowWarning)} {
-			set answer [tk_messageBox -parent . \
-					-type yesno -icon warning -default no \
-					-title [mc "Export Security Warning"] \
-					-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
-			if {$answer != "yes"} {
-					return
-			}
+		set answer [tk_messageBox -parent . \
+				-type yesno -icon warning -default no \
+				-title [mc "Export Security Warning"] \
+				-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
+		if {$answer != "yes"} {
+				return
 		}
 
 		if {![info exists ::gorilla::dirName]} {
@@ -3820,8 +3783,7 @@ proc gorilla::Save {} {
 	# Create backup file, if desired
 	#
 
-	if {[info exists ::gorilla::preference(keepBackupFile)] && \
-			$::gorilla::preference(keepBackupFile)} {
+	if {$::gorilla::preference(keepBackupFile)} {
 		set backupFileName [file rootname $::gorilla::fileName]
 		append backupFileName ".bak"
 		if {[catch {
@@ -3964,8 +3926,7 @@ proc gorilla::SaveAs {} {
 		# Create backup file, if desired
 		#
 
-		if {[info exists ::gorilla::preference(keepBackupFile)] && \
-			$::gorilla::preference(keepBackupFile) && \
+		if {$::gorilla::preference(keepBackupFile) && \
 			[file exists $fileName]} {
 	set backupFileName [file rootname $fileName]
 	append backupFileName ".bak"
@@ -4018,16 +3979,12 @@ proc gorilla::SaveAs {} {
 		# Add file to LRU preference
 		#
 
-		if {[info exists ::gorilla::preference(lru)]} {
-			set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
-				if {$found == -1} {
-					set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
-				} elseif {$found != 0} {
-					set tmp [lreplace $::gorilla::preference(lru) $found $found]
-					set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
-				}
-		} else {
-			set ::gorilla::preference(lru) [list $nativeName]
+		set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
+		if {$found == -1} {
+			set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
+		} elseif {$found != 0} {
+			set tmp [lreplace $::gorilla::preference(lru) $found $found]
+			set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 		}
 	UpdateMenu
 	$::gorilla::widgets(tree) item "RootNode" -tags black
@@ -4284,8 +4241,7 @@ proc gorilla::ArrangeToClearClipboard { {mult 1} } {
 		after cancel $::gorilla::clipboardClearId
 	}
 
-	if {![info exists ::gorilla::preference(clearClipboardAfter)] || \
-		$::gorilla::preference(clearClipboardAfter) == 0} {
+	if {$::gorilla::preference(clearClipboardAfter) == 0} {
 		catch {unset ::gorilla::clipboardClearId}
 		return
 	}
@@ -5071,37 +5027,11 @@ proc gorilla::PreferencesDialog {} {
 
 	set top .preferencesDialog
 
-	foreach {pref default} {
-		clearClipboardAfter 0 \
-		defaultVersion 3 \
-		doubleClickAction nothing \
-		exportAsUnicode 0 \
-		exportFieldSeparator "," \
-		exportIncludeNotes 0 \
-		exportIncludePassword 0 \
-		exportShowWarning 1 \
-		idleTimeoutDefault 5 \
-		keepBackupFile 0 \
-		lruSize 10 \
-		lockDatabaseAfter 0 \
-		rememberGeometries 1 \
-		saveImmediatelyDefault 0 \
-		unicodeSupport 1 \
-		lang en \
-		fontsize 10 \
-		gorillaIcon 0 \
-		iconifyOnAutolock 0 \
-		browser-exe "" \
-		browser-param "" \
-		autocopyUserid 0 \
-		autoclearMultiplier 1 \
-		gorillaAutocopy 1 \
-		} {
-		if {[info exists ::gorilla::preference($pref)]} {
-			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
-		} else {
-			set ::gorilla::prefTemp($pref) $default
-		}
+	# copy current preferences settings to a temp variable to handle
+	# "canceling" of preference changes
+	
+	dict for {pref value} $::gorilla::preference(all-preferences) {
+		set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
 	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
@@ -5392,35 +5322,15 @@ if {$::gorilla::guimutex == 1} {
 	wm withdraw $top
 
 	if {$gorilla::guimutex != 1} {
-return
+		return
 	}
 
-	foreach pref {clearClipboardAfter \
-		defaultVersion \
-		doubleClickAction \
-		exportAsUnicode \
-		exportFieldSeparator \
-		exportIncludeNotes \
-		exportIncludePassword \
-		exportShowWarning \
-		idleTimeoutDefault \
-		keepBackupFile \
-		lruSize \
-		rememberGeometries \
-		saveImmediatelyDefault \
-		unicodeSupport 
-		lang \
-		fontsize \
-		gorillaIcon \
-		iconifyOnAutolock \
-		browser-exe \
-		browser-param \
-		autocopyUserid \
-		autoclearMultiplier \
-		gorillaAutocopy \
-		} {
+	# copy the temporary preferences back into the global preferences
+	# array
+	dict for {pref value} $::gorilla::preference(all-preferences) {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
+
 }
 
 proc gorilla::Preferences {} {
@@ -5555,69 +5465,32 @@ proc gorilla::SavePreferencesToRCFile {} {
 
 	puts $f "revision=$revision"
 
-		#
-		# Note: findInText omitted on purpose. It might contain a password.
-		#
+	#
+	# Note: findThisText omitted on purpose. It might contain a password.
+	#
 
-	foreach pref {caseSensitiveFind \
-			clearClipboardAfter \
-			defaultVersion \
-			doubleClickAction \
-			exportAsUnicode \
-			exportIncludeNotes \
-			exportIncludePassword \
-			exportShowWarning \
-			findInAny \
-			findInNotes \
-			findInPassword \
-			findInTitle \
-			findInURL \
-			findInUsername \
-			idleTimeoutDefault \
-			keepBackupFile \
-			lruSize \
-			rememberGeometries \
-			saveImmediatelyDefault \
-			unicodeSupport \
-			lang \
-			fontsize \
-			gorillaIcon \
-			iconifyOnAutolock \
-			browser-exe \
-			browser-param \
-			autocopyUserid \
-			autoclearMultiplier \
-			gorillaAutocopy \
-			} {
-		if {[info exists ::gorilla::preference($pref)]} {
+	dict for {pref value} $::gorilla::preference(all-preferences) {
+		# lru and exportFieldSeparator are handled specially below
+		if { $pref ni { lru exportFieldSeparator findThisText } } {
 			puts $f "$pref=$::gorilla::preference($pref)"
 		}
 	}
 
-	if {[info exists ::gorilla::preference(exportFieldSeparator)]} {
-		puts $f "exportFieldSeparator=\"[string map {\t \\t} $::gorilla::preference(exportFieldSeparator)]\""
+	puts $f "exportFieldSeparator=\"[string map {\t \\t} $::gorilla::preference(exportFieldSeparator)]\""
+
+	set lruSize $::gorilla::preference(lruSize)
+
+	if {[llength $::gorilla::preference(lru)] > $lruSize} {
+		set lru [lrange $::gorilla::preference(lru) 0 [expr {$lruSize-1}]]
+	} else {
+		set lru $::gorilla::preference(lru)
 	}
 
-	if {[info exists ::gorilla::preference(lru)]} {
-		if {[info exists ::gorilla::preference(lruSize)]} {
-			set lruSize $::gorilla::preference(lruSize)
-		} else {
-			set lruSize 10
-		}
-
-		if {[llength $::gorilla::preference(lru)] > $lruSize} {
-			set lru [lrange $::gorilla::preference(lru) 0 [expr {$lruSize-1}]]
-		} else {
-			set lru $::gorilla::preference(lru)
-		}
-
-		foreach file $lru {
-			puts $f "lru=\"[string map {\\ \\\\ \" \\\"} $file]\""
-		}
+	foreach file $lru {
+		puts $f "lru=\"[string map {\\ \\\\ \" \\\"} $file]\""
 	}
 
-	if {![info exists ::gorilla::preference(rememberGeometries)] || \
-			$::gorilla::preference(rememberGeometries)} {
+	if {$::gorilla::preference(rememberGeometries)} {
 		foreach top [array names ::gorilla::toplevel] {
 			if {[scan [wm geometry $top] "%dx%d" width height] == 2} {
 				puts $f "geometry,$top=${width}x${height}"
@@ -5767,13 +5640,13 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	while { ! [ eof $f ] } {
 		set line [ string trim [ gets $f ] ]
 		if { [ string index $line 0 ] == "#" } {
-				continue
+			continue
 		}
 
-      set temp [ split $line = ] 
-      
-      if { [ llength $temp ] != 2 } {
-      	continue
+		set temp [ split $line = ] 
+
+		if { [ llength $temp ] != 2 } {
+			continue
 		}
 		
 		lassign $temp pref value
