@@ -5694,92 +5694,90 @@ proc gorilla::LoadPreferencesFromRegistry {} {
 }
 
 proc gorilla::LoadPreferencesFromRCFile {} {
-	if {[info exists ::gorilla::preference(rc)]} {
+	if { [ info exists ::gorilla::preference(rc) ] } {
 		set fileName $::gorilla::preference(rc)
 	} else {
-		if {[info exists ::env(HOME)] && [file isdirectory $::env(HOME)]} {
+		if { [ info exists ::env(HOME) ] && [ file isdirectory $::env(HOME) ] } {
 			set homeDir $::env(HOME)
 		} else {
 			set homeDir "~"
 		}
 
-	#
-	# On the Mac, use $HOME/Library/Preferences/gorilla.rc
-	# Elsewhere, use $HOME/.gorillarc
-	#
+		#
+		# On the Mac, use $HOME/Library/Preferences/gorilla.rc
+		# Elsewhere, use $HOME/.gorillarc
+		#
 
-	if {[tk windowingsystem] == "aqua" && \
-		[file isdirectory [file join $homeDir "Library" "Preferences"]]} {
-			set fileName [file join $homeDir "Library" "Preferences" "gorilla.rc"]
-	} else {
-			set fileName [file join $homeDir ".gorillarc"]
-	}
+		if { [tk windowingsystem] == "aqua" && \
+			[ file isdirectory [ file join $homeDir "Library" "Preferences" ] ] } {
+				set fileName [ file join $homeDir "Library" "Preferences" "gorilla.rc" ]
+		} else {
+				set fileName [ file join $homeDir ".gorillarc" ]
 		}
+	} ; # end if info exists ::gorilla::preference(rc)
 
-		if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
-	set revision "<unmatchable>"
-		}
-
-		set prefsRevision "<unknown>"
-
-		if {[catch {
-	set f [open $fileName]
-		}]} {
-	return 0
-		}
-
-		while {![eof $f]} {
-	set line [string trim [gets $f]]
-	if {[string index $line 0] == "#"} {
-			continue
+	if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision ] } {
+		set revision "<unmatchable>"
 	}
 
-	if {[set index [string first "=" $line]] < 1} {
-			continue
+	set prefsRevision "<unknown>"
+
+	if { [ catch { set f [ open $fileName ] } ] } {
+		return 0
 	}
 
-	set pref [string trim [string range $line 0 [expr {$index-1}]]]
-	set value [string trim [string range $line [expr {$index+1}] end]]
+	while {![eof $f]} {
+		set line [string trim [gets $f]]
+		if {[string index $line 0] == "#"} {
+				continue
+		}
 
-	if {[string index $value 0] == "\""} {
+		if {[set index [string first "=" $line]] < 1} {
+				continue
+		}
+
+		set pref [string trim [string range $line 0 [expr {$index-1}]]]
+		set value [string trim [string range $line [expr {$index+1}] end]]
+
+		if { [ string index $value 0 ] == "\"" } {
 			set i 1
 			set prefValue ""
 
 			while {$i < [string length $value]} {
-		set c [string index $value $i]
-		if {$c == "\\"} {
-				set c [string index $value [incr i]]
-				switch -exact -- $c {
-			t {
-					set d "\t"
-			}
-			default {
-					set d $c
-			}
+				set c [string index $value $i]
+				if {$c == "\\"} {
+					set c [string index $value [incr i]]
+					switch -exact -- $c {
+						t {
+							set d "\t"
+						}
+						default {
+							set d $c
+						}
+					}
+					append prefValue $c
+				} elseif {$c == "\""} {
+					break
+				} else {
+					append prefValue $c
 				}
-				append prefValue $c
-		} elseif {$c == "\""} {
-				break
-		} else {
-				append prefValue $c
-		}
-		incr i
+				incr i
 			}
 
 			set value $prefValue
-	}
+		} ; # end if string index value 0 == \"
 
-	switch -glob -- $pref {
+		switch -glob -- $pref {
 			clearClipboardAfter -
 			defaultVersion {
-		if {[string is integer $value]} {
-				if {$value >= 0} {
-			set ::gorilla::preference($pref) $value
+				if {[string is integer $value]} {
+					if {$value >= 0} {
+						set ::gorilla::preference($pref) $value
+					}
 				}
-		}
 			}
 			doubleClickAction {
-		set ::gorilla::preference($pref) $value
+				set ::gorilla::preference($pref) $value
 			}
 			caseSensitiveFind -
 			exportAsUnicode -
@@ -5792,58 +5790,58 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 			findInTitle -
 			findInURL -
 			findInUsername {
-		if {[string is boolean $value]} {
-				set ::gorilla::preference($pref) $value
-		}
+				if {[string is boolean $value]} {
+					set ::gorilla::preference($pref) $value
+				}
 			}
 			exportFieldSeparator {
-		if {[string length $value] == 1 && \
-			$value != "\"" && $value != "\\"} {
-				set ::gorilla::preference($pref) $value
-		}
+				if {[string length $value] == 1 && \
+					$value != "\"" && $value != "\\"} {
+					set ::gorilla::preference($pref) $value
+				}
 			}
 			findThisText {
-		set ::gorilla::preference($pref) $value
+				set ::gorilla::preference($pref) $value
 			}
 			idleTimeoutDefault {
-		if {[string is integer $value]} {
-				if {$value >= 0} {
-			set ::gorilla::preference($pref) $value
+				if {[string is integer $value]} {
+					if {$value >= 0} {
+						set ::gorilla::preference($pref) $value
+					}
 				}
-		}
 			}
 			keepBackupFile {
-		if {[string is boolean $value]} {
-				set ::gorilla::preference($pref) $value
-		}
+				if {[string is boolean $value]} {
+					set ::gorilla::preference($pref) $value
+				}
 			}
 			lru {
-		if { [ file exists $value ] } { 
-			lappend ::gorilla::preference($pref) $value
-		}
+				if { [ file exists $value ] } { 
+					lappend ::gorilla::preference($pref) $value
+				}
 			}
 			lruSize {
-		if {[string is integer $value]} {
-				set ::gorilla::preference($pref) $value
-		}
+				if {[string is integer $value]} {
+					set ::gorilla::preference($pref) $value
+				}
 			}
 			rememberGeometries {
-		if {[string is boolean $value]} {
-			set ::gorilla::preference($pref) $value
-		}
+				if {[string is boolean $value]} {
+					set ::gorilla::preference($pref) $value
+				}
 			}
 			revision {
-		set prefsRevision $value
+				set prefsRevision $value
 			}
 			saveImmediatelyDefault {
-		if {[string is boolean $value]} {
-				set ::gorilla::preference($pref) $value
-		}
+				if {[string is boolean $value]} {
+					set ::gorilla::preference($pref) $value
+				}
 			}
 			unicodeSupport {
-		if {[string is integer $value]} {
-				set ::gorilla::preference($pref) $value
-		}
+				if {[string is integer $value]} {
+					set ::gorilla::preference($pref) $value
+				}
 			}
 			geometry,* {
 				if {[scan $value "%dx%d" width height] == 2} {
@@ -5884,23 +5882,23 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 			gorillaAutocopy {
 				set ::gorilla::preference($pref) $value
 			}
-	}
-		}
+		} ; # end switch pref
+	} ; # end while ! eof f
 
-		#
-		# If the revision numbers of our preferences don't match, forget
-		# about window geometries, as they might have changed.
-		#
+	#
+	# If the revision numbers of our preferences don't match, forget
+	# about window geometries, as they might have changed.
+	#
 
-		if {![string equal $revision $prefsRevision]} {
-	foreach geo [array names ::gorilla::preference geometry,*] {
+	if {![string equal $revision $prefsRevision]} {
+		foreach geo [array names ::gorilla::preference geometry,*] {
 			unset ::gorilla::preference($geo)
-	}
 		}
+	}
 
-		catch {close $f}
-		return 1
-}
+	catch {close $f}
+	return 1
+} ; # end proc gorilla::LoadPreferencesFromRCFile
 
 proc gorilla::LoadPreferences {} {
 	if {[info exists ::gorilla::preference(norc)] && \
