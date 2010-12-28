@@ -5776,9 +5776,11 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 					}
 				}
 			}
+
 			doubleClickAction {
 				set ::gorilla::preference($pref) $value
 			}
+
 			caseSensitiveFind -
 			exportAsUnicode -
 			exportIncludeNotes -
@@ -5794,15 +5796,18 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 					set ::gorilla::preference($pref) $value
 				}
 			}
+
 			exportFieldSeparator {
 				if {[string length $value] == 1 && \
 					$value != "\"" && $value != "\\"} {
 					set ::gorilla::preference($pref) $value
 				}
 			}
+
 			findThisText {
 				set ::gorilla::preference($pref) $value
 			}
+
 			idleTimeoutDefault {
 				if {[string is integer $value]} {
 					if {$value >= 0} {
@@ -5810,49 +5815,59 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 					}
 				}
 			}
+
 			keepBackupFile {
 				if {[string is boolean $value]} {
 					set ::gorilla::preference($pref) $value
 				}
 			}
+
 			lru {
 				if { [ file exists $value ] } { 
 					lappend ::gorilla::preference($pref) $value
 				}
 			}
+
 			lruSize {
 				if {[string is integer $value]} {
 					set ::gorilla::preference($pref) $value
 				}
 			}
+
 			rememberGeometries {
 				if {[string is boolean $value]} {
 					set ::gorilla::preference($pref) $value
 				}
 			}
+
 			revision {
 				set prefsRevision $value
 			}
+
 			saveImmediatelyDefault {
 				if {[string is boolean $value]} {
 					set ::gorilla::preference($pref) $value
 				}
 			}
+
 			unicodeSupport {
 				if {[string is integer $value]} {
 					set ::gorilla::preference($pref) $value
 				}
 			}
+
 			geometry,* {
 				if {[scan $value "%dx%d" width height] == 2} {
 						set ::gorilla::preference($pref) "${width}x${height}"
 				}
 			}
+
 			lang {
 				set ::gorilla::preference($pref) $value
 				mclocale $value
 				mcload [file join $::gorillaDir msgs]
 			}
+
 			fontsize {
 				set ::gorilla::preference($pref) $value
 				font configure TkDefaultFont -size $value
@@ -5861,28 +5876,37 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				# undocumented option for ttk::treeview
 				ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
 			}
+
 			gorillaIcon {
 				set ::gorilla::preference($pref) $value
 			}
+
 			iconifyOnAutolock {
 				set ::gorilla::preference($pref) $value
 			}
+
 			browser-exe {
 				set ::gorilla::preference($pref) $value
 			}
+
 			browser-param {
 				set ::gorilla::preference($pref) $value
 			}
+
 			autocopyUserid {
 				set ::gorilla::preference($pref) $value
 			}
+
 			autoclearMultiplier {
 				set ::gorilla::preference($pref) $value
 			}
+
 			gorillaAutocopy {
 				set ::gorilla::preference($pref) $value
 			}
+
 		} ; # end switch pref
+
 	} ; # end while ! eof f
 
 	#
@@ -5898,6 +5922,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 
 	catch {close $f}
 	return 1
+
 } ; # end proc gorilla::LoadPreferencesFromRCFile
 
 proc gorilla::LoadPreferences {} {
