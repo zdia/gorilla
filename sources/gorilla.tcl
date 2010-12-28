@@ -210,25 +210,58 @@ proc gorilla::Init {} {
 			trace add variable ::gorilla::status write ::gorilla::StatusModified
 		}
 
-		# Some default preferences
-		# will be overwritten by LoadPreferencesFromRCFile if set
-
-		set ::gorilla::preference(defaultVersion) 3
-		set ::gorilla::preference(unicodeSupport) 1
-		set ::gorilla::preference(lru) [list]
-		# added by zdia
-		set ::gorilla::preference(rememberGeometries) 1
-		set ::gorilla::preference(lang) en
-		set ::gorilla::preference(gorillaIcon) 0
-		# added by Richard Ellis
-		set ::gorilla::preference(iconifyOnAutolock) 0
-		set ::gorilla::preference(browser-exe) ""
-		set ::gorilla::preference(browser-param) ""
-		set ::gorilla::preference(autocopyUserid) 0
-		set ::gorilla::preference(autoclearMultiplier) 1
-		set ::gorilla::preference(gorillaAutocopy) 1
+		# New preferences system by Richard Ellis
+		# 
+		# This dict defines all the preference variables, their defaults, and
+		# an anonymous validation proc for use in loading stored preferences
+		# from disk.  The format is name of pref as key, each value being a
+		# two element list.  Each two element list is preference default and
+		# anonymous validation proc in that order.
 		
-}
+		set ::gorilla::preference(all-preferences) {
+
+			autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+			autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
+			browser-exe            { {}      { {value} { return true } }                                                          }
+			browser-param          { {}      { {value} { return true } }                                                          }
+			caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
+			clearClipboardAfter    { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+			defaultVersion         { 3       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+			doubleClickAction      { nothing { {value} { return true } }                                                          }
+			exportAsUnicode        { 0       { {value} { string is boolean $value } }                                             }
+			exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value ni {{"} \\} ) } } } }
+			exportIncludeNotes     { 0       { {value} { string is boolean $value } }                                             }
+			exportIncludePassword  { 0       { {value} { string is boolean $value } }                                             }
+			exportShowWarning      { 1       { {value} { string is boolean $value } }                                             }
+			findInAny              { 0       { {value} { string is boolean $value } }                                             }
+			findInNotes            { 1       { {value} { string is boolean $value } }                                             }
+			findInPassword         { 1       { {value} { string is boolean $value } }                                             }
+			findInTitle            { 1       { {value} { string is boolean $value } }                                             }
+			findInURL              { 1       { {value} { string is boolean $value } }                                             }
+			findInUsername         { 1       { {value} { string is boolean $value } }                                             }
+			findThisText           { {}      { {value} { return true } }                                                          }
+			fontsize               { 10      { {value} { return true } }                                                          }
+			gorillaAutocopy        { 1       { {value} { string is boolean $value } }                                             }
+			gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
+			iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
+			idleTimeoutDefault     { 5       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+			keepBackupFile         { 0       { {value} { string is boolean $value } }                                             }
+			lang                   { en      { {value} { return true } }                                                          }
+			lockDatabaseAfter      { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+			lruSize                { 10      { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+			lru                    { {}      { {value} { file exists $value } }                                                   }
+			rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
+			saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
+			unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+
+		} ; # end set ::gorilla::preferences(all-preferences)
+
+		# initialize all the default preference settings now
+		dict for {pref value} $::gorilla::preference(all-preferences) {
+			set ::gorilla::preference($pref) [ lindex $value 0 ] 
+		}
+		
+} ; # end proc gorilla::Init
 
 # This callback traces writes to the ::gorilla::status variable, which
 # is shown in the UI's status line. We arrange for the variable to be
@@ -5694,6 +5727,10 @@ proc gorilla::LoadPreferencesFromRegistry {} {
 }
 
 proc gorilla::LoadPreferencesFromRCFile {} {
+
+   # The (rc) entry in the preferences array is utilized to hold the value
+   # from the command line -rc switch
+
 	if { [ info exists ::gorilla::preference(rc) ] } {
 		set fileName $::gorilla::preference(rc)
 	} else {
@@ -5714,9 +5751,10 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 		} else {
 				set fileName [ file join $homeDir ".gorillarc" ]
 		}
+
 	} ; # end if info exists ::gorilla::preference(rc)
 
-	if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision ] } {
+	if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion -> revision ] } {
 		set revision "<unmatchable>"
 	}
 
@@ -5726,117 +5764,28 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 		return 0
 	}
 
-	while {![eof $f]} {
-		set line [string trim [gets $f]]
-		if {[string index $line 0] == "#"} {
+	while { ! [ eof $f ] } {
+		set line [ string trim [ gets $f ] ]
+		if { [ string index $line 0 ] == "#" } {
 				continue
 		}
 
-		if {[set index [string first "=" $line]] < 1} {
-				continue
+      set temp [ split $line = ] 
+      
+      if { [ llength $temp ] != 2 } {
+      	continue
 		}
-
-		set pref [string trim [string range $line 0 [expr {$index-1}]]]
-		set value [string trim [string range $line [expr {$index+1}] end]]
-
-		if { [ string index $value 0 ] == "\"" } {
-			set i 1
-			set prefValue ""
-
-			while {$i < [string length $value]} {
-				set c [string index $value $i]
-				if {$c == "\\"} {
-					set c [string index $value [incr i]]
-					switch -exact -- $c {
-						t {
-							set d "\t"
-						}
-						default {
-							set d $c
-						}
-					}
-					append prefValue $c
-				} elseif {$c == "\""} {
-					break
-				} else {
-					append prefValue $c
-				}
-				incr i
-			}
-
-			set value $prefValue
-		} ; # end if string index value 0 == \"
+		
+		lassign $temp pref value
+		
+		set pref [ string trim $pref ]
+		# the subst is to perform backslash substitutions upon the value of the preference
+		set value [ subst -nocommands -novariables [ string trim [ string trim $value "\"" ] ] ]
 
 		switch -glob -- $pref {
-			clearClipboardAfter -
-			defaultVersion {
-				if {[string is integer $value]} {
-					if {$value >= 0} {
-						set ::gorilla::preference($pref) $value
-					}
-				}
-			}
-
-			doubleClickAction {
-				set ::gorilla::preference($pref) $value
-			}
-
-			caseSensitiveFind -
-			exportAsUnicode -
-			exportIncludeNotes -
-			exportIncludePassword -
-			exportShowWarning -
-			findInAny -
-			findInNotes -
-			findInPassword -
-			findInTitle -
-			findInURL -
-			findInUsername {
-				if {[string is boolean $value]} {
-					set ::gorilla::preference($pref) $value
-				}
-			}
-
-			exportFieldSeparator {
-				if {[string length $value] == 1 && \
-					$value != "\"" && $value != "\\"} {
-					set ::gorilla::preference($pref) $value
-				}
-			}
-
-			findThisText {
-				set ::gorilla::preference($pref) $value
-			}
-
-			idleTimeoutDefault {
-				if {[string is integer $value]} {
-					if {$value >= 0} {
-						set ::gorilla::preference($pref) $value
-					}
-				}
-			}
-
-			keepBackupFile {
-				if {[string is boolean $value]} {
-					set ::gorilla::preference($pref) $value
-				}
-			}
-
 			lru {
-				if { [ file exists $value ] } { 
+				if { [ apply [ lindex [ dict get $::gorilla::preference(all-preferences) lru ] 1 ] $value ] } {
 					lappend ::gorilla::preference($pref) $value
-				}
-			}
-
-			lruSize {
-				if {[string is integer $value]} {
-					set ::gorilla::preference($pref) $value
-				}
-			}
-
-			rememberGeometries {
-				if {[string is boolean $value]} {
-					set ::gorilla::preference($pref) $value
 				}
 			}
 
@@ -5844,70 +5793,38 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				set prefsRevision $value
 			}
 
-			saveImmediatelyDefault {
-				if {[string is boolean $value]} {
-					set ::gorilla::preference($pref) $value
-				}
-			}
-
-			unicodeSupport {
-				if {[string is integer $value]} {
-					set ::gorilla::preference($pref) $value
-				}
-			}
-
 			geometry,* {
 				if {[scan $value "%dx%d" width height] == 2} {
-						set ::gorilla::preference($pref) "${width}x${height}"
+					set ::gorilla::preference($pref) "${width}x${height}"
 				}
 			}
 
-			lang {
-				set ::gorilla::preference($pref) $value
-				mclocale $value
-				mcload [file join $::gorillaDir msgs]
-			}
-
-			fontsize {
-				set ::gorilla::preference($pref) $value
-				font configure TkDefaultFont -size $value
-				font configure TkTextFont -size $value
-				font configure TkMenuFont -size $value
-				# undocumented option for ttk::treeview
-				ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
-			}
-
-			gorillaIcon {
-				set ::gorilla::preference($pref) $value
-			}
-
-			iconifyOnAutolock {
-				set ::gorilla::preference($pref) $value
-			}
-
-			browser-exe {
-				set ::gorilla::preference($pref) $value
-			}
-
-			browser-param {
-				set ::gorilla::preference($pref) $value
-			}
-
-			autocopyUserid {
-				set ::gorilla::preference($pref) $value
-			}
-
-			autoclearMultiplier {
-				set ::gorilla::preference($pref) $value
-			}
-
-			gorillaAutocopy {
-				set ::gorilla::preference($pref) $value
+			default {
+				if { ! [ dict exists $::gorilla::preference(all-preferences) $pref ] } {
+					continue
+				}
+				# apply the validator proc from the preferences definition list to the value
+				if { [ apply [ lindex [ dict get $::gorilla::preference(all-preferences) $pref ] 1 ] $value ] } {
+					set ::gorilla::preference($pref) $value
+				}
+				
 			}
 
 		} ; # end switch pref
 
 	} ; # end while ! eof f
+
+   # initialize locale and fonts from the preference values
+
+	mclocale $::gorilla::preference(lang)
+	mcload [file join $::gorillaDir msgs]
+	
+	set value $::gorilla::preference(fontsize) 
+	font configure TkDefaultFont -size $value
+	font configure TkTextFont -size $value
+	font configure TkMenuFont -size $value
+	# undocumented option for ttk::treeview
+	ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
 
 	#
 	# If the revision numbers of our preferences don't match, forget
@@ -6359,21 +6276,6 @@ proc gorilla::Find {} {
 	}
 
 	set top .findDialog
-
-	foreach {pref default} {
-		caseSensitiveFind 0
-		findInAny 0
-		findInTitle 1
-		findInUsername 1
-		findInPassword 0
-		findInNotes 1
-		findInURL 1
-		findThisText ""
-			} {
-		if {![info exists ::gorilla::preference($pref)]} {
-			set ::gorilla::preference($pref) $default
-		}
-	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top
