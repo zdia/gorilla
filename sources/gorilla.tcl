@@ -142,6 +142,28 @@ foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 # Look for Itcl
 #
 
+#debugging
+set out [open ~/gorilla.log w]
+
+puts "auto_path: $auto_path\n"
+puts $out "auto_path: $auto_path\n"
+puts "pwd: \n[pwd]"
+puts $out "pwd: \n[pwd]"
+puts "itcl3.4 contains:"
+puts $out "itcl3.4 contains:"
+foreach datei [glob -nocomplain [pwd]/itcl3.4/* ] {
+	puts $datei
+	puts $out $datei
+}
+puts "pkgIndex.tcl:"
+puts $out "pkgIndex.tcl:"
+catch { set fh [open [pwd]/itcl3.4/pkgIndex.tcl] }
+set content [read $fh]
+puts $content
+puts $out $content
+close $fh
+close $out
+
 if {[catch {package require Itcl} oops]} {
 	#
 	# Itcl is included in tclkit and ActiveState...
