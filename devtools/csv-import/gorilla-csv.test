@@ -1,0 +1,198 @@
+# gorilla-csv.test:  tests for the CSV module in Password Gorilla
+#
+# This file contains a collection of tests for the password manager
+# Password Gorilla version 1.5.3.4
+#
+# There are two ways to use this file:
+#
+# a) Type "tkcon PATH/gorilla.tcl". Tkcon will open and you can call
+# the test-unit in the tkcon terminal with:
+#
+# cd INSTALLPATH/devtools/csv-import
+# source gorilla-csv.test
+#
+# All stdout output will be seen in the tkcon terminal.
+#
+# b) You start PWGorilla in one instance and in another the tkcon
+# terminal. The menuitem "Console:Attach to ..." lets you choose
+# "gorilla.tcl". When you source the test file in the tkcon terminal you
+# will see all stdout output in the other terminal.
+#
+# Dependencies:
+#		package tcltest 2.2
+# 	devtools/csv-import/import*.csv
+# 	"devtools/testdb.psafe3" as reference database
+#
+# Note: Only test failures will be reported
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+# -------------------------------------------------------------------------
+
+package require tcltest 2.2
+set argv ""
+eval ::tcltest::configure $argv
+set testname [info script]
+puts "running $testname for Password Gorilla ...\n"
+
+# ------------- sample -----------------
+#
+# proc TestProcedure { item } { return $item }
+# 
+# test gorilla-0.2 {initial test} \
+# 	-setup { set item FALSE } \
+# 	-body { TestProcedure $item } \
+# 	-result OK \
+# 	-cleanup { unset item }
+# 
+
+
+# -------------------------------------------------------------------------
+# work in a safe environment for testing purposes
+
+namespace eval ::gorilla::test {
+	namespace import ::tcltest::*
+	
+	# CATEGORY: CSV
+	# ------------------
+
+	test $testname-1.2 {File Open Error} \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import unknown.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result GORILLA_OPENERROR
+
+	test $testname-1.3 {Package Load Error} \
+    -setup { } \
+    -body { return [package require csv] } \
+    -cleanup { package forget csv } \
+    -result 0.7.2
+
+	test $testname-1.4 {Undefined Columns Error} \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import14.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result GORILLA_UNDEFINEDCOLUMNS
+
+# could not produce FIRSTLINEERROR
+
+	test $testname-1.5 {No Columns Error} \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import15.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result GORILLA_NODATA
+
+	test $testname-1.6 {Column Capital Letter Error} \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import16.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result GORILLA_UNDEFINEDCOLUMNS
+
+	test $testname-1.7 { Comma Line End Error} \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import17.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result GORILLA_UNDEFINEDCOLUMNS
+
+	test $testname-1.8 { Space before Comma Error} \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import18.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result GORILLA_UNDEFINEDCOLUMNS
+
+	test $testname-1.9 { Unequal number of columns Error } \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import19.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result "Unequal number of columns"
+
+	test $testname-1.10 { Adding default groupname } \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import110.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result GORILLA_ADDDEFAULTGROUP
+
+	test $testname-1.11 { Invalid group name } \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import111.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result "Invalid group name"
+
+	test $testname-1.12 { Invalid UUID field } \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body { gorilla::Import import112.csv } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result "Invalid UUID field"
+
+	test $testname-1.13 { Invalid time field } \
+    -setup { set ::DEBUG(CSVIMPORT) 1 } \
+    -body {
+			set err [gorilla::Import import113.csv]
+			return [lrange $err 0 end-1 ] } \
+    -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+    -result "Invalid time: field"
+
+# import113.csv includes a notes field test:
+# A note about \n\tthis entry"," too
+
+# test logfile
+
+# test delete rn after error
+
+test $testname-1.1 {General Ok Test} \
+    -setup { } \
+    -body { gorilla::Import import11.csv } \
+    -cleanup { } \
+    -result GORILLA_OK
+
+# tests after import
+# testdb.psafe3 is supposed to have been loaded
+# ----------------------------------------------------------------------
+
+test $testname-2.1 { saved title } \
+    -body {
+			set entries [list ]
+			foreach i {9 10 11} {
+				lappend entries [::gorilla::dbget title $i]
+			}
+			return $entries } \
+    -result "Title11 Title12 Title2"
+
+test $testname-2.2 { saved group } \
+    -body {
+			set entries [list ]
+			foreach i {9 10 11} {
+				lappend entries [::gorilla::dbget group $i]
+			}
+			return $entries } \
+    -result "{Group 1.Sub Group 1} {Group 1.Sub Group 2} {Group 2}"
+
+test $testname-2.3 { saved user } \
+    -body {
+			set entries [list ]
+			foreach i {9 10 11} {
+				lappend entries [::gorilla::dbget user $i]
+			}
+			return $entries } \
+    -result "Username11 Username12 Username2"
+
+# TODO: (enlarge import11.csv)
+# create-time last-access last-modified
+# last-pass-change lifetime notes password
+# url uuid
+		
+} ;# end of namespace eval ::gorilla::test
+
+# ----------------------------------------------------------------------
+# cleanup
+
+namespace delete ::gorilla::test
+puts "Tests for unit $testname finished."
