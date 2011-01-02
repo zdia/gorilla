@@ -1667,17 +1667,47 @@ namespace eval ::gorilla::LoginDialog {
 
 # -----------------------------------------------------------------------------
 
+	proc make-label { top text } {
+	
+		# A helper proc to generate a ttk::label element for the Edit Login
+		# Dialog.  Collapses all of the details of label creation into one
+		# place.  Also autogenerates a unique label name.
+		#
+		# top - the parent window of the new label window.
+		#
+		# text - the textual value to place in the label.  Will have a colon
+		# appended and the result will then be passed through mc for
+		# translation purposes (i.e., the colon becomes part of the "mc"
+		# string for translation).
+		#
+		# Returns the generated label name.
+	
+		variable seq
+		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure [ mc "${text}:" ] ] -style Wrapping.TLabel ]
+	} ; # end 
+
+# -----------------------------------------------------------------------------
+
 	proc BuildLoginDialog { top pvns } {
+
+		# Builds out the widgets to create a single instance of an edit login
+		# dialog window.
+		#
+		# top - the parent window for all of the component widgets.
+		#
+		# pvns - the private variable namespace which has been assigned to
+		# this login dialog window to hold -textvariables and GUI event
+		# callback procedures specific to this particular edit login window.
+		#
+		# Does not return any useful value to the caller.
 
 		set widget(top) $top
 
-		ttk::style configure Wrapping.TLabel -wraplength {}
+		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		set std_lbl_opts [ list -anchor e -justify right -padding {10 0 5 0} -style Wrapping.TLabel ]
-		
 		foreach {child label} { group Group     title Title   url URL 
 		                        user Username   password Password } {
-			grid [ ttk::label $top.l-$child -text [ wrap-measure [ mc "$label:" ] ] {*}$std_lbl_opts ] \
+			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::entry $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
 		} ; # end foreach {child label}
@@ -1685,17 +1715,27 @@ namespace eval ::gorilla::LoginDialog {
 		# password should show "*" by default
 		$widget(password) configure -show "*"
 
-		grid [ ttk::label $top.l-notes -text [ wrap-measure [ mc "Notes:" ] ] {*}$std_lbl_opts ] \
-		     [ set widget(notes) [ set ${pvns}::notes [ text $top.e-notes -width 40 -height 5 -wrap word ] ] ] \
+		# The notes text widget - with scrollbar - in an embedded frame
+		# because the text widget plus scrollbar needs to fit into the single
+		# column holding all the other ttk::entries in the outer grid
+		
+		set textframe [ frame $top.e-notes-f ]
+		set widget(notes) [ set ${pvns}::notes [ text $textframe.e-notes -width 40 -height 5 -wrap word -yscrollcommand [ list $textframe.vsb set ] ] ]
+		grid $widget(notes) [ scrollbar $textframe.vsb -command [ list $widget(notes) yview ] ] -sticky news
+		grid rowconfigure $textframe $widget(notes) -weight 1
+		grid columnconfigure $textframe $widget(notes) -weight 1
+
+		grid [ make-label $top Notes: ] \
+		     $textframe \
 		     -sticky news -pady 5
 
-		grid rowconfigure    $top $widget(notes) -weight 1
-		grid columnconfigure $top $widget(notes) -weight 1
+		grid rowconfigure    $top $textframe -weight 1
+		grid columnconfigure $top $textframe -weight 1
 
-		set lastChangeList [list last-pass-change [mc "Last Password Change:"] last-modified [mc "Last Modified:"] ]
+		set lastChangeList [list last-pass-change "Last Password Change" last-modified "Last Modified" ]
 		
-		foreach {child label} $lastChangeList {	
-			grid [ ttk::label $top.l-$child -text [ wrap-measure [ mc $label ] ] {*}$std_lbl_opts ] \
+		foreach {child label} $lastChangeList {
+			grid [ make-label $top $label ] \
 			     [ ttk::label $top.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
 			     -sticky news -pady 5
 		}
