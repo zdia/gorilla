@@ -76,9 +76,8 @@ if {[catch {package require Tcl 8.5}]} {
 		exit 1
 }
 
-if {[catch {package require msgcat} oops]} {
-		puts "error: $oops"
-		exit 1
+if {[catch {package require msgcat} oops options]} {
+		gorilla::PackageNotfound msgcat $oops $options
 }
 namespace import msgcat::*
 # mcload [file join $::gorillaDir msgs]
@@ -124,7 +123,7 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 }
 
 #
-# The pwsafe, blowfish, twofish and sha1 packages are in subdirectories
+# Check the subdirectories for needed packages
 #
 
 # Set our own install directory as first element in auto_path, so that local
@@ -136,6 +135,7 @@ foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 	if {[file isdirectory $testDir]} {
 		lappend auto_path $testDir
 	}
+	# else error "can't find $testDir"
 }
 
 #
@@ -7006,53 +7006,94 @@ proc gorilla::LaunchBrowser { rn } {
 
 #
 # ----------------------------------------------------------------------
-# Debugging for the Mac OS
+# Debugging help routines
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::writeToLog {logfile message} {
-	# mac Abfrage
-	set log "[clock format [clock seconds] -format %b\ %d\ %H:%M:%S] \
-		\"Password Gorilla\": $message"
+proc ::gorilla::PackageNotfound { package catchResult catchOptions } {
+	switch $package {
+		Itcl { set packageDir itcl3.4 }
+		msgcat { set packageDir msgs }
+		default { error "Unknown package" }
+	} ;# end switch $package
+	# the loading of the following packages has still to be wrapped
+		# sha1 { set packageDir sha1 }
+		# blowfish { set packageDir blowfish }
+		# twofish { set packageDir twofish }
+		# pwsafe { set packageDir pwsafe }
+		# tooltip { set packageDir tooltip }
 		
-	if [file exists $logfile] {
-		# puts "$logfile exists"
-		set filehandler [open $logfile a+]
-		puts $filehandler $log
-		close $filehandler
-	} else {
-		puts "$logfile does not exist or no access permissions"
-		puts $log
-	}
-}
+	set logtime [clock format [clock seconds] -format %b\ %d\ %Y\ %H:%M:%S]
+	regexp {Revision: ([0-9.]*)} $::gorillaVersion dummy revision
+	set targetDir ~/Desktop
+	if { ![file isdirectory $targetDir] } {	set targetDir ~	}
+	# Tcl offers the correct path for Mac and Windows: ~/Desktop
+	# Linux: not sure (Ok: Xfce)
+	set statusFile [file normalize [file join $targetDir gorilla.status]]
+ 	set message "Couldn't find the package $package. - The file $statusFile was created for debugging purposes. Please mail this file to 'PWGorilla@t-online.de'."
 
-proc psn_Delete {argv argc} {
-	# debugging
-	# gorilla::writeToLog $::gorilla::logfile "argv: $argv"
+	set index [open [file join $::gorillaDir/$packageDir pkgIndex.tcl] r]
+	set pkgIndex [read $index]
+	close $index
 	
-	set index 0
-	set new_argv ""
+	set statusinfo "Statusinfo created $logtime\n\
+------------------------------------------------------------------------\n
+Password Gorilla version: $revision\n\
+catch result: $catchResult\n\
+catch options: $catchOptions\n\
+auto_path:\n$::auto_path\n\
+tcl_platform:\n[gorilla::PrintArray ::tcl_platform]\n\
+info library: [info library]\n\
+gorillaDir:\n[glob $::gorillaDir *]\n\
+package dir:\n[glob [file join $::gorillaDir $packageDir] * ]\n\
+pkgIndex.tcl:\n$pkgIndex"
+
+	set out [open $statusFile w]
+	puts $out $statusinfo
+	puts $statusinfo
+	close $out
+
+	tk_messageBox -type ok -icon error -message $message
 	
-	while { $index < $argc } {
-		if {[string first "psn" [lindex $argv $index]] == -1} { 
-			lappend new_argv [lindex $argv $index]
+	exit
+} ; # end proc gorilla::PackageNotfound
+
+proc gorilla::PrintArray {arrayname} {
+	# code taken from [info body parray]
+	upvar 1 $arrayname array
+    if {![array exists array]} {
+			error "\"$arrayname\" isn't an array"
+    }
+	set maxl 0
+	set arrayString ""
+	set names [lsort [array names array]]
+	foreach name $names {
+		if {[string length $name] > $maxl} {
+				set maxl [string length $name]
 		}
-		incr index
 	}
-	# gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
-	return $new_argv
+	set maxl [expr {$maxl + [string length $arrayname] + 2}]
+	foreach name $names {
+		set nameString [format %s(%s) $arrayname $name]
+		append arrayString "[format "%-*s = %s" $maxl $nameString $array($name)]\n"
+	}
+	return $arrayString
 }
 
-proc gorilla::msg { message } {
-	tk_messageBox -type ok -icon info -message $message
-}
+#
+# ----------------------------------------------------------------------
+# DB access by name: dbget, dbset, dbunset
+# ----------------------------------------------------------------------
+#
 
-# A namespace ensemble to make retrieval from the gorilla::db object more
+# A namespace  ensemble to make retrieval from the gorilla::db object more
 # straightforward (retrieval of record elements by name instead of number). 
 # This also consolidates almost all of the "if record exists" and "if field
 # exists" checks into one place, simplifying the dialog builder code above,
 # as well as consolidating the date formatting code into one single
 # location.
+
+# Example: dbget title
 
 # At the moment there is a dependency upon the global ::gorilla::db
 # variable/object.  A future change might be to pass in the database object
@@ -7244,10 +7285,6 @@ proc ::gorilla::addRufftoHelp { menu } {
 # Init
 # ----------------------------------------------------------------------
 #
-
-# If we want some error logging
-# set logfile "/home/dia/Projekte/tcl/console.log"
-set ::gorilla::logfile "/private/var/log/console.log"
 
 if {[tk windowingsystem] == "aqua"} {
 	set argv [psn_Delete $argv $argc]
