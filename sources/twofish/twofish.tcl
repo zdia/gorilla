@@ -116,16 +116,23 @@ itcl::class ::itwofish::itwofish {
       intel -
       i*86* { set machine x86 }
     }
+		
+    # regularize os name for Windows variants
+    switch -glob -- $os {
+      Windows* { set os Windows }
+    }
 
-#    puts stderr "twofish: gorillaDir = $gorillaDir"
+		# since Tcl 8.5.9.1: Darwin >= 10.5
+		
+# puts stderr "twofish: gorillaDir = $gorillaDir"
     set lib [ file join $::gorillaDir twofish f32-$os-$machine[ info sharedlibextension ] ]
 #    puts stderr "twofish: lib -> $lib"
 
     if { [ catch { load $lib f32 } ] } {
-#      puts stderr "twofish: Using Tcl only f32"
+# 	puts stderr "twofish: Using Tcl only f32"
       set callmap [ list -m:f32- f32 ]
     } else {
-#      puts stderr "twofish: Using Critcl f32"
+# 	puts stderr "twofish: Using Critcl f32"
       set callmap [ list -m:f32- f32_critcl ]
     }
 

@@ -35,7 +35,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.2 $}
+set ::gorillaVersion {$Revision: 1.5.3.4 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -117,11 +117,11 @@ if {[tk windowingsystem] == "aqua"}	{
 	set auto_path ""
 }
 
-# foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
-	# if {[file isdirectory $testitdir]} {
-		# lappend auto_path $testitdir
-	# }
-# }
+foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
+	if {[file isdirectory $testitdir]} {
+		lappend auto_path $testitdir
+	}
+}
 
 #
 # The pwsafe, blowfish, twofish and sha1 packages are in subdirectories
@@ -138,10 +138,31 @@ foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 	}
 }
 
-
 #
 # Look for Itcl
 #
+
+#debugging
+set out [open ~/gorilla.log w]
+
+puts "auto_path: $auto_path\n"
+puts $out "auto_path: $auto_path\n"
+puts "pwd: \n[pwd]"
+puts $out "pwd: \n[pwd]"
+puts "itcl3.4 contains:"
+puts $out "itcl3.4 contains:"
+foreach datei [glob -nocomplain [pwd]/itcl3.4/* ] {
+	puts $datei
+	puts $out $datei
+}
+puts "pkgIndex.tcl:"
+puts $out "pkgIndex.tcl:"
+catch { set fh [open [pwd]/itcl3.4/pkgIndex.tcl] }
+set content [read $fh]
+puts $content
+puts $out $content
+close $fh
+close $out
 
 if {[catch {package require Itcl} oops]} {
 	#
@@ -293,7 +314,7 @@ set ::gorilla::menu_desc {
 	File	file	{"New ..." {} gorilla::New "" ""
 							"Open ..." {} gorilla::Open $menu_meta O
 							"Merge ..." open gorilla::Merge "" ""
-							Save save gorilla::Save $menu_meta S
+							"Save" save gorilla::Save $menu_meta S
 							"Save As ..." open gorilla::SaveAs "" ""
 							separator "" "" "" ""
 							"Export ..." open gorilla::Export "" ""
@@ -976,7 +997,7 @@ proc gorilla::New {} {
 			-text [mc "<New Database>"]\
 			-values [list Root] \
 			-image $::gorilla::images(group) 
-	set ::gorilla::status [mc "Add logins using \"Add Login\" in the \"Login\" menu."]
+	set ::gorilla::status [mc "Add logins using <Add Login> in the <Login> menu."]
 	. configure -cursor $myOldCursor
 
 	# Must also unset the cache of group names to ttk::treeview node identifiers
@@ -1695,7 +1716,9 @@ namespace eval ::gorilla::LoginDialog {
 		grid rowconfigure    $top $widget(notes) -weight 1
 		grid columnconfigure $top $widget(notes) -weight 1
 
-		foreach {child label} { last-pass-change "Last Password Change:"    last-modified "Last Modified:" } {	
+		set lastChangeList [list last-pass-change [mc "Last Password Change:"] last-modified [mc "Last Modified:"] ]
+		
+		foreach {child label} $lastChangeList {	
 			grid [ ttk::label $top.l-$child -text [ wrap-measure [ mc $label ] ] {*}$std_lbl_opts ] \
 			     [ ttk::label $top.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
 			     -sticky news -pady 5
@@ -4738,7 +4761,7 @@ proc gorilla::LockDatabase {} {
 			wm state    $tl [ lindex $withdrawn($tl) 0 ]
 			wm geometry $tl [ lindex $withdrawn($tl) 1 ]
 		}
-
+		
 		if {$oldGrab != ""} {
 			catch {grab $oldGrab}
 		} else {
@@ -4754,10 +4777,9 @@ proc gorilla::LockDatabase {} {
 		set ::gorilla::status [mc "Welcome back."]
 
 		set ::gorilla::isLocked 0
-
+		wm withdraw .
 		wm deiconify .
 		raise .
-
 		ArrangeIdleTimeout
 }
 
