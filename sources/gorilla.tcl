@@ -76,9 +76,8 @@ if {[catch {package require Tcl 8.5}]} {
 		exit 1
 }
 
-if {[catch {package require msgcat} oops]} {
-		puts "error: $oops"
-		exit 1
+if {[catch {package require msgcat} oops options]} {
+		gorilla::PackageNotfound msgcat $oops $options
 }
 namespace import msgcat::*
 # mcload [file join $::gorillaDir msgs]
@@ -124,7 +123,7 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 }
 
 #
-# The pwsafe, blowfish, twofish and sha1 packages are in subdirectories
+# Check the subdirectories for needed packages
 #
 
 # Set our own install directory as first element in auto_path, so that local
@@ -136,6 +135,7 @@ foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 	if {[file isdirectory $testDir]} {
 		lappend auto_path $testDir
 	}
+	# else error "can't find $testDir"
 }
 
 #
@@ -227,15 +227,7 @@ proc gorilla::Init {} {
 		set ::gorilla::preference(autocopyUserid) 0
 		set ::gorilla::preference(autoclearMultiplier) 1
 		set ::gorilla::preference(gorillaAutocopy) 1
-
-		# Initialization of the DEBUG array
-		# It will be used by the tcltest package
-		# for details look into the folder devtools/
-
-		array set ::DEBUG {
-			CSVIMPORT 0
-			
-		}
+		
 }
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -296,7 +288,6 @@ set ::gorilla::menu_desc {
 							"Save As ..." open gorilla::SaveAs "" ""
 							separator "" "" "" ""
 							"Export ..." open gorilla::Export "" ""
-							"Import ..." open gorilla::Import "" ""
 							separator mac "" "" ""
 							"Preferences ..." mac gorilla::Preferences "" ""
 							separator mac "" "" ""
@@ -1241,7 +1232,14 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				{{All Files} *}
 			}
 
-			setup-default-dirname
+			if {![info exists ::gorilla::dirName]} {
+				if {[tk windowingsystem] == "aqua"} {
+					set ::gorilla::dirName "~/Documents"
+				} else {
+				# Windows-Abfrage auch nötig ...
+					set ::gorilla::dirName [pwd]
+				}
+			}
 
 			set fileName [tk_getOpenFile -parent $top \
 				-title "Browse for a password database ..." \
@@ -3060,428 +3058,155 @@ proc gorilla::RenameGroup {} {
 #
 
 proc gorilla::DestroyExportDialog {} {
-	set ::gorilla::guimutex 2
+		set ::gorilla::guimutex 2
 }
 
 proc gorilla::Export {} {
-	ArrangeIdleTimeout
-	set top .export
+		ArrangeIdleTimeout
+		set top .export
 
-	if {![info exists ::gorilla::preference(exportIncludePassword)]} {
-		set ::gorilla::preference(exportIncludePassword) 0
-	}
-
-	if {![info exists ::gorilla::preference(exportIncludeNotes)]} {
-		set ::gorilla::preference(exportIncludeNotes) 1
-	}
-
-	if {![info exists ::gorilla::preference(exportAsUnicode)]} {
-		set ::gorilla::preference(exportAsUnicode) 0
-	}
-
-	if {![info exists ::gorilla::preference(exportFieldSeparator)]} {
-		set ::gorilla::preference(exportFieldSeparator) ","
-	}
-
-	if {![info exists ::gorilla::preference(exportShowWarning)]} {
-		set ::gorilla::preference(exportShowWarning) 1
-	}
-	
-	if {$::gorilla::preference(exportShowWarning)} {
-		set answer [tk_messageBox -parent . \
-				-type yesno -icon warning -default no \
-				-title [mc "Export Security Warning"] \
-				-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
-		if {$answer != "yes"} {
-			return
+		if {![info exists ::gorilla::preference(exportIncludePassword)]} {
+	set ::gorilla::preference(exportIncludePassword) 0
 		}
-	}
 
-	setup-default-dirname
-		
-	set types {
-		{{Text Files} {.txt}}
-		{{CSV Files} {.csv}}
-		{{All Files} *}
-	}
+		if {![info exists ::gorilla::preference(exportIncludeNotes)]} {
+	set ::gorilla::preference(exportIncludeNotes) 1
+		}
 
-	set fileName [tk_getSaveFile -parent . \
-		-title [mc "Export password database as text ..."] \
-		-defaultextension ".txt" \
-		-filetypes $types \
-		-initialdir $::gorilla::dirName]
+		if {![info exists ::gorilla::preference(exportAsUnicode)]} {
+	set ::gorilla::preference(exportAsUnicode) 0
+		}
 
-	if {$fileName == ""} {
-		return
-	}
+		if {![info exists ::gorilla::preference(exportFieldSeparator)]} {
+	set ::gorilla::preference(exportFieldSeparator) ","
+		}
 
-	set nativeName [file nativename $fileName]
+		if {![info exists ::gorilla::preference(exportShowWarning)]} {
+	set ::gorilla::preference(exportShowWarning) 1
+		}
 
-	set myOldCursor [. cget -cursor]
-	. configure -cursor watch
-	update idletasks
-
-	if {[catch {
-		set txtFile [open $fileName "w"]
-	} oops]} {
-		. configure -cursor $myOldCursor
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title [ mc "Error Exporting Database" ] \
-			-message "[ mc "Failed to export password database to" ] ${nativeName}: $oops"
-		return
-	}
-
-	set ::gorilla::status [mc "Exporting ..."]
-	update idletasks
-
-	if {$::gorilla::preference(exportAsUnicode)} {
-		#
-		# Write BOM in binary mode, then switch to Unicode
-		#
-
-		fconfigure $txtFile -encoding binary
-
-		if {[info exists ::tcl_platform(byteOrder)]} {
-			switch -- $::tcl_platform(byteOrder) {
-				littleEndian {
-					puts -nonewline $txtFile "\xff\xfe"
-				}
-				bigEndian {
-					puts -nonewline $txtFile "\xfe\xff"
-				}
+		if {$::gorilla::preference(exportShowWarning)} {
+			set answer [tk_messageBox -parent . \
+					-type yesno -icon warning -default no \
+					-title [mc "Export Security Warning"] \
+					-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
+			if {$answer != "yes"} {
+					return
 			}
 		}
 
-		fconfigure $txtFile -encoding unicode
-	} ; # end if export as unicode 
-
-	set separator [subst -nocommands -novariables $::gorilla::preference(exportFieldSeparator)]
-
-	foreach rn [$::gorilla::db getAllRecordNumbers] {
-
-		# UUID
-		if {[$::gorilla::db existsField $rn 1]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 1]
-		}
-		puts -nonewline $txtFile $separator
-
-		# Group
-		if {[$::gorilla::db existsField $rn 2]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 2]
-		}
-		puts -nonewline $txtFile $separator
-
-		# Title
-		if {[$::gorilla::db existsField $rn 3]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 3]
-		}
-		puts -nonewline $txtFile $separator
-
-		# Username
-		if {[$::gorilla::db existsField $rn 4]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 4]
-		}
-		puts -nonewline $txtFile $separator
-
-		# Password
-		if {$::gorilla::preference(exportIncludePassword)} {
-			if {[$::gorilla::db existsField $rn 6]} {
-				puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 6]
-			}
-		} else {
-			puts -nonewline $txtFile "********"
-		}
-		puts -nonewline $txtFile $separator
-
-		# Notes
-		if {$::gorilla::preference(exportIncludeNotes)} {
-			if {[$::gorilla::db existsField $rn 5]} {
-				puts -nonewline $txtFile \
-					[string map {\\ \\\\ \" \\\" \t \\t \n \\n} \
-					[$::gorilla::db getFieldValue $rn 5]]
+		if {![info exists ::gorilla::dirName]} {
+			if {[tk windowingsystem] == "aqua"} {
+				set ::gorilla::dirName "~/Documents"
+			} else {
+			# Windows-Abfrage auch nötig ...
+				set ::gorilla::dirName [pwd]
 			}
 		}
-		puts $txtFile ""
+			
+		set types {
+	{{Text Files} {.txt}}
+	{{CSV Files} {.csv}}
+	{{All Files} *}
+		}
 
-	} ; # end foreach rn in gorilla db
+		set fileName [tk_getSaveFile -parent . \
+			-title [mc "Export password database as text ..."] \
+			-defaultextension ".txt" \
+			-filetypes $types \
+			-initialdir $::gorilla::dirName]
 
-	catch {close $txtFile}
+		if {$fileName == ""} {
+	return
+		}
+
+		set nativeName [file nativename $fileName]
+
+		set myOldCursor [. cget -cursor]
+		. configure -cursor watch
+		update idletasks
+
+		if {[catch {
+	set txtFile [open $fileName "w"]
+		} oops]} {
 	. configure -cursor $myOldCursor
-	set ::gorilla::status [mc "Database exported."]
-
-} ; # end proc gorilla::Export
-
-# ----------------------------------------------------------------------
-# Import data from a CSV file
-# ----------------------------------------------------------------------
-#
-
-proc gorilla::Import { {input_file ""} } {
-
-	# Import a csv file and add the entries therein to the currently open
-	# database
-
-	ArrangeIdleTimeout
-
-	setup-default-dirname
-
-	set types {
-		{{CSV Files} {.csv}}
-	}
-
-	if { $input_file eq "" } {
-		set input_file [ tk_getOpenFile -parent . \
-		-title [ mc "Import CSV datafile" ] \
-		-defaultextension ".csv" \
-		-filetypes $types \
-		-initialdir $::gorilla::dirName ]
-	}
-	
-	if { $input_file eq "" } {
-		return
-	}
-
-	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
-		error-popup [ mc "Error opening import CSV file" ] \
-			"[ mc "Could not access file " ] ${input_file}:\n$oops"
-		return GORILLA_OPENERROR
-	}
-	fconfigure $infd -encoding utf-8
-
-	if { [ catch { package require csv } oops ] } {
-		error-popup [ mc "Error loading CSV parsing package." ] \
-			"[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
-		return
-	}
-
-	set myOldCursor [. cget -cursor]
-	. configure -cursor watch
-	update idletasks
-
-	set possible_columns { create-time group last-access last-modified
-									last-pass-change lifetime notes password title
-									url user uuid }
-
-	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
-		error-popup [ mc "Error parsing CSV file" ] \
-			" [ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
-		catch { close $infd }
-	  	. configure -cursor $myOldCursor
-			
-		return GORILLA_FIRSTLINEERROR
-	}
-
-   puts "columns_present: $columns_present"
-   
-   # Must have at least one data column present
-   if { [ llength $columns_present ] == 0 } {
-   	error-popup [ mc "Error, nothing to import." ] \
-   		[ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
-		catch { close $infd }
-	  	. configure -cursor $myOldCursor
-		return GORILLA_NODATA
-   }
-   
-   # Make sure that only the possible columns are present.  Note, this does
-   # not test for duplicate columns, that is intentional.  The result of
-   # duplicate columns is that the last duplicate column on a line will
-   # override the value of previous occurrences of the same column on that
-   # line.
-   
-   foreach item $columns_present {
-     if { $item ni $possible_columns } {
-       lappend error_columns $item
-     }
-   }
-   
-   if { [ info exists error_columns ] } {
-   	error-popup [ mc "Error, undefined data columns" ] \
-   		"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
-   	catch { close $infd }
-		. configure -cursor $myOldCursor
-   	return GORILLA_UNDEFINEDCOLUMNS
-	}
-
-	# This is utilized below to apply a "default" group to any imports
-	# which do not contain a group column in the input data.  It is
-	# setup before the loop so that the "group" name is identical for
-	# all records in the import batch
-	
-	if { "group" ni $columns_present } {
-		set default_group_name "Newly Imported [ clock format [ clock seconds ] ]"
-		if { $::DEBUG(CSVIMPORT) } {
-			. configure -cursor $myOldCursor
-			return GORILLA_ADDDEFAULTGROUP
-		}
-	}
-	
-	set new_add_counter 0
-
-	foreach line [ split [ read $infd [ file size $input_file ] ] "\n" ] {
-
-		puts "line: $line"
-		
-		if { [ catch { set data [ ::csv::split $line ] } oops ] } {
-		  lappend error_lines [ list "Unable to parse as CSV" $line ]
-		  continue
-		} ; # end if catch csv::split
-
-		if { [ llength $data ] == 0 } { 
-			continue
-		}
-		
-		if { [ llength $data ] != [ llength $columns_present ] } {
-			lappend error_lines [ list "Unequal number of columns" $line ]
-			continue
-		}
-
-		set newrn [ $::gorilla::db createRecord ]
-		# puts "newrn: $newrn"		
-
-		set no_errors 1
-
-		foreach key $columns_present value $data {
-
-			puts "key: $key value $value"
-			switch -exact -- $key {
-
-				group {
-					if { [ catch { ::pwsafe::db::splitGroup $value } ] } {
-						lappend error_lines [ list "Invalid group name" $line ]
-						set no_errors 0
-					}
-					dbset group $newrn $value
-				}
-
-				uuid {
-					# f29b9ef7-9e62-41e1-7dfd-14ae13986059
-					if { ! [ regexp {^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$} $value ] } {
-					puts "invalid uuid $value"
-						lappend error_lines [ list "Invalid UUID field" $line ]
-						set no_errors 0
-					}
-					dbset uuid $newrn $value
-				}
-
-				create-time -
-				last-access -
-				last-modified -
-				last-pass-change -
-				lifetime {
-					if { [ catch { set time [ clock scan $value -format "%Y-%m-%d %k-%M-%S %z" ] } ] } {
-						lappend error_lines [ list "Invalid time: field $key" $line ]
-						set no_errors 0
-					} else {
-						dbset $key $newrn $time
-					}
-				}
-
-				notes {
-					dbset notes $newrn [ subst -nocommands -novariables $value ]
-				}
-
-				default { dbset $key $newrn $value }
-
-			} ; # end switch
-
-		} ; # end foreach key/value
-		
-		puts ""
-
-		if { $no_errors } {
-			# setup some reasonable defaults if certain items are not provided
-			# in the CSV file
-
-			if { [ info exists default_group_name ] } {
-				puts "setting a default group"
-				dbset group $newrn $default_group_name
-			}
-			
-			if {  ( "uuid" ni $columns_present ) 
-				&& ( ! [ catch { package present uuid } ] ) } {
-				puts "setting a new uuid"
-				dbset uuid $newrn [uuid::uuid generate]
-			}
-			
-			if { "title" ni $columns_present } {
-				puts "setting a default title"
-				dbset title $newrn "Newly Imported [ clock format [ clock seconds ] ]"
-			}
-
-			AddRecordToTree $newrn
-			incr new_add_counter
-			
-		} else {
-			$::gorilla::db deleteRecord $newrn
-		}
-
-	} ; # end foreach line in input file
-	
-	if { [ info exists error_lines ] } {
-		if { $::DEBUG(CSVIMPORT) } {
-			. configure -cursor $myOldCursor
-			return [lindex $error_lines 0 0]
-		}
-		
-		puts "errors exist from import: $error_lines"
-		set answer [ tk_messageBox -default yes -icon info \
-							-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
-							-parent . -title [ mc "Some records skipped during import" ] -type yesno ]
-		if { $answer eq "yes" } {
-			set fn [ tk_getSaveFile -parent . -title [ mc "Enter a file into which to save the log" ] ]
-			if { $fn ne "" } {
-				set outfd [ open $fn {WRONLY CREAT TRUNC} ]
-				fconfigure $outfd -encoding utf-8
-				foreach item $error_lines {
-					puts $outfd [ join $item "\t" ] 
-				}
-				close $outfd
-			} ; # end if fn ne ""
-		} ; # end if answer eq yes
-	} ; # end if exists error_lines
-	
-	if { $new_add_counter > 0 } {
-	  set ::gorilla::status "$new_add_counter [ mc "record(s) successfully imported." ]"
-	  MarkDatabaseAsDirty
-	}
-	
-	catch { close $infd } 
-  	. configure -cursor $myOldCursor
-  	package forget csv
-		return GORILLA_OK
-
-} ; # end proc gorilla::Import
-
-proc gorilla::error-popup {title message} {
-
-	# a small helper proc to encapsulate all the details of opening a
-	# tk_messageBox with a title and message
-
-	if { $::DEBUG(CSVIMPORT) } { return }
-	
 	tk_messageBox -parent . -type ok -icon error -default ok \
-		-title $title \
-		-message $message 
-
-} ; # end proc gorilla::error-popup
-
-proc gorilla::setup-default-dirname { } {
-
-	# Makes sure that the global ::gorilla::dirName variable is set to a
-	# sensible default if it does not already exist.
-	#
-	# Side-effect of modifying the global ::gorilla::dirName variable
-
-	if { ! [ info exists ::gorilla::dirName ] } {
-		if { [ tk windowingsystem ] == "aqua" } {
-			set ::gorilla::dirName "~/Documents"
-		} else {
-		# Windows-Abfrage auch nötig ...
-			set ::gorilla::dirName [ pwd ]
+			-title "Error Exporting Database" \
+			-message "Failed to export password database to\
+		$nativeName: $oops"
+	return
 		}
+
+		set ::gorilla::status [mc "Exporting ..."]
+		update idletasks
+
+		if {$::gorilla::preference(exportAsUnicode)} {
+	#
+	# Write BOM in binary mode, then switch to Unicode
+	#
+
+	fconfigure $txtFile -encoding binary
+
+	if {[info exists ::tcl_platform(byteOrder)]} {
+			switch -- $::tcl_platform(byteOrder) {
+		littleEndian {
+				puts -nonewline $txtFile "\xff\xfe"
+		}
+		bigEndian {
+				puts -nonewline $txtFile "\xfe\xff"
+		}
+			}
 	}
 
-} ; # end proc setup-default-dirname
+	fconfigure $txtFile -encoding unicode
+		}
+
+		set separator [subst -nocommands -novariables $::gorilla::preference(exportFieldSeparator)]
+
+		foreach rn [$::gorilla::db getAllRecordNumbers] {
+	# UUID
+	if {[$::gorilla::db existsField $rn 1]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 1]
+	}
+	puts -nonewline $txtFile $separator
+	# Group
+	if {[$::gorilla::db existsField $rn 2]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 2]
+	}
+	puts -nonewline $txtFile $separator
+	# Title
+	if {[$::gorilla::db existsField $rn 3]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 3]
+	}
+	puts -nonewline $txtFile $separator
+	# Username
+	if {[$::gorilla::db existsField $rn 4]} {
+			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 4]
+	}
+	puts -nonewline $txtFile $separator
+	# Password
+	if {$::gorilla::preference(exportIncludePassword)} {
+			if {[$::gorilla::db existsField $rn 6]} {
+		puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 6]
+			}
+	} else {
+			puts -nonewline $txtFile "********"
+	}
+	puts -nonewline $txtFile $separator
+	if {$::gorilla::preference(exportIncludeNotes)} {
+			if {[$::gorilla::db existsField $rn 5]} {
+		puts -nonewline $txtFile \
+				[string map {\\ \\\\ \" \\\" \t \\t \n \\n} \
+			 [$::gorilla::db getFieldValue $rn 5]]
+			}
+	}
+	puts $txtFile ""
+		}
+
+		catch {close $txtFile}
+		. configure -cursor $myOldCursor
+		set ::gorilla::status [mc "Database exported."]
+}
 
 # ----------------------------------------------------------------------
 # Mark database as dirty
@@ -4173,7 +3898,14 @@ proc gorilla::SaveAs {} {
 	{{All Files} *}
 		}
 
-		setup-default-dirname
+		if {![info exists ::gorilla::dirName]} {
+			if {[tk windowingsystem] == "aqua"} {
+				set ::gorilla::dirName "~/Documents"
+			} else {
+			# Windows-Abfrage auch nötig ...
+				set ::gorilla::dirName [pwd]
+			}
+		}
 
 		set fileName [tk_getSaveFile -parent . \
 			-title "Save password database ..." \
@@ -7476,53 +7208,94 @@ proc gorilla::LaunchBrowser { rn } {
 
 #
 # ----------------------------------------------------------------------
-# Debugging for the Mac OS
+# Debugging help routines
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::writeToLog {logfile message} {
-	# mac Abfrage
-	set log "[clock format [clock seconds] -format %b\ %d\ %H:%M:%S] \
-		\"Password Gorilla\": $message"
+proc ::gorilla::PackageNotfound { package catchResult catchOptions } {
+	switch $package {
+		Itcl { set packageDir itcl3.4 }
+		msgcat { set packageDir msgs }
+		default { error "Unknown package" }
+	} ;# end switch $package
+	# the loading of the following packages has still to be wrapped
+		# sha1 { set packageDir sha1 }
+		# blowfish { set packageDir blowfish }
+		# twofish { set packageDir twofish }
+		# pwsafe { set packageDir pwsafe }
+		# tooltip { set packageDir tooltip }
 		
-	if [file exists $logfile] {
-		# puts "$logfile exists"
-		set filehandler [open $logfile a+]
-		puts $filehandler $log
-		close $filehandler
-	} else {
-		puts "$logfile does not exist or no access permissions"
-		puts $log
-	}
-}
+	set logtime [clock format [clock seconds] -format %b\ %d\ %Y\ %H:%M:%S]
+	regexp {Revision: ([0-9.]*)} $::gorillaVersion dummy revision
+	set targetDir ~/Desktop
+	if { ![file isdirectory $targetDir] } {	set targetDir ~	}
+	# Tcl offers the correct path for Mac and Windows: ~/Desktop
+	# Linux: not sure (Ok: Xfce)
+	set statusFile [file normalize [file join $targetDir gorilla.status]]
+ 	set message "Couldn't find the package $package. - The file $statusFile was created for debugging purposes. Please mail this file to 'PWGorilla@t-online.de'."
 
-proc psn_Delete {argv argc} {
-	# debugging
-	# gorilla::writeToLog $::gorilla::logfile "argv: $argv"
+	set index [open [file join $::gorillaDir/$packageDir pkgIndex.tcl] r]
+	set pkgIndex [read $index]
+	close $index
 	
-	set index 0
-	set new_argv ""
+	set statusinfo "Statusinfo created $logtime\n\
+------------------------------------------------------------------------\n
+Password Gorilla version: $revision\n\
+catch result: $catchResult\n\
+catch options: $catchOptions\n\
+auto_path:\n$::auto_path\n\
+tcl_platform:\n[gorilla::PrintArray ::tcl_platform]\n\
+info library: [info library]\n\
+gorillaDir:\n[glob $::gorillaDir *]\n\
+package dir:\n[glob [file join $::gorillaDir $packageDir] * ]\n\
+pkgIndex.tcl:\n$pkgIndex"
+
+	set out [open $statusFile w]
+	puts $out $statusinfo
+	puts $statusinfo
+	close $out
+
+	tk_messageBox -type ok -icon error -message $message
 	
-	while { $index < $argc } {
-		if {[string first "psn" [lindex $argv $index]] == -1} { 
-			lappend new_argv [lindex $argv $index]
+	exit
+} ; # end proc gorilla::PackageNotfound
+
+proc gorilla::PrintArray {arrayname} {
+	# code taken from [info body parray]
+	upvar 1 $arrayname array
+    if {![array exists array]} {
+			error "\"$arrayname\" isn't an array"
+    }
+	set maxl 0
+	set arrayString ""
+	set names [lsort [array names array]]
+	foreach name $names {
+		if {[string length $name] > $maxl} {
+				set maxl [string length $name]
 		}
-		incr index
 	}
-	# gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
-	return $new_argv
+	set maxl [expr {$maxl + [string length $arrayname] + 2}]
+	foreach name $names {
+		set nameString [format %s(%s) $arrayname $name]
+		append arrayString "[format "%-*s = %s" $maxl $nameString $array($name)]\n"
+	}
+	return $arrayString
 }
 
-proc gorilla::msg { message } {
-	tk_messageBox -type ok -icon info -message $message
-}
+#
+# ----------------------------------------------------------------------
+# DB access by name: dbget, dbset, dbunset
+# ----------------------------------------------------------------------
+#
 
-# A namespace ensemble to make retrieval from the gorilla::db object more
+# A namespace  ensemble to make retrieval from the gorilla::db object more
 # straightforward (retrieval of record elements by name instead of number). 
 # This also consolidates almost all of the "if record exists" and "if field
 # exists" checks into one place, simplifying the dialog builder code above,
 # as well as consolidating the date formatting code into one single
 # location.
+
+# Example: dbget title
 
 # At the moment there is a dependency upon the global ::gorilla::db
 # variable/object.  A future change might be to pass in the database object
@@ -7715,10 +7488,6 @@ proc ::gorilla::addRufftoHelp { menu } {
 # ----------------------------------------------------------------------
 #
 
-# If we want some error logging
-# set logfile "/home/dia/Projekte/tcl/console.log"
-set ::gorilla::logfile "/private/var/log/console.log"
-
 if {[tk windowingsystem] == "aqua"} {
 	set argv [psn_Delete $argv $argc]
 
@@ -7735,11 +7504,11 @@ if {[tk windowingsystem] == "aqua"} {
 }
 	
 proc usage {} {
-	puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
-	puts stdout "Options:"
-	puts stdout "	--rc <name>\t\tUse <name> as configuration file (not the Registry)."
-	puts stdout "	--norc\t\t\tDo not use a configuration file (or the Registry)."
-	puts stdout "	<database>\t\tOpen <database> on startup."
+		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
+		puts stdout "	Options:"
+		puts stdout "		--rc <name>	 Use <name> as configuration file (not the Registry)."
+		puts stdout "		--norc				Do not use a configuration file (or the Registry)."
+		puts stdout "		<database>		Open <database> on startup."
 }
 
 if {$::gorilla::init == 0} {
@@ -7749,6 +7518,8 @@ if {$::gorilla::init == 0} {
 
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
+
+	# set argc [llength $argv]	;# obsolete
 
 	for {set i 0} {$i < $argc} {incr i} {
 		switch -- [lindex $argv $i] {
