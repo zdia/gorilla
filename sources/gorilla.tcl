@@ -90,6 +90,7 @@ if {[catch {package require Tcl 8.5}]} {
 proc load-package { args } {
 
 	foreach package $args {
+
 		if { [ catch "package require $package" catchResult catchOptions ] } {
 
 			# a package load error occurred - create log file and report to user
@@ -106,7 +107,14 @@ tcl_platform: [ array get ::tcl_platform ]
 info library: [ info library ]
 gorillaDir: $::gorillaDir
 gorillaDir contents:
-	[ join [ glob $::gorillaDir * ] "\n\t" ]
+	[ join [ glob -directory $::gorillaDir * ] "\n\t" ]
+auto_path dir contents:
+[ set result ""
+  foreach dir $::auto_path {
+    append result "$dir\n"
+    append result "[ join [ glob -directory $dir -- * ] "\n\t" ]\n"
+  } 
+  return $result ]
 -end--------------------------------------------------------------------
 } ] ; # end of subst
 
@@ -121,9 +129,6 @@ gorillaDir contents:
 
 			set logfile [ file normalize $logfile ]
 						
-						
-					set logfile /zzzz
-					
 			if { [ catch { set logfd [ open $logfile {WRONLY CREAT APPEND} ] } ] } {
 				# could not create log file - limp along as best we can
 				text .error
