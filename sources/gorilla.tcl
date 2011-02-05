@@ -241,7 +241,7 @@ proc gorilla::Init {} {
 			findInURL              { 1       { {value} { string is boolean $value } }                                             }
 			findInUsername         { 1       { {value} { string is boolean $value } }                                             }
 			findThisText           { {}      { {value} { return true } }                                                          }
-			fontsize               { 10      { {value} { return true } }                                                          }
+			fontsize               { 10      { {value} { string is integer $value } }                                             }
 			gorillaAutocopy        { 1       { {value} { string is boolean $value } }                                             }
 			gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
 			iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
