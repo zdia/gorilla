@@ -387,6 +387,15 @@ greet you.
 iconify/minimize its windows when the lock after idle timer (see [Database
 Preferences]) expires.
 
+'''Hide login name in tree view'''
+
+ | Selecting this option will prevent Password Gorilla from showing login
+names alongside titles for each login in the main tree view window.  Note
+that this is a global setting, either no login names are shown, or all login
+names are shown.  This setting only takes full effect after exiting and
+restarting Password Gorilla, or saving and reopening the current or another
+database.
+
 -------------------
 title: Launch Browser
 alias: Browser

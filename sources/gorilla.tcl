@@ -244,6 +244,7 @@ proc gorilla::Init {} {
 			fontsize               { 10      { {value} { string is integer $value } }                                             }
 			gorillaAutocopy        { 1       { {value} { string is boolean $value } }                                             }
 			gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
+			hideLogins             { 0       { {value} { string is boolean $value } }                                             }
 			iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
 			idleTimeoutDefault     { 5       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 			keepBackupFile         { 0       { {value} { string is boolean $value } }                                             }
@@ -4009,7 +4010,8 @@ proc gorilla::SaveAs {} {
 
 		set title [ ::gorilla::dbget title $rn ]
 
-		if { [ ::gorilla::dbget user $rn ] ne "" } {
+		if { ( [ ::gorilla::dbget user $rn ] ne "" ) && 
+		     ( ! $::gorilla::preference(hideLogins) ) } {
 			append title " \[" [ ::gorilla::dbget user $rn ] "\]"
 		}
 
@@ -5223,6 +5225,14 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			-variable ::gorilla::prefTemp(iconifyOnAutolock) \
 			-text [mc "Iconify upon auto-lock"]
 		pack $display.autoiconify -anchor w -pady 5
+
+		# hide logins in main window
+		
+		ttk::checkbutton $display.hideLogins \
+			-variable ::gorilla::prefTemp(hideLogins) \
+			-text [mc "Hide login name in tree view" ]
+		pack $display.hideLogins -anchor w -pady 5
+		::tooltip::tooltip $display.hideLogins [ mc "This option takes effect after exiting\nand restarting of Password Gorilla" ]
 
 		#
 		# Fifth NoteBook tab: Browser

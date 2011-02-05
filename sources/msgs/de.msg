@@ -194,4 +194,6 @@ nicht beachten" \
 "database names" "Datenbanknamen" \
 "minutes (0=never)" "Minuten (0=niemals)" \
 "seconds (0=never)" "Sekunden (0=nie)" \
+"Hide login name in tree view" "Hide login name in tree view"
+"This option takes effect after exiting\nand restarting of Password Gorilla" "This option takes effect after exiting\nand restarting of Password Gorilla"
 }
