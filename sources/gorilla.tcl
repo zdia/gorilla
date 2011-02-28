@@ -447,7 +447,7 @@ proc gorilla::InitGui {} {
 
 	## Arrange the tree and its scrollbars in the toplevel
 	lower [ttk::frame .dummy]
-	pack .dummy -fill both -fill both -expand 1
+	pack .dummy -fill both -expand 1
 	grid .tree .vsb -sticky nsew -in .dummy
 	grid columnconfigure .dummy 0 -weight 1
 	grid rowconfigure .dummy 0 -weight 1
