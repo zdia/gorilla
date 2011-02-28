@@ -193,75 +193,75 @@ if {![info exists ::gorilla::init]} {
 # ----------------------------------------------------------------------
 
 proc gorilla::Init {} {
-		set ::gorilla::status ""
-		set ::gorilla::uniquenodeindex 0
-		set ::gorilla::dirty 0
-		set ::gorilla::overridePasswordPolicy 0
-		set ::gorilla::isPRNGInitialized 0
-		set ::gorilla::activeSelection 0
-		catch {unset ::gorilla::dirName}
-		catch {unset ::gorilla::fileName}
-		catch {unset ::gorilla::db}
-		catch {unset ::gorilla::statusClearId}
-		catch {unset ::gorilla::clipboardClearId}
-		catch {unset ::gorilla::idleTimeoutTimerId}
+	set ::gorilla::status ""
+	set ::gorilla::uniquenodeindex 0
+	set ::gorilla::dirty 0
+	set ::gorilla::overridePasswordPolicy 0
+	set ::gorilla::isPRNGInitialized 0
+	set ::gorilla::activeSelection 0
+	catch {unset ::gorilla::dirName}
+	catch {unset ::gorilla::fileName}
+	catch {unset ::gorilla::db}
+	catch {unset ::gorilla::statusClearId}
+	catch {unset ::gorilla::clipboardClearId}
+	catch {unset ::gorilla::idleTimeoutTimerId}
 
-		if {[llength [trace info variable ::gorilla::status]] == 0} {
-			trace add variable ::gorilla::status write ::gorilla::StatusModified
-		}
+	if {[llength [trace info variable ::gorilla::status]] == 0} {
+		trace add variable ::gorilla::status write ::gorilla::StatusModified
+	}
 
-		# New preferences system by Richard Ellis
-		# 
-		# This dict defines all the preference variables, their defaults, and
-		# an anonymous validation proc for use in loading stored preferences
-		# from disk.  The format is name of pref as key, each value being a
-		# two element list.  Each two element list is preference default and
-		# anonymous validation proc in that order.  The validation proc
-		# returns true for valid, false for invalid.
-		
-		set ::gorilla::preference(all-preferences) {
+	# New preferences system by Richard Ellis
+	# 
+	# This dict defines all the preference variables, their defaults, and
+	# an anonymous validation proc for use in loading stored preferences
+	# from disk.  The format is name of pref as key, each value being a
+	# two element list.  Each two element list is preference default and
+	# anonymous validation proc in that order.  The validation proc
+	# returns true for valid, false for invalid.
+	
+	set ::gorilla::preference(all-preferences) {
 
-			autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
-			autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
-			browser-exe            { {}      { {value} { return true } }                                                          }
-			browser-param          { {}      { {value} { return true } }                                                          }
-			caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
-			clearClipboardAfter    { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
-			defaultVersion         { 3       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
-			doubleClickAction      { nothing { {value} { return true } }                                                          }
-			exportAsUnicode        { 0       { {value} { string is boolean $value } }                                             }
-			exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value ni {{"} \\} ) } } } }
-			exportIncludeNotes     { 0       { {value} { string is boolean $value } }                                             }
-			exportIncludePassword  { 0       { {value} { string is boolean $value } }                                             }
-			exportShowWarning      { 1       { {value} { string is boolean $value } }                                             }
-			findInAny              { 0       { {value} { string is boolean $value } }                                             }
-			findInNotes            { 1       { {value} { string is boolean $value } }                                             }
-			findInPassword         { 1       { {value} { string is boolean $value } }                                             }
-			findInTitle            { 1       { {value} { string is boolean $value } }                                             }
-			findInURL              { 1       { {value} { string is boolean $value } }                                             }
-			findInUsername         { 1       { {value} { string is boolean $value } }                                             }
-			findThisText           { {}      { {value} { return true } }                                                          }
-			fontsize               { 10      { {value} { string is integer $value } }                                             }
-			gorillaAutocopy        { 1       { {value} { string is boolean $value } }                                             }
-			gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
-			hideLogins             { 0       { {value} { string is boolean $value } }                                             }
-			iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
-			idleTimeoutDefault     { 5       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
-			keepBackupFile         { 0       { {value} { string is boolean $value } }                                             }
-			lang                   { en      { {value} { return true } }                                                          }
-			lockDatabaseAfter      { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
-			lruSize                { 10      { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
-			lru                    { {}      { {value} { file exists $value } }                                                   }
-			rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
-			saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
-			unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
+		browser-exe            { {}      { {value} { return true } }                                                          }
+		browser-param          { {}      { {value} { return true } }                                                          }
+		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
+		clearClipboardAfter    { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		defaultVersion         { 3       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		doubleClickAction      { nothing { {value} { return true } }                                                          }
+		exportAsUnicode        { 0       { {value} { string is boolean $value } }                                             }
+		exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value ni {{"} \\} ) } } } }
+		exportIncludeNotes     { 0       { {value} { string is boolean $value } }                                             }
+		exportIncludePassword  { 0       { {value} { string is boolean $value } }                                             }
+		exportShowWarning      { 1       { {value} { string is boolean $value } }                                             }
+		findInAny              { 0       { {value} { string is boolean $value } }                                             }
+		findInNotes            { 1       { {value} { string is boolean $value } }                                             }
+		findInPassword         { 1       { {value} { string is boolean $value } }                                             }
+		findInTitle            { 1       { {value} { string is boolean $value } }                                             }
+		findInURL              { 1       { {value} { string is boolean $value } }                                             }
+		findInUsername         { 1       { {value} { string is boolean $value } }                                             }
+		findThisText           { {}      { {value} { return true } }                                                          }
+		fontsize               { 10      { {value} { string is integer $value } }                                             }
+		gorillaAutocopy        { 1       { {value} { string is boolean $value } }                                             }
+		gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
+		hideLogins             { 0       { {value} { string is boolean $value } }                                             }
+		iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
+		idleTimeoutDefault     { 5       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		keepBackupFile         { 0       { {value} { string is boolean $value } }                                             }
+		lang                   { en      { {value} { return true } }                                                          }
+		lockDatabaseAfter      { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		lruSize                { 10      { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		lru                    { {}      { {value} { file exists $value } }                                                   }
+		rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
+		saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
+		unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 
-		} ; # end set ::gorilla::preferences(all-preferences)
+	} ; # end set ::gorilla::preferences(all-preferences)
 
-		# initialize all the default preference settings now
-		dict for {pref value} $::gorilla::preference(all-preferences) {
-			set ::gorilla::preference($pref) [ lindex $value 0 ] 
-		}
+	# initialize all the default preference settings now
+	dict for {pref value} $::gorilla::preference(all-preferences) {
+		set ::gorilla::preference($pref) [ lindex $value 0 ] 
+	}
 		
 } ; # end proc gorilla::Init
 
@@ -300,68 +300,68 @@ proc gorilla::InitGui {} {
 	
 	menu .mbar
 
-# Struktur im menu_desc(ription):
-# label	widgetname {item tag command shortcut}
+	# Struktur im menu_desc(ription):
+	# label	widgetname {item tag command shortcut}
 
-		set meta Control
-		set menu_meta Ctrl
+	set meta Control
+	set menu_meta Ctrl
 		
-		if {[tk windowingsystem] == "aqua"}	{
-			set meta Command
-			set menu_meta Cmd
-			# mac is showing the Apple key icon but app is hanging if a procedure
-			# is calling a vwait loop. So we just show the letter. Both meta keys
-			# are working later on (Tk 8.5.8)
-			# set menu_meta ""
-		}
+	if {[tk windowingsystem] == "aqua"}	{
+		set meta Command
+		set menu_meta Cmd
+		# mac is showing the Apple key icon but app is hanging if a procedure
+		# is calling a vwait loop. So we just show the letter. Both meta keys
+		# are working later on (Tk 8.5.8)
+		# set menu_meta ""
+	}
 
-set ::gorilla::menu_desc {
-	File	file	{"New ..." {} gorilla::New "" ""
-							"Open ..." {} gorilla::Open $menu_meta O
-							"Merge ..." open gorilla::Merge "" ""
-							"Save" save gorilla::Save $menu_meta S
-							"Save As ..." open gorilla::SaveAs "" ""
-							separator "" "" "" ""
-							"Export ..." open gorilla::Export "" ""
-							separator mac "" "" ""
-							"Preferences ..." mac gorilla::Preferences "" ""
-							separator mac "" "" ""
-							Exit mac gorilla::Exit $menu_meta X
-							}	
-	Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
-							"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
-							"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
-							separator "" "" "" ""
-							"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
-							separator "" "" "" ""
-							"Find ..." open gorilla::Find $menu_meta F
-							"Find next" open gorilla::FindNext $menu_meta G
-							}
-	Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
-							"Edit Login" open gorilla::EditLogin $menu_meta E
-							"View Login" open gorilla::ViewLogin $menu_meta V
-							"Delete Login" login gorilla::DeleteLogin "" ""
-							"Move Login ..." login gorilla::MoveLogin "" ""
-							separator "" "" "" ""
-							"Add Group ..." open gorilla::AddGroup "" ""
-							"Add Subgroup ..." group gorilla::AddSubgroup "" ""
-							"Rename Group ..." group gorilla::RenameGroup "" ""
-							"Move Group ..." group gorilla::MoveGroup "" ""
-							"Delete Group" group gorilla::DeleteGroup "" ""
-							}
-	Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
-							"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
-							separator "" "" "" ""
-							"Change Master Password ..." open gorilla::ChangePassword "" ""
-							separator "" "" "" ""
-							"Lock now" open gorilla::LockDatabase "" ""
-							}
-	Help	help	{ "Help ..." "" gorilla::Help "" ""
-							"License ..." "" gorilla::License "" ""
-							separator mac "" "" ""
-							"About ..." mac tkAboutDialog "" ""
-							}
-} ;# end ::gorilla::menu_desc
+	set ::gorilla::menu_desc {
+		File	file	{"New ..." {} gorilla::New "" ""
+								"Open ..." {} gorilla::Open $menu_meta O
+								"Merge ..." open gorilla::Merge "" ""
+								"Save" save gorilla::Save $menu_meta S
+								"Save As ..." open gorilla::SaveAs "" ""
+								separator "" "" "" ""
+								"Export ..." open gorilla::Export "" ""
+								separator mac "" "" ""
+								"Preferences ..." mac gorilla::Preferences "" ""
+								separator mac "" "" ""
+								Exit mac gorilla::Exit $menu_meta X
+								}	
+		Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
+								"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
+								"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
+								separator "" "" "" ""
+								"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
+								separator "" "" "" ""
+								"Find ..." open gorilla::Find $menu_meta F
+								"Find next" open gorilla::FindNext $menu_meta G
+								}
+		Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
+								"Edit Login" open gorilla::EditLogin $menu_meta E
+								"View Login" open gorilla::ViewLogin $menu_meta V
+								"Delete Login" login gorilla::DeleteLogin "" ""
+								"Move Login ..." login gorilla::MoveLogin "" ""
+								separator "" "" "" ""
+								"Add Group ..." open gorilla::AddGroup "" ""
+								"Add Subgroup ..." group gorilla::AddSubgroup "" ""
+								"Rename Group ..." group gorilla::RenameGroup "" ""
+								"Move Group ..." group gorilla::MoveGroup "" ""
+								"Delete Group" group gorilla::DeleteGroup "" ""
+								}
+		Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
+								"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
+								separator "" "" "" ""
+								"Change Master Password ..." open gorilla::ChangePassword "" ""
+								separator "" "" "" ""
+								"Lock now" open gorilla::LockDatabase "" ""
+								}
+		Help	help	{ "Help ..." "" gorilla::Help "" ""
+								"License ..." "" gorilla::License "" ""
+								separator mac "" "" ""
+								"About ..." mac tkAboutDialog "" ""
+								}
+	} ;# end ::gorilla::menu_desc
 
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 		
@@ -399,20 +399,20 @@ set ::gorilla::menu_desc {
     # .mbar.apple add separator
 	}
 
-# This command must be last menu oriented command due to TkCocoa for MacOSX
+	# This command must be last menu oriented command due to TkCocoa for MacOSX
 	. configure -menu .mbar
 
-# note - if the help menu widget name changes, this will need to be updated	
-::gorilla::addRufftoHelp .mbar.help
+	# note - if the help menu widget name changes, this will need to be updated	
+	::gorilla::addRufftoHelp .mbar.help
 
-# menueintrag deaktivieren mit dem tag "login
-# suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
-# etwa in $menu_tag(file) = {"" login}, ergibt index=2
-# Zuständige Prozedur: setmenustate .mbar login disabled/normal
-# Index des Menueintrags finden:
+	# menueintrag deaktivieren mit dem tag "login
+	# suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
+	# etwa in $menu_tag(file) = {"" login}, ergibt index=2
+	# Zuständige Prozedur: setmenustate .mbar login disabled/normal
+	# Index des Menueintrags finden:
 
-# suche alle Einträge mit dem Tag tag und finde den Index
- # .mbar.file entryconfigure 2 -state disabled
+	# suche alle Einträge mit dem Tag tag und finde den Index
+	# .mbar.file entryconfigure 2 -state disabled
  
 	wm title . "Password Gorilla"
 	wm iconname . "Gorilla"
@@ -420,9 +420,9 @@ set ::gorilla::menu_desc {
 	
 	if {[info exists ::gorilla::preference(geometry,.)]} {
 		TryResizeFromPreference .
-	 } else {
+	} else {
 		wm geometry . 640x480
-	 }
+	}
 
 	#---------------------------------------------------------------------
 	# Arbeitsfläche bereitstellen unter Verwendung von ttk::treeview
@@ -456,74 +456,73 @@ set ::gorilla::menu_desc {
 	bind $tree <Button-3> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
 	bind .tree <<TreeviewSelect>> gorilla::TreeNodeSelectionChanged
 	
-		# On the Macintosh, make the context menu also pop up on
-		# Control-Left Mousebutton and button 2 <right-click>
-		
-		catch {
-			if {[tk windowingsystem] == "aqua"} {
-					bind .tree <$meta-Button-1> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
-					bind .tree <Button-2> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
-			}
+	# On the Macintosh, make the context menu also pop up on
+	# Control-Left Mousebutton and button 2 <right-click>
+	
+	catch {
+		if {[tk windowingsystem] == "aqua"} {
+				bind .tree <$meta-Button-1> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
+				bind .tree <Button-2> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
 		}
-		
-		#
-		# remember widgets
-		#
+	}
+	
+	#
+	# remember widgets
+	#
 
-		set ::gorilla::toplevel(.) "."
-		set ::gorilla::widgets(main) ".mbar"
-		set ::gorilla::widgets(tree) ".tree"
-		
-		#
-		# Initialize menu state
-		#
+	set ::gorilla::toplevel(.) "."
+	set ::gorilla::widgets(main) ".mbar"
+	set ::gorilla::widgets(tree) ".tree"
+	
+	#
+	# Initialize menu state
+	#
 
-		UpdateMenu
-		# setmenustate .mbar group disabled
-		# setmenustate .mbar login disabled
-		
-		#
-		# bindings
-		#
+	UpdateMenu
+	# setmenustate .mbar group disabled
+	# setmenustate .mbar login disabled
+	
+	#
+	# bindings
+	#
 
-		catch {bind . <MouseWheel> "$tree yview scroll \[expr {-%D/120}\] units"}
+	catch {bind . <MouseWheel> "$tree yview scroll \[expr {-%D/120}\] units"}
 
-		bind . <$meta-o> {.mbar.file invoke 1}
-		bind . <$meta-s> {.mbar.file invoke 3}
-		bind . <$meta-x> {.mbar.file invoke 10}
-		
-		bind . <$meta-u> {.mbar.edit invoke 0}
-		bind . <$meta-p> {.mbar.edit invoke 1}
-		bind . <$meta-w> {.mbar.edit invoke 2}
-		bind . <$meta-c> {.mbar.edit invoke 4}
-		bind . <$meta-f> {.mbar.edit invoke 6}
-		bind . <$meta-g> {.mbar.edit invoke 7}
+	bind . <$meta-o> {.mbar.file invoke 1}
+	bind . <$meta-s> {.mbar.file invoke 3}
+	bind . <$meta-x> {.mbar.file invoke 10}
+	
+	bind . <$meta-u> {.mbar.edit invoke 0}
+	bind . <$meta-p> {.mbar.edit invoke 1}
+	bind . <$meta-w> {.mbar.edit invoke 2}
+	bind . <$meta-c> {.mbar.edit invoke 4}
+	bind . <$meta-f> {.mbar.edit invoke 6}
+	bind . <$meta-g> {.mbar.edit invoke 7}
 
-		bind . <$meta-a> {.mbar.login invoke 0}
-		bind . <$meta-e> {.mbar.login invoke 1}
-		bind . <$meta-v> {.mbar.login invoke 2}
-		
-		# bind . <$meta-L> "gorilla::Reload"
-		# bind . <$meta-R> "gorilla::Refresh"
-		# bind . <$meta-C> "gorilla::ToggleConsole"
-		# bind . <$meta-q> "gorilla::Exit"
-		# bind . <$meta-q> "gorilla::msg"
-		# ctrl-x ist auch exit, ctrl-q reicht
+	bind . <$meta-a> {.mbar.login invoke 0}
+	bind . <$meta-e> {.mbar.login invoke 1}
+	bind . <$meta-v> {.mbar.login invoke 2}
+	
+	# bind . <$meta-L> "gorilla::Reload"
+	# bind . <$meta-R> "gorilla::Refresh"
+	# bind . <$meta-C> "gorilla::ToggleConsole"
+	# bind . <$meta-q> "gorilla::Exit"
+	# bind . <$meta-q> "gorilla::msg"
+	# ctrl-x ist auch exit, ctrl-q reicht
 
-		#
-		# Handler for the X Selection
-		#
+	#
+	# Handler for the X Selection
+	#
 
-		selection handle -selection PRIMARY   . gorilla::XSelectionHandler
-		selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
+	selection handle -selection PRIMARY   . gorilla::XSelectionHandler
+	selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
 
-		#
-		# Handler for the WM_DELETE_WINDOW event, which is sent when the
-		# user asks the window manager to destroy the application
-		#
+	#
+	# Handler for the WM_DELETE_WINDOW event, which is sent when the
+	# user asks the window manager to destroy the application
+	#
 
-		wm protocol . WM_DELETE_WINDOW gorilla::Exit
-
+	wm protocol . WM_DELETE_WINDOW gorilla::Exit
 
 }
 
@@ -532,21 +531,21 @@ set ::gorilla::menu_desc {
 #
 
 proc gorilla::InitPRNG {{seed ""}} {
-		#
-		# Try to compose a not very predictable seed
-		#
+	#
+	# Try to compose a not very predictable seed
+	#
 
-		append seed "20041201"
-		append seed [clock seconds] [clock clicks] [pid]
-		append seed [winfo id .] [winfo geometry .] [winfo pointerxy .]
-		set hashseed [pwsafe::int::sha1isz $seed]
+	append seed "20041201"
+	append seed [clock seconds] [clock clicks] [pid]
+	append seed [winfo id .] [winfo geometry .] [winfo pointerxy .]
+	set hashseed [pwsafe::int::sha1isz $seed]
 
-		#
-		# Init PRNG
-		#
+	#
+	# Init PRNG
+	#
 
-		isaac::srand $hashseed
-		set ::gorilla::isPRNGInitialized 1
+	isaac::srand $hashseed
+	set ::gorilla::isPRNGInitialized 1
 }
 
 proc setmenustate {widget tag_pattern state} {
