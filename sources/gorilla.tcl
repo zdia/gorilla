@@ -453,7 +453,7 @@ proc gorilla::InitGui {} {
 	grid rowconfigure .dummy 0 -weight 1
 	
 	bind .tree <Double-Button-1> {gorilla::TreeNodeDouble [.tree focus]}
-	bind $tree <Button-3> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
+	bind .tree <Button-3> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
 	bind .tree <<TreeviewSelect>> gorilla::TreeNodeSelectionChanged
 	
 	# On the Macintosh, make the context menu also pop up on
@@ -461,8 +461,8 @@ proc gorilla::InitGui {} {
 	
 	catch {
 		if {[tk windowingsystem] == "aqua"} {
-				bind .tree <$meta-Button-1> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
-				bind .tree <Button-2> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
+				bind .tree <$meta-Button-1> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
+				bind .tree <Button-2> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
 		}
 	}
 	
@@ -584,17 +584,9 @@ proc gorilla::EvalIfStateNormal {menuentry index} {
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::GetSelectedNode { } {
+proc gorilla::GetSelectedNode { x y } {
 	# returns node at mouse position
-	set xpos [winfo pointerx .]
-	set ypos [winfo pointery .]
-	set rootx [winfo rootx .]
-	set rooty [winfo rooty .]
-
-	set relx [incr xpos -$rootx]
-	set rely [incr ypos -$rooty]
-
-	return [.tree identify row $relx $rely]
+	return [ .tree identify row $x $y ]
 }
 
 proc gorilla::TreeNodeSelect {node} {
