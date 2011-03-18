@@ -1679,6 +1679,14 @@ namespace eval ::gorilla::LoginDialog {
 
 	proc BuildLoginDialog { top pvns } {
 
+		# Actually build out a new login dialog edit window
+		#
+		# top - the toplevel name for this new edit window
+		#
+		# pvns - the name of the private variable namespace that
+		#        this login window will use to store state
+		#        information
+
 		set widget(top) $top
 
 		ttk::style configure Wrapping.TLabel -wraplength {}
@@ -2059,6 +2067,12 @@ namespace eval ::gorilla::LoginDialog {
 		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
 
 			proc PopulateRecord { rn } {
+			
+				# Insert the state data from the linked
+				# login window into a db record
+				#
+				# rn - the db record number into which to
+				#      insert the state data
 
 				set varlist { group title user password url }
 				
@@ -2096,8 +2110,10 @@ namespace eval ::gorilla::LoginDialog {
 
 				} ; # end foreach element
 				
-				# handle notes separately
-				set value [ -m:notes- get 0.0 end ]
+				# handle notes separately - trimming
+				# trailing whitespace and newlines
+				
+				set value [ string trimright [ -m:notes- get 0.0 end ] ]
 				if { $value != "" } {
 					if { ! [ string equal $value [ dbget notes $rn ] ] } {
 						set modified 1
@@ -3623,7 +3639,7 @@ proc gorilla::Merge {} {
 		toplevel $top
 		wm title $top "Merge Report for $nativeName"
 
-		set text [text $top.text -relief sunken -width 100 -wrap none \
+		set text [text $top.text -relief sunken -width 100 -wrap word \
 		-yscrollcommand "$top.vsb set"]
 
 		if {[tk windowingsystem] ne "aqua"} {
