@@ -1890,23 +1890,14 @@ namespace eval ::gorilla::LoginDialog {
 
 				variable overridePasswordPolicy
 
-				# Getting the resizing below to work right was quite a test.  The
-				# resize code does two things, expands (or contracts) the width and
-				# increases (or decreases) the minwidth of the toplevel window by
-				# the width of the ppf pane.
+				# The resize code below increases (or decreases) the width and
+				# minwidth of the toplevel window by the width of the ppf pane.
 				
 				# This resizing code turned out to be necessary because when gorilla
 				# withdrew and then deiconified edit windows upon a lock/unlock
 				# event, it also set an explicit geometry.  By setting a geometry
 				# the window would no longer auto-resize when the ppf pane was
 				# mapped/unmapped.
-				
-				# Clearing the set geometry was my first attempt, but doing that
-				# also caused the window to resize to the widget native sizes, even
-				# if the user had enlarged it before hand manually.  Therefore, to
-				# work around that issue this code that adds an increment upon
-				# mapping the ppf pane, and subtracts the same amount upon unmapping
-				# the ppf frame, came about.
 				
 				# The extra 10 in the increment/decrement calculations is because of
 				# the -padx 5 given to grid.  Five pixels per side of padding is 10
@@ -1916,6 +1907,10 @@ namespace eval ::gorilla::LoginDialog {
 				# "update idletasks" to assure that the initial window geometry
 				# calculations have all occurred.
 
+				# 2011-03-18 - Finally deduced how to expand/shrink the width of the
+				# parent window while otherwise maintaining its exact position on
+				# screen.  The winfo rootx|rooty command is the magic.
+				
 				if { $overridePasswordPolicy } {
 					# true - map the ppf frame
 				  
@@ -1925,9 +1920,9 @@ namespace eval ::gorilla::LoginDialog {
 						set parent [ winfo parent -m:ppf- ]
 						set inc [ + 10 [ winfo reqwidth -m:ppf- ] ]
 
-						wm geometry $parent "=[ + $inc [ winfo width $parent ] ]x[ winfo height $parent ]"
+						wm geometry $parent "=[ + $inc [ winfo width $parent ] ]x[ winfo height $parent ]+[ winfo rootx $parent ]+[ winfo rooty $parent ]"
 
-						foreach {minw minh} [ wm minsize $parent ] { break }
+						lassign [ wm minsize $parent ] minw minh
 						wm minsize $parent [ + $inc $minw ] $minh
 					}
 
@@ -1941,9 +1936,9 @@ namespace eval ::gorilla::LoginDialog {
 						set parent [ winfo parent -m:ppf- ]
 						set dec [ + 10 [ winfo reqwidth -m:ppf- ] ]
 
-						wm geometry $parent "=[ - [ winfo width $parent ] $dec ]x[ winfo height $parent ]"
+						wm geometry $parent "=[ - [ winfo width $parent ] $dec ]x[ winfo height $parent ]+[ winfo rootx $parent ]+[ winfo rooty $parent ]"
 
-						foreach {minw minh} [ wm minsize $parent ] { break }
+						lassign [ wm minsize $parent ] minw minh
 						wm minsize $parent [ - $minw $dec ] $minh 
 					}
 
