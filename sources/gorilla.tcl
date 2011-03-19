@@ -6907,7 +6907,8 @@ proc gorilla::ViewEntry {rn} {
 		foreach {child childname} { group Group title Title url URL 
 						user Username pass Password 
 						lpc {Last Password Change}
-						mod {Last Modified} } {
+						mod {Last Modified} 
+						uuid UUID } {
 			
 			ttk::label $infoframe.${child}L -text [mc ${childname}]:
 			ttk::label $infoframe.${child}E -width 40 -background white
@@ -6944,6 +6945,7 @@ proc gorilla::ViewEntry {rn} {
 		$infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
 		$infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
 		$infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
+		$infoframe.uuidE  configure -text [ ::gorilla::dbget uuid             $rn ]
 
 		# now create button frame and populate it
                 	
