@@ -61,10 +61,7 @@ if {[catch {package require Tk 8.5} oops]} {
 		exit 1
 }
 
-option add *Dialog.msg.font {Sans 9}
 option add *Dialog.msg.wrapLength 6i
-# option add *Font "Sans 8"
-# option add *Button.Font "Sans 8"
 
 if {[catch {package require Tcl 8.5}]} {
 		wm withdraw .
@@ -5206,8 +5203,10 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			$m add radio -label $size -variable ::gorilla::prefTemp(fontsize) -value $size \
 				-command "
 					font configure TkDefaultFont -size $size
-					font configure TkTextFont -size $size
-					font configure TkMenuFont -size $size
+					font configure TkTextFont    -size $size
+					font configure TkMenuFont    -size $size
+					font configure TkCaptionFont -size $size
+					font configure TkFixedFont   -size $size
 					ttk::style configure gorilla.Treeview -rowheight [expr {$size * 2}]"
 		}
 		
@@ -5706,8 +5705,10 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	
 	set value $::gorilla::preference(fontsize) 
 	font configure TkDefaultFont -size $value
-	font configure TkTextFont -size $value
-	font configure TkMenuFont -size $value
+	font configure TkTextFont    -size $value
+	font configure TkMenuFont    -size $value
+	font configure TkCaptionFont -size $value
+	font configure TkFixedFont   -size $value
 	# undocumented option for ttk::treeview
 	ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
 
