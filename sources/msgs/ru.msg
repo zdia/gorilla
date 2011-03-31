@@ -186,4 +186,6 @@ mcmset ru { \
 "database names" "последних БД" \
 "minutes (0=never)" "минут (0=никогда)" \
 "seconds (0=never)" "секунд (0=никогда)" \
+"Hide login name in tree view" "Hide login name in tree view"
+"This option takes effect after exiting\nand restarting of Password Gorilla" "This option takes effect after exiting\nand restarting of Password Gorilla"
 }

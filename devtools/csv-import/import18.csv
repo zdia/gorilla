@@ -1,0 +1,4 @@
+uuid,url,user, notes
+fdc2aff8-04e1-4766-4ef4-ddae08377ba6,Group 1.Sub Group 1,A Title,A User Name,A Password,A note about this entry 
+63a1b066-148a-4bf6-40bc-a2b9afda00c6,Group 1.Sub Group 2,A Title,A User Name,A Password,A note about this entry 
+f29b9ef7-9e62-41e1-7dfd-14ae13986059,Group 2,A Title,A User Name,A Password,A note with \n an embedded newline\n\tand a tab 

@@ -61,10 +61,7 @@ if {[catch {package require Tk 8.5} oops]} {
 		exit 1
 }
 
-option add *Dialog.msg.font {Sans 9}
 option add *Dialog.msg.wrapLength 6i
-# option add *Font "Sans 8"
-# option add *Button.Font "Sans 8"
 
 if {[catch {package require Tcl 8.5}]} {
 		wm withdraw .
@@ -76,9 +73,8 @@ if {[catch {package require Tcl 8.5}]} {
 		exit 1
 }
 
-if {[catch {package require msgcat} oops]} {
-		puts "error: $oops"
-		exit 1
+if {[catch {package require msgcat} oops options]} {
+		gorilla::PackageNotfound msgcat $oops $options
 }
 namespace import msgcat::*
 # mcload [file join $::gorillaDir msgs]
@@ -124,7 +120,7 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 }
 
 #
-# The pwsafe, blowfish, twofish and sha1 packages are in subdirectories
+# Check the subdirectories for needed packages
 #
 
 # Set our own install directory as first element in auto_path, so that local
@@ -136,6 +132,7 @@ foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip } {
 	if {[file isdirectory $testDir]} {
 		lappend auto_path $testDir
 	}
+	# else error "can't find $testDir"
 }
 
 #
@@ -193,42 +190,77 @@ if {![info exists ::gorilla::init]} {
 # ----------------------------------------------------------------------
 
 proc gorilla::Init {} {
-		set ::gorilla::status ""
-		set ::gorilla::uniquenodeindex 0
-		set ::gorilla::dirty 0
-		set ::gorilla::overridePasswordPolicy 0
-		set ::gorilla::isPRNGInitialized 0
-		set ::gorilla::activeSelection 0
-		catch {unset ::gorilla::dirName}
-		catch {unset ::gorilla::fileName}
-		catch {unset ::gorilla::db}
-		catch {unset ::gorilla::statusClearId}
-		catch {unset ::gorilla::clipboardClearId}
-		catch {unset ::gorilla::idleTimeoutTimerId}
+	set ::gorilla::status ""
+	set ::gorilla::uniquenodeindex 0
+	set ::gorilla::dirty 0
+	set ::gorilla::overridePasswordPolicy 0
+	set ::gorilla::isPRNGInitialized 0
+	set ::gorilla::activeSelection 0
+	catch {unset ::gorilla::dirName}
+	catch {unset ::gorilla::fileName}
+	catch {unset ::gorilla::db}
+	catch {unset ::gorilla::statusClearId}
+	catch {unset ::gorilla::clipboardClearId}
+	catch {unset ::gorilla::idleTimeoutTimerId}
 
-		if {[llength [trace info variable ::gorilla::status]] == 0} {
-			trace add variable ::gorilla::status write ::gorilla::StatusModified
-		}
+	if {[llength [trace info variable ::gorilla::status]] == 0} {
+		trace add variable ::gorilla::status write ::gorilla::StatusModified
+	}
 
-		# Some default preferences
-		# will be overwritten by LoadPreferencesFromRCFile if set
+	# New preferences system by Richard Ellis
+	# 
+	# This dict defines all the preference variables, their defaults, and
+	# an anonymous validation proc for use in loading stored preferences
+	# from disk.  The format is name of pref as key, each value being a
+	# two element list.  Each two element list is preference default and
+	# anonymous validation proc in that order.  The validation proc
+	# returns true for valid, false for invalid.
+	
+	set ::gorilla::preference(all-preferences) {
 
-		set ::gorilla::preference(defaultVersion) 3
-		set ::gorilla::preference(unicodeSupport) 1
-		set ::gorilla::preference(lru) [list]
-		# added by zdia
-		set ::gorilla::preference(rememberGeometries) 1
-		set ::gorilla::preference(lang) en
-		set ::gorilla::preference(gorillaIcon) 0
-		# added by Richard Ellis
-		set ::gorilla::preference(iconifyOnAutolock) 0
-		set ::gorilla::preference(browser-exe) ""
-		set ::gorilla::preference(browser-param) ""
-		set ::gorilla::preference(autocopyUserid) 0
-		set ::gorilla::preference(autoclearMultiplier) 1
-		set ::gorilla::preference(gorillaAutocopy) 1
+		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
+		browser-exe            { {}      { {value} { return true } }                                                          }
+		browser-param          { {}      { {value} { return true } }                                                          }
+		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
+		clearClipboardAfter    { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		defaultVersion         { 3       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		doubleClickAction      { nothing { {value} { return true } }                                                          }
+		exportAsUnicode        { 0       { {value} { string is boolean $value } }                                             }
+		exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value ni {{"} \\} ) } } } }
+		exportIncludeNotes     { 0       { {value} { string is boolean $value } }                                             }
+		exportIncludePassword  { 0       { {value} { string is boolean $value } }                                             }
+		exportShowWarning      { 1       { {value} { string is boolean $value } }                                             }
+		findInAny              { 0       { {value} { string is boolean $value } }                                             }
+		findInNotes            { 1       { {value} { string is boolean $value } }                                             }
+		findInPassword         { 1       { {value} { string is boolean $value } }                                             }
+		findInTitle            { 1       { {value} { string is boolean $value } }                                             }
+		findInURL              { 1       { {value} { string is boolean $value } }                                             }
+		findInUsername         { 1       { {value} { string is boolean $value } }                                             }
+		findThisText           { {}      { {value} { return true } }                                                          }
+		fontsize               { 10      { {value} { string is integer $value } }                                             }
+		gorillaAutocopy        { 1       { {value} { string is boolean $value } }                                             }
+		gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
+		hideLogins             { 0       { {value} { string is boolean $value } }                                             }
+		iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
+		idleTimeoutDefault     { 5       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		keepBackupFile         { 0       { {value} { string is boolean $value } }                                             }
+		lang                   { en      { {value} { return true } }                                                          }
+		lockDatabaseAfter      { 0       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		lruSize                { 10      { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+		lru                    { {}      { {value} { file exists $value } }                                                   }
+		rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
+		saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
+		unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
+
+	} ; # end set ::gorilla::preferences(all-preferences)
+
+	# initialize all the default preference settings now
+	dict for {pref value} $::gorilla::preference(all-preferences) {
+		set ::gorilla::preference($pref) [ lindex $value 0 ] 
+	}
 		
-}
+} ; # end proc gorilla::Init
 
 # This callback traces writes to the ::gorilla::status variable, which
 # is shown in the UI's status line. We arrange for the variable to be
@@ -265,68 +297,68 @@ proc gorilla::InitGui {} {
 	
 	menu .mbar
 
-# Struktur im menu_desc(ription):
-# label	widgetname {item tag command shortcut}
+	# Struktur im menu_desc(ription):
+	# label	widgetname {item tag command shortcut}
 
-		set meta Control
-		set menu_meta Ctrl
+	set meta Control
+	set menu_meta Ctrl
 		
-		if {[tk windowingsystem] == "aqua"}	{
-			set meta Command
-			set menu_meta Cmd
-			# mac is showing the Apple key icon but app is hanging if a procedure
-			# is calling a vwait loop. So we just show the letter. Both meta keys
-			# are working later on (Tk 8.5.8)
-			# set menu_meta ""
-		}
+	if {[tk windowingsystem] == "aqua"}	{
+		set meta Command
+		set menu_meta Cmd
+		# mac is showing the Apple key icon but app is hanging if a procedure
+		# is calling a vwait loop. So we just show the letter. Both meta keys
+		# are working later on (Tk 8.5.8)
+		# set menu_meta ""
+	}
 
-set ::gorilla::menu_desc {
-	File	file	{"New ..." {} gorilla::New "" ""
-							"Open ..." {} gorilla::Open $menu_meta O
-							"Merge ..." open gorilla::Merge "" ""
-							"Save" save gorilla::Save $menu_meta S
-							"Save As ..." open gorilla::SaveAs "" ""
-							separator "" "" "" ""
-							"Export ..." open gorilla::Export "" ""
-							separator mac "" "" ""
-							"Preferences ..." mac gorilla::Preferences "" ""
-							separator mac "" "" ""
-							Exit mac gorilla::Exit $menu_meta X
-							}	
-	Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
-							"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
-							"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
-							separator "" "" "" ""
-							"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
-							separator "" "" "" ""
-							"Find ..." open gorilla::Find $menu_meta F
-							"Find next" open gorilla::FindNext $menu_meta G
-							}
-	Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
-							"Edit Login" open gorilla::EditLogin $menu_meta E
-							"View Login" open gorilla::ViewLogin $menu_meta V
-							"Delete Login" login gorilla::DeleteLogin "" ""
-							"Move Login ..." login gorilla::MoveLogin "" ""
-							separator "" "" "" ""
-							"Add Group ..." open gorilla::AddGroup "" ""
-							"Add Subgroup ..." group gorilla::AddSubgroup "" ""
-							"Rename Group ..." group gorilla::RenameGroup "" ""
-							"Move Group ..." group gorilla::MoveGroup "" ""
-							"Delete Group" group gorilla::DeleteGroup "" ""
-							}
-	Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
-							"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
-							separator "" "" "" ""
-							"Change Master Password ..." open gorilla::ChangePassword "" ""
-							separator "" "" "" ""
-							"Lock now" open gorilla::LockDatabase "" ""
-							}
-	Help	help	{ "Help ..." "" gorilla::Help "" ""
-							"License ..." "" gorilla::License "" ""
-							separator mac "" "" ""
-							"About ..." mac tkAboutDialog "" ""
-							}
-} ;# end ::gorilla::menu_desc
+	set ::gorilla::menu_desc {
+		File	file	{"New ..." {} gorilla::New "" ""
+								"Open ..." {} gorilla::Open $menu_meta O
+								"Merge ..." open gorilla::Merge "" ""
+								"Save" save gorilla::Save $menu_meta S
+								"Save As ..." open gorilla::SaveAs "" ""
+								separator "" "" "" ""
+								"Export ..." open gorilla::Export "" ""
+								separator mac "" "" ""
+								"Preferences ..." mac gorilla::Preferences "" ""
+								separator mac "" "" ""
+								Exit mac gorilla::Exit $menu_meta X
+								}	
+		Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
+								"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
+								"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
+								separator "" "" "" ""
+								"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
+								separator "" "" "" ""
+								"Find ..." open gorilla::Find $menu_meta F
+								"Find next" open gorilla::FindNext $menu_meta G
+								}
+		Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
+								"Edit Login" open gorilla::EditLogin $menu_meta E
+								"View Login" open gorilla::ViewLogin $menu_meta V
+								"Delete Login" login gorilla::DeleteLogin "" ""
+								"Move Login ..." login gorilla::MoveLogin "" ""
+								separator "" "" "" ""
+								"Add Group ..." open gorilla::AddGroup "" ""
+								"Add Subgroup ..." group gorilla::AddSubgroup "" ""
+								"Rename Group ..." group gorilla::RenameGroup "" ""
+								"Move Group ..." group gorilla::MoveGroup "" ""
+								"Delete Group" group gorilla::DeleteGroup "" ""
+								}
+		Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
+								"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
+								separator "" "" "" ""
+								"Change Master Password ..." open gorilla::ChangePassword "" ""
+								separator "" "" "" ""
+								"Lock now" open gorilla::LockDatabase "" ""
+								}
+		Help	help	{ "Help ..." "" gorilla::Help "" ""
+								"License ..." "" gorilla::License "" ""
+								separator mac "" "" ""
+								"About ..." mac tkAboutDialog "" ""
+								}
+	} ;# end ::gorilla::menu_desc
 
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 		
@@ -364,20 +396,20 @@ set ::gorilla::menu_desc {
     # .mbar.apple add separator
 	}
 
-# This command must be last menu oriented command due to TkCocoa for MacOSX
+	# This command must be last menu oriented command due to TkCocoa for MacOSX
 	. configure -menu .mbar
 
-# note - if the help menu widget name changes, this will need to be updated	
-::gorilla::addRufftoHelp .mbar.help
+	# note - if the help menu widget name changes, this will need to be updated	
+	::gorilla::addRufftoHelp .mbar.help
 
-# menueintrag deaktivieren mit dem tag "login
-# suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
-# etwa in $menu_tag(file) = {"" login}, ergibt index=2
-# Zuständige Prozedur: setmenustate .mbar login disabled/normal
-# Index des Menueintrags finden:
+	# menueintrag deaktivieren mit dem tag "login
+	# suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
+	# etwa in $menu_tag(file) = {"" login}, ergibt index=2
+	# Zuständige Prozedur: setmenustate .mbar login disabled/normal
+	# Index des Menueintrags finden:
 
-# suche alle Einträge mit dem Tag tag und finde den Index
- # .mbar.file entryconfigure 2 -state disabled
+	# suche alle Einträge mit dem Tag tag und finde den Index
+	# .mbar.file entryconfigure 2 -state disabled
  
 	wm title . "Password Gorilla"
 	wm iconname . "Gorilla"
@@ -385,9 +417,9 @@ set ::gorilla::menu_desc {
 	
 	if {[info exists ::gorilla::preference(geometry,.)]} {
 		TryResizeFromPreference .
-	 } else {
+	} else {
 		wm geometry . 640x480
-	 }
+	}
 
 	#---------------------------------------------------------------------
 	# Arbeitsfläche bereitstellen unter Verwendung von ttk::treeview
@@ -412,83 +444,82 @@ set ::gorilla::menu_desc {
 
 	## Arrange the tree and its scrollbars in the toplevel
 	lower [ttk::frame .dummy]
-	pack .dummy -fill both -fill both -expand 1
+	pack .dummy -fill both -expand 1
 	grid .tree .vsb -sticky nsew -in .dummy
 	grid columnconfigure .dummy 0 -weight 1
 	grid rowconfigure .dummy 0 -weight 1
 	
 	bind .tree <Double-Button-1> {gorilla::TreeNodeDouble [.tree focus]}
-	bind $tree <Button-3> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
+	bind .tree <Button-3> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
 	bind .tree <<TreeviewSelect>> gorilla::TreeNodeSelectionChanged
 	
-		# On the Macintosh, make the context menu also pop up on
-		# Control-Left Mousebutton and button 2 <right-click>
-		
-		catch {
-			if {[tk windowingsystem] == "aqua"} {
-					bind .tree <$meta-Button-1> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
-					bind .tree <Button-2> {gorilla::TreeNodePopup [gorilla::GetSelectedNode]}
-			}
+	# On the Macintosh, make the context menu also pop up on
+	# Control-Left Mousebutton and button 2 <right-click>
+	
+	catch {
+		if {[tk windowingsystem] == "aqua"} {
+				bind .tree <$meta-Button-1> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
+				bind .tree <Button-2> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
 		}
-		
-		#
-		# remember widgets
-		#
+	}
+	
+	#
+	# remember widgets
+	#
 
-		set ::gorilla::toplevel(.) "."
-		set ::gorilla::widgets(main) ".mbar"
-		set ::gorilla::widgets(tree) ".tree"
-		
-		#
-		# Initialize menu state
-		#
+	set ::gorilla::toplevel(.) "."
+	set ::gorilla::widgets(main) ".mbar"
+	set ::gorilla::widgets(tree) ".tree"
+	
+	#
+	# Initialize menu state
+	#
 
-		UpdateMenu
-		# setmenustate .mbar group disabled
-		# setmenustate .mbar login disabled
-		
-		#
-		# bindings
-		#
+	UpdateMenu
+	# setmenustate .mbar group disabled
+	# setmenustate .mbar login disabled
+	
+	#
+	# bindings
+	#
 
-		catch {bind . <MouseWheel> "$tree yview scroll \[expr {-%D/120}\] units"}
+	catch {bind . <MouseWheel> "$tree yview scroll \[expr {-%D/120}\] units"}
 
-		bind . <$meta-o> {.mbar.file invoke 1}
-		bind . <$meta-s> {.mbar.file invoke 3}
-		bind . <$meta-x> {.mbar.file invoke 10}
-		
-		bind . <$meta-u> {.mbar.edit invoke 0}
-		bind . <$meta-p> {.mbar.edit invoke 1}
-		bind . <$meta-w> {.mbar.edit invoke 2}
-		bind . <$meta-c> {.mbar.edit invoke 4}
-		bind . <$meta-f> {.mbar.edit invoke 6}
-		bind . <$meta-g> {.mbar.edit invoke 7}
+	bind . <$meta-o> {.mbar.file invoke 1}
+	bind . <$meta-s> {.mbar.file invoke 3}
+	bind . <$meta-x> {.mbar.file invoke 10}
+	
+	bind . <$meta-u> {.mbar.edit invoke 0}
+	bind . <$meta-p> {.mbar.edit invoke 1}
+	bind . <$meta-w> {.mbar.edit invoke 2}
+	bind . <$meta-c> {.mbar.edit invoke 4}
+	bind . <$meta-f> {.mbar.edit invoke 6}
+	bind . <$meta-g> {.mbar.edit invoke 7}
 
-		bind . <$meta-a> {.mbar.login invoke 0}
-		bind . <$meta-e> {.mbar.login invoke 1}
-		bind . <$meta-v> {.mbar.login invoke 2}
-		
-		# bind . <$meta-L> "gorilla::Reload"
-		# bind . <$meta-R> "gorilla::Refresh"
-		# bind . <$meta-C> "gorilla::ToggleConsole"
-		# bind . <$meta-q> "gorilla::Exit"
-		# bind . <$meta-q> "gorilla::msg"
-		# ctrl-x ist auch exit, ctrl-q reicht
+	bind . <$meta-a> {.mbar.login invoke 0}
+	bind . <$meta-e> {.mbar.login invoke 1}
+	bind . <$meta-v> {.mbar.login invoke 2}
+	
+	# bind . <$meta-L> "gorilla::Reload"
+	# bind . <$meta-R> "gorilla::Refresh"
+	# bind . <$meta-C> "gorilla::ToggleConsole"
+	# bind . <$meta-q> "gorilla::Exit"
+	# bind . <$meta-q> "gorilla::msg"
+	# ctrl-x ist auch exit, ctrl-q reicht
 
-		#
-		# Handler for the X Selection
-		#
+	#
+	# Handler for the X Selection
+	#
 
-		selection handle -selection PRIMARY   . gorilla::XSelectionHandler
-		selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
+	selection handle -selection PRIMARY   . gorilla::XSelectionHandler
+	selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
 
-		#
-		# Handler for the WM_DELETE_WINDOW event, which is sent when the
-		# user asks the window manager to destroy the application
-		#
+	#
+	# Handler for the WM_DELETE_WINDOW event, which is sent when the
+	# user asks the window manager to destroy the application
+	#
 
-		wm protocol . WM_DELETE_WINDOW gorilla::Exit
-
+	wm protocol . WM_DELETE_WINDOW gorilla::Exit
 
 }
 
@@ -497,21 +528,21 @@ set ::gorilla::menu_desc {
 #
 
 proc gorilla::InitPRNG {{seed ""}} {
-		#
-		# Try to compose a not very predictable seed
-		#
+	#
+	# Try to compose a not very predictable seed
+	#
 
-		append seed "20041201"
-		append seed [clock seconds] [clock clicks] [pid]
-		append seed [winfo id .] [winfo geometry .] [winfo pointerxy .]
-		set hashseed [pwsafe::int::sha1isz $seed]
+	append seed "20041201"
+	append seed [clock seconds] [clock clicks] [pid]
+	append seed [winfo id .] [winfo geometry .] [winfo pointerxy .]
+	set hashseed [pwsafe::int::sha1isz $seed]
 
-		#
-		# Init PRNG
-		#
+	#
+	# Init PRNG
+	#
 
-		isaac::srand $hashseed
-		set ::gorilla::isPRNGInitialized 1
+	isaac::srand $hashseed
+	set ::gorilla::isPRNGInitialized 1
 }
 
 proc setmenustate {widget tag_pattern state} {
@@ -550,17 +581,9 @@ proc gorilla::EvalIfStateNormal {menuentry index} {
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::GetSelectedNode { } {
+proc gorilla::GetSelectedNode { x y } {
 	# returns node at mouse position
-	set xpos [winfo pointerx .]
-	set ypos [winfo pointery .]
-	set rootx [winfo rootx .]
-	set rooty [winfo rooty .]
-
-	set relx [incr xpos -$rootx]
-	set rely [incr ypos -$rooty]
-
-	return [.tree identify row $relx $rely]
+	return [ .tree identify row $x $y ]
 }
 
 proc gorilla::TreeNodeSelect {node} {
@@ -614,20 +637,18 @@ proc gorilla::TreeNodeDouble {node} {
 		# }
 		return
 	} else {
-		if {[info exists ::gorilla::preference(doubleClickAction)]} {
-				switch -- $::gorilla::preference(doubleClickAction) {
-					copyPassword {
-						gorilla::CopyToClipboard Password
-					}
-					editLogin {
-						gorilla::EditLogin
-					}
-					launchBrowser {
-						::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] 
-					}
-				default {
-					# do nothing
-				}
+		switch -- $::gorilla::preference(doubleClickAction) {
+			copyPassword {
+				gorilla::CopyToClipboard Password
+			}
+			editLogin {
+				gorilla::EditLogin
+			}
+			launchBrowser {
+				::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] 
+			}
+			default {
+				# do nothing
 			}
 		}
 	}
@@ -833,8 +854,7 @@ proc gorilla::PopupDeleteLogin {} {
 #
 
 proc gorilla::TryResizeFromPreference {top} {
-	if {![info exists ::gorilla::preference(rememberGeometries)] || \
-			!$::gorilla::preference(rememberGeometries)} {
+	if {!$::gorilla::preference(rememberGeometries)} {
 		return
 	}
 	if {![info exists ::gorilla::preference(geometry,$top)]} {
@@ -923,35 +943,27 @@ proc gorilla::New {} {
 	pwsafe::int::randomizeVar password
 	catch {unset ::gorilla::fileName}
 
-		#
-		# Apply defaults: auto-save, idle timeout, version, Unicode support
-		#
+	#
+	# Apply defaults: auto-save, idle timeout, version, Unicode support
+	#
 
-	if {[info exists ::gorilla::preference(saveImmediatelyDefault)]} {
-		$::gorilla::db setPreference SaveImmediately \
-		$::gorilla::preference(saveImmediatelyDefault)
+	$::gorilla::db setPreference SaveImmediately \
+	$::gorilla::preference(saveImmediatelyDefault)
+
+	if {$::gorilla::preference(idleTimeoutDefault) > 0} {
+		$::gorilla::db setPreference LockOnIdleTimeout 1
+		$::gorilla::db setPreference IdleTimeout \
+		$::gorilla::preference(idleTimeoutDefault)
+	} else {
+		$::gorilla::db setPreference LockOnIdleTimeout 0
 	}
 
-	if {[info exists ::gorilla::preference(idleTimeoutDefault)]} {
-		if {$::gorilla::preference(idleTimeoutDefault) > 0} {
-			$::gorilla::db setPreference LockOnIdleTimeout 1
-			$::gorilla::db setPreference IdleTimeout \
-			$::gorilla::preference(idleTimeoutDefault)
-		} else {
-			$::gorilla::db setPreference LockOnIdleTimeout 0
-		}
+	if {$::gorilla::preference(defaultVersion) == 3} {
+		$::gorilla::db setHeaderField 0 [list 3 0]
 	}
 
-	if {[info exists ::gorilla::preference(defaultVersion)]} {
-		if {$::gorilla::preference(defaultVersion) == 3} {
-			$::gorilla::db setHeaderField 0 [list 3 0]
-		}
-	}
-
-	if {[info exists ::gorilla::preference(unicodeSupport)]} {
-		$::gorilla::db setPreference IsUTF8 \
-		$::gorilla::preference(unicodeSupport)
-	}
+	$::gorilla::db setPreference IsUTF8 \
+	$::gorilla::preference(unicodeSupport)
 
 	$::gorilla::widgets(tree) selection set {}		
 	# pathname delete itemList ;# Baum löschen
@@ -1088,8 +1100,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	wm title $top $title
 	$aframe.pw.pw delete 0 end
 
-	if {[info exists ::gorilla::preference(lru)] \
-			&& [llength $::gorilla::preference(lru)] } {
+	if { [llength $::gorilla::preference(lru)] } {
 		$aframe.file.cb configure -values $::gorilla::preference(lru)
 		$aframe.file.cb current 0
 	}
@@ -1310,17 +1321,13 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		# Add file to LRU preference
 		#
 
-		if {[info exists ::gorilla::preference(lru)]} {
-			set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
-			if {$found == -1} {
-# not found
-				set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
-			} elseif {$found != 0} {
-				set tmp [lreplace $::gorilla::preference(lru) $found $found]
-				set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
-			}
-		} else {
-			set ::gorilla::preference(lru) [list $nativeName]
+		set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
+		if {$found == -1} {
+			# not found
+			set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
+		} elseif {$found != 0} {
+			set tmp [lreplace $::gorilla::preference(lru) $found $found]
+			set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 		}
 
 		#
@@ -1669,6 +1676,14 @@ namespace eval ::gorilla::LoginDialog {
 
 	proc BuildLoginDialog { top pvns } {
 
+		# Actually build out a new login dialog edit window
+		#
+		# top - the toplevel name for this new edit window
+		#
+		# pvns - the name of the private variable namespace that
+		#        this login window will use to store state
+		#        information
+
 		set widget(top) $top
 
 		ttk::style configure Wrapping.TLabel -wraplength {}
@@ -1872,23 +1887,14 @@ namespace eval ::gorilla::LoginDialog {
 
 				variable overridePasswordPolicy
 
-				# Getting the resizing below to work right was quite a test.  The
-				# resize code does two things, expands (or contracts) the width and
-				# increases (or decreases) the minwidth of the toplevel window by
-				# the width of the ppf pane.
+				# The resize code below increases (or decreases) the width and
+				# minwidth of the toplevel window by the width of the ppf pane.
 				
 				# This resizing code turned out to be necessary because when gorilla
 				# withdrew and then deiconified edit windows upon a lock/unlock
 				# event, it also set an explicit geometry.  By setting a geometry
 				# the window would no longer auto-resize when the ppf pane was
 				# mapped/unmapped.
-				
-				# Clearing the set geometry was my first attempt, but doing that
-				# also caused the window to resize to the widget native sizes, even
-				# if the user had enlarged it before hand manually.  Therefore, to
-				# work around that issue this code that adds an increment upon
-				# mapping the ppf pane, and subtracts the same amount upon unmapping
-				# the ppf frame, came about.
 				
 				# The extra 10 in the increment/decrement calculations is because of
 				# the -padx 5 given to grid.  Five pixels per side of padding is 10
@@ -1898,6 +1904,10 @@ namespace eval ::gorilla::LoginDialog {
 				# "update idletasks" to assure that the initial window geometry
 				# calculations have all occurred.
 
+				# 2011-03-18 - Finally deduced how to expand/shrink the width of the
+				# parent window while otherwise maintaining its exact position on
+				# screen.  The winfo rootx|rooty command is the magic.
+				
 				if { $overridePasswordPolicy } {
 					# true - map the ppf frame
 				  
@@ -1907,9 +1917,9 @@ namespace eval ::gorilla::LoginDialog {
 						set parent [ winfo parent -m:ppf- ]
 						set inc [ + 10 [ winfo reqwidth -m:ppf- ] ]
 
-						wm geometry $parent "=[ + $inc [ winfo width $parent ] ]x[ winfo height $parent ]"
+						wm geometry $parent "=[ + $inc [ winfo width $parent ] ]x[ winfo height $parent ]+[ winfo rootx $parent ]+[ winfo rooty $parent ]"
 
-						foreach {minw minh} [ wm minsize $parent ] { break }
+						lassign [ wm minsize $parent ] minw minh
 						wm minsize $parent [ + $inc $minw ] $minh
 					}
 
@@ -1923,9 +1933,9 @@ namespace eval ::gorilla::LoginDialog {
 						set parent [ winfo parent -m:ppf- ]
 						set dec [ + 10 [ winfo reqwidth -m:ppf- ] ]
 
-						wm geometry $parent "=[ - [ winfo width $parent ] $dec ]x[ winfo height $parent ]"
+						wm geometry $parent "=[ - [ winfo width $parent ] $dec ]x[ winfo height $parent ]+[ winfo rootx $parent ]+[ winfo rooty $parent ]"
 
-						foreach {minw minh} [ wm minsize $parent ] { break }
+						lassign [ wm minsize $parent ] minw minh
 						wm minsize $parent [ - $minw $dec ] $minh 
 					}
 
@@ -2049,6 +2059,12 @@ namespace eval ::gorilla::LoginDialog {
 		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
 
 			proc PopulateRecord { rn } {
+			
+				# Insert the state data from the linked
+				# login window into a db record
+				#
+				# rn - the db record number into which to
+				#      insert the state data
 
 				set varlist { group title user password url }
 				
@@ -2086,8 +2102,10 @@ namespace eval ::gorilla::LoginDialog {
 
 				} ; # end foreach element
 				
-				# handle notes separately
-				set value [ -m:notes- get 0.0 end ]
+				# handle notes separately - trimming
+				# trailing whitespace and newlines
+				
+				set value [ string trimright [ -m:notes- get 0.0 end ] ]
 				if { $value != "" } {
 					if { ! [ string equal $value [ dbget notes $rn ] ] } {
 						set modified 1
@@ -3065,34 +3083,12 @@ proc gorilla::Export {} {
 		ArrangeIdleTimeout
 		set top .export
 
-		if {![info exists ::gorilla::preference(exportIncludePassword)]} {
-	set ::gorilla::preference(exportIncludePassword) 0
-		}
-
-		if {![info exists ::gorilla::preference(exportIncludeNotes)]} {
-	set ::gorilla::preference(exportIncludeNotes) 1
-		}
-
-		if {![info exists ::gorilla::preference(exportAsUnicode)]} {
-	set ::gorilla::preference(exportAsUnicode) 0
-		}
-
-		if {![info exists ::gorilla::preference(exportFieldSeparator)]} {
-	set ::gorilla::preference(exportFieldSeparator) ","
-		}
-
-		if {![info exists ::gorilla::preference(exportShowWarning)]} {
-	set ::gorilla::preference(exportShowWarning) 1
-		}
-
-		if {$::gorilla::preference(exportShowWarning)} {
-			set answer [tk_messageBox -parent . \
-					-type yesno -icon warning -default no \
-					-title [mc "Export Security Warning"] \
-					-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
-			if {$answer != "yes"} {
-					return
-			}
+		set answer [tk_messageBox -parent . \
+				-type yesno -icon warning -default no \
+				-title [mc "Export Security Warning"] \
+				-message [mc "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"] ]
+		if {$answer != "yes"} {
+				return
 		}
 
 		if {![info exists ::gorilla::dirName]} {
@@ -3635,7 +3631,7 @@ proc gorilla::Merge {} {
 		toplevel $top
 		wm title $top "Merge Report for $nativeName"
 
-		set text [text $top.text -relief sunken -width 100 -wrap none \
+		set text [text $top.text -relief sunken -width 100 -wrap word \
 		-yscrollcommand "$top.vsb set"]
 
 		if {[tk windowingsystem] ne "aqua"} {
@@ -3787,8 +3783,7 @@ proc gorilla::Save {} {
 	# Create backup file, if desired
 	#
 
-	if {[info exists ::gorilla::preference(keepBackupFile)] && \
-			$::gorilla::preference(keepBackupFile)} {
+	if {$::gorilla::preference(keepBackupFile)} {
 		set backupFileName [file rootname $::gorilla::fileName]
 		append backupFileName ".bak"
 		if {[catch {
@@ -3931,8 +3926,7 @@ proc gorilla::SaveAs {} {
 		# Create backup file, if desired
 		#
 
-		if {[info exists ::gorilla::preference(keepBackupFile)] && \
-			$::gorilla::preference(keepBackupFile) && \
+		if {$::gorilla::preference(keepBackupFile) && \
 			[file exists $fileName]} {
 	set backupFileName [file rootname $fileName]
 	append backupFileName ".bak"
@@ -3985,16 +3979,12 @@ proc gorilla::SaveAs {} {
 		# Add file to LRU preference
 		#
 
-		if {[info exists ::gorilla::preference(lru)]} {
-			set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
-				if {$found == -1} {
-					set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
-				} elseif {$found != 0} {
-					set tmp [lreplace $::gorilla::preference(lru) $found $found]
-					set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
-				}
-		} else {
-			set ::gorilla::preference(lru) [list $nativeName]
+		set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
+		if {$found == -1} {
+			set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
+		} elseif {$found != 0} {
+			set tmp [lreplace $::gorilla::preference(lru) $found $found]
+			set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 		}
 	UpdateMenu
 	$::gorilla::widgets(tree) item "RootNode" -tags black
@@ -4019,7 +4009,8 @@ proc gorilla::SaveAs {} {
 
 		set title [ ::gorilla::dbget title $rn ]
 
-		if { [ ::gorilla::dbget user $rn ] ne "" } {
+		if { ( [ ::gorilla::dbget user $rn ] ne "" ) && 
+		     ( ! $::gorilla::preference(hideLogins) ) } {
 			append title " \[" [ ::gorilla::dbget user $rn ] "\]"
 		}
 
@@ -4251,8 +4242,7 @@ proc gorilla::ArrangeToClearClipboard { {mult 1} } {
 		after cancel $::gorilla::clipboardClearId
 	}
 
-	if {![info exists ::gorilla::preference(clearClipboardAfter)] || \
-		$::gorilla::preference(clearClipboardAfter) == 0} {
+	if {$::gorilla::preference(clearClipboardAfter) == 0} {
 		catch {unset ::gorilla::clipboardClearId}
 		return
 	}
@@ -5038,37 +5028,11 @@ proc gorilla::PreferencesDialog {} {
 
 	set top .preferencesDialog
 
-	foreach {pref default} {
-		clearClipboardAfter 0 \
-		defaultVersion 3 \
-		doubleClickAction nothing \
-		exportAsUnicode 0 \
-		exportFieldSeparator "," \
-		exportIncludeNotes 0 \
-		exportIncludePassword 0 \
-		exportShowWarning 1 \
-		idleTimeoutDefault 5 \
-		keepBackupFile 0 \
-		lruSize 10 \
-		lockDatabaseAfter 0 \
-		rememberGeometries 1 \
-		saveImmediatelyDefault 0 \
-		unicodeSupport 1 \
-		lang en \
-		fontsize 10 \
-		gorillaIcon 0 \
-		iconifyOnAutolock 0 \
-		browser-exe "" \
-		browser-param "" \
-		autocopyUserid 0 \
-		autoclearMultiplier 1 \
-		gorillaAutocopy 1 \
-		} {
-		if {[info exists ::gorilla::preference($pref)]} {
-			set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
-		} else {
-			set ::gorilla::prefTemp($pref) $default
-		}
+	# copy current preferences settings to a temp variable to handle
+	# "canceling" of preference changes
+	
+	dict for {pref value} $::gorilla::preference(all-preferences) {
+		set ::gorilla::prefTemp($pref) $::gorilla::preference($pref)
 	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
@@ -5239,8 +5203,10 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			$m add radio -label $size -variable ::gorilla::prefTemp(fontsize) -value $size \
 				-command "
 					font configure TkDefaultFont -size $size
-					font configure TkTextFont -size $size
-					font configure TkMenuFont -size $size
+					font configure TkTextFont    -size $size
+					font configure TkMenuFont    -size $size
+					font configure TkCaptionFont -size $size
+					font configure TkFixedFont   -size $size
 					ttk::style configure gorilla.Treeview -rowheight [expr {$size * 2}]"
 		}
 		
@@ -5260,6 +5226,14 @@ pack $epf.password $epf.notes $epf.unicode $epf.warning $epf.fs \
 			-variable ::gorilla::prefTemp(iconifyOnAutolock) \
 			-text [mc "Iconify upon auto-lock"]
 		pack $display.autoiconify -anchor w -pady 5
+
+		# hide logins in main window
+		
+		ttk::checkbutton $display.hideLogins \
+			-variable ::gorilla::prefTemp(hideLogins) \
+			-text [mc "Hide login name in tree view" ]
+		pack $display.hideLogins -anchor w -pady 5
+		::tooltip::tooltip $display.hideLogins [ mc "This option takes effect after exiting\nand restarting of Password Gorilla" ]
 
 		#
 		# Fifth NoteBook tab: Browser
@@ -5359,35 +5333,15 @@ if {$::gorilla::guimutex == 1} {
 	wm withdraw $top
 
 	if {$gorilla::guimutex != 1} {
-return
+		return
 	}
 
-	foreach pref {clearClipboardAfter \
-		defaultVersion \
-		doubleClickAction \
-		exportAsUnicode \
-		exportFieldSeparator \
-		exportIncludeNotes \
-		exportIncludePassword \
-		exportShowWarning \
-		idleTimeoutDefault \
-		keepBackupFile \
-		lruSize \
-		rememberGeometries \
-		saveImmediatelyDefault \
-		unicodeSupport 
-		lang \
-		fontsize \
-		gorillaIcon \
-		iconifyOnAutolock \
-		browser-exe \
-		browser-param \
-		autocopyUserid \
-		autoclearMultiplier \
-		gorillaAutocopy \
-		} {
+	# copy the temporary preferences back into the global preferences
+	# array
+	dict for {pref value} $::gorilla::preference(all-preferences) {
 		set ::gorilla::preference($pref) $::gorilla::prefTemp($pref)
 	}
+
 }
 
 proc gorilla::Preferences {} {
@@ -5522,69 +5476,32 @@ proc gorilla::SavePreferencesToRCFile {} {
 
 	puts $f "revision=$revision"
 
-		#
-		# Note: findInText omitted on purpose. It might contain a password.
-		#
+	#
+	# Note: findThisText omitted on purpose. It might contain a password.
+	#
 
-	foreach pref {caseSensitiveFind \
-			clearClipboardAfter \
-			defaultVersion \
-			doubleClickAction \
-			exportAsUnicode \
-			exportIncludeNotes \
-			exportIncludePassword \
-			exportShowWarning \
-			findInAny \
-			findInNotes \
-			findInPassword \
-			findInTitle \
-			findInURL \
-			findInUsername \
-			idleTimeoutDefault \
-			keepBackupFile \
-			lruSize \
-			rememberGeometries \
-			saveImmediatelyDefault \
-			unicodeSupport \
-			lang \
-			fontsize \
-			gorillaIcon \
-			iconifyOnAutolock \
-			browser-exe \
-			browser-param \
-			autocopyUserid \
-			autoclearMultiplier \
-			gorillaAutocopy \
-			} {
-		if {[info exists ::gorilla::preference($pref)]} {
+	dict for {pref value} $::gorilla::preference(all-preferences) {
+		# lru and exportFieldSeparator are handled specially below
+		if { $pref ni { lru exportFieldSeparator findThisText } } {
 			puts $f "$pref=$::gorilla::preference($pref)"
 		}
 	}
 
-	if {[info exists ::gorilla::preference(exportFieldSeparator)]} {
-		puts $f "exportFieldSeparator=\"[string map {\t \\t} $::gorilla::preference(exportFieldSeparator)]\""
+	puts $f "exportFieldSeparator=\"[string map {\t \\t} $::gorilla::preference(exportFieldSeparator)]\""
+
+	set lruSize $::gorilla::preference(lruSize)
+
+	if {[llength $::gorilla::preference(lru)] > $lruSize} {
+		set lru [lrange $::gorilla::preference(lru) 0 [expr {$lruSize-1}]]
+	} else {
+		set lru $::gorilla::preference(lru)
 	}
 
-	if {[info exists ::gorilla::preference(lru)]} {
-		if {[info exists ::gorilla::preference(lruSize)]} {
-			set lruSize $::gorilla::preference(lruSize)
-		} else {
-			set lruSize 10
-		}
-
-		if {[llength $::gorilla::preference(lru)] > $lruSize} {
-			set lru [lrange $::gorilla::preference(lru) 0 [expr {$lruSize-1}]]
-		} else {
-			set lru $::gorilla::preference(lru)
-		}
-
-		foreach file $lru {
-			puts $f "lru=\"[string map {\\ \\\\ \" \\\"} $file]\""
-		}
+	foreach file $lru {
+		puts $f "lru=\"[string map {\\ \\\\ \" \\\"} $file]\""
 	}
 
-	if {![info exists ::gorilla::preference(rememberGeometries)] || \
-			$::gorilla::preference(rememberGeometries)} {
+	if {$::gorilla::preference(rememberGeometries)} {
 		foreach top [array names ::gorilla::toplevel] {
 			if {[scan [wm geometry $top] "%dx%d" width height] == 2} {
 				puts $f "geometry,$top=${width}x${height}"
@@ -5694,213 +5611,122 @@ proc gorilla::LoadPreferencesFromRegistry {} {
 }
 
 proc gorilla::LoadPreferencesFromRCFile {} {
-	if {[info exists ::gorilla::preference(rc)]} {
+
+   # The (rc) entry in the preferences array is utilized to hold the value
+   # from the command line -rc switch
+
+	if { [ info exists ::gorilla::preference(rc) ] } {
 		set fileName $::gorilla::preference(rc)
 	} else {
-		if {[info exists ::env(HOME)] && [file isdirectory $::env(HOME)]} {
+		if { [ info exists ::env(HOME) ] && [ file isdirectory $::env(HOME) ] } {
 			set homeDir $::env(HOME)
 		} else {
 			set homeDir "~"
 		}
 
-	#
-	# On the Mac, use $HOME/Library/Preferences/gorilla.rc
-	# Elsewhere, use $HOME/.gorillarc
-	#
+		#
+		# On the Mac, use $HOME/Library/Preferences/gorilla.rc
+		# Elsewhere, use $HOME/.gorillarc
+		#
 
-	if {[tk windowingsystem] == "aqua" && \
-		[file isdirectory [file join $homeDir "Library" "Preferences"]]} {
-			set fileName [file join $homeDir "Library" "Preferences" "gorilla.rc"]
-	} else {
-			set fileName [file join $homeDir ".gorillarc"]
-	}
-		}
-
-		if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
-	set revision "<unmatchable>"
-		}
-
-		set prefsRevision "<unknown>"
-
-		if {[catch {
-	set f [open $fileName]
-		}]} {
-	return 0
-		}
-
-		while {![eof $f]} {
-	set line [string trim [gets $f]]
-	if {[string index $line 0] == "#"} {
-			continue
-	}
-
-	if {[set index [string first "=" $line]] < 1} {
-			continue
-	}
-
-	set pref [string trim [string range $line 0 [expr {$index-1}]]]
-	set value [string trim [string range $line [expr {$index+1}] end]]
-
-	if {[string index $value 0] == "\""} {
-			set i 1
-			set prefValue ""
-
-			while {$i < [string length $value]} {
-		set c [string index $value $i]
-		if {$c == "\\"} {
-				set c [string index $value [incr i]]
-				switch -exact -- $c {
-			t {
-					set d "\t"
-			}
-			default {
-					set d $c
-			}
-				}
-				append prefValue $c
-		} elseif {$c == "\""} {
-				break
+		if { [tk windowingsystem] == "aqua" && \
+			[ file isdirectory [ file join $homeDir "Library" "Preferences" ] ] } {
+				set fileName [ file join $homeDir "Library" "Preferences" "gorilla.rc" ]
 		} else {
-				append prefValue $c
+				set fileName [ file join $homeDir ".gorillarc" ]
 		}
-		incr i
-			}
 
-			set value $prefValue
+	} ; # end if info exists ::gorilla::preference(rc)
+
+	if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion -> revision ] } {
+		set revision "<unmatchable>"
 	}
 
-	switch -glob -- $pref {
-			clearClipboardAfter -
-			defaultVersion {
-		if {[string is integer $value]} {
-				if {$value >= 0} {
-			set ::gorilla::preference($pref) $value
-				}
+	set prefsRevision "<unknown>"
+
+	if { [ catch { set f [ open $fileName ] } ] } {
+		return 0
+	}
+
+	while { ! [ eof $f ] } {
+		set line [ string trim [ gets $f ] ]
+		if { [ string index $line 0 ] == "#" } {
+			continue
 		}
-			}
-			doubleClickAction {
-		set ::gorilla::preference($pref) $value
-			}
-			caseSensitiveFind -
-			exportAsUnicode -
-			exportIncludeNotes -
-			exportIncludePassword -
-			exportShowWarning -
-			findInAny -
-			findInNotes -
-			findInPassword -
-			findInTitle -
-			findInURL -
-			findInUsername {
-		if {[string is boolean $value]} {
-				set ::gorilla::preference($pref) $value
+
+		set temp [ split $line = ] 
+
+		if { [ llength $temp ] != 2 } {
+			continue
 		}
-			}
-			exportFieldSeparator {
-		if {[string length $value] == 1 && \
-			$value != "\"" && $value != "\\"} {
-				set ::gorilla::preference($pref) $value
-		}
-			}
-			findThisText {
-		set ::gorilla::preference($pref) $value
-			}
-			idleTimeoutDefault {
-		if {[string is integer $value]} {
-				if {$value >= 0} {
-			set ::gorilla::preference($pref) $value
-				}
-		}
-			}
-			keepBackupFile {
-		if {[string is boolean $value]} {
-				set ::gorilla::preference($pref) $value
-		}
-			}
+		
+		lassign $temp pref value
+		
+		set pref [ string trim $pref ]
+		# the subst is to perform backslash substitutions upon the value of the preference
+		set value [ subst -nocommands -novariables [ string trim [ string trim $value "\"" ] ] ]
+
+		switch -glob -- $pref {
 			lru {
-		if { [ file exists $value ] } { 
-			lappend ::gorilla::preference($pref) $value
-		}
+				if { [ apply [ lindex [ dict get $::gorilla::preference(all-preferences) lru ] 1 ] $value ] } {
+					lappend ::gorilla::preference($pref) $value
+				}
 			}
-			lruSize {
-		if {[string is integer $value]} {
-				set ::gorilla::preference($pref) $value
-		}
-			}
-			rememberGeometries {
-		if {[string is boolean $value]} {
-			set ::gorilla::preference($pref) $value
-		}
-			}
+
 			revision {
-		set prefsRevision $value
+				set prefsRevision $value
 			}
-			saveImmediatelyDefault {
-		if {[string is boolean $value]} {
-				set ::gorilla::preference($pref) $value
-		}
-			}
-			unicodeSupport {
-		if {[string is integer $value]} {
-				set ::gorilla::preference($pref) $value
-		}
-			}
+
 			geometry,* {
 				if {[scan $value "%dx%d" width height] == 2} {
-						set ::gorilla::preference($pref) "${width}x${height}"
+					set ::gorilla::preference($pref) "${width}x${height}"
 				}
 			}
-			lang {
-				set ::gorilla::preference($pref) $value
-				mclocale $value
-				mcload [file join $::gorillaDir msgs]
-			}
-			fontsize {
-				set ::gorilla::preference($pref) $value
-				font configure TkDefaultFont -size $value
-				font configure TkTextFont -size $value
-				font configure TkMenuFont -size $value
-				# undocumented option for ttk::treeview
-				ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
-			}
-			gorillaIcon {
-				set ::gorilla::preference($pref) $value
-			}
-			iconifyOnAutolock {
-				set ::gorilla::preference($pref) $value
-			}
-			browser-exe {
-				set ::gorilla::preference($pref) $value
-			}
-			browser-param {
-				set ::gorilla::preference($pref) $value
-			}
-			autocopyUserid {
-				set ::gorilla::preference($pref) $value
-			}
-			autoclearMultiplier {
-				set ::gorilla::preference($pref) $value
-			}
-			gorillaAutocopy {
-				set ::gorilla::preference($pref) $value
-			}
-	}
-		}
 
-		#
-		# If the revision numbers of our preferences don't match, forget
-		# about window geometries, as they might have changed.
-		#
+			default {
+				if { ! [ dict exists $::gorilla::preference(all-preferences) $pref ] } {
+					continue
+				}
+				# apply the validator proc from the preferences definition list to the value
+				if { [ apply [ lindex [ dict get $::gorilla::preference(all-preferences) $pref ] 1 ] $value ] } {
+					set ::gorilla::preference($pref) $value
+				}
+				
+			}
 
-		if {![string equal $revision $prefsRevision]} {
-	foreach geo [array names ::gorilla::preference geometry,*] {
+		} ; # end switch pref
+
+	} ; # end while ! eof f
+
+   # initialize locale and fonts from the preference values
+
+	mclocale $::gorilla::preference(lang)
+	mcload [file join $::gorillaDir msgs]
+	
+	set value $::gorilla::preference(fontsize) 
+	font configure TkDefaultFont -size $value
+	font configure TkTextFont    -size $value
+	font configure TkMenuFont    -size $value
+	font configure TkCaptionFont -size $value
+	font configure TkFixedFont   -size $value
+	# undocumented option for ttk::treeview
+	ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
+
+	#
+	# If the revision numbers of our preferences don't match, forget
+	# about window geometries, as they might have changed.
+	#
+
+	if {![string equal $revision $prefsRevision]} {
+		foreach geo [array names ::gorilla::preference geometry,*] {
 			unset ::gorilla::preference($geo)
-	}
 		}
+	}
 
-		catch {close $f}
-		return 1
-}
+	catch {close $f}
+	return 1
+
+} ; # end proc gorilla::LoadPreferencesFromRCFile
 
 proc gorilla::LoadPreferences {} {
 	if {[info exists ::gorilla::preference(norc)] && \
@@ -6336,21 +6162,6 @@ proc gorilla::Find {} {
 	}
 
 	set top .findDialog
-
-	foreach {pref default} {
-		caseSensitiveFind 0
-		findInAny 0
-		findInTitle 1
-		findInUsername 1
-		findInPassword 0
-		findInNotes 1
-		findInURL 1
-		findThisText ""
-			} {
-		if {![info exists ::gorilla::preference($pref)]} {
-			set ::gorilla::preference($pref) $default
-		}
-	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top
@@ -7097,7 +6908,8 @@ proc gorilla::ViewEntry {rn} {
 		foreach {child childname} { group Group title Title url URL 
 						user Username pass Password 
 						lpc {Last Password Change}
-						mod {Last Modified} } {
+						mod {Last Modified} 
+						uuid UUID } {
 			
 			ttk::label $infoframe.${child}L -text [mc ${childname}]:
 			ttk::label $infoframe.${child}E -width 40 -background white
@@ -7134,6 +6946,7 @@ proc gorilla::ViewEntry {rn} {
 		$infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
 		$infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
 		$infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
+		$infoframe.uuidE  configure -text [ ::gorilla::dbget uuid             $rn ]
 
 		# now create button frame and populate it
                 	
@@ -7208,53 +7021,94 @@ proc gorilla::LaunchBrowser { rn } {
 
 #
 # ----------------------------------------------------------------------
-# Debugging for the Mac OS
+# Debugging help routines
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::writeToLog {logfile message} {
-	# mac Abfrage
-	set log "[clock format [clock seconds] -format %b\ %d\ %H:%M:%S] \
-		\"Password Gorilla\": $message"
+proc ::gorilla::PackageNotfound { package catchResult catchOptions } {
+	switch $package {
+		Itcl { set packageDir itcl3.4 }
+		msgcat { set packageDir msgs }
+		default { error "Unknown package" }
+	} ;# end switch $package
+	# the loading of the following packages has still to be wrapped
+		# sha1 { set packageDir sha1 }
+		# blowfish { set packageDir blowfish }
+		# twofish { set packageDir twofish }
+		# pwsafe { set packageDir pwsafe }
+		# tooltip { set packageDir tooltip }
 		
-	if [file exists $logfile] {
-		# puts "$logfile exists"
-		set filehandler [open $logfile a+]
-		puts $filehandler $log
-		close $filehandler
-	} else {
-		puts "$logfile does not exist or no access permissions"
-		puts $log
-	}
-}
+	set logtime [clock format [clock seconds] -format %b\ %d\ %Y\ %H:%M:%S]
+	regexp {Revision: ([0-9.]*)} $::gorillaVersion dummy revision
+	set targetDir ~/Desktop
+	if { ![file isdirectory $targetDir] } {	set targetDir ~	}
+	# Tcl offers the correct path for Mac and Windows: ~/Desktop
+	# Linux: not sure (Ok: Xfce)
+	set statusFile [file normalize [file join $targetDir gorilla.status]]
+ 	set message "Couldn't find the package $package. - The file $statusFile was created for debugging purposes. Please mail this file to 'PWGorilla@t-online.de'."
 
-proc psn_Delete {argv argc} {
-	# debugging
-	# gorilla::writeToLog $::gorilla::logfile "argv: $argv"
+	set index [open [file join $::gorillaDir/$packageDir pkgIndex.tcl] r]
+	set pkgIndex [read $index]
+	close $index
 	
-	set index 0
-	set new_argv ""
+	set statusinfo "Statusinfo created $logtime\n\
+------------------------------------------------------------------------\n
+Password Gorilla version: $revision\n\
+catch result: $catchResult\n\
+catch options: $catchOptions\n\
+auto_path:\n$::auto_path\n\
+tcl_platform:\n[gorilla::PrintArray ::tcl_platform]\n\
+info library: [info library]\n\
+gorillaDir:\n[glob $::gorillaDir *]\n\
+package dir:\n[glob [file join $::gorillaDir $packageDir] * ]\n\
+pkgIndex.tcl:\n$pkgIndex"
+
+	set out [open $statusFile w]
+	puts $out $statusinfo
+	puts $statusinfo
+	close $out
+
+	tk_messageBox -type ok -icon error -message $message
 	
-	while { $index < $argc } {
-		if {[string first "psn" [lindex $argv $index]] == -1} { 
-			lappend new_argv [lindex $argv $index]
+	exit
+} ; # end proc gorilla::PackageNotfound
+
+proc gorilla::PrintArray {arrayname} {
+	# code taken from [info body parray]
+	upvar 1 $arrayname array
+    if {![array exists array]} {
+			error "\"$arrayname\" isn't an array"
+    }
+	set maxl 0
+	set arrayString ""
+	set names [lsort [array names array]]
+	foreach name $names {
+		if {[string length $name] > $maxl} {
+				set maxl [string length $name]
 		}
-		incr index
 	}
-	# gorilla::writeToLog $::gorilla::logfile "Gefilteter argv: $new_argv"
-	return $new_argv
+	set maxl [expr {$maxl + [string length $arrayname] + 2}]
+	foreach name $names {
+		set nameString [format %s(%s) $arrayname $name]
+		append arrayString "[format "%-*s = %s" $maxl $nameString $array($name)]\n"
+	}
+	return $arrayString
 }
 
-proc gorilla::msg { message } {
-	tk_messageBox -type ok -icon info -message $message
-}
+#
+# ----------------------------------------------------------------------
+# DB access by name: dbget, dbset, dbunset
+# ----------------------------------------------------------------------
+#
 
-# A namespace ensemble to make retrieval from the gorilla::db object more
+# A namespace  ensemble to make retrieval from the gorilla::db object more
 # straightforward (retrieval of record elements by name instead of number). 
 # This also consolidates almost all of the "if record exists" and "if field
 # exists" checks into one place, simplifying the dialog builder code above,
 # as well as consolidating the date formatting code into one single
 # location.
+
+# Example: dbget title
 
 # At the moment there is a dependency upon the global ::gorilla::db
 # variable/object.  A future change might be to pass in the database object
@@ -7446,10 +7300,6 @@ proc ::gorilla::addRufftoHelp { menu } {
 # Init
 # ----------------------------------------------------------------------
 #
-
-# If we want some error logging
-# set logfile "/home/dia/Projekte/tcl/console.log"
-set ::gorilla::logfile "/private/var/log/console.log"
 
 if {[tk windowingsystem] == "aqua"} {
 	set argv [psn_Delete $argv $argc]
