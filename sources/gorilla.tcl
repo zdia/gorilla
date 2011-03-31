@@ -7350,10 +7350,10 @@ if {[tk windowingsystem] == "aqua"} {
 	
 proc usage {} {
 		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
-		puts stdout "	Options:"
-		puts stdout "		--rc <name>	 Use <name> as configuration file (not the Registry)."
-		puts stdout "		--norc				Do not use a configuration file (or the Registry)."
-		puts stdout "		<database>		Open <database> on startup."
+		puts stdout " Options:"
+		puts stdout "   --rc <name>  Use <name> as configuration file (not the Registry)."
+		puts stdout "   --norc       Do not use a configuration file (or the Registry)."
+		puts stdout "   <database>   Open <database> on startup."
 }
 
 if {$::gorilla::init == 0} {
@@ -7404,9 +7404,25 @@ if {$::gorilla::init == 0} {
 				incr i
 				set ::gorilla::preference(rc) [lindex $argv $i]
 			}
-			--help {
+			--help -
+			-help {
 				usage
 				exit 0
+			}
+			--chkmsgcat -
+			-chkmsgcat {
+				# Redefine mcunknown to dump to stderr unknown msgcat translations
+				# in a format almost suitable for adding to the msgcat files.  The
+				# one difference is that each line is prefixed with the locale ID to
+				# which it belongs.  Note, no effort is made to filter duplicates. 
+				# sort and uniq will already handle that task externally to
+				# PWGorilla.
+				#
+				# I realized this would work after reading the msgcat(n) man page.
+				proc ::msgcat::mcunknown {locale src_string} {
+				  puts stderr "$locale \"[ string map [ list "\n" "\\n" ] $src_string ]\" \"\" \\"
+				  return $src_string
+				}
 			}
 			default {
 				if {$haveDatabaseToLoad} {
