@@ -18,9 +18,10 @@
 # intelligent handling of "about ..." and "about" -> source code changes!
 # im Quellcode alle mc's ohne "" Klammer ergänzen
 #
-# step 1: Extract the mc messages in the source code.
-# step 2: Load an eventually existing msg file.
-# step 3: Create a <locale>.msg.new file with the msgcat package.
+# step 1: extract the mc messages
+# step 2: create a new ROOT.msg file as a base for the other languages
+# step 3: diff existing *.msg files for completeness
+# step 4: add the missing entries and save the incomplete entries in a *.diff file
 #
 # Hint: 'locale -a' shows all available locale languages
 #
@@ -124,16 +125,38 @@ proc createBaseMsgFile { data } {
 	return ok
 } ;# end of proc createBaseMsgFile
 
-proc createMsgFileFrom { entrylist lang} {
-	# create new resource file
-	# mark untranslated entries as "undefined"
-# puts $entrylist
-# exit
-	set newMsgEntries ""
+proc getMsgList { file } {
+	set msgList ""
+	set file [file join "[pwd]/msgs" $file]
+	if { ![file exists $file] } {
+		puts "Error in 'getMsgList': Could not find $file"
+		exit 1
+	} ;# end if
 	
-	set fileHandler [open $lang.msg.new w]
-		
-	puts $fileHandler "mcmset $lang \{ \\"
+	set fh [open $file r]
+	set base [read $fh]
+	close $fh
+
+	set base [split $base "\n"]
+	set base [lreplace $base 0 0]		;# delete the first line and check de, ru ...
+	
+	# puts $baseS
+	foreach line $base { 
+		set item [regexp -inline {\"(.*?)\"} $line]
+		if { $item != "" } {
+			# puts "$line : [lindex $item 1]"
+			lappend msgList [lindex $item 1]
+		# puts [lindex $item 1] 
+		} ;# end if $item empty
+				
+	}
+	return $msgList
+} ;# end of proc getMsgList
+
+proc getMsgMissing { entrylist } {
+
+	set notfound [list ]
+# puts "entrylist \n$entrylist"
 	
 	foreach item $entrylist {
 # puts ">>> $item\n<<< [mc $item]"
@@ -146,22 +169,13 @@ proc createMsgFileFrom { entrylist lang} {
 		# 2) mc for strings with \"
 		# 3) mc for strings with \n
 		
-		if { [join $item] eq [mc [join $item]] } {
-			puts "not found: $item"
-			# puts ">>> ![join $item]! --- <<< ![mc $item]!"
-			# puts "[expr {[join $item] == [mc [join $item]]}]"
-			
-			# puts $fileHandler "\"$item\" \"undefined\" \\"
-
-			# setting the original entry will automatically produce a
-			# 'not found' notice during checkrun
-			
-			puts $fileHandler "\"$item\" \"$item\" \\"
-			
+		if {	[mc $item] eq $item && \
+					$item eq [mc [join $item]] && \
+					[join $item] eq [mc [join $item]] } {
+			lappend notfound $item
 		} else {
-			
-			puts $fileHandler "\"$item\" \"[mc $item]\" \\"
-			# puts "found: \"$item\" \"[mc $item]\" \\"
+# puts [join $item]
+# puts "[mc [join $item]]"
 		}
 	}
 	return $notfound
@@ -221,9 +235,36 @@ proc checkMsg { source locale } {
 	set allSourceEntries [getMsgentries $sourceFile]
 # puts "--- Rückgabe: $allSourceEntries"
 
-	puts "Creating '$locale.msg.new' ..."
-	createMsgFileFrom $allSourceEntries $locale
-		
+	if { [createBaseMsgFile $allSourceEntries] != "ok" } {
+		puts "Error: Couldn't create file $baseMsg"
+		exit 1
+	}
+	
+	puts "Checking '$locale.msg' for missing entries ..."
+	
+	set msgMissingList [ getMsgMissing $allSourceEntries ]
+# puts "### missing entries:\n$msgMissingList"
+
+	if { $msgMissingList == "" } {
+		puts "No msgcat entries missing."
+		puts "Checking 'localeMsg' for undefined entries ..."
+		set result [showMsgUndefined $allSourceEntries $localeMsg]
+		if { $result eq "" } {
+			puts "All mgscat entries are translated."
+		} else {
+			puts "\nThe following entries are not defined:\n"
+				foreach item $result {
+					puts $item
+				} ;# end foreach
+		} ;# end if
+	} else {
+		appendMsgs $msgMissingList $localeMsg
+		puts "The missing msgcat entries have been appended to the file '$localeMsg'."
+		puts "\nPlease edit these entries which are marked in the resource file '$localeMsg' as <undefined>.\nThen try a new check."
+	}
+	
+	# check if any entries in the locale msg file have been deleted in the source code
+	
 } ;# end of proc checkMsg
 
 # ============== Main ===================

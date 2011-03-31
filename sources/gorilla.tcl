@@ -73,9 +73,90 @@ if {[catch {package require Tcl 8.5}]} {
 		exit 1
 }
 
-if {[catch {package require msgcat} oops options]} {
-		gorilla::PackageNotfound msgcat $oops $options
-}
+# ----------------------------------------------------------------------
+#
+# A helper proc to load packages.  This collects the details of "catching"
+# and reporting errors upon package loading into one single proc.  It must
+# be defined here because it has to be defined before it can be called.
+# Note, not in "gorilla" namespace because the gorilla namespace has not yet
+# been created.
+#
+# ----------------------------------------------------------------------
+#
+
+proc load-package { args } {
+
+	foreach package $args {
+
+		if { [ catch "package require $package" catchResult catchOptions ] } {
+
+			# a package load error occurred - create log file and report to user
+
+			set statusinfo [ subst {
+-begin------------------------------------------------------------------
+Statusinfo created [ clock format [ clock seconds ] -format "%b %d %Y %H:%M:%S" ]
+Password Gorilla version: $::gorillaVersion
+Failure to load package: $package
+catch result: $catchResult
+catch options: $catchOptions
+auto_path: $::auto_path
+tcl_platform: [ array get ::tcl_platform ]
+info library: [ info library ]
+gorillaDir: $::gorillaDir
+gorillaDir contents:
+	[ join [ glob -directory $::gorillaDir * ] "\n\t" ]
+auto_path dir contents:
+[ set result ""
+  foreach dir $::auto_path {
+    append result "$dir\n"
+    append result "[ join [ glob -directory $dir -- * ] "\n\t" ]\n"
+  } 
+  return $result ]
+-end--------------------------------------------------------------------
+} ] ; # end of subst
+
+			# for Linux, put failure status log in users home dir - for anything
+			# else, use "Desktop"
+			
+			if { $::tcl_platform(os) eq "Linux" } {
+				set logfile [ file join ~ gorilla-debug-log ]
+			} else {
+				set logfile [ file join ~ Desktop gorilla-debug-log.txt ]
+			}
+
+			set logfile [ file normalize $logfile ]
+						
+			if { [ catch { set logfd [ open $logfile {WRONLY CREAT APPEND} ] } ] } {
+				# could not create log file - limp along as best we can
+				text .error
+				pack .error
+				.error insert end "\nPassword Gorilla was unable to create a debug log file.\n"
+				.error insert end "Please copy and paste the contents of this window into am email to\nPWGorilla@t-online.de\n"
+				.error insert end "Use Control+c to copy\n\n$statusinfo\n"
+				.error tag add sel 0.0 end
+				vwait forever
+			} else {
+				puts $logfd $statusinfo
+				close $logfd
+			} 
+			
+			# also output to the terminal as well
+			puts $statusinfo
+
+			set message "Couldn't find the package $package.\n$package is required for Password Gorilla\nThe file $logfile was created for debugging purposes.\nPlease mail this file to 'PWGorilla@t-online.de'.\nPassword Gorilla will now terminate."
+
+			tk_messageBox -type ok -icon error -message $message
+		
+			exit
+
+		} ; # end if catch package require
+
+	} ; # end foreach package in args
+
+} ; # end proc gorilla::load-package
+
+load-package msgcat
+
 namespace import msgcat::*
 # mcload [file join $::gorillaDir msgs]
 # mcload has to be called after having set 'mclocale' which will happen
@@ -163,7 +244,7 @@ if {[catch {package require pwsafe} oops]} {
 	# the parameter 1 is setting gorilla.tcl's filelength to 0
 }
 
-package require tooltip
+load-package tooltip
 
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
@@ -7304,82 +7385,6 @@ proc gorilla::LaunchBrowser { rn } {
 	}
 
 } ; # end proc gorilla::LaunchBrowser
-
-#
-# ----------------------------------------------------------------------
-# Debugging help routines
-# ----------------------------------------------------------------------
-#
-
-proc ::gorilla::PackageNotfound { package catchResult catchOptions } {
-	switch $package {
-		Itcl { set packageDir itcl3.4 }
-		msgcat { set packageDir msgs }
-		default { error "Unknown package" }
-	} ;# end switch $package
-	# the loading of the following packages has still to be wrapped
-		# sha1 { set packageDir sha1 }
-		# blowfish { set packageDir blowfish }
-		# twofish { set packageDir twofish }
-		# pwsafe { set packageDir pwsafe }
-		# tooltip { set packageDir tooltip }
-		
-	set logtime [clock format [clock seconds] -format %b\ %d\ %Y\ %H:%M:%S]
-	regexp {Revision: ([0-9.]*)} $::gorillaVersion dummy revision
-	set targetDir ~/Desktop
-	if { ![file isdirectory $targetDir] } {	set targetDir ~	}
-	# Tcl offers the correct path for Mac and Windows: ~/Desktop
-	# Linux: not sure (Ok: Xfce)
-	set statusFile [file normalize [file join $targetDir gorilla.status]]
- 	set message "Couldn't find the package $package. - The file $statusFile was created for debugging purposes. Please mail this file to 'PWGorilla@t-online.de'."
-
-	set index [open [file join $::gorillaDir/$packageDir pkgIndex.tcl] r]
-	set pkgIndex [read $index]
-	close $index
-	
-	set statusinfo "Statusinfo created $logtime\n\
-------------------------------------------------------------------------\n
-Password Gorilla version: $revision\n\
-catch result: $catchResult\n\
-catch options: $catchOptions\n\
-auto_path:\n$::auto_path\n\
-tcl_platform:\n[gorilla::PrintArray ::tcl_platform]\n\
-info library: [info library]\n\
-gorillaDir:\n[glob $::gorillaDir *]\n\
-package dir:\n[glob [file join $::gorillaDir $packageDir] * ]\n\
-pkgIndex.tcl:\n$pkgIndex"
-
-	set out [open $statusFile w]
-	puts $out $statusinfo
-	puts $statusinfo
-	close $out
-
-	tk_messageBox -type ok -icon error -message $message
-	
-	exit
-} ; # end proc gorilla::PackageNotfound
-
-proc gorilla::PrintArray {arrayname} {
-	# code taken from [info body parray]
-	upvar 1 $arrayname array
-    if {![array exists array]} {
-			error "\"$arrayname\" isn't an array"
-    }
-	set maxl 0
-	set arrayString ""
-	set names [lsort [array names array]]
-	foreach name $names {
-		if {[string length $name] > $maxl} {
-				set maxl [string length $name]
-		}
-	}
-	set maxl [expr {$maxl + [string length $arrayname] + 2}]
-	foreach name $names {
-		set nameString [format %s(%s) $arrayname $name]
-		append arrayString "[format "%-*s = %s" $maxl $nameString $array($name)]\n"
-	}
-	return $arrayString
-}
 
 #
 # ----------------------------------------------------------------------
