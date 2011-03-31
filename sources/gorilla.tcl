@@ -338,6 +338,7 @@ proc gorilla::InitGui {} {
 								"Save As ..." open gorilla::SaveAs "" ""
 								separator "" "" "" ""
 								"Export ..." open gorilla::Export "" ""
+								"Import ..." open gorilla::Import "" ""
 								separator mac "" "" ""
 								"Preferences ..." mac gorilla::Preferences "" ""
 								separator mac "" "" ""
@@ -3133,6 +3134,7 @@ proc gorilla::Export {} {
 		ArrangeIdleTimeout
 		set top .export
 
+	if {$::gorilla::preference(exportShowWarning)} {
 		set answer [tk_messageBox -parent . \
 				-type yesno -icon warning -default no \
 				-title [mc "Export Security Warning"] \
@@ -3223,44 +3225,41 @@ proc gorilla::Export {} {
 
 		puts $txtFile [ ::csv::join $csv_data $separator ]
 
-		set myOldCursor [. cget -cursor]
-		. configure -cursor watch
-		update idletasks
+	} ; # end foreach rn in gorilla db
 
-		if {[catch {
-	set txtFile [open $fileName "w"]
-		} oops]} {
+	catch {close $txtFile}
 	. configure -cursor $myOldCursor
-	tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Error Exporting Database" \
-			-message "Failed to export password database to\
-		$nativeName: $oops"
-	return
-		}
+	::gorilla::Feedback [ mc "Database exported." ]
 
-		set ::gorilla::status [mc "Exporting ..."]
-		update idletasks
+} ; # end proc gorilla::Export
 
-		if {$::gorilla::preference(exportAsUnicode)} {
-	#
-	# Write BOM in binary mode, then switch to Unicode
-	#
+# ----------------------------------------------------------------------
+# Import data from a CSV file
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::Import {} {
+
+	# Import a csv file and add the entries therein to the currently open
+	# database
+
+	ArrangeIdleTimeout
 
 	setup-default-dirname
 
-	if {[info exists ::tcl_platform(byteOrder)]} {
-			switch -- $::tcl_platform(byteOrder) {
-		littleEndian {
-				puts -nonewline $txtFile "\xff\xfe"
-		}
-		bigEndian {
-				puts -nonewline $txtFile "\xfe\xff"
-		}
-			}
+	set types {
+		{{CSV Files} {.csv}}
 	}
 
-	fconfigure $txtFile -encoding unicode
-		}
+	set input_file [ tk_getOpenFile -parent . \
+		-title [ mc "Import CSV datafile" ] \
+		-defaultextension ".csv" \
+		-filetypes $types \
+		-initialdir $::gorilla::dirName ]
+		
+	if { $input_file eq "" } {
+		return
+	}
 
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
 		error-popup [ mc "Error opening import CSV file" ] \
@@ -3270,16 +3269,28 @@ proc gorilla::Export {} {
 
 	fconfigure $infd -encoding utf-8
 
-		foreach rn [$::gorilla::db getAllRecordNumbers] {
-	# UUID
-	if {[$::gorilla::db existsField $rn 1]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 1]
+	if { [ catch { package require csv } oops ] } {
+		error-popup [ mc "Error loading CSV parsing package." ] \
+			[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+		return
 	}
-	puts -nonewline $txtFile $separator
-	# Group
-	if {[$::gorilla::db existsField $rn 2]} {
-			puts -nonewline $txtFile [$::gorilla::db getFieldValue $rn 2]
+
+	set myOldCursor [. cget -cursor]
+	. configure -cursor watch
+	update idletasks
+
+	set possible_columns { create-time group last-access last-modified
+									last-pass-change lifetime notes password title
+									url user uuid }
+
+	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
+		error-popup [ mc "Error parsing CSV file" ] \
+			" [ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
+		catch { close $infd }
+	  	. configure -cursor $myOldCursor
+		return
 	}
+
 
 #   puts "columns_present: $columns_present"
    
@@ -3447,13 +3458,41 @@ proc gorilla::Export {} {
 	  set ::gorilla::status "$new_add_counter [ mc "record(s) successfully imported." ]"
 	  MarkDatabaseAsDirty
 	}
-	puts $txtFile ""
-		}
 
-		catch {close $txtFile}
-		. configure -cursor $myOldCursor
-		set ::gorilla::status [mc "Database exported."]
-}
+	catch { close $infd } 
+  	. configure -cursor $myOldCursor
+  	package forget csv
+
+} ; # end proc gorilla::Import
+
+proc gorilla::error-popup {title message} {
+
+	# a small helper proc to encapsulate all the details of opening a
+	# tk_messageBox with a title and message
+	
+	tk_messageBox -parent . -type ok -icon error -default ok \
+		-title $title \
+		-message $message 
+
+} ; # end proc gorilla::error-popup
+
+proc gorilla::setup-default-dirname { } {
+
+	# Makes sure that the global ::gorilla::dirName variable is set to a
+	# sensible default if it does not already exist.
+	#
+	# Side-effect of modifying the global ::gorilla::dirName variable
+
+	if { ! [ info exists ::gorilla::dirName ] } {
+		if { [ tk windowingsystem ] == "aqua" } {
+			set ::gorilla::dirName "~/Documents"
+		} else {
+		# Windows-Abfrage auch nötig ...
+			set ::gorilla::dirName [ pwd ]
+		}
+	}
+
+} ; # end proc setup-default-dirname
 
 # ----------------------------------------------------------------------
 # Mark database as dirty
