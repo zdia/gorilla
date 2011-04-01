@@ -2283,26 +2283,31 @@ namespace eval ::gorilla::LoginDialog {
 					set modified [ PopulateRecord $rn ]
 				}
 
+				# Once the database has been updated, the
+				# dialog window is no longer necessary. 
+				# Withdrawing it now prevents a flash of
+				# random data in the entries if a user has
+				# "auto-save-on-change" turned on.
+				
+				[ namespace parent ]::DestroyLoginDialog -m:top-
+
 				if { $modified } {
 
 					if { $rn == -999 } {
 						set ::gorilla::status [ mc "New login added." ]
 						AddRecordToTree $newrn
 					} else {
-#						UpdateRecordInTree $rn $treenode
 						# this takes a shortcut, for an existing record, simply delete from
 						# tree then reinsert into tree
 						$::gorilla::widgets(tree) delete $treenode
 						AddRecordToTree $rn                   
-						set ::gorilla::status [mc "Login modified."]
+						set ::gorilla::status [ mc "Login modified." ]
 					}
 
 					MarkDatabaseAsDirty
 
 				} ; # end if modified
 
-				[ namespace parent ]::DestroyLoginDialog -m:top-
-        
 			} ; # end proc Ok
 
 		} ] ; # end smacro namespace eval
