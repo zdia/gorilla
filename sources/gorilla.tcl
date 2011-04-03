@@ -1163,7 +1163,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
 
 		ttk::frame $aframe.buts
-		set but1 [ttk::button $aframe.buts.b1 -width 9 -text "OK" \
+		set but1 [ttk::button $aframe.buts.b1 -width 9 -text [ mc "OK" ]\
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $aframe.buts.b2 -width 9 -text [mc "Exit"] \
 			-command "set ::gorilla::guimutex 2"]
@@ -1853,7 +1853,7 @@ namespace eval ::gorilla::LoginDialog {
 		set bf  [ ttk::frame $top.bf  ]	; # button frame
 		set frt [ ttk::frame $bf.top ]	; # frame right - top
 
-		ttk::button $frt.ok -width 16 -text "OK" -command [ list namespace inscope $pvns Ok ]
+		ttk::button $frt.ok -width 16 -text [ mc "OK" ] -command [ list namespace inscope $pvns Ok ]
 		ttk::button $frt.c -width 16 -text [ mc "Cancel" ] -command [ namespace code [ list DestroyLoginDialog $top ] ]
 
 		pack $frt.ok $frt.c -side top -padx 10 -pady 5
@@ -2682,7 +2682,7 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 		pack $top.group -side top -expand yes -fill x -pady 10 -padx 10
 
 		ttk::frame $top.buts
-		set but1 [ttk::button $top.buts.b1 -width 10 -text "OK" \
+		set but1 [ttk::button $top.buts.b1 -width 10 -text [ mc "OK" ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 10 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
@@ -3048,7 +3048,7 @@ proc gorilla::RenameGroup {} {
 		pack $sep2 -side top -fill x -pady 10
 
 		ttk::frame $top.buts
-		set but1 [ttk::button $top.buts.b1 -width 15 -text "OK" \
+		set but1 [ttk::button $top.buts.b1 -width 15 -text [ mc "OK" ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
@@ -4747,7 +4747,7 @@ proc gorilla::LockDatabase {} {
 		pack $aframe.mitte.pw -side left -pady 5 -expand 0
 
 		ttk::frame $aframe.mitte.buts
-		set but1 [ttk::button $aframe.mitte.buts.b1 -width 10 -text "OK" \
+		set but1 [ttk::button $aframe.mitte.buts.b1 -width 10 -text [ mc "OK" ] \
 			-command "set ::gorilla::lockedMutex 1"]
 		set but2 [ttk::button $aframe.mitte.buts.b2 -width 10 -text [mc "Exit"] \
 			-command "set ::gorilla::lockedMutex 2"]
@@ -4903,7 +4903,7 @@ proc gorilla::GetPassword {confirm title} {
 		}
 
 		ttk::frame $top.buts
-		set but1 [ttk::button $top.buts.b1 -width 10 -text OK \
+		set but1 [ttk::button $top.buts.b1 -width 10 -text [ mc OK ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 10 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
@@ -5115,7 +5115,7 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 		pack $top.sep -side top -fill x -pady 10
 
 		frame $top.buts
-		set but1 [ttk::button $top.buts.b1 -width 15 -text "OK" \
+		set but1 [ttk::button $top.buts.b1 -width 15 -text [ mc "OK" ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
@@ -5318,7 +5318,7 @@ proc gorilla::DatabasePreferencesDialog {} {
 		pack $top.sep -side top -fill x -pady 10
 
 		ttk::frame $top.buts
-		set but1 [ttk::button $top.buts.b1 -width 15 -text "OK" \
+		set but1 [ttk::button $top.buts.b1 -width 15 -text [ mc "OK" ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
@@ -5664,7 +5664,7 @@ proc gorilla::PreferencesDialog {} {
 		# pack $top.sep -side top -fill x -pady 7
 
 		frame $top.buts
-		set but1 [ttk::button $top.buts.b1 -width 15 -text "OK" \
+		set but1 [ttk::button $top.buts.b1 -width 15 -text [ mc "OK" ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
@@ -6389,10 +6389,9 @@ proc gorilla::About {} {
 		
 		ttk::frame $w -padding {10 10}
 		ttk::label $w.image -image $::gorilla::images(splash)
-		ttk::label $w.title -text "Password Gorilla $revision" \
+		ttk::label $w.title -text "[ mc "Password Gorilla" ] $revision" \
 			-font {sans 16 bold} -padding {10 10}
-		ttk::label $w.description -text "Gorilla will protect your passwords and help you \
-		to manage them with a pwsafe 3.2 compatible database" -wraplength 350 -padding {10 0}
+		ttk::label $w.description -text [ mc "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" ] -wraplength 350 -padding {10 0}
 		ttk::label $w.copyright \
 			-text "(c) 2004-2009 Frank Pillhofer  (c) 2010 Zbigniew Diaczyszyn" \
 			-font {sans 8} -padding {10 0}
@@ -6559,7 +6558,7 @@ proc gorilla::Find {} {
 				-variable ::gorilla::preference(findInPassword)
 		ttk::checkbutton $top.find.notes -text [mc "Notes"] \
 				-variable ::gorilla::preference(findInNotes)
-		ttk::checkbutton $top.find.url -text "URL" \
+		ttk::checkbutton $top.find.url -text [ mc "URL" ] \
 				-variable ::gorilla::preference(findInURL)
 		ttk::checkbutton $top.find.case -text [mc "Case sensitive find"] \
 				-variable ::gorilla::preference(caseSensitiveFind)
