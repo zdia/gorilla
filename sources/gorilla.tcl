@@ -3213,12 +3213,12 @@ proc gorilla::RenameGroup {} {
 #
 
 proc gorilla::DestroyExportDialog {} {
-		set ::gorilla::guimutex 2
+	set ::gorilla::guimutex 2
 }
 
 proc gorilla::Export {} {
-		ArrangeIdleTimeout
-		set top .export
+	ArrangeIdleTimeout
+	set top .export
 
 	if {$::gorilla::preference(exportShowWarning)} {
 		set answer [tk_messageBox -parent . \
@@ -3284,7 +3284,7 @@ proc gorilla::Export {} {
 	# output a csv header describing what data values are present in each
 	# column of the csv file
 
-	set csv_data [ list uuid group title user \
+	set csv_data [ list uuid group title url user \
 	                    [ expr { $::gorilla::preference(exportIncludePassword) ? "password" : "" } ] \
 	                    [ expr { $::gorilla::preference(exportIncludeNotes)    ? "notes"    : "" } ] ]
 
@@ -3295,7 +3295,8 @@ proc gorilla::Export {} {
 	foreach rn [$::gorilla::db getAllRecordNumbers] {
 
 		set csv_data [ list [ dbget uuid  $rn ] [ dbget group $rn ] \
-		                    [ dbget title $rn ] [ dbget user  $rn ] ]
+		                    [ dbget title $rn ] [ dbget url $rn   ] \
+		                    [ dbget user  $rn ] ]
 
 		# Password - optional export 
 		if {$::gorilla::preference(exportIncludePassword)} {
