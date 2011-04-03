@@ -7313,7 +7313,7 @@ proc gorilla::ViewEntry {rn} {
 		$infoframe.titleE configure -text [ ::gorilla::dbget title            $rn ]
 		$infoframe.userE  configure -text [ ::gorilla::dbget user             $rn ]
 		$infoframe.notesE configure -text [ ::gorilla::dbget notes            $rn ]
-		$infoframe.passE  configure -text "********"
+		$infoframe.passE  configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password ] ] ]
 		$infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
 		$infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
 		$infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
@@ -7348,7 +7348,7 @@ proc gorilla::ViewEntryShowPWHelper { button entry rn } {
     $entry configure -text [ ::gorilla::dbget password $rn ]
     $button configure -text [ mc "Hide Password" ]
   } else {
-    $entry configure -text "********"
+    $entry configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password ] ] ]
     $button configure -text [ mc "Show Password" ]
   }
 
