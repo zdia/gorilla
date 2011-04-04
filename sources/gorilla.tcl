@@ -3271,7 +3271,7 @@ proc gorilla::Export {} {
 
 	if { [ catch { package require csv } oops ] } {
 		error-popup [ mc "Error loading CSV parsing package." ] \
-		            [ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+		           "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
 		return
 	}
 
@@ -3350,7 +3350,7 @@ proc gorilla::Import {} {
 
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
 		error-popup [ mc "Error opening import CSV file" ] \
-		            "[ mc "Could not access file " ] ${input_file}:\n$oops"
+		           "[ mc "Could not access file " ] ${input_file}:\n$oops"
 		return
 	}
 
@@ -3358,7 +3358,7 @@ proc gorilla::Import {} {
 
 	if { [ catch { package require csv } oops ] } {
 		error-popup [ mc "Error loading CSV parsing package." ] \
-			[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+		           "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
 		return
 	}
 
@@ -3372,7 +3372,7 @@ proc gorilla::Import {} {
 
 	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
 		error-popup [ mc "Error parsing CSV file" ] \
-			" [ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
+		           "[ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
 		return
@@ -3384,7 +3384,7 @@ proc gorilla::Import {} {
 	# Must have at least one data column present
 	if { [ llength $columns_present ] == 0 } {
 		error-popup [ mc "Error, nothing to import." ] \
-		[ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
+		            [ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
 		catch { close $infd }
 		. configure -cursor $myOldCursor
 		return
@@ -3404,7 +3404,7 @@ proc gorilla::Import {} {
    
 	if { [ info exists error_columns ] } {
 		error-popup [ mc "Error, undefined data columns" ] \
-			"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
+		           "[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
 		catch { close $infd }
 		. configure -cursor $myOldCursor
 		return
