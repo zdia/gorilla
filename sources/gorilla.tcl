@@ -308,7 +308,7 @@ proc gorilla::Init {} {
 		defaultVersion         { 3       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		doubleClickAction      { nothing { {value} { return true } }                                                          }
 		exportAsUnicode        { 0       { {value} { string is boolean $value } }                                             }
-		exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value ni {{"} \\} ) } } } }
+		exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value in [list , \; :] ) } } } }
 		exportIncludeNotes     { 0       { {value} { string is boolean $value } }                                             }
 		exportIncludePassword  { 0       { {value} { string is boolean $value } }                                             }
 		exportShowWarning      { 1       { {value} { string is boolean $value } }                                             }
@@ -1302,7 +1302,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# much better seed now
 
 		set password [$aframe.pw.pw get]
-
+		
 		set ::gorilla::openPercent 0
 		set ::gorilla::openPercentWidget $aframe.info
 		trace add variable ::gorilla::openPercent [list "write"] \
@@ -1489,7 +1489,16 @@ proc gorilla::Open {{defaultFile ""}} {
 		}
 	}
 
-	set openInfo [OpenDatabase [mc "Open Password Database"] $defaultFile 1]
+	if { $::DEBUG(TCLTEST) } {
+		# Skip OpenDialog
+		set ::gorilla::collectedTicks [list [clock clicks]]
+		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
+		set fileName [file join $::gorillaDir ../devtools testdb.psafe3]
+		set newdb [pwsafe::createFromFile $fileName test ::gorilla::openPercent]
+		set openInfo [list "Open" $fileName $newdb ]
+	} else {
+		set openInfo [OpenDatabase [mc "Open Password Database"] $defaultFile 1]
+	}
 	
 	set action [lindex $openInfo 0]
 
@@ -5521,12 +5530,16 @@ proc gorilla::PreferencesDialog {} {
 				-variable ::gorilla::prefTemp(exportIncludePassword)
 		ttk::checkbutton $epf.notes -text [mc "Include \"Notes\" field"] \
 				-variable ::gorilla::prefTemp(exportIncludeNotes) 
-				
+
 		ttk::frame $epf.fs
 		ttk::label $epf.fs.l -text [mc "Field separator"] -width 16 -anchor w
-		ttk::entry $epf.fs.e	 \
-				-textvariable ::gorilla::prefTemp(exportFieldSeparator) \
-			 -width 4 
+		spinbox $epf.fs.e \
+			-values [list , \; :] \
+			-textvariable ::gorilla::prefTemp(exportFieldSeparator) \
+			-width 2 \
+			-state readonly \
+			-relief sunken
+			
 		pack $epf.fs.l $epf.fs.e -side left
 		ttk::checkbutton $epf.warning -text [mc "Show security warning"] \
 				-variable ::gorilla::prefTemp(exportShowWarning) 
@@ -7626,6 +7639,7 @@ if {$::gorilla::init == 0} {
 
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
+	array set ::DEBUG { TCLTEST 0 }
 
 	# set argc [llength $argv]	;# obsolete
 
@@ -7685,7 +7699,13 @@ if {$::gorilla::init == 0} {
 				proc ::msgcat::mcunknown {locale src_string} {
 				  puts stderr "$locale \"[ string map [ list "\n" "\\n" ] $src_string ]\" \"\" \\"
 				  return $src_string
-				}
+				}			
+			}
+			--tcltest {
+				# skip the OpenDatabase dialog for automatic loading of testdb.psafe3
+				array set ::DEBUG { TCLTEST 1 }
+				# set the other DEBUG variables
+				# array set ::DEBUG { CSVIMPORT 1 }
 			}
 			default {
 				if {$haveDatabaseToLoad} {
