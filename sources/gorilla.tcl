@@ -3334,7 +3334,7 @@ proc gorilla::Export {} {
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::Import {} {
+proc gorilla::Import { {input_file ""} } {
 
 	# Import a csv file and add the entries therein to the currently open
 	# database
@@ -3347,20 +3347,22 @@ proc gorilla::Import {} {
 		{{CSV Files} {.csv}}
 	}
 
-	set input_file [ tk_getOpenFile -parent . \
+	if { $input_file eq "" } {
+		set input_file [ tk_getOpenFile -parent . \
 		-title [ mc "Import CSV datafile" ] \
 		-defaultextension ".csv" \
 		-filetypes $types \
 		-initialdir $::gorilla::dirName ]
-		
+	}
+	
 	if { $input_file eq "" } {
 		return
 	}
 
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
 		error-popup [ mc "Error opening import CSV file" ] \
-		           "[ mc "Could not access file " ] ${input_file}:\n$oops"
-		return
+					"[ mc "Could not access file " ] ${input_file}:\n$oops"
+		return GORILLA_OPENERROR
 	}
 
 	fconfigure $infd -encoding utf-8
@@ -3384,39 +3386,39 @@ proc gorilla::Import {} {
 		           "[ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
-		return
+			
+		return GORILLA_FIRSTLINEERROR
 	}
 
-
-#   puts "columns_present: $columns_present"
+   # puts "columns_present: $columns_present"
    
 	# Must have at least one data column present
 	if { [ llength $columns_present ] == 0 } {
 		error-popup [ mc "Error, nothing to import." ] \
 		            [ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
 		catch { close $infd }
+	  	. configure -cursor $myOldCursor
+		return GORILLA_NODATA
+   }
+   
+   # Make sure that only the possible columns are present.  Note, this does
+   # not test for duplicate columns, that is intentional.  The result of
+   # duplicate columns is that the last duplicate column on a line will
+   # override the value of previous occurrences of the same column on that
+   # line.
+   
+   foreach item $columns_present {
+     if { $item ni $possible_columns } {
+       lappend error_columns $item
+     }
+   }
+   
+   if { [ info exists error_columns ] } {
+   	error-popup [ mc "Error, undefined data columns" ] \
+   		"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
+   	catch { close $infd }
 		. configure -cursor $myOldCursor
-		return
-	}
-   
-	# Make sure that only the possible columns are present.  Note, this does
-	# not test for duplicate columns, that is intentional.  The result of
-	# duplicate columns is that the last duplicate column on a line will
-	# override the value of previous occurrences of the same column on that
-	# line.
-   
-	foreach item $columns_present {
-		if { $item ni $possible_columns } {
-			lappend error_columns $item
-		}
-	}
-   
-	if { [ info exists error_columns ] } {
-		error-popup [ mc "Error, undefined data columns" ] \
-		           "[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
-		catch { close $infd }
-		. configure -cursor $myOldCursor
-		return
+   	return GORILLA_UNDEFINEDCOLUMNS
 	}
 
 	# This is utilized below to apply a "default" group to any imports
@@ -3426,6 +3428,10 @@ proc gorilla::Import {} {
 	
 	if { "group" ni $columns_present } {
 		set default_group_name "Newly Imported [ clock format [ clock seconds ] ]"
+		if { $::DEBUG(CSVIMPORT) } {
+			. configure -cursor $myOldCursor
+			return GORILLA_ADDDEFAULTGROUP
+		}
 	}
 	
 	set new_add_counter 0
@@ -3533,7 +3539,12 @@ proc gorilla::Import {} {
 	} ; # end foreach line in input file
 	
 	if { [ info exists error_lines ] } {
-#		puts "errors exist from import: $error_lines"
+		if { $::DEBUG(CSVIMPORT) } {
+			. configure -cursor $myOldCursor
+			return [lindex $error_lines 0 0]
+		}
+		
+		puts "errors exist from import: $error_lines"
 		set answer [ tk_messageBox -default yes -icon info \
 							-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
 							-parent . -title [ mc "Some records skipped during import" ] -type yesno ]
@@ -3558,6 +3569,7 @@ proc gorilla::Import {} {
 	catch { close $infd } 
   	. configure -cursor $myOldCursor
   	package forget csv
+		return GORILLA_OK
 
 } ; # end proc gorilla::Import
 
@@ -3565,6 +3577,8 @@ proc gorilla::error-popup {title message} {
 
 	# a small helper proc to encapsulate all the details of opening a
 	# tk_messageBox with a title and message
+
+	if { $::DEBUG(CSVIMPORT) } { return }
 	
 	tk_messageBox -parent . -type ok -icon error -default ok \
 		-title $title \
