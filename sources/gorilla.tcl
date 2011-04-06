@@ -1493,7 +1493,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		# Skip OpenDialog
 		set ::gorilla::collectedTicks [list [clock clicks]]
 		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
-		set fileName [file join $::gorillaDir ../devtools testdb.psafe3]
+		set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
 		set newdb [pwsafe::createFromFile $fileName test ::gorilla::openPercent]
 		set openInfo [list "Open" $fileName $newdb ]
 	} else {
@@ -7702,10 +7702,9 @@ if {$::gorilla::init == 0} {
 				}			
 			}
 			--tcltest {
-				# skip the OpenDatabase dialog for automatic loading of testdb.psafe3
-				array set ::DEBUG { TCLTEST 1 }
-				# set the other DEBUG variables
-				# array set ::DEBUG { CSVIMPORT 1 }
+				# TCLTEST 1: skip the OpenDatabase dialog for automatic loading of testdb.psafe3
+				array set ::DEBUG { TCLTEST 1 \
+														CSVIMPORT 0 }
 			}
 			default {
 				if {$haveDatabaseToLoad} {

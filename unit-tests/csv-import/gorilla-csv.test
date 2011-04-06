@@ -8,7 +8,7 @@
 # a) Type "tkcon PATH/gorilla.tcl". Tkcon will open and you can call
 # the test-unit in the tkcon terminal with:
 #
-# cd INSTALLPATH/devtools/csv-import
+# cd INSTALLPATH/unit-tests/csv-import
 # source gorilla-csv.test
 #
 # All stdout output will be seen in the tkcon terminal.
@@ -20,8 +20,8 @@
 #
 # Dependencies:
 #		package tcltest 2.2
-# 	devtools/csv-import/import*.csv
-# 	"devtools/testdb.psafe3" as reference database
+# 	unit-tests/csv-import/import*.csv
+# 	unit-tests/testdb.psafe3 as reference database
 #
 # Note: Only test failures will be reported
 #
