@@ -17,13 +17,17 @@ package require tcltest 2.2
 # default search path is the actual working directory
 tcltest::workingDirectory [file dirname [file normalize [info script]]]
 tcltest::singleProcess 1
-tcltest::skipDirectories [tcltest::workingDirectory]
-tcltest::match *.test
+# tcltest::skipDirectories [tcltest::workingDirectory]
+# tcltest::match *.test
 
-set argv {}
-eval tcltest::configure $argv
+# set argv ""
+# eval tcltest::configure $argv
 
 # If a file named all.tcl is found in a subdirectory of the scanned
 # test directory, it will be sourced in the caller's context.
 
+
+# cd csv-import
+
+tcltest::testsDirectory [file join [tcltest::workingDirectory] csv-import ]
 tcltest::runAllTests

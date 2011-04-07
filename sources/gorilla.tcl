@@ -7717,8 +7717,7 @@ if {$::gorilla::init == 0} {
 			}
 			--tcltest {
 				# TCLTEST 1: skip the OpenDatabase dialog for automatic loading of testdb.psafe3
-				array set ::DEBUG { TCLTEST 1 \
-														CSVIMPORT 0 }
+				array set ::DEBUG { TCLTEST 1 CSVIMPORT 0 }
 			}
 			default {
 				if {$haveDatabaseToLoad} {
@@ -7758,3 +7757,8 @@ update
 
 # exec say [mc "Welcome to the Password Gorilla."]	;# für MacOS
 set ::gorilla::status [mc "Welcome to the Password Gorilla."]
+
+if { $DEBUG(TCLTEST) } {
+	set argv ""
+	source [file join $::gorillaDir .. unit-tests RunAllTests.tcl]
+}
