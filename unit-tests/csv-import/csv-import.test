@@ -1,4 +1,4 @@
-# gorilla-csv.test:  tests for the CSV module in Password Gorilla
+# csv-import.test:  tests for the CSV module in Password Gorilla
 #
 # This file contains a collection of tests for the password manager
 # Password Gorilla version 1.5.3.4
@@ -9,7 +9,7 @@
 # the test-unit in the tkcon terminal with:
 #
 # cd INSTALLPATH/unit-tests/csv-import
-# source gorilla-csv.test
+# source csv-import.test
 #
 # All stdout output will be seen in the tkcon terminal.
 #
@@ -41,7 +41,7 @@ package require tcltest 2.2
 set argv ""
 eval ::tcltest::configure $argv
 set testname [info script]
-puts "running $testname for Password Gorilla ...\n"
+# puts "running $testname for Password Gorilla ...\n"
 
 # ------------- sample -----------------
 #
@@ -61,8 +61,10 @@ puts "running $testname for Password Gorilla ...\n"
 namespace eval ::gorilla::test {
 	namespace import ::tcltest::*
 	
-	# CATEGORY: CSV
-	# ------------------
+	# CATEGORY: CSV-IMPORT
+	# --------------------
+
+	cd [testsDirectory]
 
 	test $testname-1.2 {File Open Error} \
     -setup { set ::DEBUG(CSVIMPORT) 1 } \
@@ -188,6 +190,8 @@ test $testname-2.3 { saved user } \
 # create-time last-access last-modified
 # last-pass-change lifetime notes password
 # url uuid
+
+cd [workingDirectory]
 		
 } ;# end of namespace eval ::gorilla::test
 
@@ -195,4 +199,4 @@ test $testname-2.3 { saved user } \
 # cleanup
 
 namespace delete ::gorilla::test
-puts "Tests for unit $testname finished."
+# puts "Tests for unit $testname finished."
