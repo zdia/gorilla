@@ -7688,6 +7688,7 @@ proc ::gorilla::conflict-dialog { conflict_list } {
 
 	# build toplevel and the outer tabset 
 	toplevel $top 
+	wm withdraw $top
 	wm title $top [ mc "Conflict Merge Tool" ]
 	# put the toplevel into the "hide these windows upon lock" array
 	set ::gorilla::toplevel($top) $top
@@ -7728,12 +7729,13 @@ proc ::gorilla::conflict-dialog { conflict_list } {
 		$tabs insert end $container -sticky news -text [ mc "Conflict %d" $seq ] -padding { 2m 2m 2m 0m }
 
 		# build out the actual "difference" view widgets within the container frame		
-		::gorilla::build-merge-widgets $container $ns $current_dbidx $merged_dbidx
+
+		set merge_widgets [ ::gorilla::build-merge-widgets $container $ns $current_dbidx $merged_dbidx ]
 
 		# now build a button frame to hold the control buttons for this tab
 		set bf [ ::ttk::frame ${container}.buttonf ]
 
-		grid [ ::ttk::button $bf.save   -text [ mc "Combine and Save" ] ] \
+		grid [ ::ttk::button $bf.save   -text [ mc "Combine and Save" ] -state disabled ] \
 		     [ ::ttk::button $bf.reset  -text [ mc "Reset Values"     ] ] \
 		     [ ::ttk::button $bf.ignore -text [ mc "Ignore Conflict"  ] ] -sticky news -padx {5m 5m}
 		grid columnconfigure $bf all -weight 1
@@ -7746,17 +7748,36 @@ proc ::gorilla::conflict-dialog { conflict_list } {
 
 		pack $feedback $bf -side bottom -pady {0m 2m} -fill x
 
-		# And a custom proc to handle setting the feedback message plus managing
-		# an after event to clear the message after twenty seconds
+		# Build a custom proc to handle setting the feedback message plus
+		# managing an after event to clear the message after twenty seconds
 		#
 		# Everything wrapped in "catch" because a user might close the window,
-		# thereby destroying it, before the after has fired.  The caches prevent
-		# errors in that situation.
-    
+		# thereby destroying it, before the after has fired.
+
 		proc ${ns}::feedback {message} [ string map [ list %feedback $feedback %ns $ns ] {
 			catch { %feedback configure -text $message }
 			catch { after cancel [ set %ns::feedback_after_id ] }
 			set %ns::feedback_after_id [ after 20000 {catch {%feedback configure -text ""}} ]
+		} ]
+
+		# Build a custom proc to handle changing the state of the save button from disabled to normal
+		# $merge_widgets format {rb1 en1 rb2 en2 item var}
+		# first extract the radio button shared variable names from the list, and setup a write trace to fire save-button-mgr
+		set rbvars [ list ]
+		foreach {rb1 en1 rb2 en2 item var} $merge_widgets {
+		  lappend rbvars $var
+		}
+		
+		proc ${ns}::save-button-mgr {args} [ string map [ list %rbvars $rbvars %savebutton $bf.save ] {
+			foreach rbvar {%rbvars} {
+				if { [ set $rbvar ] eq "" } {
+					# performing the disablment here prevents a "flashing" of the save button
+					# after it has been enabled once
+					%savebutton configure -state disabled
+					return
+				}
+			}
+			%savebutton configure -state normal
 		} ]
 
 	} ; # end foreach current_dbidx, merged_dbidx in conflict_list
@@ -7777,11 +7798,21 @@ proc ::gorilla::conflict-dialog { conflict_list } {
 	# closed
 	after 2000 [ subst -nocommands {catch {wm minsize $top [ winfo width $top ] [ winfo height $top ]} } ]
 
+	wm deiconify $top
+  
 } ; # end proc ::gorilla::conflict-dialog
 
 # ----------------------------------------------------------------------
 
 proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } {
+
+	# Builds the actual contents of each conflict tab in the tabset
+	#
+	# container - the outer "frame" into which to build the widgets
+	# ns - the namespace assigned to this conflict pair
+	# current_dbidx - the gorillaDB index value of the existing db entry
+	# merged_dbidx - the gorilalDB index value of the entry that was
+	# merged into this db and conflicted with an existing entry
 
 	set seq -1
 	
@@ -7792,66 +7823,80 @@ proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } 
 	                       password ::ttk::entry
 	                       notes    text } {
 	
-	  set labelframe [ ::ttk::labelframe ${container}.${item} -text [ mc [ string totitle $item ] ] ]
-	  
-	  set rb1 [ ::ttk::radiobutton ${labelframe}.rb1 -text [ mc Current ] -variable ${ns}::rb$item ]
-	  set en1 [ $widget            ${labelframe}.en1 -width 60 ]
-	  set rb2 [ ::ttk::radiobutton ${labelframe}.rb2 -text [ mc Merged  ] -variable ${ns}::rb$item ]
-	  set en2 [ $widget            ${labelframe}.en2 -width 60 ]
-	  
-	  grid $rb1 $en1 -sticky news 
-	  grid $rb2 $en2 -sticky news
-	  grid configure $rb1 -padx {2m 0m} -pady {0m 2m}
-	  grid configure $rb2 -padx {2m 0m} -pady {0m 2m}
-	  grid configure $en1 -padx {0m 2m} -pady {0m 2m}
-	  grid configure $en2 -padx {0m 2m} -pady {0m 2m}
+		set labelframe [ ::ttk::labelframe ${container}.${item} -text [ mc [ string totitle $item ] ] ]
 
-	  grid columnconfigure $labelframe 1 -weight 1
-	
-	  pack $labelframe -side top -pady {0m 2m} -fill x
+		# make sure the radiobutton -variable exists
+		set ${ns}::rb$item ""
+    
+		set rb1 [ ::ttk::radiobutton ${labelframe}.rb1 -text [ mc Current ] -variable ${ns}::rb$item ]
+		set en1 [ $widget            ${labelframe}.en1 -width 60 ]
+		set rb2 [ ::ttk::radiobutton ${labelframe}.rb2 -text [ mc Merged  ] -variable ${ns}::rb$item ]
+		set en2 [ $widget            ${labelframe}.en2 -width 60 ]
 
-	  # save entry/text names plus the db item for use later in filling the
-	  # widgets with data from the db
+		# The after idle calls below are necessary because the variable attached
+		# to the radio button is not set set until after this button release
+		# binding has fired.  The save-button-mgr proc queries the variable
+		# values to adjust the save button state.  An after idle firing will
+		# allow the variable to be set by the radio button bindings before
+		# save-button-mgr queries the same variable.
 
-	  lappend entries $rb1 $en1 $rb2 $en2 $item
-	  
-	  # special extras for entry/text widgets
-	  # the "-value" of the radio buttons is the command to execute to
-	  # retreive the data value that should be kept
-	  switch -exact -- $widget {
-	  	::ttk::entry {
-	  		$rb1 configure -value [ list $en1 get ]
-	  		$rb2 configure -value [ list $en2 get ]
-	  	}
-	    text {
-	    		$rb1 configure -value [ list $en1 get 0.0 end-1c ]
-			$rb2 configure -value [ list $en2 get 0.0 end-1c ]
-			# the max/min below constrains the height of the text widgets to be
-			# somewhere between 5 lines and 20 lines depending on the amount of
-			# data in the database notes field
-			set height [ max 5 \
-			           [ llength [ split [ ::gorilla::dbget $item $current_dbidx ] "\n" ] ] \
-			           [ llength [ split [ ::gorilla::dbget $item $merged_dbidx  ] "\n" ] ] \
-			]
-			$en1 configure -height [ min 20 $height ]
-			$en2 configure -height [ min 20 $height ]
+		bind $rb1 <ButtonRelease-1> +[ list after idle ${ns}::save-button-mgr ]
+		bind $rb2 <ButtonRelease-1> +[ list after idle ${ns}::save-button-mgr ]
+			  
+		grid $rb1 $en1 -sticky news 
+		grid $rb2 $en2 -sticky news
+		grid configure $rb1 -padx {2m 0m} -pady {0m 2m}
+		grid configure $rb2 -padx {2m 0m} -pady {0m 2m}
+		grid configure $en1 -padx {0m 2m} -pady {0m 2m}
+		grid configure $en2 -padx {0m 2m} -pady {0m 2m}
+
+		grid columnconfigure $labelframe 1 -weight 1
+			
+		pack $labelframe -side top -pady {0m 2m} -fill x
+
+		# save entry/text names, the db item number, and radio button variable
+		# name for use later in filling the widgets with data from the db and managing the save button
+
+		lappend entries $rb1 $en1 $rb2 $en2 $item ${ns}::rb$item
+			  
+		# special extras for entry/text widgets
+		# the "-value" of the radio buttons is the command to execute to
+		# retreive the data value that should be kept
+
+		switch -exact -- $widget {
+			::ttk::entry {
+				$rb1 configure -value [ list $en1 get ]
+				$rb2 configure -value [ list $en2 get ]
+			}
+			text {
+				$rb1 configure -value [ list $en1 get 0.0 end-1c ]
+				$rb2 configure -value [ list $en2 get 0.0 end-1c ]
+				# the max/min below constrains the height of the text widgets to be
+				# somewhere between 5 lines and 20 lines depending on the amount of
+				# data in the database notes field
+				set height [ max 5 \
+					   [ llength [ split [ ::gorilla::dbget $item $current_dbidx ] "\n" ] ] \
+					   [ llength [ split [ ::gorilla::dbget $item $merged_dbidx  ] "\n" ] ] \
+				]
+				$en1 configure -height [ min 20 $height ]
+				$en2 configure -height [ min 20 $height ]
+			}
 		}
-	}
 
-	} ; # end foreach item 
+	} ; # end foreach item,widget
 
 	# finally, now that we know all the widget names, build a reset proc that
 	# knows how to set the widgets and texts to the current data in the
 	# database and a save proc that knows how to extract data from the entries
 	# and save to the database
-	
+
 	proc ${ns}::reset-widgets {} [ string map [ list %entries $entries \
-	                                                 %current_dbidx $current_dbidx \
-	                                                 %merged_dbidx $merged_dbidx ] {
+							 %current_dbidx $current_dbidx \
+							 %merged_dbidx $merged_dbidx ] {
 
 		::gorilla::ArrangeIdleTimeout
+		foreach {rb1 en1 rb2 en2 item var} {%entries} {
 
-		foreach {rb1 en1 rb2 en2 item} {%entries} {
 			if { $item ne "notes" } {
 				$en1 delete 0 end
 				$en2 delete 0 end
@@ -7859,12 +7904,12 @@ proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } 
 				$en1 delete 0.0 end
 				$en2 delete 0.0 end
 			}
+
 			$en1 insert end [ ::gorilla::dbget $item %current_dbidx ]
 			$en2 insert end [ ::gorilla::dbget $item %merged_dbidx  ]
 
 			if { [ ::gorilla::dbget $item %current_dbidx ] eq [ ::gorilla::dbget $item %merged_dbidx ] } {
 				$rb1 invoke
-				$rb1 configure -style {}
 				$rb2 configure -style {}
 				[ winfo parent $rb1 ] configure -style {}
 			} else {
@@ -7874,11 +7919,15 @@ proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } 
 			}
 
 		}
-		
 	} ]
 
 	# and immediately call the reset proc to initially fill the widgets
+
 	${ns}::reset-widgets
+
+	# also build a proc to save the selected entries to the gorilla db,
+	# delete the duplicate conflicting db entry, and close out this
+	# tabset
 
 	proc ${ns}::save-data-to-db { current_dbidx merged_dbidx current_tree_node merged_tree_node container tabs} [ string map [ list %ns $ns ] {
 
@@ -7912,6 +7961,11 @@ proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } 
 		::gorilla::remove-from-conflict-list $current_dbidx $merged_dbidx $current_tree_node $merged_tree_node
 
 	} ] ; # end proc {ns}::save-data-to-db
+
+	# return the widget names to our caller so it can make use of them
+	# to adjust the state of the "save" button
+
+	return $entries
   
 } ; # end proc ::gorilla::build-merge-widgets
 
@@ -7929,7 +7983,7 @@ proc ::gorilla::merge-destroy { container tabset } {
 
 	::gorilla::ArrangeIdleTimeout
 
-  set top [ winfo toplevel $container ]
+	set top [ winfo toplevel $container ]
 
 	destroy $container
 
