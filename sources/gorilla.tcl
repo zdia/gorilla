@@ -1398,10 +1398,14 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		update
 
     #
-    # Re-enable the main menu.
+    # Re-enable the main menu.  The UpdateMenu call is needed to adjust the
+    # individual menu entries based upon gorilla internal status.  Otherwise
+    # every menu entry becomes enabled, even if it does not make sense for
+    # that entry to be enabled at this time.
     #
 
     setmenustate $::gorilla::widgets(main) all normal
+    UpdateMenu
 
     if {$::gorilla::guimutex == 2} {
 			# Cancel
