@@ -1,3 +1,5 @@
+See https://github.com/zdia/gorilla/wiki for next changes
+
 - Password Gorilla 1.5 (29.11.2009)
 	- Add support for msgcat localisation
 	- Added German translation
