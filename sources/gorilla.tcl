@@ -2275,10 +2275,21 @@ namespace eval ::gorilla::LoginDialog {
 				variable group
 				variable rn
 				variable treenode
+				variable url
+				variable user
         
 				if { 0 == [ string length [ string trim $title ] ] } {
-					feedback [ mc "This login must have a title." ]
-					return
+					# use url, if none use username
+					if { 0 < [ string length [ string trim $url ] ] } {
+						set title $url
+					} else {
+						if { 0 == [ string length [ string trim $user ] ] } {
+							feedback [ mc "This login must have a title, url or username." ]
+							return
+						} else {
+							set title $user
+						}
+					}
 				}
 
 				if { [ catch { ::pwsafe::db::splitGroup $group } ] } {
