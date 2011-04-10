@@ -4094,86 +4094,86 @@ proc gorilla::Merge {} {
 	}
 	UpdateMenu
 
-		$text configure -state normal
-		$text delete 1.0 end
-		$text tag delete {*}[ $text tag names ]
+	$text configure -state normal
+	$text delete 1.0 end
+	$text tag delete {*}[ $text tag names ]
 
-		$text insert end $message
-		$text insert end "\n\n"
+	$text insert end $message
+	$text insert end "\n\n"
 
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "Conflicts\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "Conflicts\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "\n"
 
-		set seq 0
-		set default_cursor [ lindex [ $text configure -cursor ] 3 ]
+	set seq 0
+	set default_cursor [ lindex [ $text configure -cursor ] 3 ]
 
-		if {[llength $conflictReport] > 0} {
-			foreach report $conflictReport {
-				$text tag configure link$seq -foreground blue -underline true
+	if {[llength $conflictReport] > 0} {
+		foreach report $conflictReport {
+			$text tag configure link$seq -foreground blue -underline true
 
-				$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
-				$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
-				$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ]
-									::gorilla::ViewEntry [ lindex $report 2 ]"
+			$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
+			$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
+			$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ]
+								::gorilla::ViewEntry [ lindex $report 2 ]"
 
-				$text insert end "[ lindex $report 0 ]\n" link$seq
-				incr seq
-			}
-		} else {
-			$text insert end "None.\n"
+			$text insert end "[ lindex $report 0 ]\n" link$seq
+			incr seq
 		}
+	} else {
+		$text insert end "None.\n"
+	}
 
-		$text insert end "\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "Added Logins\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "\n"
+	$text insert end "\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "Added Logins\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "\n"
 
-		if {[llength $addedReport] > 0} {
-			foreach report $addedReport {
-			        $text tag configure link$seq -foreground blue -underline true
+	if {[llength $addedReport] > 0} {
+		foreach report $addedReport {
+			$text tag configure link$seq -foreground blue -underline true
 
-				$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
-				$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
-				$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ] "
+			$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
+			$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
+			$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ] "
 
-				$text insert end "[ lindex $report 0 ]\n" link$seq
-				incr seq
-			}
-		} else {
-			$text insert end "None.\n"
+			$text insert end "[ lindex $report 0 ]\n" link$seq
+			incr seq
 		}
-		$text insert end "\n"
+	} else {
+		$text insert end "None.\n"
+	}
+	$text insert end "\n"
 
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "Identical Logins\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "\n"
-		if {[llength $identicalReport] > 0} {
-			foreach report $identicalReport {
-				$text insert end $report
-				$text insert end "\n"
-			}
-		} else {
-			$text insert end "None.\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "Identical Logins\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "\n"
+	if {[llength $identicalReport] > 0} {
+		foreach report $identicalReport {
+			$text insert end $report
+			$text insert end "\n"
 		}
-		$text insert end "\n"
+	} else {
+		$text insert end "None.\n"
+	}
+	$text insert end "\n"
 
-		$text configure -state disabled
+	$text configure -state disabled
 
-		update idletasks
-		wm deiconify $top
-		raise $top
-#		focus $botframe.but
-}
+	update idletasks
+	wm deiconify $top
+	raise $top
+#	focus $botframe.but
+} ; # end ::gorilla::Merge
 
 
 proc gorilla::Save {} {
