@@ -4049,16 +4049,21 @@ proc gorilla::Merge {} {
 		grid columnconfigure $top.dummy 0 -weight 1
 		grid rowconfigure $top.dummy 0 -weight 1
 		
-		set botframe [ttk::frame $top.botframe]
-		set botbut1 [ttk::button $botframe.but1 -text [mc "Resolve Conflicts"] \
-			-command [ string map [ list %mcb $botframe.but1 ] {
+		set botframe [ ttk::frame  $top.botframe ]
+		set botbut1  [ ttk::button $botframe.resolve -text [ mc "Resolve Conflicts" ] -state disabled \
+			-command [ list catch {::gorilla::conflict-dialog $::gorilla::merge_conflict_data} ] ]
+
+		trace add variable ::gorilla::merge_conflict_data write [ list apply [ list args [ string map [ list %rcb $botbut1 ] {
 				if { ( ! [ info exists ::gorilla::merge_conflict_data ] ) ||
-			                ( [ llength $::gorilla::merge_conflict_data ] == 0 ) } {
-			                	%mcb configure -state disabled
+				     ( [ llength $::gorilla::merge_conflict_data ] == 0 ) } {
+				    %rcb configure -state disabled
+				    # also turn off File->Resolve Conflicts menu entry
+				    ::gorilla::UpdateMenu
 					} else {
-						catch {::gorilla::conflict-dialog $::gorilla::merge_conflict_data} 
+						%rcb configure -state normal
 					}
-				} ] ]
+				} ] ] ]
+
 		set botbut2 [ttk::button $botframe.but2 -text [mc "Close"] \
 			-command "gorilla::DestroyMergeReport"]
 		grid $botbut1 $botbut2
@@ -8006,18 +8011,19 @@ proc ::gorilla::remove-from-conflict-list { current_dbidx merged_dbidx current_t
 		# An O(N) complexity removal for now - thankfully this list will be no
 		# longer than the number of password entries, and so the O(N) complexity
 		# factor should not be a huge loss.
-		
-		# the "junk [ unset ... ]" part of the foreach creates a form of "update
-		# in place"
 
-		foreach {a b c d} $::gorilla::merge_conflict_data junk [ unset ::gorilla::merge_conflict_data ] {
+		set temp [ list ]
+		
+		foreach {a b c d} $::gorilla::merge_conflict_data {
 		  if { ( $a ne $current_dbidx     ) &&
 		       ( $b ne $merged_dbidx      ) &&
 		       ( $c ne $current_tree_node ) &&
 		       ( $d ne $merged_tree_node  ) } {
-				lappend ::gorilla::merge_conflict_data $a $b $c $d
+				lappend temp $a $b $c $d
 			}
 		}
+
+		set ::gorilla::merge_conflict_data  $temp
 
 } ; # end proc ::gorilla::remove-from-conflict-list
 
