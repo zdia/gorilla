@@ -4019,6 +4019,18 @@ proc gorilla::Merge {} {
 		set icon "info"
 	}
 
+	# Build a list suitable for passing to ::gorilla::conflict-dialog and
+	# save it to the global "conflicts" variable.  This is so that
+	# someone can resolve conflicts "later" if they just want to get on
+	# with merging right now.  Also append to anything that might be
+	# already present, allowing multiple sequential merges to then all
+	# be conflict resolved from a single dialog.
+
+	foreach {item} $conflictReport {
+		lappend ::gorilla::merge_conflict_data [ lindex $item 2 ] [ lindex $item 1 ] [ lindex $item 4 ] [ lindex $item 3 ]
+	}
+	UpdateMenu
+
 	set answer [tk_messageBox -parent . -type yesno \
 		-icon $icon -default $default \
 		-title "Merge Results" \
@@ -4087,17 +4099,6 @@ proc gorilla::Merge {} {
 		set botframe "$top.botframe"
 	}
 
-	# Build a list suitable for passing to ::gorilla::conflict-dialog and
-	# save it to the global "conflicts" variable.  This is so that
-	# someone can resolve conflicts "later" if they just want to get on
-	# with merging right now.  Also append to anything that might be
-	# already present, allowing multiple sequential merges to then all
-	# be conflict resolved from a single dialog.
-
-	foreach {item} $conflictReport {
-		lappend ::gorilla::merge_conflict_data [ lindex $item 2 ] [ lindex $item 1 ] [ lindex $item 4 ] [ lindex $item 3 ]
-	}
-	UpdateMenu
 
 	$text configure -state normal
 	$text delete 1.0 end
