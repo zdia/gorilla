@@ -158,6 +158,7 @@ auto_path dir contents:
 load-package msgcat
 
 namespace import msgcat::*
+
 # mcload [file join $::gorillaDir msgs]
 # mcload has to be called after having set 'mclocale' which will happen
 # during initialization of Gorilla's preferences
@@ -173,11 +174,11 @@ foreach file {isaac.tcl viewhelp.tcl} {
 	if {[catch {source [file join $::gorillaDir $file]} oops]} {
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
-			-title "Need $file" \
-			-message "The Password Gorilla requires the \"$file\"\
+			-title [ mc "Need %s" $file ] \
+			-message [ mc "The Password Gorilla requires the \"%s\"\
 			package. This seems to be an installation problem, as\
 			this file ought to be part of the Password Gorilla\
-			distribution."
+			distribution.\n\nError message: %s" $file $oops ]
 		exit 1
 	}
 }
@@ -204,17 +205,10 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 # Check the subdirectories for needed packages
 #
 
-# Set our own install directory as first element in auto_path, so that local
-# items will be found before system installed items
-set auto_path [ list $::gorillaDir {*}$auto_path ]
-
-foreach subdir { sha1 blowfish twofish pwsafe itcl3.4 msgs tooltip csv } {
-	set testDir [file join $::gorillaDir $subdir]
-	if {[file isdirectory $testDir]} {
-		lappend auto_path $testDir
-	}
-	# else error "can't find $testDir"
-}
+# Set our own install directory and our local tcllib directory as first
+# elements in auto_path, so that local items will be found before system
+# installed items
+set auto_path [ list $::gorillaDir [ file join $::gorillaDir tcllib ] {*}$auto_path ]
 
 #
 # Look for Itcl
@@ -226,19 +220,19 @@ if {[catch {package require Itcl} oops]} {
 	#
 	wm withdraw .
 	tk_messageBox -type ok -icon error -default ok \
-		-title "Need \[Incr Tcl\]" \
-		-message "The Password Gorilla requires the \[incr Tcl\]\
-		add-on to Tcl. Please install the \[incr Tcl\] package."
+		-title [ mc "Need \[Incr Tcl\]" ] \
+		-message [ mc "The Password Gorilla requires the \[incr Tcl\]\
+		add-on to Tcl. Please install the \[incr Tcl\] package.\n\nError Message: %s" $oops ]
 	exit 1
 }
 
 if {[catch {package require pwsafe} oops]} {
 	wm withdraw .
 	tk_messageBox -type ok -icon error -default ok \
-		-title "Need PWSafe" \
-		-message "The Password Gorilla requires the \"pwsafe\" package.\
+		-title [ mc "Need PWSafe" ] \
+		-message [ mc "The Password Gorilla requires the \"pwsafe\" package.\
 		This seems to be an installation problem, as the pwsafe package\
-		ought to be part of the Password Gorilla distribution."
+		ought to be part of the Password Gorilla distribution.\n\nError Message: %s" $oops ]
 	exit
 	# exit 1 ;# needs testing on the Mac. It seems that
 	# the parameter 1 is setting gorilla.tcl's filelength to 0
