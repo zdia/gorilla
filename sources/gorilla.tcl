@@ -7810,6 +7810,37 @@ proc ::gorilla::conflict-dialog { conflict_list } {
 
 # ----------------------------------------------------------------------
 
+proc text+vsb {path args} {
+
+	# Creates a text plus vertical scrollbar combo widget.
+	#
+	# path - the path name to create.  This will also be the name that is used
+	# to access the embedded text widget
+	# args - additional arguments, passed directly to the embedded text widget
+	#
+	# returns the input $path name
+		
+	ttk::frame $path
+	set text [ text ${path}.text {*}$args ]
+	set vsb  [ ttk::scrollbar ${path}.vsb -orient vertical -command [ list $text yview ] ]
+	$text configure -yscrollcommand [ list $vsb set ]
+
+	grid $text $vsb -sticky news
+	grid columnconfigure $path 0 -weight 1
+	grid rowconfigure    $path 0 -weight 1
+
+	# Now map the frame name to access the internal text widget instead of the
+	# frame.  But first hide the frame name so it does not get destroyed as
+	# part of the remapping
+
+	rename $path $path.text.frame
+	interp alias {} $path {} $text
+	
+	return $path
+} ; # end proc text+vsb
+
+# ----------------------------------------------------------------------
+
 proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } {
 
 	# Builds the actual contents of each conflict tab in the tabset
@@ -7827,17 +7858,17 @@ proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } 
 	                       url      ::ttk::entry
 	                       username ::ttk::entry
 	                       password ::ttk::entry
-	                       notes    text } {
+	                       notes    text+vsb } {
 	
 		set labelframe [ ::ttk::labelframe ${container}.${item} -text [ mc [ string totitle $item ] ] ]
 
 		# make sure the radiobutton -variable exists
 		set ${ns}::rb$item ""
-    
-		set rb1 [ ::ttk::radiobutton ${labelframe}.rb1 -text [ mc Current ] -variable ${ns}::rb$item ]
-		set en1 [ $widget            ${labelframe}.en1 -width 60 ]
-		set rb2 [ ::ttk::radiobutton ${labelframe}.rb2 -text [ mc Merged  ] -variable ${ns}::rb$item ]
-		set en2 [ $widget            ${labelframe}.en2 -width 60 ]
+
+		set en1 [ $widget ${labelframe}.en1 -width 60 ]
+		set en2 [ $widget ${labelframe}.en2 -width 60 ]
+		set rb1 [ ::ttk::radiobutton ${labelframe}.rb1 -text [ mc Current ] -variable ${ns}::rb$item -value [ list $en1 get ] ]
+		set rb2 [ ::ttk::radiobutton ${labelframe}.rb2 -text [ mc Merged  ] -variable ${ns}::rb$item -value [ list $en2 get ] ]
 
 		# The after idle calls below are necessary because the variable attached
 		# to the radio button is not set set until after this button release
@@ -7865,29 +7896,23 @@ proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } 
 
 		lappend entries $rb1 $en1 $rb2 $en2 $item ${ns}::rb$item
 			  
-		# special extras for entry/text widgets
-		# the "-value" of the radio buttons is the command to execute to
-		# retreive the data value that should be kept
+		# special extras for text widgets
 
-		switch -exact -- $widget {
-			::ttk::entry {
-				$rb1 configure -value [ list $en1 get ]
-				$rb2 configure -value [ list $en2 get ]
-			}
-			text {
-				$rb1 configure -value [ list $en1 get 0.0 end-1c ]
-				$rb2 configure -value [ list $en2 get 0.0 end-1c ]
-				# the max/min below constrains the height of the text widgets to be
-				# somewhere between 5 lines and 20 lines depending on the amount of
-				# data in the database notes field
-				set height [ max 5 \
-					   [ llength [ split [ ::gorilla::dbget $item $current_dbidx ] "\n" ] ] \
-					   [ llength [ split [ ::gorilla::dbget $item $merged_dbidx  ] "\n" ] ] \
-				]
-				$en1 configure -height [ min 20 $height ]
-				$en2 configure -height [ min 20 $height ]
-			}
-		}
+		if { $widget eq "text+vsb" } {
+			$rb1 configure -value [ list $en1 get 0.0 end-1c ]
+			$rb2 configure -value [ list $en2 get 0.0 end-1c ]
+
+			# the max/min below constrains the height of the text widgets to be
+			# somewhere between 5 lines and 10 lines depending on the amount of
+			# data in the database notes field
+			set height [ max 5 \
+				   [ llength [ split [ ::gorilla::dbget $item $current_dbidx ] "\n" ] ] \
+				   [ llength [ split [ ::gorilla::dbget $item $merged_dbidx  ] "\n" ] ] \
+			]
+			$en1 configure -height [ min 10 $height ]
+			$en2 configure -height [ min 10 $height ]
+
+		} ; # end if text
 
 	} ; # end foreach item,widget
 
