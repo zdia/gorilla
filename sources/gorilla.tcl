@@ -7900,23 +7900,42 @@ proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } 
 
 		lappend entries $rb1 $en1 $rb2 $en2 $item ${ns}::rb$item
 			  
-		# special extras for text widgets
+		# special extras for text widgets and password entry
 
-		if { $widget eq "text+vsb" } {
-			$rb1 configure -value [ list $en1 get 0.0 end-1c ]
-			$rb2 configure -value [ list $en2 get 0.0 end-1c ]
+		switch $item {
+			notes {
 
-			# the max/min below constrains the height of the text widgets to be
-			# somewhere between 5 lines and 10 lines depending on the amount of
-			# data in the database notes field
-			set height [ max 5 \
-				   [ llength [ split [ ::gorilla::dbget $item $current_dbidx ] "\n" ] ] \
-				   [ llength [ split [ ::gorilla::dbget $item $merged_dbidx  ] "\n" ] ] \
-			]
-			$en1 configure -height [ min 10 $height ]
-			$en2 configure -height [ min 10 $height ]
+				$rb1 configure -value [ list $en1 get 0.0 end-1c ]
+				$rb2 configure -value [ list $en2 get 0.0 end-1c ]
 
-		} ; # end if text
+				# the max/min below constrains the height of the text widgets to be
+				# somewhere between 5 lines and 10 lines depending on the amount of
+				# data in the database notes field
+				set height [ max 5 \
+					   [ llength [ split [ ::gorilla::dbget $item $current_dbidx ] "\n" ] ] \
+					   [ llength [ split [ ::gorilla::dbget $item $merged_dbidx  ] "\n" ] ] \
+				]
+				$en1 configure -height [ min 10 $height ]
+				$en2 configure -height [ min 10 $height ]
+
+			# end notes arm
+			}
+
+			password {
+				$en1 configure -show *
+				$en2 configure -show *
+				foreach widget [ list $en1 $en2 ] {
+					bind $widget <Button-3> +[ list ::apply { {args} {
+						foreach win $args {
+							$win configure -show [ expr { [ $win cget -show ] eq "*" ? {} : "*" } ]
+						}
+					} } $en1 $en2 ]
+				} ; # end foreach widget
+
+			# end password arm
+			}
+
+		} ; # end switch item
 
 	} ; # end foreach item,widget
 
