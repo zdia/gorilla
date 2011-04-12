@@ -4062,23 +4062,27 @@ proc gorilla::Merge {} {
 		grid rowconfigure $top.dummy 0 -weight 1
 		
 		set botframe [ ttk::frame  $top.botframe ]
-		set botbut1  [ ttk::button $botframe.resolve -text [ mc "Resolve Conflicts" ] -state disabled \
+		set resolve_b  [ ttk::button $botframe.resolve -text [ mc "Resolve Conflicts" ] -state disabled \
 			-command [ list catch {::gorilla::conflict-dialog $::gorilla::merge_conflict_data} ] ]
 
-		trace add variable ::gorilla::merge_conflict_data write [ list apply [ list args [ string map [ list %rcb $botbut1 ] {
-				if { ( ! [ info exists ::gorilla::merge_conflict_data ] ) ||
-				     ( [ llength $::gorilla::merge_conflict_data ] == 0 ) } {
-				    %rcb configure -state disabled
-				    # also turn off File->Resolve Conflicts menu entry
-				    ::gorilla::UpdateMenu
-					} else {
-						%rcb configure -state normal
-					}
-				} ] ] ]
+		trace add variable ::gorilla::merge_conflict_data write [ list apply [ list args [ string map [ list %rcb $resolve_b ] {
+			if { ( ! [ info exists ::gorilla::merge_conflict_data ] ) ||
+			     ( [ llength $::gorilla::merge_conflict_data ] == 0 ) } {
+				%rcb configure -state disabled
+				# also turn off File->Resolve Conflicts menu entry
+				::gorilla::UpdateMenu
+			} else {
+				%rcb configure -state normal
+			}
+			} ] ] ]
 
-		set botbut2 [ttk::button $botframe.but2 -text [mc "Close"] \
+		if { [ llength $gorilla::merge_conflict_data ] > 0 } {
+			$resolve_b configure -state normal
+		}
+
+		set close_b [ttk::button $botframe.but2 -text [mc "Close"] \
 			-command "gorilla::DestroyMergeReport"]
-		grid $botbut1 $botbut2
+		grid $resolve_b $close_b
 		grid columnconfigure $botframe all -weight 1
 		pack $botframe -side top -fill x -pady 10
 		
