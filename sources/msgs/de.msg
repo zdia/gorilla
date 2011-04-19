@@ -36,8 +36,7 @@ mcmset de { \
 "Command line parameter (if any) to pass (optional):" "(Eventuelle) Parameter für die Kommandozeile (optional):" \
 "Confirm:" "Bestätigung:" \
 "Contributors" "Mitarbeiter" \
-"Copied Username to clipboard." "Benutzername in die Ablage kopiert." \
-"Copied Password to clipboard." "Passwort in die Ablage kopiert." \
+"Copied $what to clipboard." "$what in die Ablage kopiert." \
 "Copy Password" "Passwort kopieren" \
 "Copy Password to Clipboard" "Kopiere Passwort in die Zwischenablage" \
 "Copy URL" "URL kopieren" \
@@ -90,11 +89,11 @@ mcmset de { \
 "History deleted. After a restart the list will be empty." "Verlauf gelöscht. Nach einem Neustart ist die Liste leer." \
 "Iconify upon auto-lock" "Beim Sperren minimieren" \
 "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." "Wenn Parameter in der Aufrufzeile angegeben werden, muss der Platzhalter %url% angegeben werden. Er übergibt die URL des Login-Eintrags an den Browser. Mehr in der Hilfe." \
-"Include \"Notes\" field" "Include \"Notes\" field" \
+"Include \"Notes\" field" "Notes-Feld exportieren" \
 "Include password field" "Passwort-Feld exportieren" \
 "Language:" "Sprache:" \
 "Last Modified:" "Letzte Änderung:" \
-"Last Password Change:" "Letzte Änderung des Passworts:" \
+"Last Password Change:" "Letzte Passwortänderung:" \
 "Launch Browser directed to URL" "Starte den Browser direkt mit der URL" \
 "Launched browser:" "Gestarteter Browser:" \
 "License" "Lizenz" \
@@ -121,7 +120,7 @@ mcmset de { \
 "New login added." "Neuer Login angelegt." \
 "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." \
 "Notes" "Notizen" \
-"Notes:" "Notizen:" \
+"Notes:" "Notizen" \
 "Oh well..." "Na gut ..." \
 "Open ..." "Öffnen ..." \
 "Open Password Database" "Passwort-Datenbank öffnen" \
@@ -194,6 +193,11 @@ nicht beachten" \
 "database names" "Datenbanknamen" \
 "minutes (0=never)" "Minuten (0=niemals)" \
 "seconds (0=never)" "Sekunden (0=nie)" \
-"Hide login name in tree view" "Hide login name in tree view"
-"This option takes effect after exiting\nand restarting of Password Gorilla" "This option takes effect after exiting\nand restarting of Password Gorilla"
+"Resolve Conflicts ..." "Konflikte bereinigen ..." \
+"OK" "OK" \
+"Password database /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 loaded." "" \
+"Welcome to the Password Gorilla." "Password Gorilla ist bereit." \
+"Hide login name in tree view" "Loginname in der Übersicht verbergen" \
+"This option takes effect after exiting\nand restarting of Password Gorilla" "Diese Option wird nach einem Neustart Password Gorillas aktiv." \
+"Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" "Gorilla schützt Passwörter und verwaltet sie mit einer Pwsafe 3.2 kompatiblen Datenbank." \
 }
