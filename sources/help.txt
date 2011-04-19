@@ -856,7 +856,7 @@ f29b9ef7-9e62-41e1-7dfd-14ae13986059,Group 2,A Title,A User Name,A Password,A no
 title: DB Merging
 
 Password Gorilla also has the ability to merge separate PWsafe databases
-together into a single database.  This feature is most useful is you
+together into a single database.  This feature is most useful if you
 maintain the same password file on multiple computers, say a desktop and
 laptop machine.  As you go about your daily routine, you can make changes to
 either file, and then periodically merge the two different databases together to

@@ -4076,7 +4076,7 @@ proc gorilla::Merge {} {
 			}
 			} ] ] ]
 
-		if { [ llength $gorilla::merge_conflict_data ] > 0 } {
+		if { [ llength $::gorilla::merge_conflict_data ] > 0 } {
 			$resolve_b configure -state normal
 		}
 
