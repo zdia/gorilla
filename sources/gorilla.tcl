@@ -6274,7 +6274,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 		}
 
 		ArrangeToClearClipboard $mult
-		set ::gorilla::status [ mc "Copied $what to clipboard." ]
+		set ::gorilla::status [ mc "Copied %s to clipboard." [ mc $what ] ]
 		
 	} ; # end if item == ""
 

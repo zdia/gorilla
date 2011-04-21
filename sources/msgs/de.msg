@@ -36,7 +36,7 @@ mcmset de { \
 "Command line parameter (if any) to pass (optional):" "(Eventuelle) Parameter für die Kommandozeile (optional):" \
 "Confirm:" "Bestätigung:" \
 "Contributors" "Mitarbeiter" \
-"Copied $what to clipboard." "$what in die Ablage kopiert." \
+"Copied %s to clipboard." "%s in die Ablage kopiert." \
 "Copy Password" "Passwort kopieren" \
 "Copy Password to Clipboard" "Kopiere Passwort in die Zwischenablage" \
 "Copy URL" "URL kopieren" \
