@@ -314,7 +314,7 @@ proc gorilla::Init {} {
 		findInUsername         { 1       { {value} { string is boolean $value } }                                             }
 		findThisText           { {}      { {value} { return true } }                                                          }
 		fontsize               { 10      { {value} { string is integer $value } }                                             }
-		gorillaAutocopy        { 1       { {value} { string is boolean $value } }                                             }
+		gorillaAutocopy        { 0       { {value} { string is boolean $value } }                                             }
 		gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
 		hideLogins             { 0       { {value} { string is boolean $value } }                                             }
 		iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
