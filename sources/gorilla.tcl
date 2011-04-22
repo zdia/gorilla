@@ -1463,6 +1463,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		#
 		# If the current database was modified, give user a chance to think
 		#
+
 	if {$::gorilla::dirty} {
 		set answer [tk_messageBox -parent . \
 			-type yesnocancel -icon warning -default yes \
@@ -1487,7 +1488,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		}
 	}
 
-	if { $::DEBUG(TCLTEST) } {
+	if { $::DEBUG(TEST) } {
 		# Skip OpenDialog
 		set ::gorilla::collectedTicks [list [clock clicks]]
 		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
@@ -7662,7 +7663,10 @@ if {$::gorilla::init == 0} {
 
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
-	array set ::DEBUG { TCLTEST 0 }
+	array set ::DEBUG { \
+		TCLTEST 0 \
+		TEST 0 \
+	}
 
 	# set argc [llength $argv]	;# obsolete
 
@@ -7725,8 +7729,12 @@ if {$::gorilla::init == 0} {
 				}			
 			}
 			--tcltest {
-				# TCLTEST 1: skip the OpenDatabase dialog for automatic loading of testdb.psafe3
-				array set ::DEBUG { TCLTEST 1 CSVIMPORT 0 }
+				# TCLTEST 1 and TEST 1:
+				# skip the OpenDatabase dialog and load testdb.psafe3
+				array set ::DEBUG { TCLTEST 1 TEST 1 CSVIMPORT 0 }
+			}
+			--test {
+				array set ::DEBUG { TEST 1 }
 			}
 			default {
 				if {$haveDatabaseToLoad} {
@@ -7764,7 +7772,6 @@ wm deiconify .
 raise .
 update
 
-# exec say [mc "Welcome to the Password Gorilla."]	;# für MacOS
 set ::gorilla::status [mc "Welcome to the Password Gorilla."]
 
 if { $DEBUG(TCLTEST) } {
