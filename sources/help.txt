@@ -260,6 +260,18 @@ occurrence of a paste operation.  Without OS support to determine that a
 paste operation has occurred, Gorilla has no way to know when to
 subsequently copy a login's password to the clipboard.
 
+ | Additionally, this option interacts badly with clipboard management
+applications, e.g. xclipboard.  Clipboard management programs function by
+performing an automatic paste as soon as data is placed into the clipboard,
+which fools Password Gorilla into believing that a paste into a web-site
+login field has occurred.  The result of this bad interaction is that the
+Password Gorilla status line will flash "Username copied..." followed
+immediately by "Password copied...".  If this occurs, there are only two
+solutions:
+
+ | 1) Disable this option in Password Gorilla
+ | 2) Disable the clipboard manager program which is interfering
+
 -------------------
 title: Database Default Preferences
 
