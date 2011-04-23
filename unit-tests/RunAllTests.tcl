@@ -16,18 +16,16 @@ package require tcltest 2.2
 
 # default search path is the actual working directory
 tcltest::workingDirectory [file dirname [file normalize [info script]]]
-tcltest::singleProcess 1
-# tcltest::skipDirectories [tcltest::workingDirectory]
-# tcltest::match *.test
+tcltest::singleProcess 1	;# environment will be used
 
-# set argv ""
-# eval tcltest::configure $argv
+set testFolderList [list csv-import csv-export]
 
-# If a file named all.tcl is found in a subdirectory of the scanned
-# test directory, it will be sourced in the caller's context.
+foreach testFolder $testFolderList {
+	cd [file join [tcltest::workingDirectory] $testFolder]
+	set testList [glob *.test]
+	foreach testFile $testList {
+		source $testFile
+	}
+	cd ..
+}
 
-
-# cd csv-import
-
-tcltest::testsDirectory [file join [tcltest::workingDirectory] csv-import ]
-tcltest::runAllTests
