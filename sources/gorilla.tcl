@@ -5618,13 +5618,15 @@ proc gorilla::PreferencesDialog {} {
 		set sizes "8 9 10 11 12 14 16"
 		foreach {size} $sizes {
 			$m add radio -label $size -variable ::gorilla::prefTemp(fontsize) -value $size \
-				-command "
+				-command [ list ::apply { {size} {
 					font configure TkDefaultFont -size $size
 					font configure TkTextFont    -size $size
 					font configure TkMenuFont    -size $size
 					font configure TkCaptionFont -size $size
 					font configure TkFixedFont   -size $size
-					ttk::style configure gorilla.Treeview -rowheight [expr {$size * 2}]"
+					# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
+					ttk::style configure gorilla.Treeview -rowheight [ font metrics TkDefaultFont -linespace ]
+					} } $size ]
 		}
 		
 		pack $display.size.label $display.size.mb -side left
@@ -6125,7 +6127,8 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	font configure TkCaptionFont -size $value
 	font configure TkFixedFont   -size $value
 	# undocumented option for ttk::treeview
-	ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
+	# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
+	ttk::style configure gorilla.Treeview -rowheight [ font metrics TkDefaultFont -linespace ]
 
 	#
 	# If the revision numbers of our preferences don't match, forget
