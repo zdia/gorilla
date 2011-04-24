@@ -23,7 +23,7 @@ puts "Running $testname for Password Gorilla ..."
 #
 # proc TestProcedure { item } { return $item }
 # 
-# test gorilla-0.2 {initial test} \
+# test gorilla-0.2 { description } \
 # 	-setup { set item FALSE } \
 # 	-body { TestProcedure $item } \
 # 	-result OK \

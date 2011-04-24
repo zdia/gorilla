@@ -3256,19 +3256,24 @@ proc gorilla::Export {} {
 	}
 
 	setup-default-dirname
-		
-	set types {
-		{{CSV Files} {.csv}}
-		{{Text Files} {.txt}}
-		{{All Files} *}
-	}
 
-	set fileName [ tk_getSaveFile -parent . \
-		-title [ mc "Export password database as text ..." ] \
-		-defaultextension ".csv" \
-		-filetypes $types \
-		-initialdir $::gorilla::dirName ]
+	if { $::DEBUG(CSVEXPORT) } {
+		set fileName testexport.csv
+	} else {
+		set types {
+			{{CSV Files} {.csv}}
+			{{Text Files} {.txt}}
+			{{All Files} *}
+		}
 
+		set fileName [ tk_getSaveFile -parent . \
+			-title [ mc "Export password database as text ..." ] \
+			-defaultextension ".csv" \
+			-filetypes $types \
+			-initialdir $::gorilla::dirName ]
+
+	};# end if $::DEBUG(CSVEXPORT)
+	
 	if {$fileName == ""} {
 		return
 	}
@@ -3307,7 +3312,9 @@ proc gorilla::Export {} {
 	                    [ expr { $::gorilla::preference(exportIncludePassword) ? "password" : "" } ] \
 	                    [ expr { $::gorilla::preference(exportIncludeNotes)    ? "notes"    : "" } ] ]
 
-	puts $txtFile [ ::csv::join $csv_data $separator ]
+puts $csv_data
+	# puts $txtFile [ ::csv::join $csv_data $separator ]
+	puts [ ::csv::join $csv_data $separator ]
 
 	# now output the contents of the database
 
@@ -3329,7 +3336,8 @@ proc gorilla::Export {} {
 			lappend csv_data [ string map {\\ \\\\ \n \\n} [ dbget notes $rn ] ]
 		}
 
-		puts $txtFile [ ::csv::join $csv_data $separator ]
+		# puts $txtFile [ ::csv::join $csv_data $separator ]
+		puts [ ::csv::join $csv_data $separator ]
 
 	} ; # end foreach rn in gorilla db
 
@@ -3337,6 +3345,8 @@ proc gorilla::Export {} {
 	. configure -cursor $myOldCursor
 	::gorilla::Feedback [ mc "Database exported." ]
 
+	return GORILLA_OK
+	
 } ; # end proc gorilla::Export
 
 # ----------------------------------------------------------------------
@@ -3607,7 +3617,7 @@ proc gorilla::setup-default-dirname { } {
 		if { [ tk windowingsystem ] == "aqua" } {
 			set ::gorilla::dirName "~/Documents"
 		} else {
-		# Windows-Abfrage auch nötig ...
+		# pay attention to Windows environment
 			set ::gorilla::dirName [ pwd ]
 		}
 	}
@@ -7663,9 +7673,11 @@ if {$::gorilla::init == 0} {
 
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
-	array set ::DEBUG { \
+	array set ::DEBUG {
 		TCLTEST 0 \
 		TEST 0 \
+		CSVEXPORT 0 \
+		CSVIMPORT 0 \
 	}
 
 	# set argc [llength $argv]	;# obsolete
@@ -7731,7 +7743,7 @@ if {$::gorilla::init == 0} {
 			--tcltest {
 				# TCLTEST 1 and TEST 1:
 				# skip the OpenDatabase dialog and load testdb.psafe3
-				array set ::DEBUG { TCLTEST 1 TEST 1 CSVIMPORT 0 }
+				array set ::DEBUG { TCLTEST 1 TEST 1 }
 			}
 			--test {
 				array set ::DEBUG { TEST 1 }

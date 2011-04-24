@@ -195,7 +195,6 @@ namespace eval ::gorilla::test {
 	# cleanup
 	set ::gorilla::dirty 0
 	gorilla::Open testdb.psafe3
-	cleanupTests
 	
 } ;# end of namespace eval ::gorilla::test
 

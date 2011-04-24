@@ -40,13 +40,30 @@ namespace eval ::gorilla::test {
 	# CATEGORY: CSV-EXPORT
 	# --------------------
 
-	# test $testname-1.2 {File Open Error} \
-    # -setup { set ::DEBUG(CSVIMPORT) 1 } \
-    # -body { gorilla::Import unknown.csv } \
-    # -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
-    # -result GORILLA_OPENERROR
+# create a testexport.csv					ok
+# test gorilla::Feedback
+# test encoding
+# correct separator?
+# test csv-header
+# csv package loaded?
+# Notes - need to escape newlines and slashes.  The CSV module will
+# handle escaping commas and double quotes
 
-	cleanupTests
+	# global setup
+	set ::gorilla::preference(exportShowWarning) 0
+	# set ::DEBUG(CSVEXPORT) 1
+	
+	test $testname-1.0 {general test creating testexport.csv} \
+    -setup { set ::DEBUG(CSVEXPORT) 1 } \
+    -body { gorilla::Export } \
+    -cleanup { set ::DEBUG(CSVEXPORT) 0 } \
+    -result GORILLA_OK
+
+	# global cleanup
+	set ::gorilla::preference(exportShowWarning) 1
+	# set ::DEBUG(CSVEXPORT) 0
+
+	cleanupTests	;# will give the results and exit 
 	
 } ;# end of namespace eval ::gorilla::test
 
