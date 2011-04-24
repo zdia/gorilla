@@ -3302,9 +3302,15 @@ proc gorilla::Export {} {
 	# output a csv header describing what data values are present in each
 	# column of the csv file
 
-	set csv_data [ list uuid group title url user \
-	                    [ expr { $::gorilla::preference(exportIncludePassword) ? "password" : "" } ] \
-	                    [ expr { $::gorilla::preference(exportIncludeNotes)    ? "notes"    : "" } ] ]
+	set csv_data [ list uuid group title url user ] 
+
+	if { $::gorilla::preference(exportIncludePassword) } { 
+		lappend csv_data password
+	}
+
+	if { $::gorilla::preference(exportIncludeNotes) } {
+		lappend csv_data notes
+	}
 
 	puts $txtFile [ ::csv::join $csv_data $separator ]
 
