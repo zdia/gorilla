@@ -1,0 +1,73 @@
+# csv-export.test:  tests for the CSV export module in Password Gorilla
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+# -------------------------------------------------------------------------
+
+package require tcltest 2.2
+# set argv ""
+# eval ::tcltest::configure $argv
+set testname [info script]
+puts "------------------------------------------------------------------"
+puts "Running $testname for Password Gorilla ..."
+
+# ------------- sample -----------------
+#
+# proc TestProcedure { item } { return $item }
+# 
+# test gorilla-0.2 {initial test} \
+# 	-setup { set item FALSE } \
+# 	-body { TestProcedure $item } \
+# 	-result OK \
+# 	-cleanup { unset item }
+# 
+
+
+# -------------------------------------------------------------------------
+# work in a safe environment for testing purposes
+
+namespace eval ::gorilla::test {
+	namespace import ::tcltest::*
+	
+	# CATEGORY: CSV-EXPORT
+	# --------------------
+
+# create a testexport.csv					ok
+# test gorilla::Feedback
+# test encoding
+# correct separator?
+# test csv-header
+# csv package loaded?
+# Notes - need to escape newlines and slashes.  The CSV module will
+# handle escaping commas and double quotes
+
+	# global setup
+	set ::gorilla::preference(exportShowWarning) 0
+	# set ::DEBUG(CSVEXPORT) 1
+	
+	test $testname-1.0 {general test creating testexport.csv} \
+    -setup { set ::DEBUG(CSVEXPORT) 1 } \
+    -body { gorilla::Export } \
+    -cleanup { set ::DEBUG(CSVEXPORT) 0 } \
+    -result GORILLA_OK
+
+	# global cleanup
+	set ::gorilla::preference(exportShowWarning) 1
+	# set ::DEBUG(CSVEXPORT) 0
+
+	cleanupTests	;# will give the results and exit 
+	
+} ;# end of namespace eval ::gorilla::test
+
+# ----------------------------------------------------------------------
+# cleanup
+namespace delete ::gorilla::test
+puts "Tests for unit $testname finished."

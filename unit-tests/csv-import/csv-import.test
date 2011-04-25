@@ -41,7 +41,8 @@ package require tcltest 2.2
 # set argv ""
 # eval ::tcltest::configure $argv
 set testname [info script]
-# puts "running $testname for Password Gorilla ...\n"
+puts "------------------------------------------------------------------"
+puts "Running $testname for Password Gorilla ..."
 
 # ------------- sample -----------------
 #
@@ -64,7 +65,7 @@ namespace eval ::gorilla::test {
 	# CATEGORY: CSV-IMPORT
 	# --------------------
 
-	cd [testsDirectory]
+	# cd [testsDirectory]
 
 	test $testname-1.2 {File Open Error} \
     -setup { set ::DEBUG(CSVIMPORT) 1 } \
@@ -142,61 +143,60 @@ namespace eval ::gorilla::test {
     -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
     -result "Invalid time: field"
 
-# import113.csv includes a notes field test:
-# A note about \n\tthis entry"," too
-
-# test logfile
-
-# test delete rn after error
-
-test $testname-1.1 {General Ok Test} \
-    -setup { } \
-    -body { gorilla::Import import11.csv } \
-    -cleanup { } \
-    -result GORILLA_OK
-
-# tests after import
-# testdb.psafe3 is supposed to have been loaded
-# ----------------------------------------------------------------------
-
-test $testname-2.1 { saved title } \
-    -body {
-			set entries [list ]
-			foreach i {9 10 11} {
-				lappend entries [::gorilla::dbget title $i]
-			}
-			return $entries } \
-    -result "Title11 Title12 Title2"
-
-test $testname-2.2 { saved group } \
-    -body {
-			set entries [list ]
-			foreach i {9 10 11} {
-				lappend entries [::gorilla::dbget group $i]
-			}
-			return $entries } \
-    -result "{Group 1.Sub Group 1} {Group 1.Sub Group 2} {Group 2}"
-
-test $testname-2.3 { saved user } \
-    -body {
-			set entries [list ]
-			foreach i {9 10 11} {
-				lappend entries [::gorilla::dbget user $i]
-			}
-			return $entries } \
-    -result "Username11 Username12 Username2"
-
-# TODO: (enlarge import11.csv)
-# create-time last-access last-modified
-# last-pass-change lifetime notes password
-# url uuid
-
-cd [workingDirectory]
-		
+	# import113.csv includes a notes field test:
+	# A note about \n\tthis entry"," too
+	
+	# test logfile
+	
+	# test delete rn after error
+	
+	test $testname-1.1 {General Ok Test} \
+			-setup { } \
+			-body { gorilla::Import import11.csv } \
+			-cleanup { } \
+			-result GORILLA_OK
+	
+	# tests after import
+	# testdb.psafe3 is supposed to have been loaded
+	# ----------------------------------------------------------------------
+	
+	test $testname-2.1 { saved title } \
+			-body {
+				set entries [list ]
+				foreach i {9 10 11} {
+					lappend entries [::gorilla::dbget title $i]
+				}
+				return $entries } \
+			-result "Title11 Title12 Title2"
+	
+	test $testname-2.2 { saved group } \
+			-body {
+				set entries [list ]
+				foreach i {9 10 11} {
+					lappend entries [::gorilla::dbget group $i]
+				}
+				return $entries } \
+			-result "{Group 1.Sub Group 1} {Group 1.Sub Group 2} {Group 2}"
+	
+	test $testname-2.3 { saved user } \
+			-body {
+				set entries [list ]
+				foreach i {9 10 11} {
+					lappend entries [::gorilla::dbget user $i]
+				}
+				return $entries } \
+			-result "Username11 Username12 Username2"
+	
+	# TODO: (enlarge import11.csv)
+	# create-time last-access last-modified
+	# last-pass-change lifetime notes password
+	# url uuid
+	
+	# cleanup
+	set ::gorilla::dirty 0
+	gorilla::Open testdb.psafe3
+	
 } ;# end of namespace eval ::gorilla::test
 
-# ----------------------------------------------------------------------
-# cleanup
-
 namespace delete ::gorilla::test
-# puts "Tests for unit $testname finished."
+puts "Tests for unit $testname finished."
