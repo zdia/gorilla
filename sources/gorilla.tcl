@@ -5636,7 +5636,7 @@ proc gorilla::PreferencesDialog {} {
 					font configure TkCaptionFont -size $size
 					font configure TkFixedFont   -size $size
 					# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
-					ttk::style configure gorilla.Treeview -rowheight [ font metrics TkDefaultFont -linespace ]
+					ttk::style configure gorilla.Treeview -rowheight [ expr { 2 + [ font metrics TkDefaultFont -linespace ] } ]
 					} } $size ]
 		}
 		
@@ -6139,7 +6139,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	font configure TkFixedFont   -size $value
 	# undocumented option for ttk::treeview
 	# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
-	ttk::style configure gorilla.Treeview -rowheight [ font metrics TkDefaultFont -linespace ]
+	ttk::style configure gorilla.Treeview -rowheight [ expr { 2 + [ font metrics TkDefaultFont -linespace ] } ]
 
 	#
 	# If the revision numbers of our preferences don't match, forget
