@@ -2313,6 +2313,7 @@ namespace eval ::gorilla::LoginDialog {
 		ArrangeIdleTimeout
 
 		if { [ llength [ set sel [ $::gorilla::widgets(tree) selection ] ] ] == 0 } {
+		  set ::gorilla::status [ mc "Please select a login entry first." ]
 			return                                                       
 		}
 
@@ -2321,6 +2322,7 @@ namespace eval ::gorilla::LoginDialog {
 		set type [ lindex $data 0 ]
 
 		if {$type == "Group" || $type == "Root"} {
+		  set ::gorilla::status [ mc "Group entries may be renamed, not edited." ]
 			return
 		}
 
