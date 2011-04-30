@@ -785,7 +785,7 @@ proc gorilla::GroupPopup {node xpos ypos} {
 	set ::gorilla::widgets(popup,Group) [menu .popupForGroup]
 	$::gorilla::widgets(popup,Group) add command \
 		-label [mc "Add Login"] \
-		-command "gorilla::PopupAddLogin"
+		-command "::gorilla::LoginDialog::AddLogin"
 	$::gorilla::widgets(popup,Group) add command \
 		-label [mc "Add Subgroup"] \
 		-command "gorilla::PopupAddSubgroup"
@@ -814,28 +814,6 @@ proc gorilla::GroupPopup {node xpos ypos} {
 		# "grab"
 		catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
 }
-
-proc gorilla::PopupAddLogin {} {
-
-	# Adds a login to Gorilla at the currently selected position in the tree
-
-	set node [ lindex [ $::gorilla::widgets(tree) selection ] 0 ]
-
-	foreach {data type} [ gorilla::LookupNodeData $node ] { break }
-  
-	# if "type" is Login, repeat the data lookup, but for the parent of the
-	# node, to result in an "add to group" action occurring instead.
-
-	if { $type eq "Login" } {
-		foreach {data type} [ gorilla::LookupNodeData [ $::gorilla::widgets(tree) parent $node ] ] { break }
-	}
-
-	switch -- $type {
-		Group { gorilla::AddLoginToGroup [lindex $data 1] }
-		Root  { gorilla::AddLoginToGroup "" }
-	}
-
-} ; # end proc gorilla::PopupAddLogin
 
 proc gorilla::LookupNodeData { node } {
 
@@ -890,7 +868,7 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	$::gorilla::widgets(popup,Login) add separator
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Add Login"] \
-		-command "gorilla::PopupAddLogin"
+		-command "::gorilla::LoginDialog::AddLogin"
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Edit Login"] \
 		-command "gorilla::PopupEditLogin"
@@ -907,10 +885,6 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		# when opening a menu while another app is holding the
 		# "grab"
 		catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
-}
-
-proc gorilla::PopupAddLogin {} {
-	::gorilla::AddLogin
 }
 
 proc gorilla::PopupEditLogin {} {
@@ -2362,18 +2336,25 @@ namespace eval ::gorilla::LoginDialog {
 
 		set tree $::gorilla::widgets(tree)
 
-		if { [ llength [ set sel [ $tree selection ] ] ] == 0 } {
-			return                                                       
+		set node [ lindex [ $tree selection ] 0 ]
+
+		lassign [ ::gorilla::LookupNodeData $node ] data type
+		
+		# if "type" is Login, repeat the data lookup, but for the parent of the
+		# node, to result in an "add to group" action occurring instead.
+
+		if { $type eq "Login" } {
+			lassign [ gorilla::LookupNodeData [ $tree parent $node ] ] data type
 		}
 
-		set node [ lindex $sel 0 ]
-		set data [ $tree item $node -values ]
-		set type [ lindex $data 0 ]
-
+		# if no entry in tree is selected, then "type" will be {},
+		# so in that case perform the same action as an add to root
+		
 		switch -exact -- $type {
 			Group	{ LoginDialog -group [ lindex $data 1 ] }
 			Root	{ LoginDialog -group "" }
 			Login	{ LoginDialog -group [ lindex [ $tree item [ $tree parent $node ] -values ] 1 ] }
+			{}	{ LoginDialog -group "" }
 		} 
 
 	} ; # end proc AddLogin
