@@ -1794,10 +1794,13 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		foreach {child label} { group Group     title Title   url URL 
-		                        user Username   password Password } {
+		foreach {child label w} { group    Group    combobox
+		                          title    Title    entry
+		                          url      URL      entry
+		                          user     Username entry
+		                          password Password entry  } {
 			grid [ make-label $top $label ] \
-			     [ set widget($child) [ ttk::entry $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
+			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
 		} ; # end foreach {child label}
 
@@ -2302,6 +2305,24 @@ namespace eval ::gorilla::LoginDialog {
 				} ; # end if modified
 
 			} ; # end proc Ok
+			
+		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
+
+			proc group-post { } {
+
+				# handles filling in the entries in the dropdown list for the group
+				# combo box - done this way for two reasons: 1) the dropdown box
+				# will always reflect the current group names; and 2) I am
+				# contemplating allowing a "limit the list" capability based upon
+				# the current value of the combo box
+
+				-m:group- configure -values [ lsort [ array names ::gorilla::groupNodes ] ]
+			}
+
+			# attach group-post to the combobox
+			-m:group- configure -postcommand [ namespace code group-post ]
+
+		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
 
 		} ] ; # end smacro namespace eval
 
