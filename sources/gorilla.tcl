@@ -4259,8 +4259,12 @@ proc gorilla::Save {} {
 	unset ::gorilla::savePercent
 
 	. configure -cursor $myOldCursor
-	# set ::gorilla::status [mc "Password database saved as $nativeName"] 
-	set ::gorilla::status [mc "Password database saved."] 
+	
+	if {$::gorilla::preference(keepBackupFile)} {
+		set ::gorilla::status [mc "Password database saved with backup copy."] 
+	} else {
+		set ::gorilla::status [mc "Password database saved."] 
+	}
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 
@@ -5524,7 +5528,7 @@ proc gorilla::PreferencesDialog {} {
 
 
 		#
-		# Second NoteBook tab: database defaults
+		# Second NoteBook tab: (d)atabase (p)re(f)erences
 		#
 
 		set dpf $top.nb.dpf
@@ -5547,7 +5551,13 @@ proc gorilla::PreferencesDialog {} {
 		ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
 			-variable ::gorilla::prefTemp(unicodeSupport)
 
-		pack $dpf.si $dpf.ver $dpf.uni -side top -anchor w -pady 3 -padx 10
+		ttk::frame $dpf.bakpath
+		ttk::entry $dpf.bakpath.e -textvariable ::gorilla::fileName
+		ttk::label $dpf.bakpath.l -text [mc "Backup path:"]
+		pack $dpf.bakpath.l -side left
+		pack $dpf.bakpath.e -side left -padx 3 -expand 1 -fill x
+
+		pack $dpf.si $dpf.ver $dpf.uni $dpf.bakpath -side top -anchor w -pady 3 -padx 10 -fill x
 
 		ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
 			-text [mc "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."]
