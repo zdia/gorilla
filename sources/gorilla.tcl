@@ -1806,6 +1806,9 @@ namespace eval ::gorilla::LoginDialog {
 
 		# password should show "*" by default
 		$widget(password) configure -show "*"
+		
+		# group combox box needs to receive its values list of group names
+		$widget(group) configure -postcommand [ fill-combobox-with-grouplist $widget(group) ] 
 
 		# The notes text widget - with scrollbar - in an embedded frame
 		# because the text widget plus scrollbar needs to fit into the single
@@ -2308,22 +2311,6 @@ namespace eval ::gorilla::LoginDialog {
 			
 		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
 
-			proc group-post { } {
-
-				# handles filling in the entries in the dropdown list for the group
-				# combo box - done this way for two reasons: 1) the dropdown box
-				# will always reflect the current group names; and 2) I am
-				# contemplating allowing a "limit the list" capability based upon
-				# the current value of the combo box
-
-				-m:group- configure -values [ lsort [ array names ::gorilla::groupNodes ] ]
-			}
-
-			# attach group-post to the combobox
-			-m:group- configure -postcommand [ namespace code group-post ]
-
-		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
-
 		} ] ; # end smacro namespace eval
 
 	} ; # end proc build-gui-callbacks
@@ -2443,6 +2430,7 @@ proc gorilla::MoveGroup {} {
 proc gorilla::MoveDialog {type} {
 	ArrangeIdleTimeout
 	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
+		set ::gorilla::status [ mc "Please select an entry in the tree to move." ]
 		return
 	}
 	set node [lindex $sel 0]
@@ -2461,7 +2449,9 @@ proc gorilla::MoveDialog {type} {
 		ttk::labelframe $top.dest \
 		-text [mc "Destination Group with format <Group.Subgroup> :"] \
 		-padding [list 10 10]
-		ttk::entry $top.dest.e -width 40 -textvariable ::gorilla::MoveDialogDest
+		ttk::combobox $top.dest.e -width 40 -textvariable ::gorilla::MoveDialogDest \
+		              -postcommand [ list ::gorilla::fill-combobox-with-grouplist $top.dest.e ] 
+
 		# Format: group.subgroup
 		pack $top.source.e -side left -expand yes -fill x
 		pack $top.source -side top -expand yes -fill x -pady 10 -padx 10
@@ -2531,8 +2521,8 @@ proc gorilla::MoveDialog {type} {
 		if {$destGroup == ""} {
 				tk_messageBox -parent $top \
 					-type ok -icon error -default ok \
-					-title "Invalid Group Name" \
-					-message "The group name can not be empty."
+					-title [ mc "Invalid Group Name" ] \
+					-message [ mc "The group name can not be empty." ]
 				continue
 		}
 
@@ -2545,8 +2535,8 @@ proc gorilla::MoveDialog {type} {
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The name of the parent group is invalid."
+				-title [ mc "Invalid Group Name" ] \
+				-message [ mc "The name of the parent group is invalid." ]
 			continue
 		}
 		# all seems well
@@ -7413,6 +7403,27 @@ proc gorilla::ViewEntryShowPWHelper { button entry rn } {
   }
 
 } ; # end proc gorilla::ViewEntryShowPWHelper
+
+#
+# ----------------------------------------------------------------------
+# A helper proc to fill ttk::comboxes with password "group" listings
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::fill-combobox-with-grouplist { win } {
+
+	# handles filling in the entries in the dropdown list for the group
+	# combo box - done this way for two reasons: 1) the dropdown box
+	# will always reflect the current group names; and 2) I am
+	# contemplating allowing a "limit the list" capability based upon
+	# the current value of the combo box
+
+	# There is a dependency upon the ::gorilla::groupNodes global
+	# variable
+
+	$win configure -values [ lsort [ array names ::gorilla::groupNodes ] ]
+
+} ; # end proc gorilla::fill-combobox-with-grouplist
 
 #
 # ----------------------------------------------------------------------

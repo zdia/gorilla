@@ -190,4 +190,8 @@ mcmset ru { \
 "This option takes effect after exiting\nand restarting of Password Gorilla" "This option takes effect after exiting\nand restarting of Password Gorilla"
 "Please select a login entry first." "Please select a login entry first."
 "Group entries may be renamed, not edited." "Group entries may be renamed, not edited."
+"Please select an entry in the tree to move." "Please select an entry in the tree to move."
+"Invalid Group Name" "Invalid Group Name"
+"The group name can not be empty." "The group name can not be empty." 
+"The name of the parent group is invalid." "The name of the parent group is invalid."
 }
