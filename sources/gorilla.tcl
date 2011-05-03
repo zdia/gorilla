@@ -870,6 +870,9 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		-label [mc "Add Login"] \
 		-command "::gorilla::LoginDialog::AddLogin"
 	$::gorilla::widgets(popup,Login) add command \
+		-label [mc "Move Login"] \
+		-command "gorilla::MoveLogin"
+	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Edit Login"] \
 		-command "gorilla::PopupEditLogin"
 	$::gorilla::widgets(popup,Login) add command \
