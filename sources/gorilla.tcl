@@ -290,11 +290,12 @@ proc gorilla::Init {} {
 	# two element list.  Each two element list is preference default and
 	# anonymous validation proc in that order.  The validation proc
 	# returns true for valid, false for invalid.
-	
+
 	set ::gorilla::preference(all-preferences) {
 
 		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
+		backupPath						 { {}      { {value} { file exists $value } }                                                   }
 		browser-exe            { {}      { {value} { return true } }                                                          }
 		browser-param          { {}      { {value} { return true } }                                                          }
 		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
@@ -334,7 +335,6 @@ proc gorilla::Init {} {
 	dict for {pref value} $::gorilla::preference(all-preferences) {
 		set ::gorilla::preference($pref) [ lindex $value 0 ] 
 	}
-		
 } ; # end proc gorilla::Init
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -1511,6 +1511,10 @@ proc gorilla::Open {{defaultFile ""}} {
   set fileName [lindex $openInfo 1]
 	set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
+
+	if { $::gorilla::preference(backupPath) eq "" } {
+		set ::gorilla::preference(backupPath) [file dirname $nativeName]
+	}
 
 	wm title . "Password Gorilla - $nativeName"
 
@@ -4204,10 +4208,13 @@ proc gorilla::Save {} {
 	#
 
 	if {$::gorilla::preference(keepBackupFile)} {
-		set backupFileName [file rootname $::gorilla::fileName]
+		
+		set backupFileName [file root [file tail $::gorilla::fileName] ]
 		append backupFileName ".bak"
+		set backupFile [file join $::gorilla::preference(backupPath) $backupFileName]
+
 		if {[catch {
-			file copy -force -- $::gorilla::fileName $backupFileName
+			file copy -force -- $::gorilla::fileName $backupFile
 			} oops]} {
 			. configure -cursor $myOldCursor
 			set backupNativeName [file nativename $backupFileName]
@@ -5552,10 +5559,16 @@ proc gorilla::PreferencesDialog {} {
 			-variable ::gorilla::prefTemp(unicodeSupport)
 
 		ttk::frame $dpf.bakpath
-		ttk::entry $dpf.bakpath.e -textvariable ::gorilla::fileName
+		ttk::entry $dpf.bakpath.e -textvariable ::gorilla::prefTemp(backupPath)
 		ttk::label $dpf.bakpath.l -text [mc "Backup path:"]
+		ttk::button $dpf.bakpath.b -image $::gorilla::images(browse) \
+			-command { eval set ::gorilla::prefTemp(backupPath) \
+				[tk_chooseDirectory -initialdir $::gorilla::prefTemp(backupPath) \
+				-title [mc "Choose a directory"] ] }
+
 		pack $dpf.bakpath.l -side left
 		pack $dpf.bakpath.e -side left -padx 3 -expand 1 -fill x
+		pack $dpf.bakpath.b -side left -padx 3
 
 		pack $dpf.si $dpf.ver $dpf.uni $dpf.bakpath -side top -anchor w -pady 3 -padx 10 -fill x
 
@@ -6123,7 +6136,6 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				}
 				
 			}
-
 		} ; # end switch pref
 
 	} ; # end while ! eof f
