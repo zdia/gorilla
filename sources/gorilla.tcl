@@ -7427,6 +7427,47 @@ proc gorilla::fill-combobox-with-grouplist { win } {
 
 #
 # ----------------------------------------------------------------------
+# A helper proc to obtain type and record number of selected tree entry
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::get-selected-tree-data { {returninfo {}} } {
+
+	# Returns the type (group/login) and db record number of the
+	# selected ttk::treeview entry
+	#
+	# If nothing in tree is selected, then what is returned depends upon
+	# the returninfo variable.  If returninfo is empty, return an empty
+	# three element list.  If returninfo is the word RETURN, then
+	# perform a -code return to cause the calling proc to return. 
+	# Otherwise, feed the contents of returninfo through mc and set the
+	# gorilla::status variable, and then return a -code return.
+
+	if { [ llength [ set sel [ $::gorilla::widgets(tree) selection ] ] ] == 0 } {
+
+		# nothing selected - what we return depends upon
+		# $returninfo, one of an empty list, a code of return, or
+		# setting of the status variable followed by a code of
+		# return
+		
+		switch -- $returninfo {
+			{} { return [ list {} {} {} ] }
+			{RETURN} { return -code return }
+			default { set ::gorilla::status [ mc $returninfo ]
+				return -code return
+			}
+		}
+	}
+
+	set node [ lindex $sel 0 ]
+	set data [ $::gorilla::widgets(tree) item $node -values ]
+
+	return [ list $node {*}[ lrange $data 0 1 ] ]
+
+} ; # end proc ???
+
+#
+# ----------------------------------------------------------------------
 # Launch a browser to the current selected records URL
 # ----------------------------------------------------------------------
 #
