@@ -781,38 +781,38 @@ proc gorilla::TreeNodePopup {node} {
 #
 
 proc gorilla::GroupPopup {node xpos ypos} {
-		if {![info exists ::gorilla::widgets(popup,Group)]} {
-	set ::gorilla::widgets(popup,Group) [menu .popupForGroup]
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Add Login"] \
-		-command "::gorilla::LoginDialog::AddLogin"
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Add Subgroup"] \
-		-command "gorilla::PopupAddSubgroup"
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Rename Group"] \
-		-command "gorilla::PopupRenameGroup"
-	$::gorilla::widgets(popup,Group) add separator
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Delete Group"] \
-		-command "gorilla::PopupDeleteGroup"
-		}
+	if {![info exists ::gorilla::widgets(popup,Group)]} {
+		set ::gorilla::widgets(popup,Group) [menu .popupForGroup]
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Add Login"] \
+			-command "::gorilla::LoginDialog::AddLogin"
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Add Subgroup"] \
+			-command "gorilla::PopupAddSubgroup"
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Rename Group"] \
+			-command "gorilla::PopupRenameGroup"
+		$::gorilla::widgets(popup,Group) add separator
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Delete Group"] \
+			-command "gorilla::PopupDeleteGroup"
+	}
 
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
+	set data [$::gorilla::widgets(tree) item $node -values]
+	set type [lindex $data 0]
 
-		if {$type == "Root"} {
-	$::gorilla::widgets(popup,Group) entryconfigure 2 -state disabled
-	$::gorilla::widgets(popup,Group) entryconfigure 4 -state disabled
-		} else {
-	$::gorilla::widgets(popup,Group) entryconfigure 2 -state normal
-	$::gorilla::widgets(popup,Group) entryconfigure 4 -state normal
-		}
+	if {$type == "Root"} {
+		$::gorilla::widgets(popup,Group) entryconfigure 2 -state disabled
+		$::gorilla::widgets(popup,Group) entryconfigure 4 -state disabled
+	} else {
+		$::gorilla::widgets(popup,Group) entryconfigure 2 -state normal
+		$::gorilla::widgets(popup,Group) entryconfigure 4 -state normal
+	}
 
-		# this catch is necessary to prevent a "grab failed" error
-		# when opening a menu while another app is holding the
-		# "grab"
-		catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
+	# this catch is necessary to prevent a "grab failed" error
+	# when opening a menu while another app is holding the
+	# "grab"
+	catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
 }
 
 proc gorilla::LookupNodeData { node } {
@@ -851,40 +851,40 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	# Creates the popup menu widget for the right clicks on a tree item
 	# node - node index for right-clicked tree item
 	# xpos, ypos - root coordinates for the popup menu
-		if {![info exists ::gorilla::widgets(popup,Login)]} {
-	set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Open URL"] \
-		-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Copy Username to Clipboard"] \
-		-command "gorilla::PopupCopyUsername"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Copy Password to Clipboard"] \
-		-command "gorilla::PopupCopyPassword"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Copy URL to Clipboard"] \
-		-command "gorilla::PopupCopyURL"
-	$::gorilla::widgets(popup,Login) add separator
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Add Login"] \
-		-command "::gorilla::LoginDialog::AddLogin"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Edit Login"] \
-		-command "gorilla::PopupEditLogin"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "View Login"] \
-		-command "gorilla::PopupViewLogin"
-	$::gorilla::widgets(popup,Login) add separator 
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Delete Login"] \
-		-command "gorilla::PopupDeleteLogin"
-		}
+	if {![info exists ::gorilla::widgets(popup,Login)]} {
+		set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Open URL"] \
+			-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Copy Username to Clipboard"] \
+			-command "gorilla::PopupCopyUsername"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Copy Password to Clipboard"] \
+			-command "gorilla::PopupCopyPassword"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Copy URL to Clipboard"] \
+			-command "gorilla::PopupCopyURL"
+		$::gorilla::widgets(popup,Login) add separator
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Add Login"] \
+			-command "::gorilla::LoginDialog::AddLogin"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Edit Login"] \
+			-command "gorilla::PopupEditLogin"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "View Login"] \
+			-command "gorilla::PopupViewLogin"
+		$::gorilla::widgets(popup,Login) add separator
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Delete Login"] \
+			-command "gorilla::PopupDeleteLogin"
+	}
 
-		# this catch is necessary to prevent a "grab failed" error
-		# when opening a menu while another app is holding the
-		# "grab"
-		catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
+	# this catch is necessary to prevent a "grab failed" error
+	# when opening a menu while another app is holding the
+	# "grab"
+	catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
 }
 
 proc gorilla::PopupEditLogin {} {
@@ -2498,18 +2498,18 @@ proc gorilla::MoveDialog {type} {
 		set destGroup [$top.dest.e get]
 
 		if {$::gorilla::guimutex != 1} {
-				break
+			break
 		}
 		#
 		# The group name must not be empty
 		# 
 		
 		if {$destGroup == ""} {
-				tk_messageBox -parent $top \
-					-type ok -icon error -default ok \
-					-title [ mc "Invalid Group Name" ] \
-					-message [ mc "The group name can not be empty." ]
-				continue
+			tk_messageBox -parent $top \
+				-type ok -icon error -default ok \
+				-title [ mc "Invalid Group Name" ] \
+				-message [ mc "The group name can not be empty." ]
+			continue
 		}
 
 		#
@@ -2517,7 +2517,7 @@ proc gorilla::MoveDialog {type} {
 		#
 
 		if {[catch {
-				set destNode $::gorilla::groupNodes($destGroup)
+			set destNode $::gorilla::groupNodes($destGroup)
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
@@ -2796,7 +2796,7 @@ proc gorilla::MoveTreeNode {node dest} {
 			-type ok -icon error -default ok \
 			-title "Root Node Can Not Be Moved" \
 			-message "The root node can not be moved."
-return
+		return
 	}
 
 	set desttype [lindex $destdata 0]
@@ -4515,7 +4515,7 @@ proc gorilla::UpdateMenu {} {
 
 	if {[info exists ::gorilla::db]} {
 		setmenustate $::gorilla::widgets(main) open normal
-		} else {
+	} else {
 		setmenustate $::gorilla::widgets(main) open disabled
 	}
 }
