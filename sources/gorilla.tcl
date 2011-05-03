@@ -876,9 +876,16 @@ proc gorilla::LoginPopup {node xpos ypos} {
 			-label [mc "View Login"] \
 			-command "gorilla::PopupViewLogin"
 		$::gorilla::widgets(popup,Login) add separator
+		$::gorilla::widgets(popup,Login) add cascade \
+			-label [ mc "Move Login to:" ] \
+			-menu [ set submenu $::gorilla::widgets(popup,Login).movesub ]
+		$::gorilla::widgets(popup,Login) add separator 
 		$::gorilla::widgets(popup,Login) add command \
 			-label [mc "Delete Login"] \
 			-command "gorilla::PopupDeleteLogin"
+			
+		# now setup the cascade menu
+		menu $submenu -postcommand [ list ::gorilla::populate-login-popup $submenu ]
 	}
 
 	# this catch is necessary to prevent a "grab failed" error
@@ -886,6 +893,25 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	# "grab"
 	catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
 }
+
+proc gorilla::populate-login-popup { win } {
+
+	# builds the dynamic menu of group names for the right click move-to
+	# function
+
+	$win delete 0 end
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn 
+	
+	set count -1
+	foreach group [ lsort [ array names ::gorilla::groupNodes ] ] {
+	  incr count
+	  set temp [ split $group "." ] 
+	  set name "[ string repeat " \u2022 " [ expr { [ llength $temp ] - 1 } ] ][ lindex $temp end ]"
+	  $win add command -label $name -command [ list ::gorilla::MoveTreeNode $node $::gorilla::groupNodes($group) ] \
+	                   -columnbreak [ expr { ( $count % 20 ) == 0 } ]
+	}
+
+} ; # end proc gorilla::populate-login-popup
 
 proc gorilla::PopupEditLogin {} {
 	::gorilla::EditLogin
