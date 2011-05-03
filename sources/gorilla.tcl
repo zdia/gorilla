@@ -2320,21 +2320,12 @@ namespace eval ::gorilla::LoginDialog {
 	proc EditLogin {} {
 		ArrangeIdleTimeout
 
-		if { [ llength [ set sel [ $::gorilla::widgets(tree) selection ] ] ] == 0 } {
-		  set ::gorilla::status [ mc "Please select a login entry first." ]
-			return                                                       
-		}
-
-		set node [ lindex $sel 0 ]
-		set data [ $::gorilla::widgets(tree) item $node -values ]
-		set type [ lindex $data 0 ]
+		lassign [ ::gorilla::get-selected-tree-data "Please select a login entry first." ] node type rn 
 
 		if {$type == "Group" || $type == "Root"} {
-		  set ::gorilla::status [ mc "Group entries may be renamed, not edited." ]
+			set ::gorilla::status [ mc "Group entries may be renamed, not edited." ]
 			return
 		}
-
-		set rn [lindex $data 1]
 
 		LoginDialog -rn $rn -treenode $node
 
@@ -2429,14 +2420,9 @@ proc gorilla::MoveGroup {} {
 
 proc gorilla::MoveDialog {type} {
 	ArrangeIdleTimeout
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		set ::gorilla::status [ mc "Please select an entry in the tree to move." ]
-		return
-	}
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set nodetype [lindex $data 0]
 
+	lassign [ ::gorilla::get-selected-tree-data "Please select an entry in the tree to move." ] node nodetype rn
+	
 	set top .moveDialog
 	
 	if {![info exists ::gorilla::toplevel($top)]} {
@@ -2483,9 +2469,9 @@ proc gorilla::MoveDialog {type} {
 	# Configure Dialog
 
 	if {$nodetype == "Group"} {
-		set ::gorilla::MoveDialogSource [lindex $data 1]		
+		# for group entries the "rn" field contains the group name
+		set ::gorilla::MoveDialogSource $rn 
 	} elseif {$nodetype == "Login"} {
-		set rn [lindex $data 1]
 		if {[$::gorilla::db existsField $rn 3]} {
 			set ::gorilla::MoveDialogSource [ ::gorilla::dbget title $rn ]
 		}
@@ -2573,14 +2559,7 @@ proc gorilla::MoveDialog {type} {
 proc gorilla::DeleteLogin {} {
 	ArrangeIdleTimeout
 
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	}
-
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
-	set rn [lindex $data 1]
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn 
 
 	if {$type != "Login"} {
 		error "oops"
@@ -2621,21 +2600,20 @@ proc gorilla::AddGroup {} {
 #
 
 proc gorilla::AddSubgroup {} {
-	set sel [$::gorilla::widgets(tree) selection]
 
-	if {[llength $sel] == 0} {
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn
+
+	if { ( $node eq "" ) && ( $type eq "" ) } {
 		
 		# No selection. Add to toplevel
 		#
 		gorilla::AddSubgroupToGroup ""
 		
 	} else {
-		set node [lindex $sel 0]
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
 
 		if {$type == "Group"} {
-			gorilla::AddSubgroupToGroup [lindex $data 1]
+			# for group entries, rn field contains group name
+			gorilla::AddSubgroupToGroup $rn 
 		} elseif {$type == "Root"} {
 			gorilla::AddSubgroupToGroup ""
 		} else {
@@ -2651,7 +2629,7 @@ proc gorilla::AddSubgroup {} {
 			}
 		}
 	}
-}
+} ; # end proc gorilla::AddSubgroup
 
 #
 # ----------------------------------------------------------------------
@@ -2923,14 +2901,8 @@ proc gorilla::MoveTreeNodeRek {node newParents} {
 proc gorilla::DeleteGroup {} {
 	ArrangeIdleTimeout
 
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	}
-
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
-
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn
+	
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
@@ -2942,9 +2914,6 @@ proc gorilla::DeleteGroup {} {
 	if {$type != "Group"} {
 		error "oops"
 	}
-
-	set groupName [$::gorilla::widgets(tree) item $node -text]
-	set fullGroupName [lindex $data 1]
 
 	if {[llength [$::gorilla::widgets(tree) children $node]] > 0} {
 		set answer [tk_messageBox -parent . \
@@ -3001,14 +2970,8 @@ proc gorilla::DestroyRenameGroupDialog {} {
 proc gorilla::RenameGroup {} {
 	ArrangeIdleTimeout
 
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	}
-
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
-
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type fullGroupName
+	
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
@@ -3021,7 +2984,6 @@ proc gorilla::RenameGroup {} {
 		error "oops"
 	}
 
-	set fullGroupName [lindex $data 1]
 	set groupName [$::gorilla::widgets(tree) item $node -text]
 	set parentNode [$::gorilla::widgets(tree) parent $node]
 	set parentData [$::gorilla::widgets(tree) item $parentNode -values]
@@ -4529,16 +4491,13 @@ proc gorilla::AddGroupToTree {groupName} {
 
 
 proc gorilla::UpdateMenu {} {
-	set selection [$::gorilla::widgets(tree) selection]
+
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn
 	
-	if {[llength $selection] == 0} {
+	if { ( $node eq "" ) && ( $type eq "" ) } {
 		setmenustate $::gorilla::widgets(main) group disabled
 		setmenustate $::gorilla::widgets(main) login disabled
 	} else {
-		set node [lindex $selection 0]
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
-
 		if {$type == "Group" || $type == "Root"} {
 			setmenustate $::gorilla::widgets(main) group normal
 			setmenustate $::gorilla::widgets(main) login disabled
@@ -6372,17 +6331,18 @@ proc gorilla::GetSelectedPassword {} {
 
 proc gorilla::GetSelectedRecord {} {
 	# Obtain the db record number of the selected item in the treeview
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
+
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn 
+
+	if { ( $node eq "" ) && ( $type eq "" ) } {
 		error "oops"
 	}
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
+
 	if {$type != "Login"} {
 		error "oops"
 	}
 
-	return [lindex $data 1]
+	return $rn
 }
 
 proc gorilla::GetSelectedUsername {} {
@@ -7272,25 +7232,17 @@ proc gorilla::ViewLogin {} {
 	ArrangeIdleTimeout
 
 	# proc gorilla::GetRnFromSelectedNode
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	 }
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
+
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn
 
 	if {$type == "Group" || $type == "Root"} {
-		puts "No Login selected"
+		set ::gorilla::status [ mc "Please select a login entry first." ]
 		return
 	}
 
-	set rn [lindex $data 1]
-	
-	# return $rn
-
-	 gorilla::ViewEntry $rn
+	gorilla::ViewEntry $rn
  
-}
+} ; # end gorilla::ViewLogin
 
 proc gorilla::ViewEntry {rn} {
 	# proposed by Richard Ellis, 04.08.2010
