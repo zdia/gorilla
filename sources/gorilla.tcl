@@ -4205,28 +4205,15 @@ proc gorilla::Save {} {
 
 	#
 	# Create backup file, if desired
+	# The backup file preserves the original state of the opened db
 	#
 
 	if {$::gorilla::preference(keepBackupFile)} {
-		
-		set backupFileName [file root [file tail $::gorilla::fileName] ]
-		append backupFileName ".bak"
-		set backupFile [file join $::gorilla::preference(backupPath) $backupFileName]
-
-		if {[catch {
-			file copy -force -- $::gorilla::fileName $backupFile
-			} oops]} {
-			. configure -cursor $myOldCursor
-			set backupNativeName [file nativename $backupFileName]
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title "Error Saving Database" \
-				-message "Failed to make backup copy of password \
-				database as $backupNativeName: $oops"
-			return 0
-		}
+		gorilla::SaveBackup $::gorilla::fileName $myOldCursor
 	}
 
 	set nativeName [file nativename $::gorilla::fileName]
+	
 	#
 	# Determine file version. If there is a header field of type 0,
 	# it should indicate the version. Otherwise, default to version 2.
@@ -4353,31 +4340,17 @@ proc gorilla::SaveAs {} {
 	. configure -cursor watch
 	update idletasks
 
-		#
-		# Create backup file, if desired
-		#
+	#
+	# Create backup file, if desired
+	#
 
-		if {$::gorilla::preference(keepBackupFile) && \
-			[file exists $fileName]} {
-	set backupFileName [file rootname $fileName]
-	append backupFileName ".bak"
-	set ::gorilla::status $backupFileName
-	if {[catch {
-			file copy -force -- $fileName $backupFileName
-	} oops]} {
-			. configure -cursor $myOldCursor
-			set backupNativeName [file nativename $backupFileName]
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title "Error Saving Database" \
-				-message "Failed to make backup copy of password \
-				database as $backupNativeName: $oops"
-			return 0
+	if {$::gorilla::preference(keepBackupFile) && [file exists $fileName]} {
+		gorilla::SaveBackup $::gorilla::fileName $myOldCursor
 	}
-		}
 
-		set ::gorilla::savePercent 0
-		trace add variable ::gorilla::savePercent [list "write"] \
-	::gorilla::SavePercentTrace
+	set ::gorilla::savePercent 0
+	trace add variable ::gorilla::savePercent [list "write"] \
+		::gorilla::SavePercentTrace
 
 		if {[catch {
 	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
@@ -4421,6 +4394,26 @@ proc gorilla::SaveAs {} {
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 	return 1
 }
+
+proc gorilla::SaveBackup { filename myOldCursor } {
+puts "+++ saveBackup"
+puts "filename: $filename"
+	set backupFileName [file rootname [file tail $filename] ]
+	append backupFileName ".bak"
+	set backupFile [file join $::gorilla::preference(backupPath) $backupFileName]
+puts "backupFile: $backupFile"
+	if {[catch {
+		file copy -force -- $filename $backupFile
+		} oops]} {
+		. configure -cursor $myOldCursor
+		set backupNativeName [file nativename $backupFileName]
+		tk_messageBox -parent . -type ok -icon error -default ok \
+			-title "Error Saving Database" \
+			-message "Failed to make backup copy of password \
+			database as $backupNativeName: $oops"
+		return 0
+	}
+} ;# end of proc gorilla::SaveBackup
 
 # ----------------------------------------------------------------------
 # Rebuild Tree
