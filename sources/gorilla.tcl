@@ -907,11 +907,11 @@ proc gorilla::populate-login-popup { win } {
 	
 	set count -1
 	foreach group [ lsort [ array names ::gorilla::groupNodes ] ] {
-	  incr count
-	  set temp [ split $group "." ] 
-	  set name "[ string repeat " \u2022 " [ expr { [ llength $temp ] - 1 } ] ][ lindex $temp end ]"
-	  $win add command -label $name -command [ list ::gorilla::MoveTreeNode $node $::gorilla::groupNodes($group) ] \
-	                   -columnbreak [ expr { ( $count % 20 ) == 0 } ]
+		incr count
+		set temp [ split $group "." ] 
+		set name "[ string repeat " \u2022 " [ expr { [ llength $temp ] - 1 } ] ][ lindex $temp end ]"
+		$win add command -label $name -command [ list ::gorilla::MoveTreeNode $node $::gorilla::groupNodes($group) ] \
+		                 -columnbreak [ expr { ( $count % 20 ) == 0 } ]
 	}
 
 } ; # end proc gorilla::populate-login-popup
