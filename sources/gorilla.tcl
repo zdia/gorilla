@@ -6869,7 +6869,7 @@ proc gorilla::getAvailableLanguages {  } {
 	}
 	
 	# FIXME: This dictionary of possible languages has to be expanded
-	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian it italiano]
+	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian it Italiano]
 	
 	# create langList from *.msg pool
 	set langList {}
