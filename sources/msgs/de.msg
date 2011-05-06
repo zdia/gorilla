@@ -206,4 +206,5 @@ nicht beachten" \
 "Invalid Group Name" "Invalid Group Name"
 "The group name can not be empty." "The group name can not be empty." 
 "The name of the parent group is invalid." "The name of the parent group is invalid."
+"Move Login to:" "Move Login to:"
 }
