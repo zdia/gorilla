@@ -133,7 +133,7 @@ nicht beachten" \
 "Password Gorilla License" "Password Gorilla Lizenz" \
 "Password Length" "Passwortlänge" \
 "Password Policy ..." "Passwort Richtlinien" \
-"Password database $nativeName loaded." " Passwort-Datenbank geladen." \
+"Password database %s loaded." "Passwort-Datenbank %s geladen." \
 "Password database saved as $nativeName" "Die Passwort-Datenbank wurde als $nativeName gespeichert" \
 "Password database saved." "Passwort-Datenbank gespeichert." \
 "Password policy changed." "Passwortrichtlinien geändert." \
@@ -195,7 +195,6 @@ nicht beachten" \
 "seconds (0=never)" "Sekunden (0=nie)" \
 "Resolve Conflicts ..." "Konflikte bereinigen ..." \
 "OK" "OK" \
-"Password database /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 loaded." "" \
 "Welcome to the Password Gorilla." "Password Gorilla ist bereit." \
 "Hide login name in tree view" "Loginname in der Übersicht verbergen" \
 "This option takes effect after exiting\nand restarting of Password Gorilla" "Diese Option wird nach einem Neustart Password Gorillas aktiv." \

@@ -129,7 +129,7 @@ mcmset ru { \
 "Password Gorilla License" "Лицензия на Password Gorilla" \
 "Password Length" "Длинна пароля" \
 "Password Policy ..." "Политика паролей ..." \
-"Password database $nativeName loaded." "БД паролей $nativeName загружена." \
+"Password database %s loaded." "БД паролей %s загружена." \
 "Password database saved as $nativeName" "БД сохранена как $nativeName" \
 "Password database saved." "БД сохранена." \
 "Password policy changed." "Политика паролей изменена." \

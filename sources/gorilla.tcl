@@ -1492,7 +1492,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		itcl::delete object $::gorilla::db
 	}
 
-	set ::gorilla::status [mc "Password database $nativeName loaded."]
+	set ::gorilla::status [mc "Password database %s loaded." $nativeName ]
 	set ::gorilla::fileName $fileName
 	set ::gorilla::db $newdb
 	set ::gorilla::dirty 0
