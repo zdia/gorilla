@@ -6876,10 +6876,10 @@ proc gorilla::getAvailableLanguages {  } {
 		lappend msgList [lindex [split $file "."] 0]
 	}
 	
-	# Diese Liste muss erweitert werden, vgl. "locale -a"
-	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian]
+	# FIXME: This dictionary of possible languages has to be expanded
+	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian it italiano]
 	
-	# erstelle Liste mit {locale fullname}
+	# create langList from *.msg pool
 	set langList {}
 	foreach lang $msgList {
 		set res [lsearch $langFullName $lang]
