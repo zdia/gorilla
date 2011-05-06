@@ -870,9 +870,6 @@ proc gorilla::LoginPopup {node xpos ypos} {
 			-label [mc "Add Login"] \
 			-command "::gorilla::LoginDialog::AddLogin"
 		$::gorilla::widgets(popup,Login) add command \
-			-label [mc "Move Login"] \
-			-command "gorilla::MoveLogin"
-		$::gorilla::widgets(popup,Login) add command \
 			-label [mc "Edit Login"] \
 			-command "gorilla::PopupEditLogin"
 		$::gorilla::widgets(popup,Login) add command \
@@ -888,7 +885,7 @@ proc gorilla::LoginPopup {node xpos ypos} {
 			-command "gorilla::PopupDeleteLogin"
 			
 		# now setup the cascade menu
-		menu $submenu -postcommand [ list ::gorilla::populate-login-popup $submenu ]
+		menu $submenu -postcommand [ list ::gorilla::populateLoginPopup $submenu ]
 	}
 
 	# this catch is necessary to prevent a "grab failed" error
@@ -897,7 +894,7 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
 }
 
-proc gorilla::populate-login-popup { win } {
+proc gorilla::populateLoginPopup { win } {
 
 	# builds the dynamic menu of group names for the right click move-to
 	# function
@@ -905,16 +902,22 @@ proc gorilla::populate-login-popup { win } {
 	$win delete 0 end
 	lassign [ ::gorilla::get-selected-tree-data ] node type rn 
 	
+	# count is used to "split" the menu into elements of 20 units each
 	set count -1
 	foreach group [ lsort [ array names ::gorilla::groupNodes ] ] {
 		incr count
-		set temp [ split $group "." ] 
-		set name "[ string repeat " \u2022 " [ expr { [ llength $temp ] - 1 } ] ][ lindex $temp end ]"
-		$win add command -label $name -command [ list ::gorilla::MoveTreeNode $node $::gorilla::groupNodes($group) ] \
+		set grouplist [ split $group "." ]
+		set grouplen [ llength $grouplist ]
+		if { $grouplen <= 1 } { 
+		  set leader ""
+		} else {
+		  set leader "[ string repeat "   " [ expr { $grouplen - 2 } ] ] \u2022 "
+		}
+		$win add command -label "$leader[ lindex $grouplist end ]" -command [ list ::gorilla::MoveTreeNode $node $::gorilla::groupNodes($group) ] \
 		                 -columnbreak [ expr { ( $count % 20 ) == 0 } ]
 	}
 
-} ; # end proc gorilla::populate-login-popup
+} ; # end proc gorilla::populateLoginPopup
 
 proc gorilla::PopupEditLogin {} {
 	::gorilla::EditLogin
