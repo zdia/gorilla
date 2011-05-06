@@ -785,7 +785,7 @@ proc gorilla::GroupPopup {node xpos ypos} {
 	set ::gorilla::widgets(popup,Group) [menu .popupForGroup]
 	$::gorilla::widgets(popup,Group) add command \
 		-label [mc "Add Login"] \
-		-command "gorilla::PopupAddLogin"
+		-command "::gorilla::LoginDialog::AddLogin"
 	$::gorilla::widgets(popup,Group) add command \
 		-label [mc "Add Subgroup"] \
 		-command "gorilla::PopupAddSubgroup"
@@ -814,28 +814,6 @@ proc gorilla::GroupPopup {node xpos ypos} {
 		# "grab"
 		catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
 }
-
-proc gorilla::PopupAddLogin {} {
-
-	# Adds a login to Gorilla at the currently selected position in the tree
-
-	set node [ lindex [ $::gorilla::widgets(tree) selection ] 0 ]
-
-	foreach {data type} [ gorilla::LookupNodeData $node ] { break }
-  
-	# if "type" is Login, repeat the data lookup, but for the parent of the
-	# node, to result in an "add to group" action occurring instead.
-
-	if { $type eq "Login" } {
-		foreach {data type} [ gorilla::LookupNodeData [ $::gorilla::widgets(tree) parent $node ] ] { break }
-	}
-
-	switch -- $type {
-		Group { gorilla::AddLoginToGroup [lindex $data 1] }
-		Root  { gorilla::AddLoginToGroup "" }
-	}
-
-} ; # end proc gorilla::PopupAddLogin
 
 proc gorilla::LookupNodeData { node } {
 
@@ -890,7 +868,7 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	$::gorilla::widgets(popup,Login) add separator
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Add Login"] \
-		-command "gorilla::PopupAddLogin"
+		-command "::gorilla::LoginDialog::AddLogin"
 	$::gorilla::widgets(popup,Login) add command \
 		-label [mc "Edit Login"] \
 		-command "gorilla::PopupEditLogin"
@@ -907,10 +885,6 @@ proc gorilla::LoginPopup {node xpos ypos} {
 		# when opening a menu while another app is holding the
 		# "grab"
 		catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
-}
-
-proc gorilla::PopupAddLogin {} {
-	::gorilla::AddLogin
 }
 
 proc gorilla::PopupEditLogin {} {
@@ -2339,6 +2313,7 @@ namespace eval ::gorilla::LoginDialog {
 		ArrangeIdleTimeout
 
 		if { [ llength [ set sel [ $::gorilla::widgets(tree) selection ] ] ] == 0 } {
+		  set ::gorilla::status [ mc "Please select a login entry first." ]
 			return                                                       
 		}
 
@@ -2347,6 +2322,7 @@ namespace eval ::gorilla::LoginDialog {
 		set type [ lindex $data 0 ]
 
 		if {$type == "Group" || $type == "Root"} {
+		  set ::gorilla::status [ mc "Group entries may be renamed, not edited." ]
 			return
 		}
 
@@ -2362,18 +2338,25 @@ namespace eval ::gorilla::LoginDialog {
 
 		set tree $::gorilla::widgets(tree)
 
-		if { [ llength [ set sel [ $tree selection ] ] ] == 0 } {
-			return                                                       
+		set node [ lindex [ $tree selection ] 0 ]
+
+		lassign [ ::gorilla::LookupNodeData $node ] data type
+		
+		# if "type" is Login, repeat the data lookup, but for the parent of the
+		# node, to result in an "add to group" action occurring instead.
+
+		if { $type eq "Login" } {
+			lassign [ gorilla::LookupNodeData [ $tree parent $node ] ] data type
 		}
 
-		set node [ lindex $sel 0 ]
-		set data [ $tree item $node -values ]
-		set type [ lindex $data 0 ]
-
+		# if no entry in tree is selected, then "type" will be {},
+		# so in that case perform the same action as an add to root
+		
 		switch -exact -- $type {
 			Group	{ LoginDialog -group [ lindex $data 1 ] }
 			Root	{ LoginDialog -group "" }
 			Login	{ LoginDialog -group [ lindex [ $tree item [ $tree parent $node ] -values ] 1 ] }
+			{}	{ LoginDialog -group "" }
 		} 
 
 	} ; # end proc AddLogin
@@ -3308,9 +3291,15 @@ proc gorilla::Export {} {
 	# output a csv header describing what data values are present in each
 	# column of the csv file
 
-	set csv_data [ list uuid group title url user \
-	                    [ expr { $::gorilla::preference(exportIncludePassword) ? "password" : "" } ] \
-	                    [ expr { $::gorilla::preference(exportIncludeNotes)    ? "notes"    : "" } ] ]
+	set csv_data [ list uuid group title url user ] 
+
+	if { $::gorilla::preference(exportIncludePassword) } { 
+		lappend csv_data password
+	}
+
+	if { $::gorilla::preference(exportIncludeNotes) } {
+		lappend csv_data notes
+	}
 
 puts $csv_data
 	# puts $txtFile [ ::csv::join $csv_data $separator ]
@@ -5623,13 +5612,15 @@ proc gorilla::PreferencesDialog {} {
 		set sizes "8 9 10 11 12 14 16"
 		foreach {size} $sizes {
 			$m add radio -label $size -variable ::gorilla::prefTemp(fontsize) -value $size \
-				-command "
+				-command [ list ::apply { {size} {
 					font configure TkDefaultFont -size $size
 					font configure TkTextFont    -size $size
 					font configure TkMenuFont    -size $size
 					font configure TkCaptionFont -size $size
 					font configure TkFixedFont   -size $size
-					ttk::style configure gorilla.Treeview -rowheight [expr {$size * 2}]"
+					# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
+					ttk::style configure gorilla.Treeview -rowheight [ expr { 2 + [ font metrics TkDefaultFont -linespace ] } ]
+					} } $size ]
 		}
 		
 		pack $display.size.label $display.size.mb -side left
@@ -6130,7 +6121,8 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	font configure TkCaptionFont -size $value
 	font configure TkFixedFont   -size $value
 	# undocumented option for ttk::treeview
-	ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
+	# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
+	ttk::style configure gorilla.Treeview -rowheight [ expr { 2 + [ font metrics TkDefaultFont -linespace ] } ]
 
 	#
 	# If the revision numbers of our preferences don't match, forget

@@ -200,4 +200,6 @@ nicht beachten" \
 "Hide login name in tree view" "Loginname in der Übersicht verbergen" \
 "This option takes effect after exiting\nand restarting of Password Gorilla" "Diese Option wird nach einem Neustart Password Gorillas aktiv." \
 "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" "Gorilla schützt Passwörter und verwaltet sie mit einer Pwsafe 3.2 kompatiblen Datenbank." \
+"Please select a login entry first." "Please select a login entry first."
+"Group entries may be renamed, not edited." "Group entries may be renamed, not edited." 
 }
