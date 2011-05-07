@@ -206,4 +206,8 @@ mcmset it {
 "The group name can not be empty." "Il nome gruppo non pu essere vuoto." 
 "The name of the parent group is invalid." "Il nome del gruppo genitore non  valido."
 "Move Login to:" "Sposta login a:"
+"Gorilla artwork contributed by %s" "Grafica del Gorilla a cura di %s"
+"German translation by %s"          "Traduzione in tedesco di %s"
+"Russian translation by %s"         "Traduzione in russo di %s"
+"Italian translation by %s"         "Traduzione in italiano di %s"
 }
