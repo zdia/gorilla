@@ -201,4 +201,10 @@ nicht beachten" \
 "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" "Gorilla schützt Passwörter und verwaltet sie mit einer Pwsafe 3.2 kompatiblen Datenbank." \
 "Please select a login entry first." "Please select a login entry first."
 "Group entries may be renamed, not edited." "Group entries may be renamed, not edited." 
+
+"Gorilla artwork contributed by %s" "Gorilla artwork contributed by %s"
+"German translation by %s"          "German translation by %s"
+"Russian translation by %s"         "Russian translation by %s"
+"Italian translation by %s"         "Italian translation by %s"
+
 }

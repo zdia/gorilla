@@ -6399,14 +6399,6 @@ proc gorilla::DestroyAboutDialog {} {
 		unset ::gorilla::toplevel($top)
 }
 
-proc gorilla::contributors {} {
-	# ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
-	tk_messageBox -default ok \
-		-message \
-		"Gorilla artwork contributed by Andrew J. Sniezek."
-}
-# Russian translaters see github
-
 proc tkAboutDialog {} {
      ##about dialog code goes here
      gorilla::About
@@ -6435,20 +6427,28 @@ proc gorilla::About {} {
 			-font {sans 9} -padding {10 0}
 		ttk::label $w.url -text "http:/github.com/zdia/gorilla" -foreground blue \
 			-font {sans 10}
+
+		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
+		ttk::label $w.contributors -text [ mc "Contributors" ] {*}$stdopts -font {sans 10}
+		ttk::label $w.contrib1 -text "\u2022 [ mc "Gorilla artwork contributed by %s" "Andrew J. Sniezek." ]" {*}$stdopts
+		ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts
+		ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Leonid Shvechikov" ]" {*}$stdopts
+		ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts
 		
 		ttk::frame $w.buttons
-		ttk::button $w.buttons.contrib -text [mc "Contributors"] -command gorilla::contributors
 		ttk::button $w.buttons.license -text [mc License] -command gorilla::License
 		ttk::button $w.buttons.close -text [mc "Close"] -command gorilla::DestroyAboutDialog
-		
 					
 		pack $w.image -side top
 		pack $w.title -side top -pady 5
 		pack $w.description -side top
 		pack $w.copyright -side top -pady 5 -fill x
 		pack $w.url -side top -pady 5 
-		pack $w.buttons.contrib $w.buttons.license $w.buttons.close \
-			-side left -padx 5
+		foreach item [ list $w.contributors $w.contrib1 $w.contrib2 $w.contrib3 $w.contrib4 ] { 
+			pack $item -side top -pady 0 -fill x
+		} 
+		pack $w.buttons.license $w.buttons.close \
+			-side left -padx 30
 		pack $w.buttons -side bottom -pady 10
 		pack $w
 		

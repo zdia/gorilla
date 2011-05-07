@@ -190,4 +190,9 @@ mcmset ru { \
 "This option takes effect after exiting\nand restarting of Password Gorilla" "This option takes effect after exiting\nand restarting of Password Gorilla"
 "Please select a login entry first." "Please select a login entry first."
 "Group entries may be renamed, not edited." "Group entries may be renamed, not edited."
+
+"Gorilla artwork contributed by %s" "Gorilla artwork contributed by %s"
+"German translation by %s"          "German translation by %s"
+"Russian translation by %s"         "Russian translation by %s"
+"Italian translation by %s"         "Italian translation by %s"
 }
