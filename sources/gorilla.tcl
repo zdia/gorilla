@@ -3689,6 +3689,7 @@ variable gorilla::fieldNames [ list "" \
 
 proc gorilla::DestroyMergeReport {} {
 	ArrangeIdleTimeout
+	trace remove variable ::gorilla::merge_conflict_data {*}[ lindex [ trace info variable ::gorilla::merge_conflict_data ] 0 ]
 	set top .mergeReport
 	catch {destroy $top}
 	unset ::gorilla::toplevel($top)
