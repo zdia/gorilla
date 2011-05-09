@@ -581,7 +581,7 @@ proc gorilla::InitGui {} {
 
 	bind . <$meta-o> {.mbar.file invoke 1}
 	bind . <$meta-s> {.mbar.file invoke 3}
-	bind . <$meta-x> {.mbar.file invoke 10}
+	bind . <$meta-x> {.mbar.file invoke 11}
 	
 	bind . <$meta-u> {.mbar.edit invoke 0}
 	bind . <$meta-p> {.mbar.edit invoke 1}
