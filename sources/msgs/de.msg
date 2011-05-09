@@ -207,4 +207,11 @@ nicht beachten" \
 "Russian translation by %s"         "Russian translation by %s"
 "Italian translation by %s"         "Italian translation by %s"
 
+"Wrong Password"                "Wrong Password"
+"That password is not correct." "That password is not correct." 
+"Password Not Changed"          "Password Not Changed" 
+"You canceled the setting of a new password.\nTherefore, the existing password remains in effect." "You canceled the setting of a new password.\nTherefore, the existing password remains in effect." 
+"No Database"                   "No Database" 
+"Import ..."                    "Import ..."
+
 }
