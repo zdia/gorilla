@@ -4848,8 +4848,8 @@ proc gorilla::LockDatabase {} {
 
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Wrong Password" \
-				-message "That password is not correct."
+				-title [ mc "Wrong Password" ] \
+				-message [ mc "That password is not correct." ]
 
 			 # clear the PW entry upon invalid PW
 			 $aframe.mitte.pw.pw delete 0 end
@@ -6160,9 +6160,8 @@ proc gorilla::ChangePassword {} {
 	if {![info exists ::gorilla::db]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "No Database" \
-			-message "Please create a new database, or open an existing\
-			database first."
+			-title [ mc "No Database" ] \
+			-message [ mc "Please create a new database, or open an existing\ndatabase first." ]
 		return
 	}
 
@@ -6173,8 +6172,8 @@ proc gorilla::ChangePassword {} {
 	if {![$::gorilla::db checkPassword $currentPassword]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Wrong Password" \
-			-message "That password is not correct."
+			-title [ mc "Wrong Password" ] \
+			-message [ mc "That password is not correct." ]
 		return
 	}
 
@@ -6183,9 +6182,8 @@ proc gorilla::ChangePassword {} {
 	if {[catch {set newPassword [GetPassword 1 [mc "New Master Password:"]] } err]} {
 		tk_messageBox -parent . \
 			-type ok -icon info -default ok \
-			-title "Password Not Changed" \
-			-message "You canceled the setting of a new password.\
-			Therefore, the existing password remains in effect."
+			-title [ mc "Password Not Changed" ] \
+			-message [ mc "You canceled the setting of a new password.\nTherefore, the existing password remains in effect." ]
 		return
 	}
 	$::gorilla::db setPassword $newPassword
