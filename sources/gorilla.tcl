@@ -7627,6 +7627,83 @@ proc ::gorilla::addRufftoHelp { menu } {
 
 } ; # end proc addRufftoHelp
 
+# ----------------------------------------------------------------------
+#
+# ----------------------------------------------------------------------
+# Drag and Drop for ttk::treeview widget
+# ----------------------------------------------------------------------
+#
+
+# NOTE! - At present, this is just a very basic beginning.  Have to start
+# somewhere however.
+
+namespace eval ::gorilla::dnd {
+
+	namespace ensemble create
+	
+	variable dragging 0
+	variable dragitem ""
+	variable dragidx  ""
+
+	namespace export init
+	proc ::gorilla::dnd::init { tree } {
+  
+		# Adds drag and drop bindings to the tree widget command passed as a
+		# parameter
+		#
+		# tree - name of tree widget onto which to add DND bindings
+
+		bind $tree <ButtonPress-1>   [ namespace code "press   $tree %x %y" ]	    
+		bind $tree <Button1-Motion>  [ namespace code "motion  $tree %x %y" ]
+		bind $tree <ButtonRelease-1> [ namespace code "release $tree %x %y" ]
+
+	} ; # end ::gorilla::dnd::init
+
+	proc ::gorilla::dnd::press {tree x y} {
+		variable dragging 0
+		variable dragitem ""
+		variable dragidx  ""
+		
+		set selrow [ $tree identify row $x $y ]
+		if { $selrow ne "" } {
+			set dragging 1
+			set dragitem [ $tree item $selrow -text ]
+			set dragidx  $selrow
+		} ; # end if selrow ne ""
+		
+		puts "dragging $dragging dragidx $dragidx dragitem $dragitem"
+		
+	} ; # end proc ::gorilla::dnd::press
+  
+	proc ::gorilla::dnd::motion {tree x y} {
+
+		variable dragging
+		variable dragitem
+		variable dragidx
+
+		puts "motion $tree $x $y [ $tree identify row $x $y ]"
+
+		if { $dragging } {
+
+			$tree selection set [ $tree identify row $x $y ]
+			if { ! [ winfo exists $tree.dnd ] } {
+				ttk::label $tree.dnd -text $dragitem
+			} 
+			place $tree.dnd -x $x -y $y -anchor w
+
+		} ; # end if dragging
+
+	} ; # end proc ::gorilla::dnd::motion
+  
+	proc ::gorilla::dnd::release {tree x y} {
+
+		puts "release $tree $x $y"
+		destroy .tree.dnd
+
+	} ; # end proc ::gorilla::dnd::release
+  
+} ; # end namespace eval ::gorilla::dnd
+
 #
 # ----------------------------------------------------------------------
 # Init
