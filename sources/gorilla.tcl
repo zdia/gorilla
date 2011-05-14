@@ -1083,7 +1083,7 @@ proc gorilla::OpenPercentTrace {name1 name2 op} {
 	set ::gorilla::openPercentLastUpdate $now
 
 	if {$::gorilla::openPercent > 0} {
-		set info [format "Opening ... %2.0f %%" $::gorilla::openPercent]
+		set info [format [mc "Opening ... %2.0f %%"] $::gorilla::openPercent]
 		$::gorilla::openPercentWidget configure -text $info
 		update idletasks
 	}
@@ -1093,7 +1093,7 @@ proc gorilla::OpenPercentTrace {name1 name2 op} {
 	
 # proc gorilla::OpenDatabase {title {defaultFile ""}} {
 proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
-	
+
 	ArrangeIdleTimeout
 	set top .openDialog
 
@@ -1286,9 +1286,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		$top configure -cursor $myOldCursor
 
 		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title "Error Opening Database" \
-			-message "Can not open password database\
-			\"$nativeName\": $oops"
+			-title [mc "Error Opening Database"] \
+			-message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
 		$aframe.info configure -text $info
 		$aframe.pw.pw delete 0 end
 		focus $aframe.pw.pw
@@ -1321,7 +1320,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			}
 
 			set fileName [tk_getOpenFile -parent $top \
-				-title "Browse for a password database ..." \
+				-title [mc "Browse for a password database ..."] \
 				-filetypes $types \
 				-initialdir $::gorilla::dirName]
 			# -defaultextension ".psafe3" 
@@ -3656,7 +3655,7 @@ proc gorilla::SavePercentTrace {name1 name2 op} {
 	set ::gorilla::savePercentLastUpdate $now
 
 	if {$::gorilla::savePercent > 0} {
-		set ::gorilla::status [format "Saving ... %2.0f %%" $::gorilla::savePercent]
+		set ::gorilla::status [format [mc "Saving ... %2.0f %%"] $::gorilla::savePercent]
 		update idletasks
 	}
 }
@@ -4312,7 +4311,7 @@ proc gorilla::SaveAs {} {
 		}
 
 		set fileName [tk_getSaveFile -parent . \
-			-title "Save password database ..." \
+			-title [mc "Save password database ..."] \
 			-filetypes $types \
 			-initialdir $::gorilla::dirName]
 						# -defaultextension $defaultExtension \
@@ -4346,9 +4345,9 @@ proc gorilla::SaveAs {} {
 			. configure -cursor $myOldCursor
 			set backupNativeName [file nativename $backupFileName]
 			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title "Error Saving Database" \
-				-message "Failed to make backup copy of password \
-				database as $backupNativeName: $oops"
+				-title [mc "Error Saving Database"] \
+				-message [mc "Failed to make backup copy of password database as \"%s\": %s" \
+				$backupNativeName $oops]
 			return 0
 	}
 		}
@@ -4366,9 +4365,9 @@ proc gorilla::SaveAs {} {
 
 	. configure -cursor $myOldCursor
 	tk_messageBox -parent . -type ok -icon error -default ok \
-		-title "Error Saving Database" \
-		-message "Failed to save password database as\
-		$nativeName: $oops"
+		-title [mc "Error Saving Database"] \
+		-message [mc "Failed to save password database as \"%s\": %s" \
+		$nativeName $oops]
 	return 0
 		}
 
@@ -4382,7 +4381,7 @@ proc gorilla::SaveAs {} {
 		set ::gorilla::fileName $fileName
 		wm title . "Password Gorilla - $nativeName"
 		$::gorilla::widgets(tree) item "RootNode" -text $nativeName
-		set ::gorilla::status "Password database saved as $nativeName"
+		set ::gorilla::status [mc "Password database saved as %s" $nativeName]
 
 		#
 		# Add file to LRU preference
@@ -4830,7 +4829,7 @@ proc gorilla::LockDatabase {} {
 
 	focus $aframe.mitte.pw.pw
 	if {[catch { grab $top } oops]} {
-		set ::gorilla::status "error: $oops"
+		set ::gorilla::status [mc "error: %s" $oops]
 	}
 		
 	if { $::gorilla::preference(iconifyOnAutolock) } {

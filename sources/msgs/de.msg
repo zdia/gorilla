@@ -214,4 +214,16 @@ nicht beachten" \
 "No Database"                   "No Database" 
 "Import ..."                    "Import ..."
 
+"Error Opening Database" "Error Opening Database"
+"Can not open password database \"%s\": %s" "Can not open password database \"%s\": %s"
+"error: %s" "error: %s"
+"Browse for a password database ..." "Browse for a password database ..."
+"Save password database ..." "Save password database ..."
+"Opening ... %2.0f %%" "Opening ... %2.0f %%"
+"Saving ... %2.0f %%" "Saving ... %2.0f %%" 
+"Password database saved as %s" "Password database saved as %s" 
+"Error Saving Database" "Error Saving Database"
+"Failed to save password database as \"%s\": %s" "Failed to save password database as \"%s\": %s"
+"Failed to make backup copy of password database as \"%s\": %s" "Failed to make backup copy of password database as \"%s\": %s" 
+
 }

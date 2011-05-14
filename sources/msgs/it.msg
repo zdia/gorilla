@@ -160,7 +160,7 @@ mcmset it {
 "Text not found." "Testo non trovato." 
 "The confirmed password does not match." "La password di conferma non corrisponde." 
 "The current password database is modified. Do you want to save the current database before creating the new database?" "L'archivio corrente è stato modificato. Salvare l'archivio corrente prima di crearne uno nuovo?" 
-"The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." "L'archivio delle password corrente è stato modificato. Salvare l'archivio? <S> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale." 
+"The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." "L'archivio delle password corrente è stato modificato. Salvare l'archivio? <Sì> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale." 
 "The selected login does not contain a URL value." "Il login selezionato non contiene un valore URL." 
 "This login must have a title." "Questo login deve avere un titolo." 
 "This login's group name is not valid." "Questo nome di gruppo di login non è valido." 
@@ -200,10 +200,10 @@ mcmset it {
 "seconds (0=never)" "secondi (0=mai)" 
 "Resolve Conflicts ..." "Risolvi i conflitti ..." 
 "OK" "OK" 
-"Password database /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 loaded." "Archivio password /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 caricato." \
-"Welcome to the Password Gorilla." "Benvenuti in Password Gorilla." \
-"Hide login name in tree view" "Nascondi i nomi di login nella vista ad albero" \
-"This option takes effect after exiting\nand restarting of Password Gorilla" "Questa opzione diventa attiva dopo l'uscita\ne il riavvio di Password Gorilla." \
+"Password database /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 loaded." "Archivio password /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 caricato." 
+"Welcome to the Password Gorilla." "Benvenuti in Password Gorilla."
+"Hide login name in tree view" "Nascondi i nomi di login nella vista ad albero" 
+"This option takes effect after exiting\nand restarting of Password Gorilla" "Questa opzione diventa attiva dopo l'uscita\ne il riavvio di Password Gorilla." 
 "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" "Gorilla protegge le vostre password o vi aiuta a gestire un archivio password compatibile con Pwsafe 3.2." \
 "Please select a login entry first." "Selezionare prima una voce di login."
 "Group entries may be renamed, not edited." "Le voci di gruppo possono essere rinominate, non modificate."
@@ -218,8 +218,20 @@ mcmset it {
 "Italian translation by %s" "Traduzione in italiano di %s"
 "Wrong Password" "Password errata"
 "That password is not correct." "La password è sbagliata."
-"Password Not Changed"          "Password non modificata"
+"Password Not Changed" "Password non modificata"
 "You canceled the setting of a new password.\nTherefore, the existing password remains in effect." "L'impostazione della nuova password è stata annullata.\nDi conseguenza, la password esistente rimane in effetto."
-"No Database"                   "Nessun archivio"
-"Import ..."                    "Importa ..."
+"No Database" "Nessun archivio"
+"Import ..." "Importa ..."
+
+"Error Opening Database" "Errore durante l'apertura dell'archivio"
+"Can not open password database \"%s\": %s" "Impossibile aprire l'archivio database \"%s\": %s"
+"error: %s" "errore: %s"
+"Browse for a password database ..." "Seleziona un archivio password ..."
+"Save password database ..." "Salvataggio archivio password ..."
+"Opening ... %2.0f %%" "Apertura ... %2.0f %%"
+"Saving ... %2.0f %%" "Salvataggio ... %2.0f %%"
+"Password database saved as %s" "Archivio password salvato come %s" 
+"Error Saving Database" "Errore durante il salvataggio dell'archivio"
+"Failed to save password database as \"%s\": %s" "Fallito il salvataggio dell'archivio password come \"%s\": %s"
+"Failed to make backup copy of password database as \"%s\": %s" "Fallito il salvataggio della copia di scorta dell'archivio password come \"%s\": %s"
 }
