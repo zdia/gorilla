@@ -7698,6 +7698,7 @@ namespace eval ::gorilla::dnd {
 
 			set selectedItems [ $tree selection ]
 
+			set temp [ list ]
 			foreach item $selectedItems {
 				# name of the item
 				lappend temp [ $tree item $item -text ]
