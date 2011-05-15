@@ -2805,9 +2805,9 @@ proc gorilla::MoveTreeNode {node dest} {
 	if {$nodetype == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Root Node Can Not Be Moved" \
-			-message "The root node can not be moved."
-return
+			-title [ mc "Root Node Can Not Be Moved" ] \
+			-message [ mc "The root node can not be moved." ]
+		return
 	}
 
 	set desttype [lindex $destdata 0]
@@ -2855,9 +2855,8 @@ return
 	if {$destiter != "RootNode" || $node == "RootNode"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Move Node" \
-			-message "Can not move a group to a subgroup\
-			of itself."
+			-title [ mc "Can Not Move Node" ] \
+			-message [ mc "Can not move a group to a subgroup of itself." ]
 		return
 	}
 
