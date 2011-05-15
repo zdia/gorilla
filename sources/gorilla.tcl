@@ -5580,7 +5580,7 @@ proc gorilla::PreferencesDialog {} {
 			set ::gorilla::prefTemp(lang) en
 		}
 		set ::gorilla::fullLangName [dict get $languages $::gorilla::prefTemp(lang)]
-		
+
 		set display $top.nb.display
 		$top.nb add [ttk::frame $display -padding [list 10 10]] -text [mc "Display"]
 		
@@ -5590,7 +5590,7 @@ proc gorilla::PreferencesDialog {} {
 			-width 8 -direction right
 		set m [menu $display.lang.mb.menu -tearoff 0]
 		$display.lang.mb configure -menu $m
-		
+
 		foreach {lang name} $languages {
 			$m add radio -label $name -variable ::gorilla::prefTemp(lang) -value $lang \
 				-command "set ::gorilla::fullLangName $name"
@@ -6248,7 +6248,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 	set item [ gorilla::GetSelected$what ]
 
 	if {$item == ""} {
-		set ::gorilla::status [ mc "Can not copy $what to clipboard: no $what defined." ]
+		set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] ]
 	} else {
 		switch -exact -- [ tk windowingsystem ] {
 			aqua    -
@@ -6422,7 +6422,7 @@ proc gorilla::About {} {
 		ttk::label $w.copyright \
 			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2011 Zbigniew Diaczyszyn and\n\u00a9 2010-2011 Richard Ellis" \
 			-font {sans 9} -padding {10 0}
-		ttk::label $w.url -text "http:/github.com/zdia/gorilla" -foreground blue \
+		ttk::label $w.url -text "https:/github.com/zdia/gorilla" -foreground blue \
 			-font {sans 10}
 
 		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
