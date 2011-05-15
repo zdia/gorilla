@@ -615,6 +615,9 @@ proc gorilla::InitGui {} {
 
 	wm protocol . WM_DELETE_WINDOW gorilla::Exit
 
+	# attach drag and drop functionality to the tree
+	::gorilla::dnd init $::gorilla::widgets(tree)
+
 }
 
 #
