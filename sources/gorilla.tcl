@@ -2797,10 +2797,12 @@ proc gorilla::MoveTreeNode {node dest} {
 	set nodedata [$::gorilla::widgets(tree) item $node -values]
 	set destdata [$::gorilla::widgets(tree) item $dest -values]
 	set nodetype [lindex $nodedata 0]
-# node6 to node3
-#node7 node1
-# menü move login erscheint nur, wenn ein Login angeklickt ist
-# entsprechend MOVE GROUP nur, wenn tag group aktiviert ist
+	set desttype [lindex $destdata 0]
+
+	# node6 to node3
+	#node7 node1
+	# menü move login erscheint nur, wenn ein Login angeklickt ist
+	# entsprechend MOVE GROUP nur, wenn tag group aktiviert ist
 
 	if {$nodetype == "Root"} {
 		tk_messageBox -parent . \
@@ -2810,17 +2812,21 @@ proc gorilla::MoveTreeNode {node dest} {
 		return
 	}
 
-	set desttype [lindex $destdata 0]
-
 	if {$desttype == "RootNode"} {
 		set destgroup ""
+	} elseif { $desttype == "Login" } {
+		# if moving to a "Login", actually move to the parent of the
+		# login (which will be a group)
+		set dest [ $::gorilla::widgets(tree) parent $dest ]
+		set destdata [ $::gorilla::widgets(tree) item $dest -values ]
+		lassign $destdata desttype destgroup
 	} else {
 		set destgroup [lindex $destdata 1]
 	}
 
-		#
-		# Move a Login
-		#
+	#
+	# Move a Login
+	#
 
 	if {$nodetype == "Login"} {
 		set rn [lindex $nodedata 1]
@@ -2830,19 +2836,19 @@ proc gorilla::MoveTreeNode {node dest} {
 		MarkDatabaseAsDirty
 		return
 	}
-# bis hier
-		#
-		# Moving a group to its immediate parent does not have any effect
-		#
+	# bis hier
+	#
+	# Moving a group to its immediate parent does not have any effect
+	#
 
 	if {$dest == [$::gorilla::widgets(tree) parent $node]} {
 		return
 	}
 	
-		#
-		# When we are moving a group, make sure that destination is not a
-		# child of this group
-		#
+	#
+	# When we are moving a group, make sure that destination is not a
+	# child of this group
+	#
 
 	set destiter $dest
 	while {$destiter != "RootNode"} {
@@ -2860,9 +2866,9 @@ proc gorilla::MoveTreeNode {node dest} {
 		return
 	}
 
-		#
-		# Move recursively
-		#
+	#
+	# Move recursively
+	#
 
 	MoveTreeNodeRek $node [pwsafe::db::splitGroup $destgroup]
 	MarkDatabaseAsDirty
