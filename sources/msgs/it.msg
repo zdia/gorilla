@@ -12,7 +12,7 @@ mcmset it {
 "Add logins using <Add Login> in the <Login> menu." "Aggiungi un nuovo login tramite il menu <Login>." 
 "Add/Edit/View Login" "Nuovo/modifica/mostra login" 
 "Addition of group canceled." "Nuovo login annullato." 
-"Also copy username to clipboard" "E copia il nomeutente negli appunti." 
+"Also copy username to clipboard" "Inoltre, copia il nome utente negli appunti." 
 "Any field" "Qualsiasi campo" 
 "Are you sure that you want to delete group and all its contents?" "Sicuri di voler cancellare il gruppo e tutto il suo contenuto?" 
 "Are you sure that you want to delete this login?" "Sicuri di voler cancellare questo login?" 
@@ -90,7 +90,7 @@ mcmset it {
 "Iconify upon auto-lock" "Riduci ad icona durante l'auto blocco" 
 "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." "Se viene fornito un parametro in riga di comando, questo deve contenere la sequenza di caratteri %url% . Questa sequenza verrà rimpiazzata dall'URL usato durante l'avvio del browser. Consultare la guida per i dettagli." 
 "Include \"Notes\" field" "Includi il campo \"Notes\"" 
-"Include password field" "Includi il campi \"Password\"" 
+"Include password field" "Includi il campo \"Password\"" 
 "Language:" "Lingua:" 
 "Last Modified:" "Ultima modifica:" 
 "Last Password Change:" "Ultima modifica della password:" 
@@ -160,7 +160,7 @@ mcmset it {
 "Text not found." "Testo non trovato." 
 "The confirmed password does not match." "La password di conferma non corrisponde." 
 "The current password database is modified. Do you want to save the current database before creating the new database?" "L'archivio corrente è stato modificato. Salvare l'archivio corrente prima di crearne uno nuovo?" 
-"The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." "L'archivio delle password corrente è stato modificato. Salvare l'archivio? <S> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale." 
+"The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." "L'archivio delle password corrente è stato modificato. Salvare l'archivio? <Sì> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale." 
 "The selected login does not contain a URL value." "Il login selezionato non contiene un valore URL." 
 "This login must have a title." "Questo login deve avere un titolo." 
 "This login's group name is not valid." "Questo nome di gruppo di login non è valido." 
@@ -186,18 +186,24 @@ mcmset it {
 "Welcome back." "Bentornati." 
 "Welcome to the Password Gorilla." "Benvenuti in Password Gorilla" 
 "When double clicking a login ..." "Quando si fa doppio clic su un login ..." 
-"When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "Selezionando il nome utente\ndalla voce di login esso verrà\ncopiato anche negli appunti,\nall'apertura di un browser." 
-"You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" "Si sta per esportare l'archivio delle password su di un file di testo in chiaro. Il file non sarà criptato né protetto da password. Chiunque ne quadagni l'accesso potrà leggere il file, ed apprendere i nomi utenti e le password. Assicuratevi di salvare il file in un posto sicuro. Continuare?" 
+"When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "Impostando il nome utente nella voce\ndi login, all'apertura del browser, esso\nverrà copiato anche negli appunti." 
+"You are about to export the password\
+				database to a plain-text file. The file will\
+				not be encrypted or password-protected. Anybody\
+				with access can read the file, and learn your\
+				user names and passwords. Make sure to store the\
+				file in a secure location. Do you want to\
+				continue?" "Si sta per esportare l'archivio delle password su di un file di testo in chiaro. Il file non sarà criptato né protetto da password. Chiunque ne quadagni l'accesso potrà leggere il file, ed apprendere i nomi utenti e le password. Assicuratevi di salvare il file in un posto sicuro. Continuare?" 
 "because the file permissions are set for read-only access." "dato che i permessi sul file sono impostati per la sola lettura." 
 "database names" "Nomi archivi" 
 "minutes (0=never)" "minuti (0=mai)" 
 "seconds (0=never)" "secondi (0=mai)" 
 "Resolve Conflicts ..." "Risolvi i conflitti ..." 
 "OK" "OK" 
-"Password database /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 loaded." "Archivio password /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 caricato." \
-"Welcome to the Password Gorilla." "Benvenuti in Password Gorilla." \
-"Hide login name in tree view" "Nascondi i nomi di login nella vista ad albero" \
-"This option takes effect after exiting\nand restarting of Password Gorilla" "Questa opzione diventa attiva dopo l'uscita\ne il riavvio di Password Gorilla." \
+"Password database /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 loaded." "Archivio password /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 caricato." 
+"Welcome to the Password Gorilla." "Benvenuti in Password Gorilla."
+"Hide login name in tree view" "Nascondi i nomi di login nella vista ad albero" 
+"This option takes effect after exiting\nand restarting of Password Gorilla" "Questa opzione diventa attiva dopo l'uscita\ne il riavvio di Password Gorilla." 
 "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" "Gorilla protegge le vostre password o vi aiuta a gestire un archivio password compatibile con Pwsafe 3.2." \
 "Please select a login entry first." "Selezionare prima una voce di login."
 "Group entries may be renamed, not edited." "Le voci di gruppo possono essere rinominate, non modificate."
@@ -212,8 +218,20 @@ mcmset it {
 "Italian translation by %s" "Traduzione in italiano di %s"
 "Wrong Password" "Password errata"
 "That password is not correct." "La password è sbagliata."
-"Password Not Changed"          "Password non modificata"
+"Password Not Changed" "Password non modificata"
 "You canceled the setting of a new password.\nTherefore, the existing password remains in effect." "L'impostazione della nuova password è stata annullata.\nDi conseguenza, la password esistente rimane in effetto."
-"No Database"                   "Nessun archivio"
-"Import ..."                    "Importa ..."
+"No Database" "Nessun archivio"
+"Import ..." "Importa ..."
+
+"Error Opening Database" "Errore durante l'apertura dell'archivio"
+"Can not open password database \"%s\": %s" "Impossibile aprire l'archivio database \"%s\": %s"
+"error: %s" "errore: %s"
+"Browse for a password database ..." "Seleziona un archivio password ..."
+"Save password database ..." "Salvataggio archivio password ..."
+"Opening ... %2.0f %%" "Apertura ... %2.0f %%"
+"Saving ... %2.0f %%" "Salvataggio ... %2.0f %%"
+"Password database saved as %s" "Archivio password salvato come %s" 
+"Error Saving Database" "Errore durante il salvataggio dell'archivio"
+"Failed to save password database as \"%s\": %s" "Fallito il salvataggio dell'archivio password come \"%s\": %s"
+"Failed to make backup copy of password database as \"%s\": %s" "Fallito il salvataggio della copia di scorta dell'archivio password come \"%s\": %s"
 }
