@@ -7633,7 +7633,8 @@ proc ::gorilla::addRufftoHelp { menu } {
 #
 
 if {[tk windowingsystem] == "aqua"} {
-	set argv [psn_Delete $argv $argc]
+	# psn_nr in argv is deleted in Mac's application bundle.
+	# See pkgIndex.tcl
 
 	set ::gorilla::MacShowPreferences {
 		proc ::tk::mac::ShowPreferences {} {

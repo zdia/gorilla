@@ -94,7 +94,7 @@ mcmset de {
 "Include password field" "Passwort-Feld exportieren" 
 "Language:" "Sprache:" 
 "Last Modified:" "Letzte Änderung:" 
-"Last Password Change:" "Letzte Passwortänderung:" 
+"Last Password Change:" "Letzte Änderung des Passworts:" 
 "Launch Browser directed to URL" "Starte den Browser direkt mit der URL" 
 "Launched browser:" "Gestarteter Browser:" 
 "License" "Lizenz" 
