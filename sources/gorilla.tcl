@@ -1018,7 +1018,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	set top .openDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		
 		# TryResizeFromPreference $top
 
@@ -2274,7 +2274,7 @@ proc gorilla::MoveDialog {type} {
 	set top .moveDialog
 	
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Move $type"]
 
@@ -2510,7 +2510,7 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	set top .subgroupDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Add a new Group"]
 
@@ -2868,7 +2868,7 @@ proc gorilla::RenameGroup {} {
 	set top .renameGroup
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Rename Group"]
 
@@ -3632,7 +3632,7 @@ proc gorilla::Merge {} {
 	set top ".mergeReport"
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top "Merge Report for $nativeName"
 
 		set text [text $top.text -relief sunken -width 100 -wrap none \
@@ -4348,7 +4348,7 @@ proc gorilla::LockDatabase {} {
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
 		
-	toplevel $top
+	toplevel $top -class "Gorilla"
 	TryResizeFromPreference $top
 
 		 if {$::gorilla::preference(gorillaIcon)} {
@@ -4508,9 +4508,9 @@ proc gorilla::GetPassword {confirm title} {
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		if {[tk windowingsystem] == "aqua"} {
-			toplevel $top -background #ededed
+			toplevel $top -background #ededed -class "Gorilla"
 		} else {
-			toplevel $top
+			toplevel $top -class "Gorilla"
 		}
 		TryResizeFromPreference $top
 
@@ -4716,7 +4716,7 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 		set top .passPolicyDialog
 
 		if {![info exists ::gorilla::toplevel($top)]} {
-	toplevel $top
+	toplevel $top -class "Gorilla"
 	TryResizeFromPreference $top
 
 	ttk::frame $top.plen -padding [list 0 10 0 0 ]
@@ -4913,7 +4913,7 @@ proc gorilla::DatabasePreferencesDialog {} {
 	set oldKeyStretchingIterations $::gorilla::dpd(keyStretchingIterations)
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top [mc "Database Preferences"]
 		TryResizeFromPreference $top
 
@@ -5072,7 +5072,7 @@ proc gorilla::PreferencesDialog {} {
 	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		# TryResizeFromPreference $top
 		wm title $top [mc "Preferences"]
 
@@ -6180,7 +6180,7 @@ proc gorilla::About {} {
 	set top .about
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		
 		set w .about.mainframe
 		
@@ -6256,7 +6256,7 @@ proc gorilla::DestroyTextFileDialog {top} {
 
 proc gorilla::ShowTextFile {top title fileName} {
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 
 		wm title $top $title
 
@@ -6353,7 +6353,7 @@ proc gorilla::Find {} {
 	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top "Find"
 
@@ -7085,7 +7085,7 @@ proc gorilla::ViewEntry {rn} {
 		
 	} else {
 	
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top [ mc "View Login" ]
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
