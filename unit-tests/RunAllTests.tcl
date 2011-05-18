@@ -16,11 +16,11 @@ package require tcltest 2.2
 
 # default search path is the actual working directory
 tcltest::workingDirectory [file dirname [file normalize [info script]]]
-tcltest::singleProcess 1	;# environment will be used
+tcltest::singleProcess 1	;# caller environment will be used
 tcltest::verbose { start pass }
 
 # set testFolderList [list csv-import csv-export merge lock-database]
-set testFolderList [list csv-export ]
+set testFolderList [list csv-import csv-export ]
 
 foreach testFolder $testFolderList {
 	cd [file join [tcltest::workingDirectory] $testFolder]
@@ -31,3 +31,4 @@ foreach testFolder $testFolderList {
 	cd ..
 }
 
+tcltest::cleanupTests	;# will give the results and exit 

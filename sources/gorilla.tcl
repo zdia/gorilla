@@ -74,17 +74,15 @@ if {[catch {package require Tcl 8.5}]} {
 }
 
 # ----------------------------------------------------------------------
-#
-# A helper proc to load packages.  This collects the details of "catching"
-# and reporting errors upon package loading into one single proc.  It must
-# be defined here because it has to be defined before it can be called.
-# Note, not in "gorilla" namespace because the gorilla namespace has not yet
-# been created.
-#
-# ----------------------------------------------------------------------
-#
 
 proc load-package { args } {
+	# A helper proc to load packages.  This collects the details of "catching"
+	# and reporting errors upon package loading into one single proc.  It must
+	# be defined here because it has to be defined before it can be called.
+	# Note, not in "gorilla" namespace because the gorilla namespace has not yet
+	# been created.
+	#
+	# args - package(s) to load
 
 	foreach package $args {
 
@@ -3275,11 +3273,7 @@ proc gorilla::Export {} {
 		return
 	}
 
-	if { [ catch { package require csv } oops ] } {
-		error-popup [ mc "Error loading CSV parsing package." ] \
-		           "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
-		return
-	}
+	load-package csv
 
 	::gorilla::Feedback [ mc "Exporting ..." ]
 
@@ -3300,9 +3294,7 @@ proc gorilla::Export {} {
 		lappend csv_data notes
 	}
 
-puts $csv_data
-	# puts $txtFile [ ::csv::join $csv_data $separator ]
-	puts [ ::csv::join $csv_data $separator ]
+	puts $txtFile [ ::csv::join $csv_data $separator ]
 
 	# now output the contents of the database
 
@@ -3324,8 +3316,7 @@ puts $csv_data
 			lappend csv_data [ string map {\\ \\\\ \n \\n} [ dbget notes $rn ] ]
 		}
 
-		# puts $txtFile [ ::csv::join $csv_data $separator ]
-		puts [ ::csv::join $csv_data $separator ]
+		puts $txtFile [ ::csv::join $csv_data $separator ]
 
 	} ; # end foreach rn in gorilla db
 
@@ -3375,11 +3366,12 @@ proc gorilla::Import { {input_file ""} } {
 
 	fconfigure $infd -encoding utf-8
 
-	if { [ catch { package require csv } oops ] } {
-		error-popup [ mc "Error loading CSV parsing package." ] \
-		           "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
-		return
-	}
+	load-package csv
+	# if { [ catch { package require csv } oops ] } {
+		# error-popup [ mc "Error loading CSV parsing package." ] \
+		           # "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+		# return
+	# }
 
 	set myOldCursor [. cget -cursor]
 	. configure -cursor watch

@@ -16,8 +16,8 @@ package require tcltest 2.2
 # set argv ""
 # eval ::tcltest::configure $argv
 set testname [info script]
-puts "------------------------------------------------------------------"
-puts "Running $testname for Password Gorilla ..."
+# puts "------------------------------------------------------------------"
+# puts "Running $testname for Password Gorilla ..."
 
 # ------------- sample -----------------
 #
@@ -40,30 +40,23 @@ namespace eval ::gorilla::test {
 	# CATEGORY: CSV-EXPORT
 	# --------------------
 
-# create a testexport.csv					ok
-# test gorilla::Feedback
-# test encoding
-# correct separator?
-# test csv-header
-# csv package loaded?
-# Notes - need to escape newlines and slashes.  The CSV module will
-# handle escaping commas and double quotes
+	# Test database contains special characters and utf8 sensible characters
 
 	# global setup
 	set ::gorilla::preference(exportShowWarning) 0
-	# set ::DEBUG(CSVEXPORT) 1
-	
-	test $testname-1.0 {general test creating testexport.csv} \
+
+	test $testname-1.0 {create and test testexport.csv} \
     -setup { set ::DEBUG(CSVEXPORT) 1 } \
-    -body { gorilla::Export } \
+    -body {
+						gorilla::Export
+						return [viewFile testexport.csv ./]
+					} \
     -cleanup { set ::DEBUG(CSVEXPORT) 0 } \
-    -result GORILLA_OK
+    -result [viewFile normexport.csv ./]
 
 	# global cleanup
 	set ::gorilla::preference(exportShowWarning) 1
-	# set ::DEBUG(CSVEXPORT) 0
-
-	cleanupTests	;# will give the results and exit 
+	removeFile testexport.csv .
 	
 } ;# end of namespace eval ::gorilla::test
 
