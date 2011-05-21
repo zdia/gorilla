@@ -213,4 +213,9 @@ mcmset ru {
 "Failed to save password database as \"%s\": %s" "Failed to save password database as \"%s\": %s"
 "Failed to make backup copy of password database as \"%s\": %s" "Failed to make backup copy of password database as \"%s\": %s"
 "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" "" \
+"Please select an entry in the tree to move." "Please select an entry in the tree to move."
+"Invalid Group Name" "Invalid Group Name"
+"The group name can not be empty." "The group name can not be empty." 
+"The name of the parent group is invalid." "The name of the parent group is invalid."
+"Move Login to:" "Move Login to:"
 }
