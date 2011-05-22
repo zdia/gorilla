@@ -17,6 +17,9 @@
 msgid "File"
 msgstr ""
 
+msgid "New ..."
+msgstr ""
+
 msgid "Open ..."
 msgstr ""
 
@@ -44,6 +47,9 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 
+msgid "Copy Username"
+msgstr ""
+
 msgid "Copy Password"
 msgstr ""
 
@@ -60,6 +66,9 @@ msgid "Find next"
 msgstr ""
 
 msgid "Login"
+msgstr ""
+
+msgid "Add Login"
 msgstr ""
 
 msgid "Edit Login"
@@ -92,6 +101,9 @@ msgstr ""
 msgid "Security"
 msgstr ""
 
+msgid "Password Policy ..."
+msgstr ""
+
 msgid "Customize ..."
 msgstr ""
 
@@ -102,6 +114,9 @@ msgid "Lock now"
 msgstr ""
 
 msgid "Help"
+msgstr ""
+
+msgid "Help ..."
 msgstr ""
 
 msgid "License ..."
