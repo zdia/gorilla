@@ -7648,10 +7648,13 @@ namespace eval ::gorilla::dnd {
 	namespace ensemble create
 
 	variable dragging      0        ; # flag to indicate if user is dragging items
-	variable selectedItems [ list ]	; # list of items (tree node names) that are being dragged
-	variable clickPx       -Inf     ; # mouse cursor x position for click that started drag
-	variable clickPy       -Inf     ; # mouse cursor y position for click that started drag
-	variable invalidDrag   0        ; # flag to indicate if the selected item list is a valid set of items for a drag
+
+	variable selectedItems [ list ]	; # list of items (tree node names) that
+	                                  # need to be "moved" to perform the move
+	                                  # action
+
+	variable clickPx       -Inf     ; # mouse cursor x position at start of drag
+	variable clickPy       -Inf     ; # mouse cursor y position at start of drag
 
 	# ----------------------------------------------------------------------
 
@@ -7673,13 +7676,13 @@ namespace eval ::gorilla::dnd {
 		ttk::label $tree.dnd
 
 		#ruff
-		# Attaches event bindings to the widget passed as the sole
-		# parameter for handling drag and drop operations.  Also
-		# creates a single label widget as a child of the parameter
-		# which will be utilized as a drag indicator.
+		# Attaches event bindings to the widget passed as the sole parameter for
+		# handling drag and drop operations.  Also creates a single label widget
+		# as a child of the parameter which will be utilized as a drag
+		# indicator.
 		#
-		# tree - the widget name to attach the event bindings.  The
-		#        created label will be a child of this widget
+		# tree - the widget name to attach the event bindings.  The created
+		#        label will be a child of this widget
 		
 	} ; # end ::gorilla::dnd::init
 
@@ -7688,50 +7691,53 @@ namespace eval ::gorilla::dnd {
 	proc ::gorilla::dnd::select { tree } {
 		variable dragging
 		variable selectedItems
-		variable invalidDrag 0
 		
 		if { ! $dragging } {
-			# numG and numL are utilized to exclude attempting
-			# to drag and drop groups and logins or plural
-			# groups
-			set numG [ set numL 0 ]
+			set tempitems [ $tree selection ]
+			
+			# keep only items that are 1) visible 2) not a child of an item
+			# already in the list
+			
+			set selectedItems [ list ]
+			set labeltexts    [ list ]
+			foreach item $tempitems {
 
-			set selectedItems [ $tree selection ]
+				# bbox is documented as returning empty list for a not visible item
+				if { [ llength [ $tree bbox $item ] ] == 0 } {
+					continue
+				}
 
-			set temp [ list ]
-			foreach item $selectedItems {
-				# name of the item
-				lappend temp [ $tree item $item -text ]
+				# at this point the item is visible, so add its label to the
+				# labeltexts list
 
-				# type (Login,Group) of the item
-				switch -exact -- [ lindex [ $tree item $item -values ] 0 ] {
-				  	Group { incr numG } 
-				  	Login { incr numL }
-				} ; # end switch
+				lappend labeltexts [ $tree item $item -text ]
+				
+				# skip if parent item already in selection list
+				if { [ $tree parent $item ] in $tempitems } {
+					continue
+				}
 
- 			} ; # end foreach item
+				# otherwise remember the item as a move candidate
+				lappend selectedItems $item
 
- 			# put the selected item names into the label widget
- 			# that is the drag feedback indicator
-			$tree.dnd configure -text [ join $temp "\n" ]
+			} ; # end foreach item in tempitems
 
-			if { ( ( $numG > 0 ) && ( $numL > 0 ) )
-			    || ( $numG > 1 ) } {
-				# can not drag both groups and logins
-				# can not drag plural groups
-				set invalidDrag 1
-			}
-		}
+ 			# put the selected item names into the label widget that is the drag
+ 			# feedback indicator
+
+			$tree.dnd configure -text [ join $labeltexts "\n" ]
+
+		} ; # end if not dragging
 
 		#ruff
-		# Called by event loop when treeview selection changes
+		# Called by event loop when treeview selection changes 
+		#
 		# tree - the name of the treeview widget
 		#
-		# If a drag is happening then retreives the list of selected
-		# treeview rows and stores them in a namespace varaible in
-		# prepraration for a drag operation occurring.  Also inserts
-		# the names of the rows in the drag label as feedback to a
-		# user for what items are being dragged.
+		# If a drag is happening then retreives the list of selected treeview
+		# rows and stores them in a namespace varaible in prepraration for a
+		# drag operation occurring.  Also inserts the names of the rows in the
+		# drag label as feedback to a user for what items are being dragged.
 		#
 		# If a drag is not happening then do nothing.
 
@@ -7743,21 +7749,17 @@ namespace eval ::gorilla::dnd {
 		variable clickPx     -Inf
 		variable clickPy     -Inf
 		
-		# can not drag empty area of tree, nor root node of tree -
-		# the -Inf is the magic which makes this work.  Any x,y
-		# position subtracted from -Inf is still -Inf, and -Inf is
-		# always smaller than zero, so as long as Px,Py are -Inf, a
-		# drag will never initiate
-
+		# can not drag empty area of tree, nor root node of tree - leave set to
+		# -Inf in those cases
+		
 		if { ( [ $tree identify row $x $y ] ni {"" RootNode} ) } {
 			set clickPx $x
 			set clickPy $y
 		} ; # end if selrow ni ""/RootNode
 
 		#ruff
-		# Callled by mouse button press event to record the x,y
-		# position of the mouse cursor in preparation for a possible
-		# drag occurring.
+		# Called by mouse button press event to record the x,y position of the
+		# mouse cursor in preparation for a possible drag occurring.
 		#
 		# tree - the tree widget 
 		# x - x mouse cursor position
@@ -7771,16 +7773,14 @@ namespace eval ::gorilla::dnd {
 		variable dragging
 		variable clickPx
 		variable clickPy
-		variable invalidDrag
 
-		if { $invalidDrag } { 
-			::gorilla::Feedback [ mc "Can not drag the selected items (see documentation)" ]
-			set dragging 0
-			return
-		}
+		# the -Inf default for clickP[xy] is the magic which makes this code
+		# below work.  Any x,y position subtracted from -Inf is still -Inf, and
+		# -Inf is always smaller than zero, so as long as Px,Py are -Inf, a drag
+		# will never initiate
 
-		# a small hysteresis of 5 pixels of motion before we decide
-		# that a drag is occurring
+		# a small hysteresis of 5 pixels of motion before we decide that a drag
+		# is occurring
 		if { ( ! $dragging )
 		  && ( 
 		          ( [ expr { abs( $clickPx - $x ) } ] > 5 )
@@ -7790,9 +7790,9 @@ namespace eval ::gorilla::dnd {
 		}
 
 		if { $dragging } {
-			# I do not understand why, but configuring -cursor
-			# on the tree did not work, yet configuring it on .
-			# did work properly.
+
+			# I do not understand why, but configuring -cursor on the tree did not
+			# work, yet configuring it on .  did work properly.
 			. configure -cursor double_arrow
 
 			set selrow [ $tree identify row $x $y ]
@@ -7802,18 +7802,17 @@ namespace eval ::gorilla::dnd {
 				$tree see $selrow
 			}
 
-			# use place to position the drag indicator - the +5
-			# pixels positions it just to the right of the
-			# cursor bitmap so it does not overlap with the
-			# cursor
+			# use place to position the drag indicator - the +5 pixels positions
+			# it just to the right of the cursor bitmap so it does not overlap
+			# with the cursor
 
 			place $tree.dnd -x [ expr { $x + 5 } ] -y $y -anchor w
 
 		} ; # end if dragging
 
 		#ruff
-		# Called by mouse motion event to both decide when to
-		# initiate a drag and to animate the drag as it occurs
+		# Called by mouse motion event to both decide when to initiate a drag
+		# and to animate the drag as it occurs
 		#
 		# tree - the tree widget
 		# x - new mouse x position
@@ -7829,24 +7828,28 @@ namespace eval ::gorilla::dnd {
 
 		if { $dragging } {
 			# clean up
-			. configure -cursor {}
 			set dragging 0
 			place forget $tree.dnd
 
 			set dropIdx [ $tree identify row $x $y ]
+
 			# can not drop into empty section of tree
 			if { $dropIdx ne "" } {
+				. configure -cursor watch
+				update idletasks
 				foreach item $selectedItems {
 					::gorilla::MoveTreeNode $item $dropIdx
 				}
 			}
 
+			. configure -cursor {}
+
 		} ; # end if dragging
 		
 		#ruff
-		# Called by mouse button release event.  If a drag was
-		# occurring then handle actually performing the "move" of
-		# the selected items to the destination location in the tree.
+		# Called by mouse button release event.  If a drag was occurring then
+		# handle actually performing the "move" of the selected items to the
+		# destination location in the tree.
 		#
 		# tree - the tree widget
 		# x - mouse x position of release event
