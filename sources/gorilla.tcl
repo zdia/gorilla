@@ -35,7 +35,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.4 $}
+set ::gorillaVersion {$Revision: 1.5.3.5 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -6432,7 +6432,7 @@ proc gorilla::About {} {
 		ttk::label $w.contributors -text [ mc "Contributors" ] {*}$stdopts -font {sans 10}
 		ttk::label $w.contrib1 -text "\u2022 [ mc "Gorilla artwork contributed by %s" "Andrew J. Sniezek." ]" {*}$stdopts
 		ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts
-		ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Leonid Shvechikov" ]" {*}$stdopts
+		ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts
 		ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts
 		
 		ttk::frame $w.buttons
