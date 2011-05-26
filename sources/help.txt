@@ -39,9 +39,7 @@ alias: Overview
  - [Keyboard Shortcuts]
  - [The "V3" Database Format]
 
- Author: Frank Pilhofer, fp@fpx.de
- Last modified: 2010/08/23 (Zbigniew Diaczyszyn)
- This help written using Keith Vetter's Hypertext Help System.
+ This help is written using Keith Vetter's Hypertext Help System.
 
 -------------------
 title: Risks

@@ -301,8 +301,8 @@ proc gorilla::Init {} {
 		doubleClickAction      { nothing { {value} { return true } }                                                          }
 		exportAsUnicode        { 0       { {value} { string is boolean $value } }                                             }
 		exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value in [list , \; :] ) } } } }
-		exportIncludeNotes     { 0       { {value} { string is boolean $value } }                                             }
-		exportIncludePassword  { 0       { {value} { string is boolean $value } }                                             }
+		exportIncludeNotes     { 1       { {value} { string is boolean $value } }                                             }
+		exportIncludePassword  { 1       { {value} { string is boolean $value } }                                             }
 		exportShowWarning      { 1       { {value} { string is boolean $value } }                                             }
 		findInAny              { 0       { {value} { string is boolean $value } }                                             }
 		findInNotes            { 1       { {value} { string is boolean $value } }                                             }
