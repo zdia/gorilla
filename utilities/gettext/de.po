@@ -1,3 +1,23 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-05-22 12:19+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: zdia <z.dia@gmx.de>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: mc\n"
+"X-Poedit-Basepath: /home/dia/Projekte/git/gorilla/sources\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-KeywordsList: mc\n"
+"X-Poedit-Basepath: /home/dia/Projekte/git/gorilla/sources\n"
+"X-Poedit-SearchPath-0: msgs\n"
+"X-Poedit-SearchPath-1: .\n"
+
 msgid "File"
 msgstr "Datenbank"
 
@@ -120,26 +140,6 @@ msgstr "Lizenz ..."
 msgid "About ..."
 msgstr "Über ..."
 
-msgid ""
-msgstr ""
-"Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-22 12:19+0200\n"
-"PO-Revision-Date: \n"
-"Last-Translator: zdia <z.dia@gmx.de>\n"
-"Language-Team: \n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: mc\n"
-"X-Poedit-Basepath: /home/dia/Projekte/git/gorilla/sources\n"
-"X-Poedit-SourceCharset: utf-8\n"
-"X-Poedit-KeywordsList: mc\n"
-"X-Poedit-Basepath: /home/dia/Projekte/git/gorilla/sources\n"
-"X-Poedit-SearchPath-0: msgs\n"
-"X-Poedit-SearchPath-1: .\n"
-
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:175
 #, tcl-format
 msgid "Need %s"
@@ -148,15 +148,10 @@ msgstr "Benötige %s"
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:176
 #, tcl-format
 msgid ""
-"The Password Gorilla requires the \"%s\" package. This seems to be an "
-"installation problem, as this file ought to be part of the Password Gorilla "
-"distribution.\n"
+"The Password Gorilla requires the \"%s\" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.\n"
 "\n"
 "Error message: %s"
-msgstr ""
-"Password Gorilla benötigt das \"%s\" Paket. Dies scheint ein "
-"Installationsproblem zu sein, da dies Paket Teil der Distribution von "
-"Password Gorilla  ist."
+msgstr "Password Gorilla benötigt das \"%s\" Paket. Dies scheint ein Installationsproblem zu sein, da dies Paket Teil der Distribution von Password Gorilla  ist."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:221
 msgid "Need [Incr Tcl]"
@@ -165,12 +160,10 @@ msgstr "Benötige [Incr Tcl]"
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:222
 #, tcl-format
 msgid ""
-"The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install "
-"the [incr Tcl] package.\n"
+"The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.\n"
 "\n"
 "Error Message: %s"
-msgstr ""
-"Password Gorilla benötigt das [incr Tcl] Paket. Bitte installieren Sie es."
+msgstr "Password Gorilla benötigt das [incr Tcl] Paket. Bitte installieren Sie es."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:230
 msgid "Need PWSafe"
@@ -179,15 +172,10 @@ msgstr "Benötige PWSafe"
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:231
 #, tcl-format
 msgid ""
-"The Password Gorilla requires the \"pwsafe\" package. This seems to be an "
-"installation problem, as the pwsafe package ought to be part of the Password "
-"Gorilla distribution.\n"
+"The Password Gorilla requires the \"pwsafe\" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.\n"
 "\n"
 "Error Message: %s"
-msgstr ""
-"Password Gorilla benötigt das <pwsafe> Paket. Dies scheint ein "
-"Installationsproblem zu sein, das dies Paket Teil der Password Gorilla "
-"Distribution ist."
+msgstr "Password Gorilla benötigt das <pwsafe> Paket. Dies scheint ein Installationsproblem zu sein, das dies Paket Teil der Password Gorilla Distribution ist."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:347
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:8055
@@ -233,12 +221,8 @@ msgid "Save changes?"
 msgstr "Änderungen speichern?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:991
-msgid ""
-"The current password database is modified. Do you want to save the current "
-"database before creating the new database?"
-msgstr ""
-"Die aktuelle Datenbank wurde modifiziert. Soll sie vor dem Anlegen einer "
-"neuen Datenbank gespeichert werden?"
+msgid "The current password database is modified. Do you want to save the current database before creating the new database?"
+msgstr "Die aktuelle Datenbank wurde modifiziert. Soll sie vor dem Anlegen einer neuen Datenbank gespeichert werden?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1020
 msgid "New Database: Choose Master Password"
@@ -289,12 +273,8 @@ msgid "New"
 msgstr "Neu"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1210
-msgid ""
-"Select a database, and enter its password. Click \"New\" to create a new "
-"database."
-msgstr ""
-"Wählen Sie eine Datenbank und geben Sie das Passwort ein. Klicken Sie auf "
-"Click \"New\" to create a new database."
+msgid "Select a database, and enter its password. Click \"New\" to create a new database."
+msgstr "Wählen Sie eine Datenbank und geben Sie das Passwort ein. Klicken Sie auf  \"Neu\" um eine Datenbank anzulegen."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1294
 msgid "Please be patient. Verifying password ..."
@@ -375,8 +355,7 @@ msgstr "<unbekannt>"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2298
 msgid "This login must have a title, url or username."
-msgstr ""
-"Dieser Datensatz benötigt einen Titel, eine Url oder einen Benutzernamen."
+msgstr "Dieser Datensatz benötigt einen Titel, eine Url oder einen Benutzernamen."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2307
 msgid "This login's group name is not valid."
@@ -477,16 +456,8 @@ msgid "Export Security Warning"
 msgstr "Sicherheitshinweis Export"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3239
-msgid ""
-"You are about to export the password database to a plain-text file. The file "
-"will not be encrypted or password-protected. Anybody with access can read "
-"the file, and learn your user names and passwords. Make sure to store the "
-"file in a secure location. Do you want to continue?"
-msgstr ""
-"Sie sind im Begriff, die Passwort-Datenbank als lesbare unverschlüsselte "
-"Textdatei zu exportieren. Sie ist auch nicht passwortgeschützt. Es ist damit "
-"leicht, an Ihre Passwörter zu kommen. Speichern Sie Ihre Datei an einem "
-"sicheren Ort. Wollen Sie fortfahren?"
+msgid "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"
+msgstr "Sie sind im Begriff, die Passwort-Datenbank als lesbare unverschlüsselte Textdatei zu exportieren. Sie ist auch nicht passwortgeschützt. Es ist damit leicht, an Ihre Passwörter zu kommen. Speichern Sie Ihre Datei an einem sicheren Ort. Wollen Sie fortfahren?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3263
 msgid "Export password database as text ..."
@@ -604,12 +575,8 @@ msgid "because the file permissions are set for read-only access."
 msgstr "kann nicht gesichert werden, weil sie schreibgeschützt ist."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4181
-msgid ""
-"Please change the file permissions to read-write and hit 'Retry' or hit "
-"'Cancel' and use 'File'->'Save As' to save into a different file."
-msgstr ""
-"Entfernen Sie den Schreibschutz und wählen dann 'Wiederholen' oder brechen "
-"Sie den Vorgang ab und speichern Sie die Datei unter einem neuen Namen."
+msgid "Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file."
+msgstr "Entfernen Sie den Schreibschutz und wählen dann 'Wiederholen' oder brechen Sie den Vorgang ab und speichern Sie die Datei unter einem neuen Namen."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4183
 msgid "Warning: Read-only password file"
@@ -644,10 +611,7 @@ msgid "Password database saved as %s"
 msgstr "Die Passwort-Datenbank wurde gespeichert als %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4582
-msgid ""
-"The current password database is modified. Do you want to save the database? "
-"<Yes> saves the database and exits. <No> discards all changes and exits. "
-"<Cancel> returns to the main menu."
+msgid "The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu."
 msgstr "Die Datenbank wurde modizifiert. Soll sie gespeichert werden?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4641
@@ -834,13 +798,8 @@ msgid "Defaults"
 msgstr "Voreinstellungen"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5543
-msgid ""
-"Note: these defaults will be applied to new databases. To change a setting "
-"for an existing database, go to \"Customize\" in the \"Security\" menu."
-msgstr ""
-"Achtung: Diese Einstellungen werden auf neue Datenbanken angewandt. Um "
-"Einstellungen für eine existierende Datenbank zu ändern, wählen Sie "
-"\"Anpassen\" im Menü \"Sicherheit\"."
+msgid "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."
+msgstr "Achtung: Diese Einstellungen werden auf neue Datenbanken angewandt. Um Einstellungen für eine existierende Datenbank zu ändern, wählen Sie \"Anpassen\" im Menü \"Sicherheit\"."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5551
 msgid "Export"
@@ -909,14 +868,8 @@ msgid "Find Browser"
 msgstr "Browser suchen"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5663
-msgid ""
-"If a command line parameter is provided, it must contain the character "
-"sequence: %url%. This sequence will be replaced with the actual URL during "
-"launch. See the help system for details."
-msgstr ""
-"Wenn Parameter in der Aufrufzeile angegeben werden, muss der Platzhalter %url"
-"% angegeben werden. Er übergibt die URL des Login-Eintrags an den Browser. "
-"Mehr in der Hilfe."
+msgid "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details."
+msgstr "Wenn Parameter in der Aufrufzeile angegeben werden, muss der Platzhalter %url% angegeben werden. Er übergibt die URL des Login-Eintrags an den Browser. Mehr in der Hilfe."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5667
 msgid "Also copy username to clipboard"
@@ -962,8 +915,7 @@ msgstr "Keine Datenbank"
 msgid ""
 "Please create a new database, or open an existing\n"
 "database first."
-msgstr ""
-"Legen Sie bitte eine neue Datenbank an, oder öffnen Sie eine existierende."
+msgstr "Legen Sie bitte eine neue Datenbank an, oder öffnen Sie eine existierende."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6169
 msgid "Current Master Password:"
@@ -1002,12 +954,8 @@ msgid "Password Gorilla"
 msgstr "Password Gorilla"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6424
-msgid ""
-"Gorilla will protect your passwords and help you to manage them with a "
-"pwsafe 3.2 compatible database"
-msgstr ""
-"Gorilla schützt Ihre Passwörter und hilft Ihnen, sie mit Pwsafe 3.2 "
-"kompatiblen Datenbanken zu verwalten."
+msgid "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database"
+msgstr "Gorilla schützt Ihre Passwörter und hilft Ihnen, sie mit Pwsafe 3.2 kompatiblen Datenbanken zu verwalten."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6432
 msgid "Contributors"
@@ -1128,8 +1076,7 @@ msgstr "Gorilladoc.html erzeugen"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7825
 msgid "Can not drag the selected items (see documentation)"
-msgstr ""
-"Die ausgewählten Einträge können nicht verschoben werden (vgl. Dokumentation)"
+msgstr "Die ausgewählten Einträge können nicht verschoben werden (vgl. Dokumentation)"
 
 #~ msgid "Group:"
 #~ msgstr "Gruppe:"
