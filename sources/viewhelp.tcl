@@ -413,6 +413,7 @@ proc ::Help::DoDisplay { top } {
  # ::Help::ShowPage -- Shows a text help page, doing wiki type transforms
  #
  proc ::Help::ShowPage {w title} {
+puts "+++ Here is Help::ShowPage"
     variable pages
  
     set endash \u2013
@@ -425,7 +426,7 @@ proc ::Help::DoDisplay { top } {
     } else {
         set lines [split $pages($title) \n]
     }
- 
+puts "lines $lines" 
     foreach line $lines {
         set tag {}
         set op1 ""
@@ -478,6 +479,7 @@ proc ::Help::DoDisplay { top } {
                 set line $ital1
             }
         }
+puts "HelpShowPage line: \n$line"
         $w insert end "$line\n" $tag
     }
  }
