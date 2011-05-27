@@ -3557,7 +3557,7 @@ proc gorilla::Import { {input_file ""} } {
 			return [lindex $error_lines 0 0]
 		}
 		
-		puts "errors exist from import: $error_lines"
+		# puts "errors exist from import: $error_lines"
 		set answer [ tk_messageBox -default yes -icon info \
 			-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
 			-parent . -title [ mc "Some records skipped during import" ] -type yesno ]

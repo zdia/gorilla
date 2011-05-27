@@ -39,7 +39,7 @@ alias: Overview
  - [Keyboard Shortcuts]
  - [The "V3" Database Format]
 
- This help is written using Keith Vetter's Hypertext Help System.
+ This documentation is written using Keith Vetter's Hypertext Help System.
 
 -------------------
 title: Risks
