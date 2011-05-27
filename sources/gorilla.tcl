@@ -7911,8 +7911,8 @@ namespace eval ::gorilla::dnd {
 #
 
 if {[tk windowingsystem] == "aqua"} {
-	# psn_nr in argv is deleted in Mac's application bundle.
-	# See pkgIndex.tcl
+	# we have to delete the psn_nr in argv
+	if {[string first "-psn" [lindex $argv 0]] == 0} { set argv [lrange $argv 1 end]}
 
 	set ::gorilla::MacShowPreferences {
 		proc ::tk::mac::ShowPreferences {} {
