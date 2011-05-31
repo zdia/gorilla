@@ -157,10 +157,12 @@ load-package msgcat
 
 namespace import msgcat::*
 
-# mcload [file join $::gorillaDir msgs]
-# mcload has to be called after having set 'mclocale' which will happen
-# during initialization of Gorilla's preferences
-#
+mcload [file join $::gorillaDir msgs help]
+mcload [file join $::gorillaDir msgs]
+# The message files will be loaded according to the system's actual
+# language. During initialization of Gorilla's preferences the command
+# 'mclocale' will set the language accoring to Gorilla's resource file.
+# 
 # Look out! If you use a file ROOT.msg in the msgs folder it will be used 
 # without regard to the Unix LOCALE configuration
 
@@ -8054,7 +8056,7 @@ update
 
 set ::gorilla::status [mc "Welcome to the Password Gorilla."]
 
-if { $DEBUG(TCLTEST) } {
+if { $::DEBUG(TCLTEST) } {
 	set argv ""
 	source [file join $::gorillaDir .. unit-tests RunAllTests.tcl]
 }

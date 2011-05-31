@@ -1,12 +1,12 @@
- ##+##########################################################################
+ ############################################################################
  #
  # Hypertext viewhelp.tcl -- A help system based on wiki 1194 and tile
  # by Keith Vetter, May 2007
  #
  # based on Ttk 8.5 and modified for use with Password Gorilla with 
- # permission of Keith Vetter
- #
- # 18.08.2010 zdia
+ # permission of Keith Vetter (18.08.2010 zdia)
+ # 
+ # added msgcat calls in order to get internationalization for the help
  #
 
  interp alias {} ::button {} ::ttk::button
@@ -65,44 +65,53 @@
  #
  # ::Help::Help -- initializes and creates the help dialog
  #
- proc ::Help::Help {{title ""}} {
-    variable W
- 
-    if {![winfo exists $W(top)]} {
-        ::Help::DoDisplay $W(top)
-    }
- 
-    raise $W(top)
-    ::Help::Show $title
- }
+proc ::Help::Help {{title ""}} {
+	variable W
+
+	if {![winfo exists $W(top)]} {
+			::Help::DoDisplay $W(top)
+	}
+
+	raise $W(top)
+	::Help::Show $title
+
+}
  ##+##########################################################################
  #
  # ::Help::ReadHelpFiles -- reads "help.txt" in the packages directory
  # and creates all the help pages.
  #
  proc ::Help::ReadHelpFiles {dir} {
-    set fname [file join $dir help.txt]
-    set fin [open $fname r]
-    set data [read $fin] ; list
-    close $fin
- 
-    regsub -all -line {^-+$} $data \x01 data
-    regsub -all -line {^\#.*$\n} $data {} data
-    foreach section [split $data \x01] {
-        set n [regexp -line {^title:\s*(.*)$} $section => title]
-        if {! $n} {
-            puts "Bad help section\n'[string range $section 0 400]'"
-            continue
-        }
-        set aliases {}
-        foreach {. alias} [regexp -all -line -inline {^alias:\s*(.*)$} $section] {
-            lappend aliases $alias
-        }
- 
-        regsub -all -line {^(title:|alias:).*$\n} $section {} section
-        ::Help::AddPage $title $aliases $section
-    }
-    ::Help::BuildTOC
+	# Looks in the passed directory for a file "help.txt"
+	# The text is split into section according to the "title:" markers.
+	# Then the sections are passed to ::Help::AddPage to build the
+	# ::Help::pages() array so that ::Help::BuildTOC can construct the TOC
+	# 
+	# dir - the directory in which the file help.txt is searched for
+	#
+	set fname [file join $dir help.txt]
+	set fin [open $fname r]
+	set data [read $fin] ; list
+	close $fin
+
+	regsub -all -line {^-+$} $data \x01 data
+	regsub -all -line {^\#.*$\n} $data {} data
+	foreach section [split $data \x01] {
+			set n [regexp -line {^title:\s*(.*)$} $section => title]
+			set title [mc $title]
+			if {! $n} {
+					puts "Bad help section\n'[string range $section 0 400]'"
+					continue
+			}
+			set aliases {}
+			foreach {. alias} [regexp -all -line -inline {^alias:\s*(.*)$} $section] {
+					lappend aliases $alias
+			}
+
+			regsub -all -line {^(title:|alias:).*$\n} $section {} section
+			::Help::AddPage $title $aliases $section
+	}
+	::Help::BuildTOC
  }
  ##+##########################################################################
  #
@@ -355,7 +364,6 @@ proc ::Help::DoDisplay { top } {
  proc ::Help::FindPage {title} {
     variable pages
     variable alias
- # puts "pages(title) $pages($title)"
     if {[info exists pages($title)]} { return $title }
     set title2 [string tolower $title]
     if {[info exists alias($title2)]} { return $alias($title2) }
@@ -394,12 +402,12 @@ proc ::Help::DoDisplay { top } {
     if {! $state(haveTOC) && [info exists alias(toc)]} {
         $w insert end TOC link " - " {}
     }
-    $w insert end Index link " - " {} Search link
+    $w insert end Index link " - " {} [mc Search] link
     if {$next} {
-        $w insert end " - " {} Previous link " - " {} Next link
+        $w insert end " - " {} [mc Previous] link " - " {} [mc Next] link
     }
     if {[llength $state(history)]} {
-        $w insert end " - " {} History link " - " {} Back link
+        $w insert end " - " {} [mc History] link " - " {} [mc Back] link
     }
  
     $w insert end \n
@@ -413,7 +421,6 @@ proc ::Help::DoDisplay { top } {
  # ::Help::ShowPage -- Shows a text help page, doing wiki type transforms
  #
  proc ::Help::ShowPage {w title} {
-puts "+++ Here is Help::ShowPage"
     variable pages
  
     set endash \u2013
@@ -426,11 +433,11 @@ puts "+++ Here is Help::ShowPage"
     } else {
         set lines [split $pages($title) \n]
     }
-puts "lines $lines" 
+
     foreach line $lines {
         set tag {}
         set op1 ""
-        if {[regexp {^ +([1*-|]+)\s*(.*)} $line -> op txt]} {
+        if {[regexp {^ +([1*\-|]+)\s*(.*)} $line -> op txt]} {
             set op1 [string index $op 0]
             set lvl [expr {[string length $op] - 1}]
             set indent [string repeat "     " $lvl]
@@ -452,11 +459,15 @@ puts "lines $lines"
         } elseif {[string match " *" $line]} {  ;# Line beginning w/ a space
             $w insert end $line\n fix
             unset -nocomplain number
+						set line [mc $line]
             continue
         }
+				
+				set line [mc $line]
+
         if {$op1 ne "1"} {unset -nocomplain number}
- 
-        while {1} {                             ;# Look for markups
+				# now look for markups
+        while {1} {
             set link0 [set bold0 [set ital0 $line]]
             set n1 [regexp {^(.*?)[[](.*?)[]](.*$)} $line -> link0 link link1]
             set n2 [regexp {^(.*?)'''(.*?)'''(\s*.*$)} $line -> bold0 bold bold1]
@@ -479,7 +490,6 @@ puts "lines $lines"
                 set line $ital1
             }
         }
-puts "HelpShowPage line: \n$line"
         $w insert end "$line\n" $tag
     }
  }
@@ -495,7 +505,6 @@ puts "HelpShowPage line: \n$line"
     set state(allTOC) {}                        ;# All pages in TOC ordering
     if {! [winfo exists $W(tree)]} return
     set tocData $pages([::Help::FindPage toc])
- 
     $W(tree) delete [$W(tree) child {}]
     unset -nocomplain parent
     set parent() {}
@@ -506,8 +515,10 @@ puts "HelpShowPage line: \n$line"
         if {! $n} continue
  
         set isLink [regexp {^\[(.*)\]$} $txt => txt]
+				set txt [mc $txt]
         set pDashes [string range $dashes 1 end]
         set parent($dashes) [$W(tree) insert $parent($pDashes) end -text $txt]
+
         if {$isLink} {
             $W(tree) item $parent($dashes) -tag link -open true
  
