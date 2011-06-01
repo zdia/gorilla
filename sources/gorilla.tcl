@@ -1131,7 +1131,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	set top .openDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		
 		# TryResizeFromPreference $top
 
@@ -2458,7 +2458,7 @@ proc gorilla::MoveDialog {type} {
 	set top .moveDialog
 	
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Move $type"]
 
@@ -2688,7 +2688,7 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	set top .subgroupDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Add a new Group"]
 
@@ -3035,7 +3035,7 @@ proc gorilla::RenameGroup {} {
 	set top .renameGroup
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Rename Group"]
 
@@ -4041,7 +4041,7 @@ proc gorilla::Merge {} {
 	set top ".mergeReport"
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top "Merge Report for $nativeName"
 
 		set text [text $top.text -relief sunken -width 100 -wrap word \
@@ -4748,8 +4748,36 @@ proc gorilla::LockDatabase {} {
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
 		
-		toplevel $top
-		TryResizeFromPreference $top
+	toplevel $top -class "Gorilla"
+	TryResizeFromPreference $top
+
+		 if {$::gorilla::preference(gorillaIcon)} {
+			 ttk::label $top.splash -image $::gorilla::images(splash)
+			 pack $top.splash -side left -fill both
+
+			 ttk::separator $top.vsep -orient vertical
+			 pack $top.vsep -side left -fill y -padx 3
+		 }
+
+	set aframe [ttk::frame $top.right -padding {10 10}]
+
+	# Titel packen	
+	# ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
+	ttk::label $aframe.title -anchor center
+	pack $aframe.title -side top -fill x -pady 10
+
+	ttk::labelframe $aframe.file -text [mc "Database:"]
+	ttk::entry $aframe.file.f -width 40 -state disabled
+	pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
+	pack $aframe.file -side top -pady 5 -fill x -expand yes
+
+	ttk::frame $aframe.mitte
+	ttk::labelframe $aframe.mitte.pw -text [mc "Password:"] 
+	entry $aframe.mitte.pw.pw -width 20 -show "*" 
+	# -background #FFFFCC
+	pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
+	
+	pack $aframe.mitte.pw -side left -pady 5 -expand 0
 
 		if {$::gorilla::preference(gorillaIcon)} {
 			ttk::label $top.splash -image $::gorilla::images(splash)
@@ -4908,9 +4936,9 @@ proc gorilla::GetPassword {confirm title} {
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		if {[tk windowingsystem] == "aqua"} {
-			toplevel $top -background #ededed
+			toplevel $top -background #ededed -class "Gorilla"
 		} else {
-			toplevel $top
+			toplevel $top -class "Gorilla"
 		}
 		TryResizeFromPreference $top
 
@@ -5113,6 +5141,63 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 		easytoread 1]
 	array set ::gorilla::ppd $settings
 
+		set top .passPolicyDialog
+
+		if {![info exists ::gorilla::toplevel($top)]} {
+	toplevel $top -class "Gorilla"
+	TryResizeFromPreference $top
+
+	ttk::frame $top.plen -padding [list 0 10 0 0 ]
+	ttk::label $top.plen.l -text [mc "Password Length"]
+	spinbox $top.plen.s -from 1 -to 999 -increment 1 \
+		-width 4 -justify right \
+		-textvariable ::gorilla::ppd(length)
+	pack $top.plen.l -side left
+	pack $top.plen.s -side left -padx 10
+	pack $top.plen -side top -anchor w -padx 10 -pady 3
+
+	ttk::checkbutton $top.lower -text [mc "Use lowercase letters"] \
+		-variable ::gorilla::ppd(uselowercase)
+	ttk::checkbutton $top.upper -text [mc "Use UPPERCASE letters"] \
+		-variable ::gorilla::ppd(useuppercase)
+	ttk::checkbutton $top.digits -text [mc "Use digits"] \
+		-variable ::gorilla::ppd(usedigits)
+	ttk::checkbutton $top.hex -text [mc "Use hexadecimal digits"] \
+		-variable ::gorilla::ppd(usehexdigits)
+	ttk::checkbutton $top.symbols -text [mc "Use symbols (%, \$, @, #, etc.)"] \
+		-variable ::gorilla::ppd(usesymbols)
+	ttk::checkbutton $top.easy \
+		-text [mc "Use easy to read characters only (e.g. no \"0\" or \"O\")"] \
+		-variable ::gorilla::ppd(easytoread)
+	pack $top.lower $top.upper $top.digits $top.hex $top.symbols \
+		$top.easy -anchor w -side top -padx 10 -pady 3
+
+	ttk::separator $top.sep -orient horizontal
+	pack $top.sep -side top -fill x -pady 10
+
+	frame $top.buts
+	set but1 [ttk::button $top.buts.b1 -width 15 -text "OK" \
+		-command "set ::gorilla::guimutex 1"]
+	set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
+		-command "set ::gorilla::guimutex 2"]
+	pack $but1 $but2 -side left -pady 10 -padx 20
+	pack $top.buts -padx 10
+
+	bind $top.lower <Return> "set ::gorilla::guimutex 1"
+	bind $top.upper <Return> "set ::gorilla::guimutex 1"
+	bind $top.digits <Return> "set ::gorilla::guimutex 1"
+	bind $top.hex <Return> "set ::gorilla::guimutex 1"
+	bind $top.symbols <Return> "set ::gorilla::guimutex 1"
+	bind $top.easy <Return> "set ::gorilla::guimutex 1"
+	bind $top.buts.b1 <Return> "set ::gorilla::guimutex 1"
+	bind $top.buts.b2 <Return> "set ::gorilla::guimutex 2"
+
+	set ::gorilla::toplevel($top) $top
+	wm protocol $top WM_DELETE_WINDOW gorilla::DestroyPasswordPolicyDialog
+		} else {
+	wm deiconify $top
+		}
+
 	set top .passPolicyDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
@@ -5313,7 +5398,7 @@ proc gorilla::DatabasePreferencesDialog {} {
 	set oldKeyStretchingIterations $::gorilla::dpd(keyStretchingIterations)
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top [mc "Database Preferences"]
 		TryResizeFromPreference $top
 
@@ -5446,7 +5531,7 @@ proc gorilla::PreferencesDialog {} {
 	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		# TryResizeFromPreference $top
 		wm title $top [mc "Preferences"]
 
@@ -6409,7 +6494,7 @@ proc gorilla::About {} {
 	set top .about
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		
 		set w .about.mainframe
 		
@@ -6492,7 +6577,7 @@ proc gorilla::DestroyTextFileDialog {top} {
 
 proc gorilla::ShowTextFile {top title fileName} {
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 
 		wm title $top $title
 
@@ -6574,7 +6659,7 @@ proc gorilla::Find {} {
 	set top .findDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top "Find"
 
@@ -7298,7 +7383,7 @@ proc gorilla::ViewEntry {rn} {
 		
 	} else {
 	
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top [ mc "View Login" ]
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
