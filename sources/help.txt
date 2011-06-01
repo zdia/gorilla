@@ -36,10 +36,18 @@ alias: Overview
  -- [Moving Groups and/or Logins]
  - [Logins]
  - [Preferences]
+ -- [General Preferences]
+ -- [Database Default Preferences]
+ --- [Export Preferences]
+ --- [Database Preferences]
+ -- [Display]
+ -- [Launch Browser]
  - [Keyboard Shortcuts]
  - [The "V3" Database Format]
+ - [Data Import]
 
- This documentation is written using Keith Vetter's Hypertext Help System.
+This documentation is written using Keith Vetter's Hypertext Help System.
+For copyright and authorship see the About panel.
 
 -------------------
 title: Risks
