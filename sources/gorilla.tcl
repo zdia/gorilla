@@ -2443,11 +2443,11 @@ proc gorilla::EditLogin {} {
 #
 
 proc gorilla::MoveLogin {} {
-	gorilla::MoveDialog Login
+	gorilla::MoveDialog [mc Login]
 }
 
 proc gorilla::MoveGroup {} {
-	gorilla::MoveDialog Group
+	gorilla::MoveDialog [mc Group]
 }
 
 proc gorilla::MoveDialog {type} {
@@ -2460,9 +2460,9 @@ proc gorilla::MoveDialog {type} {
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
-		wm title $top [mc "Move $type"]
+		wm title $top [mc "Move %s" "$type"]
 
-		ttk::labelframe $top.source -text [mc $type] -padding [list 10 10]
+		ttk::labelframe $top.source -text $type -padding [list 10 10]
 		ttk::entry $top.source.e -width 40 -textvariable ::gorilla::MoveDialogSource
 		ttk::labelframe $top.dest \
 		-text [mc "Destination Group with format <Group.Subgroup> :"] \
@@ -2570,7 +2570,7 @@ proc gorilla::MoveDialog {type} {
 	wm withdraw $top
 
 	if {$::gorilla::guimutex != 1} {
-		set ::gorilla::status [mc "Moving of $type canceled."]
+		set ::gorilla::status [mc "Moving of %s canceled." $type]
 		return
 	}
 
@@ -2578,7 +2578,7 @@ proc gorilla::MoveDialog {type} {
 	
 	$::gorilla::widgets(tree) item $destNode -open 1
 	$::gorilla::widgets(tree) item "RootNode" -open 1
-	set ::gorilla::status [mc "$type moved."]
+	set ::gorilla::status [mc "%s moved." $type]
 	MarkDatabaseAsDirty
 }
 
@@ -6327,7 +6327,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 		Username { set ::gorilla::activeSelection 1 }
 		Password { set ::gorilla::activeSelection 2 }
 		URL      { set ::gorilla::activeSelection 3 }
-		default  { error "gorilla::CopyToClipboard: parameter 'what' not one of 'Username', 'Password', 'URL'" }
+		default  { error [mc "gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'" [mc $what]] }
 	}
 
 	ArrangeIdleTimeout

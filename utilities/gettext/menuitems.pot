@@ -125,3 +125,9 @@ msgstr ""
 msgid "About ..."
 msgstr ""
 
+msgid "Last Modified"
+msgstr ""
+
+msgid "Last Password Change"
+msgstr ""
+
