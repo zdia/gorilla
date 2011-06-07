@@ -295,7 +295,7 @@ proc gorilla::Init {} {
 
 		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
-		backupPath						 { {}      { {value} { file exists $value } }                                                   }
+		backupPath						 { {~/gorilla-backup} { {value} { file exists $value } }                                                   }
 		browser-exe            { {}      { {value} { return true } }                                                          }
 		browser-param          { {}      { {value} { return true } }                                                          }
 		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
@@ -1512,6 +1512,7 @@ proc gorilla::Open {{defaultFile ""}} {
 	set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
 
+puts $::gorilla::preference(backupPath)
 	if { $::gorilla::preference(backupPath) eq "" } {
 		set ::gorilla::preference(backupPath) [file dirname $nativeName]
 	}
@@ -5528,7 +5529,7 @@ proc gorilla::PreferencesDialog {} {
 
 
 		#
-		# Second NoteBook tab: (d)atabase (p)re(f)erences
+		# Second NoteBook tab: (d)efault (p)re(f)erences
 		#
 
 		set dpf $top.nb.dpf
@@ -5552,13 +5553,13 @@ proc gorilla::PreferencesDialog {} {
 			-variable ::gorilla::prefTemp(unicodeSupport)
 
 		ttk::frame $dpf.bakpath
+puts $::gorilla::prefTemp(backupPath)
 		ttk::entry $dpf.bakpath.e -textvariable ::gorilla::prefTemp(backupPath)
 		ttk::label $dpf.bakpath.l -text [mc "Backup path:"]
 		ttk::button $dpf.bakpath.b -image $::gorilla::images(browse) \
 			-command { eval set ::gorilla::prefTemp(backupPath) \
 				[tk_chooseDirectory -initialdir $::gorilla::prefTemp(backupPath) \
 				-title [mc "Choose a directory"] ] }
-
 		pack $dpf.bakpath.l -side left
 		pack $dpf.bakpath.e -side left -padx 3 -expand 1 -fill x
 		pack $dpf.bakpath.b -side left -padx 3
