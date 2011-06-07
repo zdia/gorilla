@@ -1,0 +1,127 @@
+# This is the template for Gorilla's menuitems which are not marked by
+# a keyword in the source file
+# 
+# Create a localized .po catalog:
+# 
+# msgmerge -o <outputcatalog> <existing>.po <untranslated>.pot
+# msgmerge de.po menuitems.pot
+#
+# Result: Outputcatalog will contain the already existing translations
+# The non-equal entries are commented out.
+#
+# Then create the final catalog file:
+# E.g. for German catalog:
+#
+# msgcat -o de.po source_de.po menuitems_de.po
+# 
+msgid "File"
+msgstr ""
+
+msgid "New ..."
+msgstr ""
+
+msgid "Open ..."
+msgstr ""
+
+msgid "Merge ..."
+msgstr ""
+
+msgid "Save"
+msgstr ""
+
+msgid "Save As ..."
+msgstr ""
+
+msgid "Export ..."
+msgstr ""
+
+msgid "Import ..."
+msgstr ""
+
+msgid "Preferences ..."
+msgstr ""
+
+msgid "Exit"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Copy Username"
+msgstr ""
+
+msgid "Copy Password"
+msgstr ""
+
+msgid "Copy URL"
+msgstr ""
+
+msgid "Clear Clipboard"
+msgstr ""
+
+msgid "Find ..."
+msgstr ""
+
+msgid "Find next"
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Add Login"
+msgstr ""
+
+msgid "Edit Login"
+msgstr ""
+
+msgid "View Login"
+msgstr ""
+
+msgid "Delete Login"
+msgstr ""
+
+msgid "Move Login ..."
+msgstr ""
+
+msgid "Add Group ..."
+msgstr ""
+
+msgid "Add Subgroup ..."
+msgstr ""
+
+msgid "Rename Group ..."
+msgstr ""
+
+msgid "Move Group ..."
+msgstr ""
+
+msgid "Delete Group"
+msgstr ""
+
+msgid "Security"
+msgstr ""
+
+msgid "Password Policy ..."
+msgstr ""
+
+msgid "Customize ..."
+msgstr ""
+
+msgid "Change Master Password ..."
+msgstr ""
+
+msgid "Lock now"
+msgstr ""
+
+msgid "Help"
+msgstr ""
+
+msgid "Help ..."
+msgstr ""
+
+msgid "License ..."
+msgstr ""
+
+msgid "About ..."
+msgstr ""
+

@@ -1,0 +1,199 @@
+#!/bin/bash
+
+# A script to create a debian install bundle from the Password Gorilla
+# source tree from github.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# See LICENCE.txt in ../sources/ for the full licence text.
+#
+# ----------------------------------------------------------------------
+
+# This script is written for GNU Bash - you have been warned.
+
+# NOTE - this script (at present) builds an architecture independent
+# PWGorilla .deb file.  Compiled binary extensions for sha2 and twofish
+# acceleration are not included in the package file.
+
+# The .deb file created by this script has been tested on Ubuntu 11.04
+# running in VirtualBox.  It installs prerequisites and a working Password
+# Gorilla.
+
+YOUR_NAME="Enter your name here"
+YOUR_EMAIL="Enter your email here"
+
+DATE=$(date)
+YEAR=$(date +%Y)
+
+#set -x # for development
+
+set -e # exit on any errors - NOTE - does not clean up after itself
+
+GORILLA_DIR=../sources
+DEST=/tmp/PasswordGorilla
+CONTROL=$DEST/DEBIAN
+GORILLA_VERSION=$(grep "set ::gorillaVersion {\$Revision:" ../sources/gorilla.tcl | cut -f 4 -d " ")
+DEBIAN_VERSION=5
+DATA=make-deb.data
+
+# ----------------------------------------------------------------------
+
+function error() {
+
+  echo -e $@
+
+  exit 1
+
+}
+
+# ----------------------------------------------------------------------
+
+function subst() {
+
+  sed -e "s/%VER1%/$GORILLA_VERSION/g" \
+      -e "s/%VER2%/$DEBIAN_VERSION/g" \
+      -e "s/%YOUR_NAME%/$YOUR_NAME/g" \
+      -e "s/%YOUR_EMAIL%/$YOUR_EMAIL/g" \
+      -e "s/%DATE%/$DATE/g" \
+      -e "s/%YEAR%/$YEAR/g" $1 > $2 
+
+}
+
+# ----------------------------------------------------------------------
+
+# check for dpkg presence
+
+which dpkg > /dev/null || error "This script requires the \"dpkg\" tool, which does not seem to be installed.\nSee http://packages.debian.org/stable/admin/dpkg.\nInstallation of \"dpkg\" is beyond the scope of this script."
+
+# check for gorilla.tcl in the expected location
+
+if [ ! -f ${GORILLA_DIR}/gorilla.tcl ] ; then
+  error "This script assumes it is being run from gorilla/utilities, and that gorilla.tcl is located at ../sources/gorilla.tcl.\nPlease run the script from the gorilla/utilities directory."
+fi
+
+# check for data dir
+
+if [ ! -d $DATA ] ; then 
+  error "\'$DATA\' not found in $(pwd).  Unable to continue."
+fi
+
+# check for output dir
+if [ -d $DEST ] ; then
+  error "Output directory tree \'$DEST\' already exists.  Refusing to overwrite.  Please remove \'$DEST\' manually."
+fi
+
+# prerequisites appear to be in order, start building a deb directory structure in DEST
+
+# first, make the directory structure
+
+mkdir -p $CONTROL
+mkdir -p $DEST/usr/bin
+mkdir -p $DEST/usr/share/applications
+mkdir -p $DEST/usr/share/doc/password-gorilla
+mkdir -p $DEST/usr/share/icons/hicolor/16x16
+mkdir -p $DEST/usr/share/icons/hicolor/32x32
+mkdir -p $DEST/usr/share/icons/hicolor/48x48
+mkdir -p $DEST/usr/share/man/man1
+mkdir -p $DEST/usr/share/menu
+mkdir -p $DEST/usr/share/password-gorilla/blowfish
+mkdir -p $DEST/usr/share/password-gorilla/pwsafe
+mkdir -p $DEST/usr/share/password-gorilla/twofish
+mkdir -p $DEST/usr/share/pixmaps
+
+# copy the Password Gorilla files into the destination locations
+
+# first - the script in /usr/bin 
+
+cat - > $DEST/usr/bin/password-gorilla <<"END"
+#!/bin/sh
+
+exec /usr/share/password-gorilla/gorilla.tcl $@
+END
+
+chmod a+x $DEST/usr/bin/password-gorilla
+
+# desktop app data file
+
+cp $DATA/password-gorilla.desktop $DEST/usr/share/applications/
+
+# changlog.gz
+
+gzip -9 < $GORILLA_DIR/CHANGES.txt > $DEST/usr/share/doc/password-gorilla/changelog.gz
+
+# copyright
+
+subst $DATA/copyright $DEST/usr/share/doc/password-gorilla/copyright
+
+# changelog.Debian.gz
+
+subst $DATA/changelog.Debian $DEST/usr/share/doc/password-gorilla/changelog.Debian
+gzip -9 $DEST/usr/share/doc/password-gorilla/changelog.Debian
+
+# link help.txt to gorilla's help.txt
+
+ln -s ../../password-gorilla/help.txt $DEST/usr/share/doc/password-gorilla/help.txt
+
+# icons
+
+cp $DATA/16x16.password-gorilla.png $DEST/usr/share/icons/hicolor/16x16/password-gorilla.png
+cp $DATA/32x32.password-gorilla.png $DEST/usr/share/icons/hicolor/32x32/password-gorilla.png
+cp $DATA/48x48.password-gorilla.png $DEST/usr/share/icons/hicolor/48x48/password-gorilla.png
+
+# manpage
+
+gzip -9 < $DATA/password-gorilla.1 > $DEST/usr/share/man/man1/password-gorilla.1.gz
+
+# menu
+
+cp $DATA/password-gorilla.menu $DEST/usr/share/menu/password-gorilla
+
+# pixmap
+
+cp $DATA/password-gorilla.xpm $DEST/usr/share/pixmaps/
+
+# and now - Password Gorilla itself
+
+ln -s ../common-licenses/GPL-2 $DEST/usr/share/password-gorilla/LICENSE.txt
+
+# NOTE - for the moment this builds only a pure Tcl .deb package
+
+pushd $GORILLA_DIR > /dev/null
+  cp blowfish/{LICENSE.txt,blowfish.tcl,pkgIndex.tcl} $DEST/usr/share/password-gorilla/blowfish/
+  cp pwsafe/{LICENSE.txt,pwsafe-db.tcl,pwsafe-io.tcl,pwsafe-v3.tcl,pwsafe.tcl,pkgIndex.tcl,pwsafe-int.tcl,pwsafe-v2.tcl} $DEST/usr/share/password-gorilla/pwsafe/
+  cp twofish/{LICENSE.txt,pkgIndex.tcl,twofish.tcl} $DEST/usr/share/password-gorilla/twofish/
+  cp -r msgs $DEST/usr/share/password-gorilla
+  cp gorilla.tcl help.txt isaac.tcl viewhelp.tcl $DEST/usr/share/password-gorilla
+popd > /dev/null
+
+chmod a+x $DEST/usr/share/password-gorilla/gorilla.tcl
+
+# cleanup editor backup files - modify as needed for other editors
+# also generate md5sums file
+pushd $DEST > /dev/null
+  find -type f -name \*~ -print0 | xargs -0 rm
+  find usr -type f -print0 | xargs -0 md5sum > DEBIAN/md5sums
+popd > /dev/null
+
+chown -R root.root $DEST/
+
+# now create debian control file and other misc pieces
+
+subst $DATA/control $CONTROL/control
+
+cp $DATA/postinst $DATA/postrm $CONTROL/
+
+dpkg-deb --build $DEST
+
+echo normal exit

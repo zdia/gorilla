@@ -1,0 +1,64 @@
+
+password-gorilla (%VER1%-%VER2%) unstable; urgency=low
+
+  * Newest changes
+
+ -- %YOUR_NAME% <%YOUR_EMAIL%> %DATE%
+
+password-gorilla (1.4-4.1) unstable; urgency=low
+
+  * Non-maintainer upload.
+  * Switched to Tcl/Tk 8.5 to match changes in itcl3 and itk3 packages.
+
+ -- Sergei Golovan <sgolovan@debian.org>  Wed, 02 Sep 2009 19:37:02 +0400
+
+password-gorilla (1.4-4) unstable; urgency=low
+
+  * Updated maintainer email address
+  * Added a file README.source to document the patch handling
+  * Upgraded Standards-Version
+
+ -- Patrick Schoenfeld <schoenfeld@debian.org>  Mon, 29 Dec 2008 18:28:27 +0100
+
+password-gorilla (1.4-3) unstable; urgency=low
+
+  * Use the new Homepage header instead of a pseudo-header
+  * Updated Standards-Version
+  * Added Vcs-Headers
+  * Made watch file work again by adding trailing slash to the url
+  * Updated debian/copyright to clarify license and copyright information
+  * Replaced (C) with © in debian/copyright because of its legal entitlement
+  * Include a commented DH_VERBOSE=1 line in debian/rules
+  * Remove encoding line from desktop file because its deprecated
+  * Removed lintian override, because its no longer needed
+  * Use Build-Depends-Indep instead of Build-Depends, except for debhelper and
+    dpatch, because they are used in the clean target
+  * Wrap lines after 80 characters in
+    01_patch-wrong-interpreter-in-twotest-tcl.dpatch
+  * Added tcllib to depends so that this can be used instead of a
+    packaged copy
+  * Do not install a copy of the sha1 lib which is part of tcllib
+  * Do not install pwsafe.dat, because it is useless
+  * Install icons in different sizes to appropriate location in
+    /usr/share/icons/
+  * Call dh_desktop in debian/rules so that desktop file gets registered
+  * Add a note to the copyright file that sha1 is only present in the
+    source package
+  * Added a versioned build depend for debhelper, because of dh_icons
+  * Change StartupNotify to false in desktop file because it is not used
+
+ -- Patrick Schoenfeld <schoenfeld@in-medias-res.com>  Fri, 29 Feb 2008 11:31:56 +0100
+
+password-gorilla (1.4-2) unstable; urgency=low
+
+  * Changed architecture to 'all' in order to fix FTBFS (Closes: #444860)
+  * Added a watch file
+
+ -- Patrick Schoenfeld <schoenfeld@in-medias-res.com>  Sun, 07 Oct 2007 18:17:16 +0200
+
+password-gorilla (1.4-1) unstable; urgency=low
+
+  * Initial release (Closes: #309238)
+  * Added a manpage
+
+ -- Patrick Schoenfeld <schoenfeld@in-medias-res.com>  Wed, 05 Sep 2007 21:39:10 +0200

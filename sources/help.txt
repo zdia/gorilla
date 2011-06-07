@@ -5,6 +5,7 @@ alias: TOC
 	-- [Starting]
 	-- [Choosing a Master Password]
 	-- [Organization Into Groups]
+	--- [Moving Groups and/or Logins]
 	-- [Logins]
 	-- [Preferences]
 	--- [General Preferences]
@@ -32,14 +33,21 @@ alias: Overview
  - [Starting]
  - [Choosing a Master Password]
  - [Organization Into Groups]
+ -- [Moving Groups and/or Logins]
  - [Logins]
  - [Preferences]
+ -- [General Preferences]
+ -- [Database Default Preferences]
+ --- [Export Preferences]
+ --- [Database Preferences]
+ -- [Display]
+ -- [Launch Browser]
  - [Keyboard Shortcuts]
  - [The "V3" Database Format]
+ - [Data Import]
 
- Author: Frank Pilhofer, fp@fpx.de
- Last modified: 2010/08/23 (Zbigniew Diaczyszyn)
- This help written using Keith Vetter's Hypertext Help System.
+This documentation is written using Keith Vetter's Hypertext Help System.
+For copyright and authorship see the About panel.
 
 -------------------
 title: Risks
@@ -114,6 +122,54 @@ of the new subgroup can be entered.
 
 Note that empty groups are not stored in the password database file.
 If you save and re-open a file, empty groups will disappear.
+
+-------------------
+title: Moving Groups and/or Logins
+
+Moving groups and/or logins to new locations in the tree can be accomplished
+in any one of several ways.
+
+1) The Login menu contains commands "Move Login ..." and "Move Group ..."
+which are active when a login or group is respectively selected in the tree. 
+Selecting either of these commands will open a window that shows the current
+group location of the selected item on top, and contains an entry on the
+bottom into which a new group location may be typed.  Separate group names
+with a dot or period character (.) and do not use a dot character within a
+group name itself.  Pressing "Ok" after entering a new group name will move
+the selected login or group to the entered location.  Additionally, the
+destination entry is also a drop down select list with which an existing
+group can be selected as a destination.
+
+2) In the right-click menu that appears from right-clicking a login or group
+there is a sub-menu item "Move login to:" or "Move group to:".  Selecting
+this item will cause a second menu to appear listing all current groups in
+the database.  Selecting one of the current group names will cause the
+right-clicked login to be moved to the selected group. 
+
+3) A group or login can be selected by clicking with the left mouse button. 
+If the button is held down and the mouse is moved a short distance, a drag
+and drop operation will occur.  When this happens the cursor will change to
+a double vertical arrow and a floating window will appear showing the title
+of the item that is being dragged.  As the item is being dragged the active
+drop location will be highlighted in the tree and will correspond to the
+tree item that is underneath the cursor.  Drop the item by releasing the
+mouse button.
+
+Dropping a login or a group onto a login name will perform a move to the
+group location where the drop occurred.  Dropping a login or a group onto a
+group name will perform a move into the group where the drop occurred.
+
+At the moment, due to some small issues with the ttk::treeview widget that
+implements the tree, dragging plural items is limited to dragging plural
+logins or dragging single groups.  
+
+4) Within the edit login dialog the entry for group name for the login is
+also a drop down select list containing all current group names.  To move a
+login to a new group while editing, either type a new group into the group
+entry, or drop down the select list with the mouse and choose an existing
+group name.  When edits to the login entry are complete any changes to the
+group of the login will be stored into the database.
+
 
 -------------------
 title: Logins

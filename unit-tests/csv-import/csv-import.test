@@ -41,8 +41,8 @@ package require tcltest 2.2
 # set argv ""
 # eval ::tcltest::configure $argv
 set testname [info script]
-puts "------------------------------------------------------------------"
-puts "Running $testname for Password Gorilla ..."
+# puts "------------------------------------------------------------------"
+# puts "Running $testname for Password Gorilla ..."
 
 # ------------- sample -----------------
 #

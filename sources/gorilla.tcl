@@ -35,7 +35,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.4 $}
+set ::gorillaVersion {$Revision: 1.5.3.5 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -52,39 +52,37 @@ if { [ file type [ info script ] ] eq "link" } {
 #
 
 if {[catch {package require Tk 8.5} oops]} {
-		#
-		# Because of using Themed Widgets we need Tk 8.5
-		#
+	#
+	# Because of using Themed Widgets we need Tk 8.5
+	#
 
-		puts "This application requires Tk 8.5, which does not seem to be available."
-		puts $oops
-		exit 1
+	puts "This application requires Tk 8.5, which does not seem to be available."
+	puts $oops
+	exit 1
 }
 
 option add *Dialog.msg.wrapLength 6i
 
 if {[catch {package require Tcl 8.5}]} {
-		wm withdraw .
-		tk_messageBox -type ok -icon error -default ok \
-			-title "Need more recent Tcl/Tk" \
-			-message "The Password Gorilla requires at least Tcl/Tk 8.5\
-			to run. This smells like Tcl/Tk [info patchlevel].\
-			Please upgrade."
-		exit 1
+	wm withdraw .
+	tk_messageBox -type ok -icon error -default ok \
+		-title "Need more recent Tcl/Tk" \
+		-message "The Password Gorilla requires at least Tcl/Tk 8.5\
+		to run. This smells like Tcl/Tk [info patchlevel].\
+		Please upgrade."
+	exit 1
 }
 
 # ----------------------------------------------------------------------
-#
-# A helper proc to load packages.  This collects the details of "catching"
-# and reporting errors upon package loading into one single proc.  It must
-# be defined here because it has to be defined before it can be called.
-# Note, not in "gorilla" namespace because the gorilla namespace has not yet
-# been created.
-#
-# ----------------------------------------------------------------------
-#
 
 proc load-package { args } {
+	# A helper proc to load packages.  This collects the details of "catching"
+	# and reporting errors upon package loading into one single proc.  It must
+	# be defined here because it has to be defined before it can be called.
+	# Note, not in "gorilla" namespace because the gorilla namespace has not yet
+	# been created.
+	#
+	# args - package(s) to load
 
 	foreach package $args {
 
@@ -256,8 +254,8 @@ catch {package require uuid}
 namespace eval gorilla {}
 
 if {![info exists ::gorilla::init]} {
-		wm withdraw .
-		set ::gorilla::init 0
+	wm withdraw .
+	set ::gorilla::init 0
 }
 
 # ----------------------------------------------------------------------
@@ -304,8 +302,8 @@ proc gorilla::Init {} {
 		doubleClickAction      { nothing { {value} { return true } }                                                          }
 		exportAsUnicode        { 0       { {value} { string is boolean $value } }                                             }
 		exportFieldSeparator   { ,       { {value} { expr { ( [ string length $value ] == 1 ) && ( $value in [list , \; :] ) } } } }
-		exportIncludeNotes     { 0       { {value} { string is boolean $value } }                                             }
-		exportIncludePassword  { 0       { {value} { string is boolean $value } }                                             }
+		exportIncludeNotes     { 1       { {value} { string is boolean $value } }                                             }
+		exportIncludePassword  { 1       { {value} { string is boolean $value } }                                             }
 		exportShowWarning      { 1       { {value} { string is boolean $value } }                                             }
 		findInAny              { 0       { {value} { string is boolean $value } }                                             }
 		findInNotes            { 1       { {value} { string is boolean $value } }                                             }
@@ -487,7 +485,7 @@ proc gorilla::InitGui {} {
 		menu .mbar.apple
 		.mbar add cascade -menu .mbar.apple
 		.mbar.apple add command -label "[mc "About"] Password Gorilla" -command gorilla::About
-    # .mbar.apple add separator
+		# .mbar.apple add separator
 	}
 
 	# This command must be last menu oriented command due to TkCocoa for MacOSX
@@ -527,11 +525,11 @@ proc gorilla::InitGui {} {
 	.tree tag configure black -foreground black
 
 	if {[tk windowingsystem] ne "aqua"} {
-			ttk::scrollbar .vsb -orient vertical -command ".tree yview"
-			ttk::scrollbar .hsb -orient horizontal -command ".tree xview"
+		ttk::scrollbar .vsb -orient vertical -command ".tree yview"
+		ttk::scrollbar .hsb -orient horizontal -command ".tree xview"
 	} else {
-			scrollbar .vsb -orient vertical -command ".tree yview"
-			scrollbar .hsb -orient horizontal -command ".tree xview"
+		scrollbar .vsb -orient vertical -command ".tree yview"
+		scrollbar .hsb -orient horizontal -command ".tree xview"
 	}
 	ttk::label .status -relief sunken -padding [list 5 2]
 	pack .status -side bottom -fill x
@@ -552,8 +550,8 @@ proc gorilla::InitGui {} {
 	
 	catch {
 		if {[tk windowingsystem] == "aqua"} {
-				bind .tree <$meta-Button-1> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
-				bind .tree <Button-2> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
+			bind .tree <$meta-Button-1> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
+			bind .tree <Button-2> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
 		}
 	}
 	
@@ -581,7 +579,7 @@ proc gorilla::InitGui {} {
 
 	bind . <$meta-o> {.mbar.file invoke 1}
 	bind . <$meta-s> {.mbar.file invoke 3}
-	bind . <$meta-x> {.mbar.file invoke 10}
+	bind . <$meta-x> {.mbar.file invoke 11}
 	
 	bind . <$meta-u> {.mbar.edit invoke 0}
 	bind . <$meta-p> {.mbar.edit invoke 1}
@@ -614,6 +612,9 @@ proc gorilla::InitGui {} {
 	#
 
 	wm protocol . WM_DELETE_WINDOW gorilla::Exit
+
+	# attach drag and drop functionality to the tree
+	::gorilla::dnd init $::gorilla::widgets(tree)
 
 }
 
@@ -725,9 +726,9 @@ proc gorilla::TreeNodeDouble {node} {
 	if {$type == "Group" || $type == "Root"} {
 		# set open [$::gorilla::widgets(tree) itemcget $node -open]
 		# if {$open} {
-				# $::gorilla::widgets(tree) itemconfigure $node -open 0
+			# $::gorilla::widgets(tree) itemconfigure $node -open 0
 		# } else {
-				# $::gorilla::widgets(tree) itemconfigure $node -open 1
+			# $::gorilla::widgets(tree) itemconfigure $node -open 1
 		# }
 		return
 	} else {
@@ -781,61 +782,39 @@ proc gorilla::TreeNodePopup {node} {
 #
 
 proc gorilla::GroupPopup {node xpos ypos} {
-		if {![info exists ::gorilla::widgets(popup,Group)]} {
-	set ::gorilla::widgets(popup,Group) [menu .popupForGroup]
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Add Login"] \
-		-command "gorilla::PopupAddLogin"
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Add Subgroup"] \
-		-command "gorilla::PopupAddSubgroup"
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Rename Group"] \
-		-command "gorilla::PopupRenameGroup"
-	$::gorilla::widgets(popup,Group) add separator
-	$::gorilla::widgets(popup,Group) add command \
-		-label [mc "Delete Group"] \
-		-command "gorilla::PopupDeleteGroup"
-		}
+	if {![info exists ::gorilla::widgets(popup,Group)]} {
+		set ::gorilla::widgets(popup,Group) [menu .popupForGroup]
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Add Login"] \
+			-command "::gorilla::LoginDialog::AddLogin"
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Add Subgroup"] \
+			-command "gorilla::PopupAddSubgroup"
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Rename Group"] \
+			-command "gorilla::PopupRenameGroup"
+		$::gorilla::widgets(popup,Group) add separator
+		$::gorilla::widgets(popup,Group) add command \
+			-label [mc "Delete Group"] \
+			-command "gorilla::PopupDeleteGroup"
+	}
 
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
+	set data [$::gorilla::widgets(tree) item $node -values]
+	set type [lindex $data 0]
 
-		if {$type == "Root"} {
-	$::gorilla::widgets(popup,Group) entryconfigure 2 -state disabled
-	$::gorilla::widgets(popup,Group) entryconfigure 4 -state disabled
-		} else {
-	$::gorilla::widgets(popup,Group) entryconfigure 2 -state normal
-	$::gorilla::widgets(popup,Group) entryconfigure 4 -state normal
-		}
+	if {$type == "Root"} {
+		$::gorilla::widgets(popup,Group) entryconfigure 2 -state disabled
+		$::gorilla::widgets(popup,Group) entryconfigure 4 -state disabled
+	} else {
+		$::gorilla::widgets(popup,Group) entryconfigure 2 -state normal
+		$::gorilla::widgets(popup,Group) entryconfigure 4 -state normal
+	}
 
-		# this catch is necessary to prevent a "grab failed" error
-		# when opening a menu while another app is holding the
-		# "grab"
-		catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
+	# this catch is necessary to prevent a "grab failed" error
+	# when opening a menu while another app is holding the
+	# "grab"
+	catch { tk_popup $::gorilla::widgets(popup,Group) $xpos $ypos }
 }
-
-proc gorilla::PopupAddLogin {} {
-
-	# Adds a login to Gorilla at the currently selected position in the tree
-
-	set node [ lindex [ $::gorilla::widgets(tree) selection ] 0 ]
-
-	foreach {data type} [ gorilla::LookupNodeData $node ] { break }
-  
-	# if "type" is Login, repeat the data lookup, but for the parent of the
-	# node, to result in an "add to group" action occurring instead.
-
-	if { $type eq "Login" } {
-		foreach {data type} [ gorilla::LookupNodeData [ $::gorilla::widgets(tree) parent $node ] ] { break }
-	}
-
-	switch -- $type {
-		Group { gorilla::AddLoginToGroup [lindex $data 1] }
-		Root  { gorilla::AddLoginToGroup "" }
-	}
-
-} ; # end proc gorilla::PopupAddLogin
 
 proc gorilla::LookupNodeData { node } {
 
@@ -852,15 +831,15 @@ proc gorilla::LookupNodeData { node } {
 } ; # end proc gorilla::LookupNodeData
 
 proc gorilla::PopupAddSubgroup {} {
-		gorilla::AddSubgroup
+	gorilla::AddSubgroup
 }
 
 proc gorilla::PopupDeleteGroup {} {
-		gorilla::DeleteGroup
+	gorilla::DeleteGroup
 }
 
 proc gorilla::PopupRenameGroup {} {
-		gorilla::RenameGroup
+	gorilla::RenameGroup
 }
 
 
@@ -873,45 +852,73 @@ proc gorilla::LoginPopup {node xpos ypos} {
 	# Creates the popup menu widget for the right clicks on a tree item
 	# node - node index for right-clicked tree item
 	# xpos, ypos - root coordinates for the popup menu
-		if {![info exists ::gorilla::widgets(popup,Login)]} {
-	set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Open URL"] \
-		-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Copy Username to Clipboard"] \
-		-command "gorilla::PopupCopyUsername"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Copy Password to Clipboard"] \
-		-command "gorilla::PopupCopyPassword"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Copy URL to Clipboard"] \
-		-command "gorilla::PopupCopyURL"
-	$::gorilla::widgets(popup,Login) add separator
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Add Login"] \
-		-command "gorilla::PopupAddLogin"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Edit Login"] \
-		-command "gorilla::PopupEditLogin"
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "View Login"] \
-		-command "gorilla::PopupViewLogin"
-	$::gorilla::widgets(popup,Login) add separator 
-	$::gorilla::widgets(popup,Login) add command \
-		-label [mc "Delete Login"] \
-		-command "gorilla::PopupDeleteLogin"
+	if {![info exists ::gorilla::widgets(popup,Login)]} {
+		set ::gorilla::widgets(popup,Login) [menu .popupForLogin]
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Open URL"] \
+			-command { ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ] }
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Copy Username to Clipboard"] \
+			-command "gorilla::PopupCopyUsername"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Copy Password to Clipboard"] \
+			-command "gorilla::PopupCopyPassword"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Copy URL to Clipboard"] \
+			-command "gorilla::PopupCopyURL"
+		$::gorilla::widgets(popup,Login) add separator
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Add Login"] \
+			-command "::gorilla::LoginDialog::AddLogin"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Edit Login"] \
+			-command "gorilla::PopupEditLogin"
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "View Login"] \
+			-command "gorilla::PopupViewLogin"
+		$::gorilla::widgets(popup,Login) add separator
+		$::gorilla::widgets(popup,Login) add cascade \
+			-label [ mc "Move Login to:" ] \
+			-menu [ set submenu $::gorilla::widgets(popup,Login).movesub ]
+		$::gorilla::widgets(popup,Login) add separator 
+		$::gorilla::widgets(popup,Login) add command \
+			-label [mc "Delete Login"] \
+			-command "gorilla::PopupDeleteLogin"
+			
+		# now setup the cascade menu
+		menu $submenu -postcommand [ list ::gorilla::populateLoginPopup $submenu ]
+	}
+
+	# this catch is necessary to prevent a "grab failed" error
+	# when opening a menu while another app is holding the
+	# "grab"
+	catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
+}
+
+proc gorilla::populateLoginPopup { win } {
+
+	# builds the dynamic menu of group names for the right click move-to
+	# function
+
+	$win delete 0 end
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn 
+	
+	# count is used to "split" the menu into elements of 20 units each
+	set count -1
+	foreach group [ lsort [ array names ::gorilla::groupNodes ] ] {
+		incr count
+		set grouplist [ split $group "." ]
+		set grouplen [ llength $grouplist ]
+		if { $grouplen <= 1 } { 
+		  set leader ""
+		} else {
+		  set leader "[ string repeat "   " [ expr { $grouplen - 2 } ] ] \u2022 "
 		}
+		$win add command -label "$leader[ lindex $grouplist end ]" -command [ list ::gorilla::MoveTreeNode $node $::gorilla::groupNodes($group) ] \
+		                 -columnbreak [ expr { ( $count % 20 ) == 0 } ]
+	}
 
-		# this catch is necessary to prevent a "grab failed" error
-		# when opening a menu while another app is holding the
-		# "grab"
-		catch { tk_popup $::gorilla::widgets(popup,Login) $xpos $ypos }
-}
-
-proc gorilla::PopupAddLogin {} {
-	::gorilla::AddLogin
-}
+} ; # end proc gorilla::populateLoginPopup
 
 proc gorilla::PopupEditLogin {} {
 	::gorilla::EditLogin
@@ -971,11 +978,11 @@ proc gorilla::CollectTicks {} {
 }
 
 proc gorilla::New {} {
-		ArrangeIdleTimeout
+	ArrangeIdleTimeout
 
-		#
-		# If the current database was modified, give user a chance to think
-		#
+	#
+	# If the current database was modified, give user a chance to think
+	#
 
 	if {$::gorilla::dirty} {
 		set answer [tk_messageBox -parent . \
@@ -1003,9 +1010,9 @@ proc gorilla::New {} {
 		}
 	}
 
-		#
-		# Timing between clicks is used for our initial random seed
-		#
+	#
+	# Timing between clicks is used for our initial random seed
+	#
 
 	set ::gorilla::collectedTicks [list [clock clicks]]
 	gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
@@ -1090,7 +1097,7 @@ proc gorilla::New {} {
 #
 
 proc gorilla::DestroyOpenDatabaseDialog {} {
-		set ::gorilla::guimutex 2
+	set ::gorilla::guimutex 2
 }
 
 proc gorilla::OpenPercentTrace {name1 name2 op} {
@@ -1109,7 +1116,7 @@ proc gorilla::OpenPercentTrace {name1 name2 op} {
 	set ::gorilla::openPercentLastUpdate $now
 
 	if {$::gorilla::openPercent > 0} {
-		set info [format "Opening ... %2.0f %%" $::gorilla::openPercent]
+		set info [format [mc "Opening ... %2.0f %%"] $::gorilla::openPercent]
 		$::gorilla::openPercentWidget configure -text $info
 		update idletasks
 	}
@@ -1119,12 +1126,12 @@ proc gorilla::OpenPercentTrace {name1 name2 op} {
 	
 # proc gorilla::OpenDatabase {title {defaultFile ""}} {
 proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
-	
+
 	ArrangeIdleTimeout
 	set top .openDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		
 		# TryResizeFromPreference $top
 
@@ -1186,10 +1193,10 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyOpenDatabaseDialog
 
-		} else {
-			set aframe $top.right
-			wm deiconify $top
-		}
+	} else {
+		set aframe $top.right
+		wm deiconify $top
+	}
 
 	wm title $top $title
 	$aframe.pw.pw delete 0 end
@@ -1207,114 +1214,113 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		$aframe.buts.b3 configure -state disabled
 	}
 
-		$aframe.info configure -text $info
+	$aframe.info configure -text $info
 
-		if {$defaultFile != ""} {
-			catch {set ::gorilla::dirName [file dirname $defaultFile]}
+	if {$defaultFile != ""} {
+		catch {set ::gorilla::dirName [file dirname $defaultFile]}
 
-			set values [$aframe.file.cb get]
-			set found [lsearch -exact $values $defaultFile]
+		set values [$aframe.file.cb get]
+		set found [lsearch -exact $values $defaultFile]
 
-			if {$found != -1} {
-				$aframe.file.cb current $found
-			} else {
-				set values [linsert $values 0 $defaultFile]
-				$aframe.file.cb configure -values $values
-				$aframe.file.cb current 0
-			}
+		if {$found != -1} {
+			$aframe.file.cb current $found
+		} else {
+			set values [linsert $values 0 $defaultFile]
+			$aframe.file.cb configure -values $values
+			$aframe.file.cb current 0
 		}
+	}
 
 
-		#
-		# Disable the main menu, so that it is not accessible, even on the Mac.
-		#
+	#
+	# Disable the main menu, so that it is not accessible, even on the Mac.
+	#
     
-		setmenustate $::gorilla::widgets(main) all disabled
+	setmenustate $::gorilla::widgets(main) all disabled
 
-		#
-		# Run dialog
-		#
+	#
+	# Run dialog
+	#
 
-		set oldGrab [grab current .]
+	set oldGrab [grab current .]
 
-		update idletasks
-		raise $top
-		focus $aframe.pw.pw
-		if {[tk windowingsystem] != "aqua"} {
-			catch {grab $top}
-		}
+	update idletasks
+	raise $top
+	focus $aframe.pw.pw
+	if {[tk windowingsystem] != "aqua"} {
+		catch {grab $top}
+	}
 
-		#
-		# Timing between clicks is used for our initial random seed
-		#
+	#
+	# Timing between clicks is used for our initial random seed
+	#
 
-		set ::gorilla::collectedTicks [list [clock clicks]]
-		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
+	set ::gorilla::collectedTicks [list [clock clicks]]
+	gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
 
-		while {42} {
-	ArrangeIdleTimeout
-	set ::gorilla::guimutex 0
-	vwait ::gorilla::guimutex
+	while {42} {
+		ArrangeIdleTimeout
+		set ::gorilla::guimutex 0
+		vwait ::gorilla::guimutex
 
-	lappend myClicks [clock clicks]
+		lappend myClicks [clock clicks]
 
-	if {$::gorilla::guimutex == 2} {
-    # Cancel
-    break
-	} elseif {$::gorilla::guimutex == 4} {
-    # New
-		break
-	} elseif {$::gorilla::guimutex == 1} {
+		if {$::gorilla::guimutex == 2} {
+			# Cancel
+			break
+		} elseif {$::gorilla::guimutex == 4} {
+			# New
+			break
+		} elseif {$::gorilla::guimutex == 1} {
 			set fileName [$aframe.file.cb get]
 			set nativeName [file nativename $fileName]
 
-		if {$fileName == ""} {
-			tk_messageBox -parent $top -type ok -icon error -default ok \
-				-title "No File" \
-				-message "Please select a password database."
-			continue
-		}
+			if {$fileName == ""} {
+				tk_messageBox -parent $top -type ok -icon error -default ok \
+					-title "No File" \
+					-message "Please select a password database."
+				continue
+			}
 
-		if {![file readable $fileName]} {
-			tk_messageBox -parent $top -type ok -icon error -default ok \
-				-title "File Not Found" \
-				-message "The password database\
-				\"$nativeName\" does not exist or can not\
-				be read."
-			continue
-		}
+			if {![file readable $fileName]} {
+				tk_messageBox -parent $top -type ok -icon error -default ok \
+					-title "File Not Found" \
+					-message "The password database\
+					\"$nativeName\" does not exist or can not\
+					be read."
+				continue
+			}
 
-		$aframe.info configure -text [mc "Please be patient. Verifying password ..."]
+			$aframe.info configure -text [mc "Please be patient. Verifying password ..."]
 
-		set myOldCursor [$top cget -cursor]
-		set dotOldCursor [. cget -cursor]
-		$top configure -cursor watch
-		. configure -cursor watch
-		update idletasks
+			set myOldCursor [$top cget -cursor]
+			set dotOldCursor [. cget -cursor]
+			$top configure -cursor watch
+			. configure -cursor watch
+			update idletasks
 
-		lappend ::gorilla::collectedTicks [clock clicks]
-		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# much better seed now
+			lappend ::gorilla::collectedTicks [clock clicks]
+			gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# much better seed now
 
-		set password [$aframe.pw.pw get]
-		
-		set ::gorilla::openPercent 0
-		set ::gorilla::openPercentWidget $aframe.info
-		trace add variable ::gorilla::openPercent [list "write"] \
-		::gorilla::OpenPercentTrace
+			set password [$aframe.pw.pw get]
+			
+			set ::gorilla::openPercent 0
+			set ::gorilla::openPercentWidget $aframe.info
+			trace add variable ::gorilla::openPercent [list "write"] \
+			::gorilla::OpenPercentTrace
 #set a [ clock milliseconds ]
-		if {[catch {set newdb [pwsafe::createFromFile $fileName $password \
-					 ::gorilla::openPercent]} oops]} {
-			pwsafe::int::randomizeVar password
-			trace remove variable ::gorilla::openPercent [list "write"] \
-				::gorilla::OpenPercentTrace
-			unset ::gorilla::openPercent
+			if {[catch {set newdb [pwsafe::createFromFile $fileName $password \
+						 ::gorilla::openPercent]} oops]} {
+				pwsafe::int::randomizeVar password
+				trace remove variable ::gorilla::openPercent [list "write"] \
+					::gorilla::OpenPercentTrace
+				unset ::gorilla::openPercent
 		. configure -cursor $dotOldCursor
 		$top configure -cursor $myOldCursor
 
 		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title "Error Opening Database" \
-			-message "Can not open password database\
-			\"$nativeName\": $oops"
+			-title [mc "Error Opening Database"] \
+			-message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
 		$aframe.info configure -text $info
 		$aframe.pw.pw delete 0 end
 		focus $aframe.pw.pw
@@ -1327,11 +1333,11 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	::gorilla::OpenPercentTrace
 		unset ::gorilla::openPercent
 
-		. configure -cursor $dotOldCursor
-		$top configure -cursor $myOldCursor
-		pwsafe::int::randomizeVar password
-		break
-	} elseif {$::gorilla::guimutex == 3} {
+			. configure -cursor $dotOldCursor
+			$top configure -cursor $myOldCursor
+			pwsafe::int::randomizeVar password
+			break
+		} elseif {$::gorilla::guimutex == 3} {
 			set types {
 				{{Password Database Files} {.psafe3 .dat}}
 				{{All Files} *}
@@ -1347,7 +1353,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			}
 
 			set fileName [tk_getOpenFile -parent $top \
-				-title "Browse for a password database ..." \
+				-title [mc "Browse for a password database ..."] \
 				-filetypes $types \
 				-initialdir $::gorilla::dirName]
 			# -defaultextension ".psafe3" 
@@ -1373,81 +1379,81 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			}
 
 			focus $aframe.pw.pw
+		}
+	} ;# end while
+
+	set fileName [$aframe.file.cb get]
+	set nativeName [file nativename $fileName]
+	pwsafe::int::randomizeVar ::gorilla::collectedTicks
+
+	# make sure collectedTicks is a proper list again after
+	# having been randomized above - this avoids an error
+	# message from the lappend in gorilla::CollectTicks when
+	# attempting to lappend after randomizing the variable
+	set ::gorilla::collectedTicks [ list [ clock clicks ] ] 
+
+	$aframe.pw.pw configure -text ""
+
+	if {$oldGrab != ""} {
+		catch {grab $oldGrab}
+	} else {
+		catch {grab release $top}
 	}
-		} ;# end while
 
-		set fileName [$aframe.file.cb get]
-		set nativeName [file nativename $fileName]
-		pwsafe::int::randomizeVar ::gorilla::collectedTicks
+	wm withdraw $top
+	update
 
-		# make sure collectedTicks is a proper list again after
-		# having been randomized above - this avoids an error
-		# message from the lappend in gorilla::CollectTicks when
-		# attempting to lappend after randomizing the variable
-		set ::gorilla::collectedTicks [ list [ clock clicks ] ] 
+	#
+	# Re-enable the main menu.  The UpdateMenu call is needed to adjust the
+	# individual menu entries based upon gorilla internal status.  Otherwise
+	# every menu entry becomes enabled, even if it does not make sense for
+	# that entry to be enabled at this time.
+	#
 
-		$aframe.pw.pw configure -text ""
+	setmenustate $::gorilla::widgets(main) all normal
+	UpdateMenu
 
-		if {$oldGrab != ""} {
-			catch {grab $oldGrab}
-		} else {
-			catch {grab release $top}
-		}
+	if {$::gorilla::guimutex == 2} {
+		# Cancel
+		return "Cancel"
+	} elseif {$::gorilla::guimutex == 4} {
+		# New
+		return "New"
+	}
 
-		wm withdraw $top
-		update
+	#
+	# Add file to LRU preference
+	#
 
-    #
-    # Re-enable the main menu.  The UpdateMenu call is needed to adjust the
-    # individual menu entries based upon gorilla internal status.  Otherwise
-    # every menu entry becomes enabled, even if it does not make sense for
-    # that entry to be enabled at this time.
-    #
+	set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
+	if {$found == -1} {
+		# not found
+		set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
+	} elseif {$found != 0} {
+		set tmp [lreplace $::gorilla::preference(lru) $found $found]
+		set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
+	}
 
-    setmenustate $::gorilla::widgets(main) all normal
-    UpdateMenu
+	#
+	# Show any warnings?
+	#
 
-    if {$::gorilla::guimutex == 2} {
-			# Cancel
-			return "Cancel"
-    } elseif {$::gorilla::guimutex == 4} {
-			# New
-			return "New"
-		}
+	set dbWarnings [$newdb cget -warningsDuringOpen]
 
-		#
-		# Add file to LRU preference
-		#
-
-		set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
-		if {$found == -1} {
-			# not found
-			set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
-		} elseif {$found != 0} {
-			set tmp [lreplace $::gorilla::preference(lru) $found $found]
-			set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
-		}
-
-		#
-		# Show any warnings?
-		#
-
-		set dbWarnings [$newdb cget -warningsDuringOpen]
-
-		if {[llength $dbWarnings] > 0} {
-	set message $fileName
-	append message ": " [join $dbWarnings "\n"]
-	tk_messageBox -parent . \
+	if {[llength $dbWarnings] > 0} {
+		set message $fileName
+		append message ": " [join $dbWarnings "\n"]
+		tk_messageBox -parent . \
 			-type ok -icon warning -title "File Warning" \
 			-message $message
-		}
+	}
 
-		#
-		# All seems well
-		#
+	#
+	# All seems well
+	#
 
-		ArrangeIdleTimeout
-		return [list "Open" $fileName $newdb]
+	ArrangeIdleTimeout
+	return [list "Open" $fileName $newdb]
 }
 
 #
@@ -1460,9 +1466,9 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 proc gorilla::Open {{defaultFile ""}} {
 
-		#
-		# If the current database was modified, give user a chance to think
-		#
+	#
+	# If the current database was modified, give user a chance to think
+	#
 
 	if {$::gorilla::dirty} {
 		set answer [tk_messageBox -parent . \
@@ -1508,7 +1514,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		return "New"
 	}
 
-  set fileName [lindex $openInfo 1]
+	set fileName [lindex $openInfo 1]
 	set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
 
@@ -1523,7 +1529,7 @@ puts $::gorilla::preference(backupPath)
 		itcl::delete object $::gorilla::db
 	}
 
-	set ::gorilla::status [mc "Password database $nativeName loaded."]
+	set ::gorilla::status [mc "Password database %s loaded." $nativeName ]
 	set ::gorilla::fileName $fileName
 	set ::gorilla::db $newdb
 	set ::gorilla::dirty 0
@@ -1825,15 +1831,21 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		foreach {child label} { group Group     title Title   url URL 
-		                        user Username   password Password } {
+		foreach {child label w} { group    Group    combobox
+		                          title    Title    entry
+		                          url      URL      entry
+		                          user     Username entry
+		                          password Password entry  } {
 			grid [ make-label $top $label ] \
-			     [ set widget($child) [ ttk::entry $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
+			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
 		} ; # end foreach {child label}
 
 		# password should show "*" by default
 		$widget(password) configure -show "*"
+		
+		# group combox box needs to receive its values list of group names
+		$widget(group) configure -postcommand [ fill-combobox-with-grouplist $widget(group) ] 
 
 		# The notes text widget - with scrollbar - in an embedded frame
 		# because the text widget plus scrollbar needs to fit into the single
@@ -2333,6 +2345,8 @@ namespace eval ::gorilla::LoginDialog {
 				} ; # end if modified
 
 			} ; # end proc Ok
+			
+		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
 
 		} ] ; # end smacro namespace eval
 
@@ -2343,19 +2357,12 @@ namespace eval ::gorilla::LoginDialog {
 	proc EditLogin {} {
 		ArrangeIdleTimeout
 
-		if { [ llength [ set sel [ $::gorilla::widgets(tree) selection ] ] ] == 0 } {
-			return                                                       
-		}
-
-		set node [ lindex $sel 0 ]
-		set data [ $::gorilla::widgets(tree) item $node -values ]
-		set type [ lindex $data 0 ]
+		lassign [ ::gorilla::get-selected-tree-data "Please select a login entry first." ] node type rn 
 
 		if {$type == "Group" || $type == "Root"} {
+			set ::gorilla::status [ mc "Group entries may be renamed, not edited." ]
 			return
 		}
-
-		set rn [lindex $data 1]
 
 		LoginDialog -rn $rn -treenode $node
 
@@ -2367,18 +2374,25 @@ namespace eval ::gorilla::LoginDialog {
 
 		set tree $::gorilla::widgets(tree)
 
-		if { [ llength [ set sel [ $tree selection ] ] ] == 0 } {
-			return                                                       
+		set node [ lindex [ $tree selection ] 0 ]
+
+		lassign [ ::gorilla::LookupNodeData $node ] data type
+		
+		# if "type" is Login, repeat the data lookup, but for the parent of the
+		# node, to result in an "add to group" action occurring instead.
+
+		if { $type eq "Login" } {
+			lassign [ gorilla::LookupNodeData [ $tree parent $node ] ] data type
 		}
 
-		set node [ lindex $sel 0 ]
-		set data [ $tree item $node -values ]
-		set type [ lindex $data 0 ]
-
+		# if no entry in tree is selected, then "type" will be {},
+		# so in that case perform the same action as an add to root
+		
 		switch -exact -- $type {
 			Group	{ LoginDialog -group [ lindex $data 1 ] }
 			Root	{ LoginDialog -group "" }
 			Login	{ LoginDialog -group [ lindex [ $tree item [ $tree parent $node ] -values ] 1 ] }
+			{}	{ LoginDialog -group "" }
 		} 
 
 	} ; # end proc AddLogin
@@ -2443,17 +2457,13 @@ proc gorilla::MoveGroup {} {
 
 proc gorilla::MoveDialog {type} {
 	ArrangeIdleTimeout
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	}
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set nodetype [lindex $data 0]
 
+	lassign [ ::gorilla::get-selected-tree-data "Please select an entry in the tree to move." ] node nodetype rn
+	
 	set top .moveDialog
 	
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Move $type"]
 
@@ -2462,7 +2472,9 @@ proc gorilla::MoveDialog {type} {
 		ttk::labelframe $top.dest \
 		-text [mc "Destination Group with format <Group.Subgroup> :"] \
 		-padding [list 10 10]
-		ttk::entry $top.dest.e -width 40 -textvariable ::gorilla::MoveDialogDest
+		ttk::combobox $top.dest.e -width 40 -textvariable ::gorilla::MoveDialogDest \
+		              -postcommand [ list ::gorilla::fill-combobox-with-grouplist $top.dest.e ] 
+
 		# Format: group.subgroup
 		pack $top.source.e -side left -expand yes -fill x
 		pack $top.source -side top -expand yes -fill x -pady 10 -padx 10
@@ -2471,9 +2483,9 @@ proc gorilla::MoveDialog {type} {
 
 		ttk::frame $top.buts
 		set but1 [ttk::button $top.buts.b1 -width 10 -text "OK" \
-		 -command "set ::gorilla::guimutex 1"]
+			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 10 -text [mc "Cancel"] \
-			 -command "set ::gorilla::guimutex 2"]
+			-command "set ::gorilla::guimutex 2"]
 		pack $but1 $but2 -side left -pady 10 -padx 20
 		pack $top.buts -side bottom -pady 10 -fill y -expand yes
 	
@@ -2494,9 +2506,9 @@ proc gorilla::MoveDialog {type} {
 	# Configure Dialog
 
 	if {$nodetype == "Group"} {
-		set ::gorilla::MoveDialogSource [lindex $data 1]		
+		# for group entries the "rn" field contains the group name
+		set ::gorilla::MoveDialogSource $rn 
 	} elseif {$nodetype == "Login"} {
-		set rn [lindex $data 1]
 		if {[$::gorilla::db existsField $rn 3]} {
 			set ::gorilla::MoveDialogSource [ ::gorilla::dbget title $rn ]
 		}
@@ -2523,18 +2535,18 @@ proc gorilla::MoveDialog {type} {
 		set destGroup [$top.dest.e get]
 
 		if {$::gorilla::guimutex != 1} {
-				break
+			break
 		}
 		#
 		# The group name must not be empty
 		# 
 		
 		if {$destGroup == ""} {
-				tk_messageBox -parent $top \
-					-type ok -icon error -default ok \
-					-title "Invalid Group Name" \
-					-message "The group name can not be empty."
-				continue
+			tk_messageBox -parent $top \
+				-type ok -icon error -default ok \
+				-title [ mc "Invalid Group Name" ] \
+				-message [ mc "The group name can not be empty." ]
+			continue
 		}
 
 		#
@@ -2542,12 +2554,12 @@ proc gorilla::MoveDialog {type} {
 		#
 
 		if {[catch {
-				set destNode $::gorilla::groupNodes($destGroup)
+			set destNode $::gorilla::groupNodes($destGroup)
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The name of the parent group is invalid."
+				-title [ mc "Invalid Group Name" ] \
+				-message [ mc "The name of the parent group is invalid." ]
 			continue
 		}
 		# all seems well
@@ -2584,14 +2596,7 @@ proc gorilla::MoveDialog {type} {
 proc gorilla::DeleteLogin {} {
 	ArrangeIdleTimeout
 
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	}
-
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
-	set rn [lindex $data 1]
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn 
 
 	if {$type != "Login"} {
 		error "oops"
@@ -2632,21 +2637,20 @@ proc gorilla::AddGroup {} {
 #
 
 proc gorilla::AddSubgroup {} {
-	set sel [$::gorilla::widgets(tree) selection]
 
-	if {[llength $sel] == 0} {
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn
+
+	if { ( $node eq "" ) && ( $type eq "" ) } {
 		
 		# No selection. Add to toplevel
 		#
 		gorilla::AddSubgroupToGroup ""
 		
 	} else {
-		set node [lindex $sel 0]
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
 
 		if {$type == "Group"} {
-			gorilla::AddSubgroupToGroup [lindex $data 1]
+			# for group entries, rn field contains group name
+			gorilla::AddSubgroupToGroup $rn 
 		} elseif {$type == "Root"} {
 			gorilla::AddSubgroupToGroup ""
 		} else {
@@ -2662,7 +2666,7 @@ proc gorilla::AddSubgroup {} {
 			}
 		}
 	}
-}
+} ; # end proc gorilla::AddSubgroup
 
 #
 # ----------------------------------------------------------------------
@@ -2671,7 +2675,7 @@ proc gorilla::AddSubgroup {} {
 #
 
 proc gorilla::DestroyAddSubgroupDialog {} {
-		set ::gorilla::guimutex 2
+	set ::gorilla::guimutex 2
 }
 
 proc gorilla::AddSubgroupToGroup {parentName} {
@@ -2689,7 +2693,7 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	set top .subgroupDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Add a new Group"]
 
@@ -2748,18 +2752,18 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 		set group [$top.group.e get]
 
 		if {$::gorilla::guimutex != 1} {
-				break
+			break
 		}
 		#
 		# The group name must not be empty
 		#
 
 		if {$group == ""} {
-				tk_messageBox -parent $top \
-					-type ok -icon error -default ok \
-					-title "Invalid Group Name" \
-					-message "The group name can not be empty."
-				continue
+			tk_messageBox -parent $top \
+				-type ok -icon error -default ok \
+				-title "Invalid Group Name" \
+				-message "The group name can not be empty."
+			continue
 		}
 
 		#
@@ -2767,7 +2771,7 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 		#
 
 		if {[catch {
-				set parents [pwsafe::db::splitGroup $parent]
+			set parents [pwsafe::db::splitGroup $parent]
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
@@ -2819,30 +2823,36 @@ proc gorilla::MoveTreeNode {node dest} {
 	set nodedata [$::gorilla::widgets(tree) item $node -values]
 	set destdata [$::gorilla::widgets(tree) item $dest -values]
 	set nodetype [lindex $nodedata 0]
-# node6 to node3
-#node7 node1
-# menü move login erscheint nur, wenn ein Login angeklickt ist
-# entsprechend MOVE GROUP nur, wenn tag group aktiviert ist
+	set desttype [lindex $destdata 0]
+
+	# node6 to node3
+	#node7 node1
+	# menü move login erscheint nur, wenn ein Login angeklickt ist
+	# entsprechend MOVE GROUP nur, wenn tag group aktiviert ist
 
 	if {$nodetype == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Root Node Can Not Be Moved" \
-			-message "The root node can not be moved."
-return
+			-title [ mc "Root Node Can Not Be Moved" ] \
+			-message [ mc "The root node can not be moved." ]
+		return
 	}
-
-	set desttype [lindex $destdata 0]
 
 	if {$desttype == "RootNode"} {
 		set destgroup ""
+	} elseif { $desttype == "Login" } {
+		# if moving to a "Login", actually move to the parent of the
+		# login (which will be a group)
+		set dest [ $::gorilla::widgets(tree) parent $dest ]
+		set destdata [ $::gorilla::widgets(tree) item $dest -values ]
+		lassign $destdata desttype destgroup
 	} else {
 		set destgroup [lindex $destdata 1]
 	}
 
-		#
-		# Move a Login
-		#
+	#
+	# Move a Login
+	#
 
 	if {$nodetype == "Login"} {
 		set rn [lindex $nodedata 1]
@@ -2852,19 +2862,19 @@ return
 		MarkDatabaseAsDirty
 		return
 	}
-# bis hier
-		#
-		# Moving a group to its immediate parent does not have any effect
-		#
+	# bis hier
+	#
+	# Moving a group to its immediate parent does not have any effect
+	#
 
 	if {$dest == [$::gorilla::widgets(tree) parent $node]} {
 		return
 	}
 	
-		#
-		# When we are moving a group, make sure that destination is not a
-		# child of this group
-		#
+	#
+	# When we are moving a group, make sure that destination is not a
+	# child of this group
+	#
 
 	set destiter $dest
 	while {$destiter != "RootNode"} {
@@ -2877,15 +2887,14 @@ return
 	if {$destiter != "RootNode" || $node == "RootNode"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Move Node" \
-			-message "Can not move a group to a subgroup\
-			of itself."
+			-title [ mc "Can Not Move Node" ] \
+			-message [ mc "Can not move a group to a subgroup of itself." ]
 		return
 	}
 
-		#
-		# Move recursively
-		#
+	#
+	# Move recursively
+	#
 
 	MoveTreeNodeRek $node [pwsafe::db::splitGroup $destgroup]
 	MarkDatabaseAsDirty
@@ -2934,14 +2943,8 @@ proc gorilla::MoveTreeNodeRek {node newParents} {
 proc gorilla::DeleteGroup {} {
 	ArrangeIdleTimeout
 
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	}
-
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
-
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn
+	
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
@@ -2953,9 +2956,6 @@ proc gorilla::DeleteGroup {} {
 	if {$type != "Group"} {
 		error "oops"
 	}
-
-	set groupName [$::gorilla::widgets(tree) item $node -text]
-	set fullGroupName [lindex $data 1]
 
 	if {[llength [$::gorilla::widgets(tree) children $node]] > 0} {
 		set answer [tk_messageBox -parent . \
@@ -3006,20 +3006,14 @@ proc gorilla::DeleteGroupRek {node} {
 #
 
 proc gorilla::DestroyRenameGroupDialog {} {
-		set ::gorilla::guimutex 2
+	set ::gorilla::guimutex 2
 }
 
 proc gorilla::RenameGroup {} {
 	ArrangeIdleTimeout
 
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	}
-
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
-
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type fullGroupName
+	
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
@@ -3032,7 +3026,6 @@ proc gorilla::RenameGroup {} {
 		error "oops"
 	}
 
-	set fullGroupName [lindex $data 1]
 	set groupName [$::gorilla::widgets(tree) item $node -text]
 	set parentNode [$::gorilla::widgets(tree) parent $node]
 	set parentData [$::gorilla::widgets(tree) item $parentNode -values]
@@ -3047,7 +3040,7 @@ proc gorilla::RenameGroup {} {
 	set top .renameGroup
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top [mc "Rename Group"]
 
@@ -3106,7 +3099,7 @@ proc gorilla::RenameGroup {} {
 		vwait ::gorilla::guimutex
 
 		if {$::gorilla::guimutex != 1} {
-				break
+			break
 		}
 
 		set newParent [$top.parent.e get]
@@ -3117,22 +3110,22 @@ proc gorilla::RenameGroup {} {
 		#
 
 		if {$newGroup == ""} {
-				tk_messageBox -parent $top \
-					-type ok -icon error -default ok \
-					-title "Invalid Group Name" \
-					-message "The group name can not be empty."
-				continue
+			tk_messageBox -parent $top \
+				-type ok -icon error -default ok \
+				-title "Invalid Group Name" \
+				-message "The group name can not be empty."
+			continue
 		}
 
 		if {[catch {
-				set newParents [pwsafe::db::splitGroup $newParent]
+			set newParents [pwsafe::db::splitGroup $newParent]
 		}]} {
-				tk_messageBox -parent $top \
-					-type ok -icon error -default ok \
-					-title "Invalid Group Name" \
-					-message "The name of the group's parent node\
-					is invalid."
-				continue
+			tk_messageBox -parent $top \
+				-type ok -icon error -default ok \
+				-title "Invalid Group Name" \
+				-message "The name of the group's parent node\
+				is invalid."
+			continue
 		}
 
 		#
@@ -3182,7 +3175,7 @@ proc gorilla::RenameGroup {} {
 	set destiter $destparentnode
 	while {$destiter != "RootNode"} {
 		if {$destiter == $node} {
-				break
+			break
 		}
 		set destiter [$::gorilla::widgets(tree) parent $destiter]
 	}
@@ -3212,12 +3205,12 @@ proc gorilla::RenameGroup {} {
 		set childtype [lindex $childdata 0]
 
 		if {$childtype == "Login"} {
-				set rn [lindex $childdata 1]
-				$::gorilla::db setFieldValue $rn 2 $newParentName
-				$::gorilla::widgets(tree) delete $child
-				AddRecordToTree $rn
+			set rn [lindex $childdata 1]
+			$::gorilla::db setFieldValue $rn 2 $newParentName
+			$::gorilla::widgets(tree) delete $child
+			AddRecordToTree $rn
 		} else {
-				MoveTreeNodeRek $child $newParents
+			MoveTreeNodeRek $child $newParents
 		}
 
 	}
@@ -3298,11 +3291,7 @@ proc gorilla::Export {} {
 		return
 	}
 
-	if { [ catch { package require csv } oops ] } {
-		error-popup [ mc "Error loading CSV parsing package." ] \
-		           "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
-		return
-	}
+	load-package csv
 
 	::gorilla::Feedback [ mc "Exporting ..." ]
 
@@ -3313,13 +3302,17 @@ proc gorilla::Export {} {
 	# output a csv header describing what data values are present in each
 	# column of the csv file
 
-	set csv_data [ list uuid group title url user \
-	                    [ expr { $::gorilla::preference(exportIncludePassword) ? "password" : "" } ] \
-	                    [ expr { $::gorilla::preference(exportIncludeNotes)    ? "notes"    : "" } ] ]
+	set csv_data [ list uuid group title url user ] 
 
-puts $csv_data
-	# puts $txtFile [ ::csv::join $csv_data $separator ]
-	puts [ ::csv::join $csv_data $separator ]
+	if { $::gorilla::preference(exportIncludePassword) } { 
+		lappend csv_data password
+	}
+
+	if { $::gorilla::preference(exportIncludeNotes) } {
+		lappend csv_data notes
+	}
+
+	puts $txtFile [ ::csv::join $csv_data $separator ]
 
 	# now output the contents of the database
 
@@ -3341,8 +3334,7 @@ puts $csv_data
 			lappend csv_data [ string map {\\ \\\\ \n \\n} [ dbget notes $rn ] ]
 		}
 
-		# puts $txtFile [ ::csv::join $csv_data $separator ]
-		puts [ ::csv::join $csv_data $separator ]
+		puts $txtFile [ ::csv::join $csv_data $separator ]
 
 	} ; # end foreach rn in gorilla db
 
@@ -3392,19 +3384,20 @@ proc gorilla::Import { {input_file ""} } {
 
 	fconfigure $infd -encoding utf-8
 
-	if { [ catch { package require csv } oops ] } {
-		error-popup [ mc "Error loading CSV parsing package." ] \
-		           "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
-		return
-	}
+	load-package csv
+	# if { [ catch { package require csv } oops ] } {
+		# error-popup [ mc "Error loading CSV parsing package." ] \
+		           # "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
+		# return
+	# }
 
 	set myOldCursor [. cget -cursor]
 	. configure -cursor watch
 	update idletasks
 
 	set possible_columns { create-time group last-access last-modified
-									last-pass-change lifetime notes password title
-									url user uuid }
+				last-pass-change lifetime notes password title
+				url user uuid }
 
 	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
 		error-popup [ mc "Error parsing CSV file" ] \
@@ -3415,7 +3408,7 @@ proc gorilla::Import { {input_file ""} } {
 		return GORILLA_FIRSTLINEERROR
 	}
 
-   # puts "columns_present: $columns_present"
+	# puts "columns_present: $columns_present"
    
 	# Must have at least one data column present
 	if { [ llength $columns_present ] == 0 } {
@@ -3424,26 +3417,26 @@ proc gorilla::Import { {input_file ""} } {
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
 		return GORILLA_NODATA
-   }
+	}
    
-   # Make sure that only the possible columns are present.  Note, this does
-   # not test for duplicate columns, that is intentional.  The result of
-   # duplicate columns is that the last duplicate column on a line will
-   # override the value of previous occurrences of the same column on that
-   # line.
+	# Make sure that only the possible columns are present.  Note, this does
+	# not test for duplicate columns, that is intentional.  The result of
+	# duplicate columns is that the last duplicate column on a line will
+	# override the value of previous occurrences of the same column on that
+	# line.
+	   
+	foreach item $columns_present {
+		if { $item ni $possible_columns } {
+			lappend error_columns $item
+		}
+	}
    
-   foreach item $columns_present {
-     if { $item ni $possible_columns } {
-       lappend error_columns $item
-     }
-   }
-   
-   if { [ info exists error_columns ] } {
-   	error-popup [ mc "Error, undefined data columns" ] \
-   		"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
-   	catch { close $infd }
-		. configure -cursor $myOldCursor
-   	return GORILLA_UNDEFINEDCOLUMNS
+	if { [ info exists error_columns ] } {
+		error-popup [ mc "Error, undefined data columns" ] \
+			"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
+		catch { close $infd }
+			. configure -cursor $myOldCursor
+		return GORILLA_UNDEFINEDCOLUMNS
 	}
 
 	# This is utilized below to apply a "default" group to any imports
@@ -3466,8 +3459,8 @@ proc gorilla::Import { {input_file ""} } {
 #		puts "line: $line"
 		
 		if { [ catch { set data [ ::csv::split $line ] } oops ] } {
-		  lappend error_lines [ list "Unable to parse as CSV" $line ]
-		  continue
+			lappend error_lines [ list "Unable to parse as CSV" $line ]
+			continue
 		} ; # end if catch csv::split
 
 		if { [ llength $data ] == 0 } { 
@@ -3569,10 +3562,10 @@ proc gorilla::Import { {input_file ""} } {
 			return [lindex $error_lines 0 0]
 		}
 		
-		puts "errors exist from import: $error_lines"
+		# puts "errors exist from import: $error_lines"
 		set answer [ tk_messageBox -default yes -icon info \
-							-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
-							-parent . -title [ mc "Some records skipped during import" ] -type yesno ]
+			-message [ mc "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" ] \
+			-parent . -title [ mc "Some records skipped during import" ] -type yesno ]
 		if { $answer eq "yes" } {
 			set fn [ tk_getSaveFile -parent . -title [ mc "Enter a file into which to save the log" ] ]
 			if { $fn ne "" } {
@@ -3587,14 +3580,14 @@ proc gorilla::Import { {input_file ""} } {
 	} ; # end if exists error_lines
 	
 	if { $new_add_counter > 0 } {
-	  set ::gorilla::status "$new_add_counter [ mc "record(s) successfully imported." ]"
-	  MarkDatabaseAsDirty
+		set ::gorilla::status "$new_add_counter [ mc "record(s) successfully imported." ]"
+		MarkDatabaseAsDirty
 	}
 
 	catch { close $infd } 
   	. configure -cursor $myOldCursor
   	package forget csv
-		return GORILLA_OK
+	return GORILLA_OK
 
 } ; # end proc gorilla::Import
 
@@ -3672,7 +3665,7 @@ proc gorilla::SavePercentTrace {name1 name2 op} {
 	set ::gorilla::savePercentLastUpdate $now
 
 	if {$::gorilla::savePercent > 0} {
-		set ::gorilla::status [format "Saving ... %2.0f %%" $::gorilla::savePercent]
+		set ::gorilla::status [format [mc "Saving ... %2.0f %%"] $::gorilla::savePercent]
 		update idletasks
 	}
 }
@@ -3730,7 +3723,7 @@ proc gorilla::Merge {} {
 	set ::gorilla::status [mc "Merging"]
 
 	set fileName [lindex $openInfo 1]
-  set newdb [lindex $openInfo 2]
+	set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
 
 	set totalLogins 0
@@ -3755,15 +3748,15 @@ proc gorilla::Merge {} {
 		set nuser ""
 
 		if {[$newdb existsField $nrn 2]} {
-				set ngroup [$newdb getFieldValue $nrn 2]
+			set ngroup [$newdb getFieldValue $nrn 2]
 		}
 
 		if {[$newdb existsField $nrn 3]} {
-				set ntitle [$newdb getFieldValue $nrn 3]
+			set ntitle [$newdb getFieldValue $nrn 3]
 		}
 
 		if {[$newdb existsField $nrn 4]} {
-				set nuser [$newdb getFieldValue $nrn 4]
+			set nuser [$newdb getFieldValue $nrn 4]
 		}
 
 		#
@@ -3774,18 +3767,18 @@ proc gorilla::Merge {} {
 		set found 0
 
 		if {$ngroup == "" || [info exists ::gorilla::groupNodes($ngroup)]} {
-	    if {$ngroup != ""} {
+			if {$ngroup != ""} {
 				set parent $::gorilla::groupNodes($ngroup)
-	    } else {
+			} else {
 				set parent "RootNode"
-	    }
+			}
 	
 			foreach node [$::gorilla::widgets(tree) children $parent] {
 				set data [$::gorilla::widgets(tree) item $node -values]
 				set type [lindex $data 0]
 
 				if {$type != "Login"} {
-						continue
+					continue
 				}
 
 				set rn [lindex $data 1]
@@ -3802,7 +3795,7 @@ proc gorilla::Merge {} {
 		}
 
 		if {[info exists title]} {
-				pwsafe::int::randomizeVar title user
+			pwsafe::int::randomizeVar title user
 		}
 
 		#
@@ -3860,8 +3853,8 @@ proc gorilla::Merge {} {
 						if {$field > 0 && \
 							$field < [llength $::gorilla::fieldNames]} {
 							append reason "the " \
-									[lindex $::gorilla::fieldNames $field] \
-									" field"
+								[lindex $::gorilla::fieldNames $field] \
+								" field"
 						} else {
 							append reason "field number $field"
 						}
@@ -3894,7 +3887,7 @@ proc gorilla::Merge {} {
 									[lindex $::gorilla::fieldNames $field] \
 									" differs"
 						} else {
-								append reason "field number $field differs"
+							append reason "field number $field differs"
 						}
 						set identical 0
 						break
@@ -3931,7 +3924,7 @@ proc gorilla::Merge {} {
 			if {[$newdb existsField $nrn 12]} {
 				append title " - modified " [clock format \
 			[$newdb getFieldValue $nrn 12] \
-			-format $timestampFormat]
+				-format $timestampFormat]
 			} else {
 				append title " - merged " [clock format \
 				[clock seconds] \
@@ -4053,7 +4046,7 @@ proc gorilla::Merge {} {
 	set top ".mergeReport"
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top "Merge Report for $nativeName"
 
 		set text [text $top.text -relief sunken -width 100 -wrap word \
@@ -4094,85 +4087,85 @@ proc gorilla::Merge {} {
 		set botframe "$top.botframe"
 	}
 
-		$text configure -state normal
-		$text delete 1.0 end
-		$text tag delete {*}[ $text tag names ]
+	$text configure -state normal
+	$text delete 1.0 end
+	$text tag delete {*}[ $text tag names ]
 
-		$text insert end $message
-		$text insert end "\n\n"
+	$text insert end $message
+	$text insert end "\n\n"
 
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "Conflicts\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "Conflicts\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "\n"
 
-		set seq 0
-		set default_cursor [ lindex [ $text configure -cursor ] 3 ]
+	set seq 0
+	set default_cursor [ lindex [ $text configure -cursor ] 3 ]
 
-		if {[llength $conflictReport] > 0} {
-			foreach report $conflictReport {
-				$text tag configure link$seq -foreground blue -underline true
+	if {[llength $conflictReport] > 0} {
+		foreach report $conflictReport {
+			$text tag configure link$seq -foreground blue -underline true
 
-				$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
-				$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
-				$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ]
-									::gorilla::ViewEntry [ lindex $report 2 ]"
+			$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
+			$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
+			$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ]
+								::gorilla::ViewEntry [ lindex $report 2 ]"
 
-				$text insert end "[ lindex $report 0 ]\n" link$seq
-				incr seq
-			}
-		} else {
-			$text insert end "None.\n"
+			$text insert end "[ lindex $report 0 ]\n" link$seq
+			incr seq
 		}
+	} else {
+		$text insert end "None.\n"
+	}
 
-		$text insert end "\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "Added Logins\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "\n"
+	$text insert end "\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "Added Logins\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "\n"
 
-		if {[llength $addedReport] > 0} {
-			foreach report $addedReport {
-			        $text tag configure link$seq -foreground blue -underline true
+	if {[llength $addedReport] > 0} {
+		foreach report $addedReport {
+			$text tag configure link$seq -foreground blue -underline true
 
-				$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
-				$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
-				$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ] "
+			$text tag bind link$seq <Enter> [ list $text configure -cursor hand2 ]
+			$text tag bind link$seq <Leave> [ list $text configure -cursor $default_cursor ]
+			$text tag bind link$seq <Button-1> " ::gorilla::ViewEntry [ lindex $report 1 ] "
 
-				$text insert end "[ lindex $report 0 ]\n" link$seq
-				incr seq
-			}
-		} else {
-			$text insert end "None.\n"
+			$text insert end "[ lindex $report 0 ]\n" link$seq
+			incr seq
 		}
-		$text insert end "\n"
+	} else {
+		$text insert end "None.\n"
+	}
+	$text insert end "\n"
 
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "Identical Logins\n"
-		$text insert end [string repeat "-" 70]
-		$text insert end "\n"
-		$text insert end "\n"
-		if {[llength $identicalReport] > 0} {
-			foreach report $identicalReport {
-				$text insert end $report
-				$text insert end "\n"
-			}
-		} else {
-			$text insert end "None.\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "Identical Logins\n"
+	$text insert end [string repeat "-" 70]
+	$text insert end "\n"
+	$text insert end "\n"
+	if {[llength $identicalReport] > 0} {
+		foreach report $identicalReport {
+			$text insert end $report
+			$text insert end "\n"
 		}
-		$text insert end "\n"
+	} else {
+		$text insert end "None.\n"
+	}
+	$text insert end "\n"
 
-		$text configure -state disabled
+	$text configure -state disabled
 
-		update idletasks
-		wm deiconify $top
-		raise $top
-		focus $botframe.but
+	update idletasks
+	wm deiconify $top
+	raise $top
+	focus $botframe.but
 }
 
 
@@ -4238,7 +4231,7 @@ proc gorilla::Save {} {
 	if {[catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
 	::gorilla::savePercent} oops]} {
 		trace remove variable ::gorilla::savePercent [list "write"] \
-				::gorilla::SavePercentTrace
+			::gorilla::SavePercentTrace
 		unset ::gorilla::savePercent
 
 		. configure -cursor $myOldCursor
@@ -4303,33 +4296,33 @@ proc gorilla::SaveAs {} {
 		set defaultExtension ".dat"
 	}
 
-		#
-		# Query user for file name
-		#
+	#
+	# Query user for file name
+	#
 
-		set types {
-	{{Password Database Files} {.psafe3 .dat}}
-	{{All Files} *}
-		}
+	set types {
+		{{Password Database Files} {.psafe3 .dat}}
+		{{All Files} *}
+	}
 
-		if {![info exists ::gorilla::dirName]} {
-			if {[tk windowingsystem] == "aqua"} {
-				set ::gorilla::dirName "~/Documents"
-			} else {
-			# Windows-Abfrage auch nötig ...
-				set ::gorilla::dirName [pwd]
-			}
+	if {![info exists ::gorilla::dirName]} {
+		if {[tk windowingsystem] == "aqua"} {
+			set ::gorilla::dirName "~/Documents"
+		} else {
+		# Windows-Abfrage auch nötig ...
+			set ::gorilla::dirName [pwd]
 		}
+	}
 
 		set fileName [tk_getSaveFile -parent . \
-			-title "Save password database ..." \
+			-title [mc "Save password database ..."] \
 			-filetypes $types \
 			-initialdir $::gorilla::dirName]
 						# -defaultextension $defaultExtension \
 
-		if {$fileName == ""} {
-	return 0
-		}
+	if {$fileName == ""} {
+		return 0
+	}
 
 	# Dateiname auf Default Extension testen 
 	# not necessary
@@ -4350,8 +4343,7 @@ proc gorilla::SaveAs {} {
 	}
 
 	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] \
-		::gorilla::SavePercentTrace
+	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
 
 		if {[catch {
 	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
@@ -4362,14 +4354,14 @@ proc gorilla::SaveAs {} {
 
 	. configure -cursor $myOldCursor
 	tk_messageBox -parent . -type ok -icon error -default ok \
-		-title "Error Saving Database" \
-		-message "Failed to save password database as\
-		$nativeName: $oops"
+		-title [mc "Error Saving Database"] \
+		-message [mc "Failed to save password database as \"%s\": %s" \
+		$nativeName $oops]
 	return 0
 		}
 
 		trace remove variable ::gorilla::savePercent [list "write"] \
-	::gorilla::SavePercentTrace
+			::gorilla::SavePercentTrace
 		unset ::gorilla::savePercent
 
 		. configure -cursor $myOldCursor
@@ -4378,19 +4370,19 @@ proc gorilla::SaveAs {} {
 		set ::gorilla::fileName $fileName
 		wm title . "Password Gorilla - $nativeName"
 		$::gorilla::widgets(tree) item "RootNode" -text $nativeName
-		set ::gorilla::status "Password database saved as $nativeName"
+		set ::gorilla::status [mc "Password database saved as %s" $nativeName]
 
-		#
-		# Add file to LRU preference
-		#
+	#
+	# Add file to LRU preference
+	#
 
-		set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
-		if {$found == -1} {
-			set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
-		} elseif {$found != 0} {
-			set tmp [lreplace $::gorilla::preference(lru) $found $found]
-			set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
-		}
+	set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
+	if {$found == -1} {
+		set ::gorilla::preference(lru) [linsert $::gorilla::preference(lru) 0 $nativeName]
+	} elseif {$found != 0} {
+		set tmp [lreplace $::gorilla::preference(lru) $found $found]
+		set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
+	}
 	UpdateMenu
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 	return 1
@@ -4534,16 +4526,13 @@ proc gorilla::AddGroupToTree {groupName} {
 
 
 proc gorilla::UpdateMenu {} {
-	set selection [$::gorilla::widgets(tree) selection]
+
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn
 	
-	if {[llength $selection] == 0} {
+	if { ( $node eq "" ) && ( $type eq "" ) } {
 		setmenustate $::gorilla::widgets(main) group disabled
 		setmenustate $::gorilla::widgets(main) login disabled
 	} else {
-		set node [lindex $selection 0]
-		set data [$::gorilla::widgets(tree) item $node -values]
-		set type [lindex $data 0]
-
 		if {$type == "Group" || $type == "Root"} {
 			setmenustate $::gorilla::widgets(main) group normal
 			setmenustate $::gorilla::widgets(main) login disabled
@@ -4561,7 +4550,7 @@ proc gorilla::UpdateMenu {} {
 
 	if {[info exists ::gorilla::db]} {
 		setmenustate $::gorilla::widgets(main) open normal
-		} else {
+	} else {
 		setmenustate $::gorilla::widgets(main) open disabled
 	}
 }
@@ -4614,27 +4603,27 @@ proc gorilla::Exit {} {
 		}
 	}
 
-		#
-		# Save preferences
-		#
+	#
+	# Save preferences
+	#
 
-		SavePreferences
+	SavePreferences
 
-		#
-		# Clear the clipboard, if we were meant to do that sooner or later.
-		#
+	#
+	# Clear the clipboard, if we were meant to do that sooner or later.
+	#
 
-		if {[info exists ::gorilla::clipboardClearId]} {
-			after cancel $::gorilla::clipboardClearId
-			ClearClipboard
-		}
+	if {[info exists ::gorilla::clipboardClearId]} {
+		after cancel $::gorilla::clipboardClearId
+		ClearClipboard
+	}
 
-		#
-		# Goodbye, cruel world
-		#
+	#
+	# Goodbye, cruel world
+	#
 
-		destroy .
-		exit
+	destroy .
+	exit
 }
 
 # ----------------------------------------------------------------------
@@ -4763,8 +4752,36 @@ proc gorilla::LockDatabase {} {
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
 		
-		toplevel $top
-		TryResizeFromPreference $top
+	toplevel $top -class "Gorilla"
+	TryResizeFromPreference $top
+
+		 if {$::gorilla::preference(gorillaIcon)} {
+			 ttk::label $top.splash -image $::gorilla::images(splash)
+			 pack $top.splash -side left -fill both
+
+			 ttk::separator $top.vsep -orient vertical
+			 pack $top.vsep -side left -fill y -padx 3
+		 }
+
+	set aframe [ttk::frame $top.right -padding {10 10}]
+
+	# Titel packen	
+	# ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
+	ttk::label $aframe.title -anchor center
+	pack $aframe.title -side top -fill x -pady 10
+
+	ttk::labelframe $aframe.file -text [mc "Database:"]
+	ttk::entry $aframe.file.f -width 40 -state disabled
+	pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
+	pack $aframe.file -side top -pady 5 -fill x -expand yes
+
+	ttk::frame $aframe.mitte
+	ttk::labelframe $aframe.mitte.pw -text [mc "Password:"] 
+	entry $aframe.mitte.pw.pw -width 20 -show "*" 
+	# -background #FFFFCC
+	pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
+	
+	pack $aframe.mitte.pw -side left -pady 5 -expand 0
 
 		if {$::gorilla::preference(gorillaIcon)} {
 			ttk::label $top.splash -image $::gorilla::images(splash)
@@ -4846,7 +4863,7 @@ proc gorilla::LockDatabase {} {
 
 	focus $aframe.mitte.pw.pw
 	if {[catch { grab $top } oops]} {
-		set ::gorilla::status "error: $oops"
+		set ::gorilla::status [mc "error: %s" $oops]
 	}
 		
 	if { $::gorilla::preference(iconifyOnAutolock) } {
@@ -4864,8 +4881,8 @@ proc gorilla::LockDatabase {} {
 
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Wrong Password" \
-				-message "That password is not correct."
+				-title [ mc "Wrong Password" ] \
+				-message [ mc "That password is not correct." ]
 
 			 # clear the PW entry upon invalid PW
 			 $aframe.mitte.pw.pw delete 0 end
@@ -4923,9 +4940,9 @@ proc gorilla::GetPassword {confirm title} {
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		if {[tk windowingsystem] == "aqua"} {
-			toplevel $top -background #ededed
+			toplevel $top -background #ededed -class "Gorilla"
 		} else {
-			toplevel $top
+			toplevel $top -class "Gorilla"
 		}
 		TryResizeFromPreference $top
 
@@ -4972,68 +4989,68 @@ proc gorilla::GetPassword {confirm title} {
 		wm deiconify $top
 	}
 
-		wm title $top $title
-		# $top.password configure -text ""
-		set ::gorilla::passwordDialog.pw ""
+	wm title $top $title
+	# $top.password configure -text ""
+	set ::gorilla::passwordDialog.pw ""
 
-		if {$confirm} {
-			# $top.confirm configure -text ""
-			set ::gorilla::passwordDialog.c ""
+	if {$confirm} {
+		# $top.confirm configure -text ""
+		set ::gorilla::passwordDialog.c ""
+	}
+
+	#
+	# Run dialog
+	#
+
+	set oldGrab [grab current .]
+
+	update idletasks
+	raise $top
+	focus $top.password.e
+	catch {grab $top}
+
+	while {42} {
+		ArrangeIdleTimeout
+		set ::gorilla::guimutex 0
+		vwait ::gorilla::guimutex
+
+		if {$::gorilla::guimutex != 1} {
+			break
 		}
 
-		#
-		# Run dialog
-		#
+		set password [$top.password.e get]
 
-		set oldGrab [grab current .]
+		if {$confirm} {
+			set confirmed [$top.confirm.e get]
 
-		update idletasks
-		raise $top
-		focus $top.password.e
-		catch {grab $top}
-
-		while {42} {
-			ArrangeIdleTimeout
-			set ::gorilla::guimutex 0
-			vwait ::gorilla::guimutex
-
-			if {$::gorilla::guimutex != 1} {
-				break
-			}
-
-			set password [$top.password.e get]
-
-			if {$confirm} {
-				set confirmed [$top.confirm.e get]
-
-				if {![string equal $password $confirmed]} {
-					tk_messageBox -parent $top \
-						-type ok -icon error -default ok \
-						-title [ mc "Passwords Do Not Match" ] \
-						-message [ mc "The confirmed password does not match." ]
-				} else {
-					break
-				}
+			if {![string equal $password $confirmed]} {
+				tk_messageBox -parent $top \
+					-type ok -icon error -default ok \
+					-title [ mc "Passwords Do Not Match" ] \
+					-message [ mc "The confirmed password does not match." ]
 			} else {
 				break
 			}
-		}
-
-		set ::gorilla::passwordDialog.pw ""
-
-		if {$oldGrab != ""} {
-			catch {grab $oldGrab}
 		} else {
-			catch {grab release $top}
+			break
 		}
+	}
 
-		wm withdraw $top
+	set ::gorilla::passwordDialog.pw ""
 
-		if {$::gorilla::guimutex != 1} {
-			error "canceled"
-		}
+	if {$oldGrab != ""} {
+		catch {grab $oldGrab}
+	} else {
+		catch {grab release $top}
+	}
 
-		return $password
+	wm withdraw $top
+
+	if {$::gorilla::guimutex != 1} {
+		error "canceled"
+	}
+
+	return $password
 }
 
 # ----------------------------------------------------------------------
@@ -5127,6 +5144,63 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 		usesymbols 0 \
 		easytoread 1]
 	array set ::gorilla::ppd $settings
+
+		set top .passPolicyDialog
+
+		if {![info exists ::gorilla::toplevel($top)]} {
+	toplevel $top -class "Gorilla"
+	TryResizeFromPreference $top
+
+	ttk::frame $top.plen -padding [list 0 10 0 0 ]
+	ttk::label $top.plen.l -text [mc "Password Length"]
+	spinbox $top.plen.s -from 1 -to 999 -increment 1 \
+		-width 4 -justify right \
+		-textvariable ::gorilla::ppd(length)
+	pack $top.plen.l -side left
+	pack $top.plen.s -side left -padx 10
+	pack $top.plen -side top -anchor w -padx 10 -pady 3
+
+	ttk::checkbutton $top.lower -text [mc "Use lowercase letters"] \
+		-variable ::gorilla::ppd(uselowercase)
+	ttk::checkbutton $top.upper -text [mc "Use UPPERCASE letters"] \
+		-variable ::gorilla::ppd(useuppercase)
+	ttk::checkbutton $top.digits -text [mc "Use digits"] \
+		-variable ::gorilla::ppd(usedigits)
+	ttk::checkbutton $top.hex -text [mc "Use hexadecimal digits"] \
+		-variable ::gorilla::ppd(usehexdigits)
+	ttk::checkbutton $top.symbols -text [mc "Use symbols (%, \$, @, #, etc.)"] \
+		-variable ::gorilla::ppd(usesymbols)
+	ttk::checkbutton $top.easy \
+		-text [mc "Use easy to read characters only (e.g. no \"0\" or \"O\")"] \
+		-variable ::gorilla::ppd(easytoread)
+	pack $top.lower $top.upper $top.digits $top.hex $top.symbols \
+		$top.easy -anchor w -side top -padx 10 -pady 3
+
+	ttk::separator $top.sep -orient horizontal
+	pack $top.sep -side top -fill x -pady 10
+
+	frame $top.buts
+	set but1 [ttk::button $top.buts.b1 -width 15 -text "OK" \
+		-command "set ::gorilla::guimutex 1"]
+	set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
+		-command "set ::gorilla::guimutex 2"]
+	pack $but1 $but2 -side left -pady 10 -padx 20
+	pack $top.buts -padx 10
+
+	bind $top.lower <Return> "set ::gorilla::guimutex 1"
+	bind $top.upper <Return> "set ::gorilla::guimutex 1"
+	bind $top.digits <Return> "set ::gorilla::guimutex 1"
+	bind $top.hex <Return> "set ::gorilla::guimutex 1"
+	bind $top.symbols <Return> "set ::gorilla::guimutex 1"
+	bind $top.easy <Return> "set ::gorilla::guimutex 1"
+	bind $top.buts.b1 <Return> "set ::gorilla::guimutex 1"
+	bind $top.buts.b2 <Return> "set ::gorilla::guimutex 2"
+
+	set ::gorilla::toplevel($top) $top
+	wm protocol $top WM_DELETE_WINDOW gorilla::DestroyPasswordPolicyDialog
+		} else {
+	wm deiconify $top
+		}
 
 	set top .passPolicyDialog
 
@@ -5328,7 +5402,7 @@ proc gorilla::DatabasePreferencesDialog {} {
 	set oldKeyStretchingIterations $::gorilla::dpd(keyStretchingIterations)
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top [mc "Database Preferences"]
 		TryResizeFromPreference $top
 
@@ -5346,8 +5420,8 @@ proc gorilla::DatabasePreferencesDialog {} {
 		pack $top.si -anchor w -side top -pady 3 -padx 10
 
 		ttk::checkbutton $top.ver -text [mc "Use Password Safe 3 format"] \
-				-variable ::gorilla::dpd(defaultVersion) \
-				-onvalue 3 -offvalue 2
+			-variable ::gorilla::dpd(defaultVersion) \
+			-onvalue 3 -offvalue 2
 		pack $top.ver -anchor w -side top -pady 3 -padx 10
 
 		ttk::checkbutton $top.uni -text [mc "V2 Unicode support"] \
@@ -5356,8 +5430,8 @@ proc gorilla::DatabasePreferencesDialog {} {
 
 		ttk::frame $top.stretch -padding [list 10 5]
 		spinbox $top.stretch.spin -from 2048 -to 65535 -increment 256 \
-				-justify right -width 8 \
-				-textvariable ::gorilla::dpd(keyStretchingIterations)
+			-justify right -width 8 \
+			-textvariable ::gorilla::dpd(keyStretchingIterations)
 		ttk::label $top.stretch.label -text [mc "V3 key stretching iterations"]
 		pack $top.stretch.spin $top.stretch.label -side left -padx 3
 		pack $top.stretch -anchor w -side top
@@ -5461,7 +5535,7 @@ proc gorilla::PreferencesDialog {} {
 	}
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		# TryResizeFromPreference $top
 		wm title $top [mc "Preferences"]
 
@@ -5538,17 +5612,17 @@ proc gorilla::PreferencesDialog {} {
 		ttk::frame $dpf.il -padding [list 10 10]
 		ttk::label $dpf.il.l1 -text [mc "Lock when idle after"]
 		spinbox $dpf.il.s -from 0 -to 999 -increment 1 \
-				-justify right -width 4 \
-				-textvariable ::gorilla::prefTemp(idleTimeoutDefault)
+			-justify right -width 4 \
+			-textvariable ::gorilla::prefTemp(idleTimeoutDefault)
 		ttk::label $dpf.il.l2 -text [mc "minutes (0=never)"]
 		pack $dpf.il.l1 $dpf.il.s $dpf.il.l2 -side left -padx 3
 		pack $dpf.il -side top -anchor w -pady 3
 
 		ttk::checkbutton $dpf.si -text [mc "Auto-save database immediately when changed"] \
-						-variable ::gorilla::prefTemp(saveImmediatelyDefault)
+			-variable ::gorilla::prefTemp(saveImmediatelyDefault)
 		ttk::checkbutton $dpf.ver -text [mc "Use Password Safe 3 format"] \
-				-variable ::gorilla::prefTemp(defaultVersion) \
-				-onvalue 3 -offvalue 2
+			-variable ::gorilla::prefTemp(defaultVersion) \
+			-onvalue 3 -offvalue 2
 		ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
 			-variable ::gorilla::prefTemp(unicodeSupport)
 
@@ -5578,9 +5652,9 @@ puts $::gorilla::prefTemp(backupPath)
 		$top.nb add [ttk::frame $epf -padding [list 10 10]] -text [mc "Export"]
 
 		ttk::checkbutton $epf.password -text [mc "Include password field"] \
-				-variable ::gorilla::prefTemp(exportIncludePassword)
+			-variable ::gorilla::prefTemp(exportIncludePassword)
 		ttk::checkbutton $epf.notes -text [mc "Include \"Notes\" field"] \
-				-variable ::gorilla::prefTemp(exportIncludeNotes) 
+			-variable ::gorilla::prefTemp(exportIncludeNotes) 
 
 		ttk::frame $epf.fs
 		ttk::label $epf.fs.l -text [mc "Field separator"] -width 16 -anchor w
@@ -5593,7 +5667,7 @@ puts $::gorilla::prefTemp(backupPath)
 			
 		pack $epf.fs.l $epf.fs.e -side left
 		ttk::checkbutton $epf.warning -text [mc "Show security warning"] \
-				-variable ::gorilla::prefTemp(exportShowWarning) 
+			-variable ::gorilla::prefTemp(exportShowWarning) 
 				
 		pack $epf.password $epf.notes $epf.warning $epf.fs \
 			-anchor w -side top -pady 3
@@ -5609,7 +5683,7 @@ puts $::gorilla::prefTemp(backupPath)
 			set ::gorilla::prefTemp(lang) en
 		}
 		set ::gorilla::fullLangName [dict get $languages $::gorilla::prefTemp(lang)]
-		
+
 		set display $top.nb.display
 		$top.nb add [ttk::frame $display -padding [list 10 10]] -text [mc "Display"]
 		
@@ -5619,7 +5693,7 @@ puts $::gorilla::prefTemp(backupPath)
 			-width 8 -direction right
 		set m [menu $display.lang.mb.menu -tearoff 0]
 		$display.lang.mb configure -menu $m
-		
+
 		foreach {lang name} $languages {
 			$m add radio -label $name -variable ::gorilla::prefTemp(lang) -value $lang \
 				-command "set ::gorilla::fullLangName $name"
@@ -5640,13 +5714,15 @@ puts $::gorilla::prefTemp(backupPath)
 		set sizes "8 9 10 11 12 14 16"
 		foreach {size} $sizes {
 			$m add radio -label $size -variable ::gorilla::prefTemp(fontsize) -value $size \
-				-command "
+				-command [ list ::apply { {size} {
 					font configure TkDefaultFont -size $size
 					font configure TkTextFont    -size $size
 					font configure TkMenuFont    -size $size
 					font configure TkCaptionFont -size $size
 					font configure TkFixedFont   -size $size
-					ttk::style configure gorilla.Treeview -rowheight [expr {$size * 2}]"
+					# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
+					ttk::style configure gorilla.Treeview -rowheight [ expr { 2 + [ font metrics TkDefaultFont -linespace ] } ]
+					} } $size ]
 		}
 		
 		pack $display.size.label $display.size.mb -side left
@@ -6146,7 +6222,8 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	font configure TkCaptionFont -size $value
 	font configure TkFixedFont   -size $value
 	# undocumented option for ttk::treeview
-	ttk::style configure gorilla.Treeview -rowheight [expr {$value * 2}]
+	# note - this has an explicit dependency upon Treeview using TkDefaultFont for display
+	ttk::style configure gorilla.Treeview -rowheight [ expr { 2 + [ font metrics TkDefaultFont -linespace ] } ]
 
 	#
 	# If the revision numbers of our preferences don't match, forget
@@ -6184,9 +6261,8 @@ proc gorilla::ChangePassword {} {
 	if {![info exists ::gorilla::db]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "No Database" \
-			-message "Please create a new database, or open an existing\
-			database first."
+			-title [ mc "No Database" ] \
+			-message [ mc "Please create a new database, or open an existing\ndatabase first." ]
 		return
 	}
 
@@ -6197,8 +6273,8 @@ proc gorilla::ChangePassword {} {
 	if {![$::gorilla::db checkPassword $currentPassword]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Wrong Password" \
-			-message "That password is not correct."
+			-title [ mc "Wrong Password" ] \
+			-message [ mc "That password is not correct." ]
 		return
 	}
 
@@ -6207,9 +6283,8 @@ proc gorilla::ChangePassword {} {
 	if {[catch {set newPassword [GetPassword 1 [mc "New Master Password:"]] } err]} {
 		tk_messageBox -parent . \
 			-type ok -icon info -default ok \
-			-title "Password Not Changed" \
-			-message "You canceled the setting of a new password.\
-			Therefore, the existing password remains in effect."
+			-title [ mc "Password Not Changed" ] \
+			-message [ mc "You canceled the setting of a new password.\nTherefore, the existing password remains in effect." ]
 		return
 	}
 	$::gorilla::db setPassword $newPassword
@@ -6225,22 +6300,22 @@ proc gorilla::ChangePassword {} {
 
 proc gorilla::XSelectionHandler {offset maxChars} {
 	switch -- $::gorilla::activeSelection {
-	0 {
+		0 {
 			set data ""
 		}
-	1 {
+		1 {
 			set data [gorilla::GetSelectedUsername]
 			if { $::gorilla::preference(gorillaAutocopy) } {
 				after idle { after 200 { ::gorilla::CopyToClipboard Password } }
 			}
 		}
-	2 {
+		2 {
 			set data [gorilla::GetSelectedPassword]
 		}
-	3 {
+		3 {
 			set data [gorilla::GetSelectedURL]
 		}
-	default {
+		default {
 			set data ""
 		}
 	}
@@ -6275,7 +6350,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 	set item [ gorilla::GetSelected$what ]
 
 	if {$item == ""} {
-		set ::gorilla::status [ mc "Can not copy $what to clipboard: no $what defined." ]
+		set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] ]
 	} else {
 		switch -exact -- [ tk windowingsystem ] {
 			aqua    -
@@ -6317,17 +6392,17 @@ proc gorilla::GetSelectedURL {} {
 		return
 	}
 
-		#
-		# Password Safe v3 has a dedicated URL field.
-		#
+	#
+	# Password Safe v3 has a dedicated URL field.
+	#
 
 	if {[$::gorilla::db existsField $rn 13]} {
 		return [ ::gorilla::dbget url $rn ]
 	}
 
-		#
-		# Password Safe v2 kept the URL in the "Notes" field.
-		#
+	#
+	# Password Safe v2 kept the URL in the "Notes" field.
+	#
 
 	if {![$::gorilla::db existsField $rn 5]} {
 		return
@@ -6385,17 +6460,18 @@ proc gorilla::GetSelectedPassword {} {
 
 proc gorilla::GetSelectedRecord {} {
 	# Obtain the db record number of the selected item in the treeview
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
+
+	lassign [ ::gorilla::get-selected-tree-data ] node type rn 
+
+	if { ( $node eq "" ) && ( $type eq "" ) } {
 		error "oops"
 	}
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
+
 	if {$type != "Login"} {
 		error "oops"
 	}
 
-	return [lindex $data 1]
+	return $rn
 }
 
 proc gorilla::GetSelectedUsername {} {
@@ -6417,23 +6493,15 @@ proc gorilla::GetSelectedUsername {} {
 #
 
 proc gorilla::DestroyAboutDialog {} {
-		ArrangeIdleTimeout
-		set top .about
-		catch {destroy $top}
-		unset ::gorilla::toplevel($top)
+	ArrangeIdleTimeout
+	set top .about
+	catch {destroy $top}
+	unset ::gorilla::toplevel($top)
 }
-
-proc gorilla::contributors {} {
-	# ShowTextFile .help [mc "Using Password Gorilla"] "help.txt"
-	tk_messageBox -default ok \
-		-message \
-		"Gorilla artwork contributed by Andrew J. Sniezek."
-}
-# Russian translaters see github
 
 proc tkAboutDialog {} {
-     ##about dialog code goes here
-     gorilla::About
+	##about dialog code goes here
+	gorilla::About
 } 
 
 proc gorilla::About {} {
@@ -6441,7 +6509,7 @@ proc gorilla::About {} {
 	set top .about
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		
 		set w .about.mainframe
 		
@@ -6457,22 +6525,30 @@ proc gorilla::About {} {
 		ttk::label $w.copyright \
 			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2011 Zbigniew Diaczyszyn and\n\u00a9 2010-2011 Richard Ellis" \
 			-font {sans 9} -padding {10 0}
-		ttk::label $w.url -text "http:/github.com/zdia/gorilla" -foreground blue \
+		ttk::label $w.url -text "https:/github.com/zdia/gorilla" -foreground blue \
 			-font {sans 10}
+
+		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
+		ttk::label $w.contributors -text [ mc "Contributors" ] {*}$stdopts -font {sans 10}
+		ttk::label $w.contrib1 -text "\u2022 [ mc "Gorilla artwork contributed by %s" "Andrew J. Sniezek." ]" {*}$stdopts
+		ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts
+		ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts
+		ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts
 		
 		ttk::frame $w.buttons
-		ttk::button $w.buttons.contrib -text [mc "Contributors"] -command gorilla::contributors
 		ttk::button $w.buttons.license -text [mc License] -command gorilla::License
 		ttk::button $w.buttons.close -text [mc "Close"] -command gorilla::DestroyAboutDialog
-		
 					
 		pack $w.image -side top
 		pack $w.title -side top -pady 5
 		pack $w.description -side top
 		pack $w.copyright -side top -pady 5 -fill x
 		pack $w.url -side top -pady 5 
-		pack $w.buttons.contrib $w.buttons.license $w.buttons.close \
-			-side left -padx 5
+		foreach item [ list $w.contributors $w.contrib1 $w.contrib2 $w.contrib3 $w.contrib4 ] { 
+			pack $item -side top -pady 0 -fill x
+		} 
+		pack $w.buttons.license $w.buttons.close \
+			-side left -padx 30
 		pack $w.buttons -side bottom -pady 10
 		pack $w
 		
@@ -6504,19 +6580,19 @@ proc gorilla::Help {} {
 }
 
 proc gorilla::License {} {
-		ArrangeIdleTimeout
-		ShowTextFile .license [mc "Password Gorilla License"] "LICENSE.txt"
+	ArrangeIdleTimeout
+	ShowTextFile .license [mc "Password Gorilla License"] "LICENSE.txt"
 }
 
 proc gorilla::DestroyTextFileDialog {top} {
-		ArrangeIdleTimeout
-		catch {destroy $top}
-		unset ::gorilla::toplevel($top)
+	ArrangeIdleTimeout
+	catch {destroy $top}
+	unset ::gorilla::toplevel($top)
 }
 
 proc gorilla::ShowTextFile {top title fileName} {
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 
 		wm title $top $title
 
@@ -6598,7 +6674,7 @@ proc gorilla::Find {} {
 	set top .findDialog
 
 	if {![info exists ::gorilla::toplevel($top)]} {
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
 		wm title $top "Find"
 
@@ -6646,8 +6722,8 @@ proc gorilla::Find {} {
 		bind $top.text.e <Return> "::gorilla::RunFind"
 
 
-# if any then all checked
-# $top.find.case state selected
+		# if any then all checked
+		# $top.find.case state selected
 
 		bind $top.text.e <Return> "::gorilla::RunFind"
 
@@ -6696,8 +6772,8 @@ proc gorilla::FindNextNode {node} {
 # gets stdin
 # break
 		if {$indexInParent < [llength $children]} {
-				set node [lindex $children $indexInParent]
-				break
+			set node [lindex $children $indexInParent]
+			break
 		}
 
 		#
@@ -6722,13 +6798,13 @@ proc gorilla::FindNextNode {node} {
 }
 
 proc gorilla::FindCompare {needle haystack caseSensitive} {
-		if {$caseSensitive} {
-	set cmp [string first $needle $haystack]
-		} else {
-	set cmp [string first [string tolower $needle] [string tolower $haystack]]
-		}
+	if {$caseSensitive} {
+		set cmp [string first $needle $haystack]
+	} else {
+		set cmp [string first [string tolower $needle] [string tolower $haystack]]
+	}
 
-		return [expr {($cmp == -1) ? 0 : 1}]
+	return [expr {($cmp == -1) ? 0 : 1}]
 }
 
 proc gorilla::RunFind {} {
@@ -6782,32 +6858,32 @@ proc gorilla::RunFind {} {
 		if {($fa || $::gorilla::preference(findInUsername)) && \
 			[$::gorilla::db existsField $rn 4]} {
 				if {[FindCompare $text [ ::gorilla::dbget user $rn ] $cs]} {
-			set found 4
-			break
+					set found 4
+					break
 				}
 		}
 
 		if {($fa || $::gorilla::preference(findInPassword)) && \
 			[$::gorilla::db existsField $rn 6]} {
 				if {[FindCompare $text [ ::gorilla::dbget password $rn ] $cs]} {
-			set found 6
-			break
+					set found 6
+					break
 				}
 		}
 
 		if {($fa || $::gorilla::preference(findInNotes)) && \
 			[$::gorilla::db existsField $rn 5]} {
 				if {[FindCompare $text [ ::gorilla::dbget notes $rn ] $cs]} {
-			set found 5
-			break
+					set found 5
+					break
 				}
 		}
 
 		if {($fa || $::gorilla::preference(findInURL)) && \
 			[$::gorilla::db existsField $rn 13]} {
 				if {[FindCompare $text [ ::gorilla::dbget url $rn ] $cs]} {
-			set found 13
-			break
+					set found 13
+					break
 				}
 		}
 
@@ -6838,45 +6914,45 @@ proc gorilla::RunFind {} {
 	while {$parent != "RootNode"} {
 		$::gorilla::widgets(tree) item $parent -open 1
 		set parent [$::gorilla::widgets(tree) parent $parent]
-			}
+	}
 
-			#
-			# Make sure that the node is visible.
-			#
+	#
+	# Make sure that the node is visible.
+	#
 
-			$::gorilla::widgets(tree) see $node
-			$::gorilla::widgets(tree) selection set $node
+	$::gorilla::widgets(tree) see $node
+	$::gorilla::widgets(tree) selection set $node
 
-			#
-			# Report.
-			#
+	#
+	# Report.
+	#
 
-		switch -- $found {
-	3 {
+	switch -- $found {
+		3 {
 			set ::gorilla::status "Found matching title."
-	}
-	4 {
-			set ::gorilla::status "Found matching username."
-	}
-	5 {
-			set ::gorilla::status "Found matching notes."
-	}
-	6 {
-			set ::gorilla::status "Found matching password."
-	}
-	13 {
-			set ::gorilla::status "Found matching URL."
-	}
-	default {
-			set ::gorilla::status "Found match."
-	}
 		}
+		4 {
+			set ::gorilla::status "Found matching username."
+		}
+		5 {
+			set ::gorilla::status "Found matching notes."
+		}
+		6 {
+			set ::gorilla::status "Found matching password."
+		}
+		13 {
+			set ::gorilla::status "Found matching URL."
+		}
+		default {
+			set ::gorilla::status "Found match."
+		}
+	}
 
-		#
-		# Remember.
-		#
+	#
+	# Remember.
+	#
 
-		set ::gorilla::findCurrentNode $node
+	set ::gorilla::findCurrentNode $node
 }
 
 proc gorilla::FindNext {} {
@@ -6892,10 +6968,10 @@ proc gorilla::getAvailableLanguages {  } {
 		lappend msgList [lindex [split $file "."] 0]
 	}
 	
-	# Diese Liste muss erweitert werden, vgl. "locale -a"
-	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian]
+	# FIXME: This dictionary of possible languages has to be expanded
+	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian it Italiano]
 	
-	# erstelle Liste mit {locale fullname}
+	# create langList from *.msg pool
 	set langList {}
 	foreach lang $msgList {
 		set res [lsearch $langFullName $lang]
@@ -7285,25 +7361,17 @@ proc gorilla::ViewLogin {} {
 	ArrangeIdleTimeout
 
 	# proc gorilla::GetRnFromSelectedNode
-	if {[llength [set sel [$::gorilla::widgets(tree) selection]]] == 0} {
-		return
-	 }
-	set node [lindex $sel 0]
-	set data [$::gorilla::widgets(tree) item $node -values]
-	set type [lindex $data 0]
+
+	lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn
 
 	if {$type == "Group" || $type == "Root"} {
-		puts "No Login selected"
+		set ::gorilla::status [ mc "Please select a login entry first." ]
 		return
 	}
 
-	set rn [lindex $data 1]
-	
-	# return $rn
-
-	 gorilla::ViewEntry $rn
+	gorilla::ViewEntry $rn
  
-}
+} ; # end gorilla::ViewLogin
 
 proc gorilla::ViewEntry {rn} {
 	# proposed by Richard Ellis, 04.08.2010
@@ -7319,7 +7387,7 @@ proc gorilla::ViewEntry {rn} {
 	# dervive a unique toplevel name
 	set seq 0
 	while { [ winfo exists .view$seq ] } {
-	  incr seq
+		incr seq
 	}
 
 	set top .view$seq
@@ -7330,7 +7398,7 @@ proc gorilla::ViewEntry {rn} {
 		
 	} else {
 	
-		toplevel $top
+		toplevel $top -class "Gorilla"
 		wm title $top [ mc "View Login" ]
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
@@ -7407,15 +7475,77 @@ proc gorilla::ViewEntry {rn} {
 #
 
 proc gorilla::ViewEntryShowPWHelper { button entry rn } {
-  if { [ $button cget -text ] eq [ mc "Show Password" ] } {
-    $entry configure -text [ ::gorilla::dbget password $rn ]
-    $button configure -text [ mc "Hide Password" ]
-  } else {
-    $entry configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
-    $button configure -text [ mc "Show Password" ]
-  }
+	if { [ $button cget -text ] eq [ mc "Show Password" ] } {
+		$entry configure -text [ ::gorilla::dbget password $rn ]
+		$button configure -text [ mc "Hide Password" ]
+	} else {
+		$entry configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
+		$button configure -text [ mc "Show Password" ]
+	}
 
 } ; # end proc gorilla::ViewEntryShowPWHelper
+
+#
+# ----------------------------------------------------------------------
+# A helper proc to fill ttk::comboxes with password "group" listings
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::fill-combobox-with-grouplist { win } {
+
+	# handles filling in the entries in the dropdown list for the group
+	# combo box - done this way for two reasons: 1) the dropdown box
+	# will always reflect the current group names; and 2) I am
+	# contemplating allowing a "limit the list" capability based upon
+	# the current value of the combo box
+
+	# There is a dependency upon the ::gorilla::groupNodes global
+	# variable
+
+	$win configure -values [ lsort [ array names ::gorilla::groupNodes ] ]
+
+} ; # end proc gorilla::fill-combobox-with-grouplist
+
+#
+# ----------------------------------------------------------------------
+# A helper proc to obtain type and record number of selected tree entry
+# ----------------------------------------------------------------------
+#
+
+proc gorilla::get-selected-tree-data { {returninfo {}} } {
+
+	# Returns the type (group/login) and db record number of the
+	# selected ttk::treeview entry
+	#
+	# If nothing in tree is selected, then what is returned depends upon
+	# the returninfo variable.  If returninfo is empty, return an empty
+	# three element list.  If returninfo is the word RETURN, then
+	# perform a -code return to cause the calling proc to return. 
+	# Otherwise, feed the contents of returninfo through mc and set the
+	# gorilla::status variable, and then return a -code return.
+
+	if { [ llength [ set sel [ $::gorilla::widgets(tree) selection ] ] ] == 0 } {
+
+		# nothing selected - what we return depends upon
+		# $returninfo, one of an empty list, a code of return, or
+		# setting of the status variable followed by a code of
+		# return
+		
+		switch -- $returninfo {
+			{} { return [ list {} {} {} ] }
+			{RETURN} { return -code return }
+			default { set ::gorilla::status [ mc $returninfo ]
+				return -code return
+			}
+		}
+	}
+
+	set node [ lindex $sel 0 ]
+	set data [ $::gorilla::widgets(tree) item $node -values ]
+
+	return [ list $node {*}[ lrange $data 0 1 ] ]
+
+} ; # end proc ???
 
 #
 # ----------------------------------------------------------------------
@@ -7653,6 +7783,227 @@ proc ::gorilla::addRufftoHelp { menu } {
 
 } ; # end proc addRufftoHelp
 
+# ----------------------------------------------------------------------
+
+#
+# ----------------------------------------------------------------------
+# Drag and Drop for ttk::treeview widget
+# ----------------------------------------------------------------------
+#
+
+namespace eval ::gorilla::dnd {
+
+	namespace ensemble create
+
+	variable dragging      0        ; # flag to indicate if user is dragging items
+	variable selectedItems [ list ]	; # list of items (tree node names) that are being dragged
+	variable clickPx       -Inf     ; # mouse cursor x position for click that started drag
+	variable clickPy       -Inf     ; # mouse cursor y position for click that started drag
+	variable invalidDrag   0        ; # flag to indicate if the selected item list is a valid set of items for a drag
+
+	# ----------------------------------------------------------------------
+
+
+	namespace export init
+	proc ::gorilla::dnd::init { tree } {
+
+		# Adds drag and drop bindings to the tree widget command passed as a
+		# parameter
+		#
+		# tree - name of tree widget onto which to add DND bindings
+
+		bind $tree <ButtonPress-1>    +[ namespace code "press   $tree %x %y" ]
+		bind $tree <Button1-Motion>   +[ namespace code "motion  $tree %x %y" ]
+		bind $tree <ButtonRelease-1>  +[ namespace code "release $tree %x %y" ]
+		bind $tree <<TreeviewSelect>> +[ namespace code "select  $tree" ]
+
+		# create - but do not map yet - a label to use as a drag indicator
+		ttk::label $tree.dnd
+
+		#ruff
+		# Attaches event bindings to the widget passed as the sole
+		# parameter for handling drag and drop operations.  Also
+		# creates a single label widget as a child of the parameter
+		# which will be utilized as a drag indicator.
+		#
+		# tree - the widget name to attach the event bindings.  The
+		#        created label will be a child of this widget
+		
+	} ; # end ::gorilla::dnd::init
+
+	# ----------------------------------------------------------------------
+
+	proc ::gorilla::dnd::select { tree } {
+		variable dragging
+		variable selectedItems
+		variable invalidDrag 0
+		
+		if { ! $dragging } {
+			# numG and numL are utilized to exclude attempting
+			# to drag and drop groups and logins or plural
+			# groups
+			set numG [ set numL 0 ]
+
+			set selectedItems [ $tree selection ]
+
+			set temp [ list ]
+			foreach item $selectedItems {
+				# name of the item
+				lappend temp [ $tree item $item -text ]
+
+				# type (Login,Group) of the item
+				switch -exact -- [ lindex [ $tree item $item -values ] 0 ] {
+				  	Group { incr numG } 
+				  	Login { incr numL }
+				} ; # end switch
+
+ 			} ; # end foreach item
+
+ 			# put the selected item names into the label widget
+ 			# that is the drag feedback indicator
+			$tree.dnd configure -text [ join $temp "\n" ]
+
+			if { ( ( $numG > 0 ) && ( $numL > 0 ) )
+			    || ( $numG > 1 ) } {
+				# can not drag both groups and logins
+				# can not drag plural groups
+				set invalidDrag 1
+			}
+		}
+
+		#ruff
+		# Called by event loop when treeview selection changes
+		# tree - the name of the treeview widget
+		#
+		# If a drag is happening then retreives the list of selected
+		# treeview rows and stores them in a namespace varaible in
+		# prepraration for a drag operation occurring.  Also inserts
+		# the names of the rows in the drag label as feedback to a
+		# user for what items are being dragged.
+		#
+		# If a drag is not happening then do nothing.
+
+	} ; # end proc ::gorilla::dnd::select
+
+	# ----------------------------------------------------------------------
+
+	proc ::gorilla::dnd::press {tree x y} {
+		variable clickPx     -Inf
+		variable clickPy     -Inf
+		
+		# can not drag empty area of tree, nor root node of tree -
+		# the -Inf is the magic which makes this work.  Any x,y
+		# position subtracted from -Inf is still -Inf, and -Inf is
+		# always smaller than zero, so as long as Px,Py are -Inf, a
+		# drag will never initiate
+
+		if { ( [ $tree identify row $x $y ] ni {"" RootNode} ) } {
+			set clickPx $x
+			set clickPy $y
+		} ; # end if selrow ni ""/RootNode
+
+		#ruff
+		# Callled by mouse button press event to record the x,y
+		# position of the mouse cursor in preparation for a possible
+		# drag occurring.
+		#
+		# tree - the tree widget 
+		# x - x mouse cursor position
+		# y - y mouse cursor position
+
+	} ; # end proc ::gorilla::dnd::press
+
+	# ----------------------------------------------------------------------
+
+	proc ::gorilla::dnd::motion {tree x y} {
+		variable dragging
+		variable clickPx
+		variable clickPy
+		variable invalidDrag
+
+		if { $invalidDrag } { 
+			::gorilla::Feedback [ mc "Can not drag the selected items (see documentation)" ]
+			set dragging 0
+			return
+		}
+
+		# a small hysteresis of 5 pixels of motion before we decide
+		# that a drag is occurring
+		if { ( ! $dragging )
+		  && ( 
+		          ( [ expr { abs( $clickPx - $x ) } ] > 5 )
+		       || ( [ expr { abs( $clickPy - $y ) } ] > 5 ) 
+		     ) } {
+			set dragging 1
+		}
+
+		if { $dragging } {
+			# I do not understand why, but configuring -cursor
+			# on the tree did not work, yet configuring it on .
+			# did work properly.
+			. configure -cursor double_arrow
+
+			set selrow [ $tree identify row $x $y ]
+			if { $selrow ne "" } {
+				$tree selection set $selrow
+				# the "see" causes edge scrolling to happen automatically
+				$tree see $selrow
+			}
+
+			# use place to position the drag indicator - the +5
+			# pixels positions it just to the right of the
+			# cursor bitmap so it does not overlap with the
+			# cursor
+
+			place $tree.dnd -x [ expr { $x + 5 } ] -y $y -anchor w
+
+		} ; # end if dragging
+
+		#ruff
+		# Called by mouse motion event to both decide when to
+		# initiate a drag and to animate the drag as it occurs
+		#
+		# tree - the tree widget
+		# x - new mouse x position
+		# y - new mouse y position
+
+	} ; # end proc ::gorilla::dnd::motion
+
+	# ----------------------------------------------------------------------
+
+	proc ::gorilla::dnd::release {tree x y} {
+		variable dragging
+		variable selectedItems
+
+		if { $dragging } {
+			# clean up
+			. configure -cursor {}
+			set dragging 0
+			place forget $tree.dnd
+
+			set dropIdx [ $tree identify row $x $y ]
+			# can not drop into empty section of tree
+			if { $dropIdx ne "" } {
+				foreach item $selectedItems {
+					::gorilla::MoveTreeNode $item $dropIdx
+				}
+			}
+
+		} ; # end if dragging
+		
+		#ruff
+		# Called by mouse button release event.  If a drag was
+		# occurring then handle actually performing the "move" of
+		# the selected items to the destination location in the tree.
+		#
+		# tree - the tree widget
+		# x - mouse x position of release event
+		# y - mouse y position of release event
+
+	} ; # end proc ::gorilla::dnd::release
+
+} ; # end namespace eval ::gorilla::dnd
+
 #
 # ----------------------------------------------------------------------
 # Init
@@ -7660,7 +8011,8 @@ proc ::gorilla::addRufftoHelp { menu } {
 #
 
 if {[tk windowingsystem] == "aqua"} {
-	set argv [psn_Delete $argv $argc]
+	# we have to delete the psn_nr in argv
+	if {[string first "-psn" [lindex $argv 0]] == 0} { set argv [lrange $argv 1 end]}
 
 	set ::gorilla::MacShowPreferences {
 		proc ::tk::mac::ShowPreferences {} {
@@ -7669,17 +8021,17 @@ if {[tk windowingsystem] == "aqua"} {
 	}
 
 	proc ::tk::mac::Quit {} {
-    gorilla::Exit
+		gorilla::Exit
 	}
 
 }
 	
 proc usage {} {
-		puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
-		puts stdout " Options:"
-		puts stdout "   --rc <name>  Use <name> as configuration file (not the Registry)."
-		puts stdout "   --norc       Do not use a configuration file (or the Registry)."
-		puts stdout "   <database>   Open <database> on startup."
+	puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
+	puts stdout " Options:"
+	puts stdout "   --rc <name>  Use <name> as configuration file (not the Registry)."
+	puts stdout "   --norc       Do not use a configuration file (or the Registry)."
+	puts stdout "   <database>   Open <database> on startup."
 }
 
 if {$::gorilla::init == 0} {
