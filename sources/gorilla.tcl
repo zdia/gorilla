@@ -293,7 +293,7 @@ proc gorilla::Init {} {
 
 		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
-		backupPath						 { {~/gorilla-backup} { {value} { file exists $value } }                                                   }
+		backupPath						 { {}      { {value} { file exists $value } }                                                   }
 		browser-exe            { {}      { {value} { return true } }                                                          }
 		browser-param          { {}      { {value} { return true } }                                                          }
 		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
@@ -1517,11 +1517,6 @@ proc gorilla::Open {{defaultFile ""}} {
 	set fileName [lindex $openInfo 1]
 	set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
-
-puts $::gorilla::preference(backupPath)
-	if { $::gorilla::preference(backupPath) eq "" } {
-		set ::gorilla::preference(backupPath) [file dirname $nativeName]
-	}
 
 	wm title . "Password Gorilla - $nativeName"
 
@@ -3591,7 +3586,7 @@ proc gorilla::Import { {input_file ""} } {
 
 } ; # end proc gorilla::Import
 
-proc gorilla::error-popup {title message} {
+proc gorilla::ErrorPopup {title message} {
 
 	# a small helper proc to encapsulate all the details of opening a
 	# tk_messageBox with a title and message
@@ -3602,7 +3597,7 @@ proc gorilla::error-popup {title message} {
 		-title $title \
 		-message $message 
 
-} ; # end proc gorilla::error-popup
+} ; # end proc gorilla::ErrorPopup
 
 proc gorilla::setup-default-dirname { } {
 
@@ -4197,13 +4192,14 @@ proc gorilla::Save {} {
 	. configure -cursor watch
 	update idletasks
 
-	#
-	# Create backup file, if desired
-	# The backup file preserves the original state of the opened db
-	#
+	# Note: The backup file preserves the original state of the opened db
 
-	if {$::gorilla::preference(keepBackupFile)} {
-		gorilla::SaveBackup $::gorilla::fileName $myOldCursor
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
+puts "message $message"
+	if { $message ne "GORILLA_OK" } {
+		. configure -cursor $myOldCursor
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
 	}
 
 	set nativeName [file nativename $::gorilla::fileName]
@@ -4225,7 +4221,7 @@ proc gorilla::Save {} {
 	set ::gorilla::savePercent 0
 	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
 
-	# verhindert einen grauen Fleck bei Speichervorgang
+	# avoid gray area during save
 	update
 
 	if {[catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
@@ -4235,11 +4231,9 @@ proc gorilla::Save {} {
 		unset ::gorilla::savePercent
 
 		. configure -cursor $myOldCursor
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Error Saving Database" \
-			-message "Failed to save password database as\
-			$nativeName: $oops"
-		return 0
+		gorilla::errorPopup [ mc "Error Saving Backup of Database"] \
+			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
+		return GORILLA_SAVEBACKUPERROR
 	}
 
 	trace remove variable ::gorilla::savePercent [list "write"] \
@@ -4249,7 +4243,8 @@ proc gorilla::Save {} {
 	. configure -cursor $myOldCursor
 	
 	if {$::gorilla::preference(keepBackupFile)} {
-		set ::gorilla::status [mc "Password database saved with backup copy."] 
+puts "nativeName: $nativeName"
+		set ::gorilla::status [mc "Password database saved with backup copy %s." $nativeName ] 
 	} else {
 		set ::gorilla::status [mc "Password database saved."] 
 	}
@@ -4257,7 +4252,7 @@ proc gorilla::Save {} {
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 
 	UpdateMenu
-	return 1
+	return GORILLA_OK
 }
 
 #
@@ -4339,7 +4334,19 @@ proc gorilla::SaveAs {} {
 	#
 
 	if {$::gorilla::preference(keepBackupFile) && [file exists $fileName]} {
-		gorilla::SaveBackup $::gorilla::fileName $myOldCursor
+puts "message $message"
+		set message [gorilla::SaveBackup $::gorilla::fileName $myOldCursor
+		if { $message ne GORILLA_OK} {
+			. configure -cursor $myOldCursor
+			# proc gorilla::ShowError { $errortype $message }
+			tk_messageBox -parent . -type ok -icon error -default ok \
+				-title [mc "Error Saving Backup of Database"] \
+				-message $message
+				$nativeName $oops]
+			# ;# end proc gorilla::ShowError
+			return GORILLA_SAVEBACKUPERROR
+			# Create array index ERRORMESSAGE(GORILLA_SAVEERROR)
+		}
 	}
 
 	set ::gorilla::savePercent 0
@@ -4388,24 +4395,62 @@ proc gorilla::SaveAs {} {
 	return 1
 }
 
-proc gorilla::SaveBackup { filename myOldCursor } {
+proc gorilla::SaveBackup { filename } {
+	# tries to backup the actual database observing the keepBackupFile flag.
+	# If the backup fails an error-type and a error-message string filtered
+	# by msgcat are returned.
+	#
+	# filename - name of current database containing full path
+	
 puts "+++ saveBackup"
 puts "filename: $filename"
+puts "backup flag: $::gorilla::preference(keepBackupFile)"
+
+	set error-type [ mc "Error Saving Backup of Database"]
+	# TODO: set error-type $ERRORMESSAGE(GORILLA_SAVEBACKUPERROR)
+	
+	if { ! $::gorilla::preference(keepBackupFile) } {
+		return GORILLA_OK
+	}
+	if { $::gorilla::preference(backupPath) eq "" } {
+		return [list \
+			$error-type \
+			[ mc "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."] \
+		]
+	}
+	if { ! [file isdirectory $::gorilla::preference(backupPath)] } {
+		return [list \
+			$error-type \
+			[ mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] \
+		]
+	}
+	if { ! [file exists $::gorilla::fileName] } {
+		return [list \
+			$error-type \
+			[ mc "Unknown file. - \nPlease select a valid database filename."] \
+		]
+	}
+	
+			# TODO:
+			# array set ::ERRORMESSAGE {
+			# GORILLA_SAVEBACKUPERROR "Error Saving Backup of Database"
+			# }
+			
 	set backupFileName [file rootname [file tail $filename] ]
 	append backupFileName ".bak"
 	set backupFile [file join $::gorilla::preference(backupPath) $backupFileName]
 puts "backupFile: $backupFile"
+
 	if {[catch {
 		file copy -force -- $filename $backupFile
 		} oops]} {
 		. configure -cursor $myOldCursor
 		set backupNativeName [file nativename $backupFileName]
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Error Saving Database" \
-			-message "Failed to make backup copy of password \
-			database as $backupNativeName: $oops"
-		return 0
+		gorilla::ErrorPopup $error-type \
+			[ mc "Failed to make backup copy of password\ndatabase as %s: %s" $backupNativeName $oops ]
+		return GORILLA_SAVEBACKUPERROR
 	}
+	return GORILLA_OK
 } ;# end of proc gorilla::SaveBackup
 
 # ----------------------------------------------------------------------
@@ -6024,7 +6069,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 	}
 
 	if {[catch {close $f}]} {
-		gorilla::msg "Error while saving RC-File"
+		gorilla::msg [mc "Error while saving RC-File"]
 		return 0
 	}
 	return 1
