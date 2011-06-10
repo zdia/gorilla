@@ -4797,36 +4797,8 @@ proc gorilla::LockDatabase {} {
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
 		
-	toplevel $top -class "Gorilla"
-	TryResizeFromPreference $top
-
-		 if {$::gorilla::preference(gorillaIcon)} {
-			 ttk::label $top.splash -image $::gorilla::images(splash)
-			 pack $top.splash -side left -fill both
-
-			 ttk::separator $top.vsep -orient vertical
-			 pack $top.vsep -side left -fill y -padx 3
-		 }
-
-	set aframe [ttk::frame $top.right -padding {10 10}]
-
-	# Titel packen	
-	# ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
-	ttk::label $aframe.title -anchor center
-	pack $aframe.title -side top -fill x -pady 10
-
-	ttk::labelframe $aframe.file -text [mc "Database:"]
-	ttk::entry $aframe.file.f -width 40 -state disabled
-	pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
-	pack $aframe.file -side top -pady 5 -fill x -expand yes
-
-	ttk::frame $aframe.mitte
-	ttk::labelframe $aframe.mitte.pw -text [mc "Password:"] 
-	entry $aframe.mitte.pw.pw -width 20 -show "*" 
-	# -background #FFFFCC
-	pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
-	
-	pack $aframe.mitte.pw -side left -pady 5 -expand 0
+		toplevel $top -class "Gorilla"
+		TryResizeFromPreference $top
 
 		if {$::gorilla::preference(gorillaIcon)} {
 			ttk::label $top.splash -image $::gorilla::images(splash)
