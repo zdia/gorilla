@@ -325,6 +325,7 @@ proc gorilla::Init {} {
 		lru                    { {}      { {value} { file exists $value } }                                                   }
 		rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
 		saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
+		timeStampBackup        { 0       { {value} { string is boolean $value } }                                             }
 		unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 
 	} ; # end set ::gorilla::preferences(all-preferences)
@@ -4333,6 +4334,7 @@ proc gorilla::SaveAs {} {
 	# Create backup file, if desired
 	#
 
+# FIXME !!!
 	if {$::gorilla::preference(keepBackupFile) && [file exists $fileName]} {
 puts "message $message"
 		set message [gorilla::SaveBackup $::gorilla::fileName $myOldCursor
@@ -4352,20 +4354,20 @@ puts "message $message"
 	set ::gorilla::savePercent 0
 	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
 
-		if {[catch {
-	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
-		} oops]} {
-	trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
-
-	. configure -cursor $myOldCursor
-	tk_messageBox -parent . -type ok -icon error -default ok \
-		-title [mc "Error Saving Database"] \
-		-message [mc "Failed to save password database as \"%s\": %s" \
-		$nativeName $oops]
-	return 0
-		}
+	if {[catch {
+			pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
+			} oops]} {
+		trace remove variable ::gorilla::savePercent [list "write"] \
+				::gorilla::SavePercentTrace
+		unset ::gorilla::savePercent
+	
+		. configure -cursor $myOldCursor
+		tk_messageBox -parent . -type ok -icon error -default ok \
+			-title [mc "Error Saving Database"] \
+			-message [mc "Failed to save password database as \"%s\": %s" \
+			$nativeName $oops]
+		return 0
+	}
 
 		trace remove variable ::gorilla::savePercent [list "write"] \
 			::gorilla::SavePercentTrace
@@ -4399,6 +4401,9 @@ proc gorilla::SaveBackup { filename } {
 	# tries to backup the actual database observing the keepBackupFile flag.
 	# If the backup fails an error-type and a error-message string filtered
 	# by msgcat are returned.
+	#
+	# If the timestamp flag is set the backup file gets a timestamp appendix
+	# according to the local settings
 	#
 	# filename - name of current database containing full path
 	
@@ -4435,7 +4440,17 @@ puts "backup flag: $::gorilla::preference(keepBackupFile)"
 			# array set ::ERRORMESSAGE {
 			# GORILLA_SAVEBACKUPERROR "Error Saving Backup of Database"
 			# }
-			
+
+puts "preference(backupPath) $::gorilla::preference(backupPath)"
+
+	if { $::gorilla::preference(timeStampBackup) } {
+		# e.g. locale de: <gorilladb>#10-06-2011#17-55-22.<extension>
+		# locale us: #06-10-2011#18-00-53
+		# Windows: the following characters are reserved and cannot be used
+		# in a file name: < > : " / \ | ? * 
+		puts "timestamp [join [string map {/ - . - : -} [clock format [clock seconds] -format "#%x %X" -locale de]] #]"
+	} ;# end if
+	
 	set backupFileName [file rootname [file tail $filename] ]
 	append backupFileName ".bak"
 	set backupFile [file join $::gorilla::preference(backupPath) $backupFileName]
@@ -5642,9 +5657,11 @@ proc gorilla::PreferencesDialog {} {
 			-onvalue 3 -offvalue 2
 		ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
 			-variable ::gorilla::prefTemp(unicodeSupport)
+		ttk::checkbutton $dpf.ts -text [mc "Time stamp backup"] \
+			-variable ::gorilla::prefTemp(timeStampBackup)
 
 		ttk::frame $dpf.bakpath
-puts $::gorilla::prefTemp(backupPath)
+# puts $::gorilla::prefTemp(backupPath)
 		ttk::entry $dpf.bakpath.e -textvariable ::gorilla::prefTemp(backupPath)
 		ttk::label $dpf.bakpath.l -text [mc "Backup path:"]
 		ttk::button $dpf.bakpath.b -image $::gorilla::images(browse) \
@@ -5655,7 +5672,7 @@ puts $::gorilla::prefTemp(backupPath)
 		pack $dpf.bakpath.e -side left -padx 3 -expand 1 -fill x
 		pack $dpf.bakpath.b -side left -padx 3
 
-		pack $dpf.si $dpf.ver $dpf.uni $dpf.bakpath -side top -anchor w -pady 3 -padx 10 -fill x
+		pack $dpf.si $dpf.ver $dpf.uni $dpf.ts $dpf.bakpath -side top -anchor w -pady 3 -padx 10 -fill x
 
 		ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
 			-text [mc "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."]
