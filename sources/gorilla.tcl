@@ -4193,16 +4193,6 @@ proc gorilla::Save {} {
 	. configure -cursor watch
 	update idletasks
 
-	# Note: The backup file preserves the original state of the opened db
-
-	set message [ gorilla::SaveBackup $::gorilla::fileName ]
-puts "message $message"
-	if { $message ne "GORILLA_OK" } {
-		. configure -cursor $myOldCursor
-		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-		return GORILLA_SAVEBACKUPERROR
-	}
-
 	set nativeName [file nativename $::gorilla::fileName]
 	
 	#
@@ -4237,14 +4227,31 @@ puts "message $message"
 		return GORILLA_SAVEBACKUPERROR
 	}
 
+	# The actual data are saved. Now take care of a backup file
+
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
+
+	if { $message ne "GORILLA_OK" } {
+		. configure -cursor $myOldCursor
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
+
+	# TODO: refactoring for saveErrorPopup
+	# need central place for all GUI states
+	# e.g. ::GUI(OLDCURSOR)
+	
 	trace remove variable ::gorilla::savePercent [list "write"] \
 		::gorilla::SavePercentTrace
 	unset ::gorilla::savePercent
 
 	. configure -cursor $myOldCursor
+
+	# TODO:
+	# Initialisation: array set ::MESSAGES "SAVEOK [mc "My message text]"
+	# set ::gorilla::status $::MESSAGES(SAVEOK)
 	
 	if {$::gorilla::preference(keepBackupFile)} {
-puts "nativeName: $nativeName"
 		set ::gorilla::status [mc "Password database saved with backup copy %s." $nativeName ] 
 	} else {
 		set ::gorilla::status [mc "Password database saved."] 
@@ -4266,10 +4273,9 @@ proc gorilla::SaveAs {} {
 	ArrangeIdleTimeout
 
 	if {![info exists ::gorilla::db]} {
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Nothing To Save" \
-			-message "No password database to save."
-		return 1
+		gorilla::ErrorPopup [ mc "Nothing To Save" ] \
+		[ mc "No password database to save." ]
+		return GORILLA_SAVEERROR
 	}
 
 	#
@@ -4330,33 +4336,12 @@ proc gorilla::SaveAs {} {
 	. configure -cursor watch
 	update idletasks
 
-	#
-	# Create backup file, if desired
-	#
-
-# FIXME !!!
-	if {$::gorilla::preference(keepBackupFile) && [file exists $fileName]} {
-puts "message $message"
-		set message [gorilla::SaveBackup $::gorilla::fileName $myOldCursor
-		if { $message ne GORILLA_OK} {
-			. configure -cursor $myOldCursor
-			# proc gorilla::ShowError { $errortype $message }
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title [mc "Error Saving Backup of Database"] \
-				-message $message
-				$nativeName $oops]
-			# ;# end proc gorilla::ShowError
-			return GORILLA_SAVEBACKUPERROR
-			# Create array index ERRORMESSAGE(GORILLA_SAVEERROR)
-		}
-	}
-
 	set ::gorilla::savePercent 0
 	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
 
-	if {[catch {
-			pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
-			} oops]} {
+	if {[ catch {	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
+							} oops]
+			} {
 		trace remove variable ::gorilla::savePercent [list "write"] \
 				::gorilla::SavePercentTrace
 		unset ::gorilla::savePercent
@@ -4369,21 +4354,35 @@ puts "message $message"
 		return 0
 	}
 
-		trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
+	# The actual data are saved. Now take care of a backup file
 
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
+
+	if { $message ne "GORILLA_OK" } {
 		. configure -cursor $myOldCursor
-		set ::gorilla::dirty 0
-		$::gorilla::widgets(tree) item "RootNode" -tags black
-		set ::gorilla::fileName $fileName
-		wm title . "Password Gorilla - $nativeName"
-		$::gorilla::widgets(tree) item "RootNode" -text $nativeName
-		set ::gorilla::status [mc "Password database saved as %s" $nativeName]
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
 
-	#
+	# clean up
+	
+	trace remove variable ::gorilla::savePercent [list "write"] \
+		::gorilla::SavePercentTrace
+	unset ::gorilla::savePercent
+	. configure -cursor $myOldCursor
+	set ::gorilla::dirty 0
+	$::gorilla::widgets(tree) item "RootNode" -tags black
+	set ::gorilla::fileName $fileName
+	wm title . "Password Gorilla - $nativeName"
+	$::gorilla::widgets(tree) item "RootNode" -text $nativeName
+	
+	if {$::gorilla::preference(keepBackupFile)} {
+		set ::gorilla::status [mc "Password database saved with backup copy" ] 
+	} else {
+		set ::gorilla::status [mc "Password database saved."] 
+	}
+	
 	# Add file to LRU preference
-	#
 
 	set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
 	if {$found == -1} {
@@ -4392,79 +4391,77 @@ puts "message $message"
 		set tmp [lreplace $::gorilla::preference(lru) $found $found]
 		set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 	}
+	
 	UpdateMenu
-	$::gorilla::widgets(tree) item "RootNode" -tags black
-	return 1
+	return GORILLA_OK
 }
 
 proc gorilla::SaveBackup { filename } {
 	# tries to backup the actual database observing the keepBackupFile flag.
-	# If the backup fails an error-type and a error-message string filtered
+	# If the backup fails an errorType and a errorMessage string filtered
 	# by msgcat are returned.
 	#
 	# If the timestamp flag is set the backup file gets a timestamp appendix
 	# according to the local settings
 	#
+	# If automatic backup is activated 
+	#
 	# filename - name of current database containing full path
-	
-puts "+++ saveBackup"
-puts "filename: $filename"
-puts "backup flag: $::gorilla::preference(keepBackupFile)"
+	#
 
-	set error-type [ mc "Error Saving Backup of Database"]
-	# TODO: set error-type $ERRORMESSAGE(GORILLA_SAVEBACKUPERROR)
-	
+	# TODO: set errorType $::ERROR(GORILLA_SAVEBACKUPERROR)	
+	set errorType [ mc "Error Saving Backup of Database"]
+	set backupFileName "[file rootname [file tail $filename] ].bak"
+
 	if { ! $::gorilla::preference(keepBackupFile) } {
 		return GORILLA_OK
-	}
-	if { $::gorilla::preference(backupPath) eq "" } {
-		return [list \
-			$error-type \
-			[ mc "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."] \
-		]
-	}
-	if { ! [file isdirectory $::gorilla::preference(backupPath)] } {
-		return [list \
-			$error-type \
-			[ mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] \
-		]
-	}
-	if { ! [file exists $::gorilla::fileName] } {
-		return [list \
-			$error-type \
-			[ mc "Unknown file. - \nPlease select a valid database filename."] \
-		]
+	}	elseif { $::gorilla::preference(backupPath) eq "" } {
+			return [list \
+				$errorType \
+				[ mc "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."] \
+			]
+	}	elseif { ! [file isdirectory $::gorilla::preference(backupPath)] } {
+			return [list \
+				$errorType \
+				[ mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] \
+			]
+	}	elseif { ! [file exists $::gorilla::fileName] } {
+			return [list \
+				$errorType \
+				[ mc "Unknown file. - \nPlease select a valid database filename."] \
+			]
+	}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
+			set backupFileName "[ file tail $filename ]~"
+	} elseif { $::gorilla::preference(timeStampBackup) } {
+			# e.g. locale de: testdb_Jun-12-2011_23-58-09.psafe3
+			#
+			# Note: The following characters are reserved in Windows and
+			# cannot be used in a file name: < > : " / \ | ? *
+			#
+			# Timestamping uses Tcl's msgcat package for month's name
+			# with adding option -locale
+			
+			set backupFileName [ file rootname [file tail $filename] ]
+			append backupFileName "[clock format [clock seconds] -format "_%b-%d-%Y_%H-%M-%S" -locale [mclocale] ]"
+			append backupFileName [file extension $filename]
 	}
 	
 			# TODO:
+			# Create a central place for all error messages
 			# array set ::ERRORMESSAGE {
 			# GORILLA_SAVEBACKUPERROR "Error Saving Backup of Database"
 			# }
 
-puts "preference(backupPath) $::gorilla::preference(backupPath)"
-
-	if { $::gorilla::preference(timeStampBackup) } {
-		# e.g. locale de: <gorilladb>#10-06-2011#17-55-22.<extension>
-		# locale us: #06-10-2011#18-00-53
-		# Windows: the following characters are reserved and cannot be used
-		# in a file name: < > : " / \ | ? * 
-		puts "timestamp [join [string map {/ - . - : -} [clock format [clock seconds] -format "#%x %X" -locale de]] #]"
-	} ;# end if
-	
-	set backupFileName [file rootname [file tail $filename] ]
-	append backupFileName ".bak"
-	set backupFile [file join $::gorilla::preference(backupPath) $backupFileName]
-puts "backupFile: $backupFile"
+	set backupFile [ file join $::gorilla::preference(backupPath) $backupFileName ]
 
 	if {[catch {
 		file copy -force -- $filename $backupFile
 		} oops]} {
-		. configure -cursor $myOldCursor
 		set backupNativeName [file nativename $backupFileName]
-		gorilla::ErrorPopup $error-type \
-			[ mc "Failed to make backup copy of password\ndatabase as %s: %s" $backupNativeName $oops ]
-		return GORILLA_SAVEBACKUPERROR
+		return $errorType \
+			[ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]
 	}
+
 	return GORILLA_OK
 } ;# end of proc gorilla::SaveBackup
 
@@ -4808,7 +4805,15 @@ proc gorilla::LockDatabase {} {
 		setmenustate $::gorilla::widgets(main) all disabled
 		rename ::tk::mac::ShowPreferences ""
 	}
-	
+
+	# FIXME: perhaps it's better to backup the db in any case?
+	if { $::gorilla::preference(keepBackupFile) } {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { $message ne "GORILLA_OK" } {
+			gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		}
+	} ;# endif $::gorilla::preference(keepBackupFile)
+
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
 		
