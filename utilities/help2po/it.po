@@ -112,7 +112,7 @@ msgid "[Organization Into Groups]"
 msgstr "[Organizzare in gruppi]"
 
 msgid "[Moving Groups and/or Logins]"
-msgstr "Spostamento di gruppi e/o login]"
+msgstr "[Spostamento di gruppi e/o login]"
 
 msgid "[Logins]"
 msgstr "[Login]"
@@ -145,11 +145,11 @@ msgid "[The \"V3\" Database Format]"
 msgstr "[Il formato archivio \"V3\"]"
 
 msgid "[Data Import]"
-msgstr "Importazione dati"
+msgstr "[Importazione dati]"
 
 msgid ""
 " This documentation is written using Keith Vetter's Hypertext Help System."
-msgstr "Questa documentazione è stata scritta usando il sistema di aiuto ipertestuale di Keith Vetter."
+msgstr " Questa documentazione è stata scritta usando il sistema di aiuto ipertestuale di Keith Vetter."
 
 msgid "History"
 msgstr "Cronologia"

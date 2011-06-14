@@ -25,6 +25,7 @@
     array set W {top .helpSystem main "" tree ""}
     array set alias {index Index previous Previous back Back search Search
         history History next Next}
+
  }
  
  ## BEGIN ON HELP
@@ -81,14 +82,26 @@ proc ::Help::Help {{title ""}} {
  # ::Help::ReadHelpFiles -- reads "help.txt" in the packages directory
  # and creates all the help pages.
  #
- proc ::Help::ReadHelpFiles {dir} {
-	# Looks in the passed directory for a file "help.txt"
+ proc ::Help::ReadHelpFiles {dir locale} {
+	# Initiates the Viewhelp module.
+	# It sets the language locale for msgcat and loads the appropriate
+	# language file into the namespace ::Help. Then it looks in the passed
+	# directory for the manual contained in the "help.txt" file.
 	# The text is split into section according to the "title:" markers.
-	# Then the sections are passed to ::Help::AddPage to build the
-	# ::Help::pages() array so that ::Help::BuildTOC can construct the TOC
-	# 
-	# dir - the directory in which the file help.txt is searched for
+	# Then the sections are passed to ::Help::AddPage to populate the
+	# ::Help::pages() array with all help pages. Finally ::Help::BuildTOC
+	# constructs the TOC.
 	#
+	# dir - the directory in which the file help.txt is searched for
+	# locale - the locale according to the resource file .gorillarc
+	#
+
+	# viewhelp.tcl is sourced before the preference() array is populated.
+	# Thus we have to get the locale by parameter from namespace ::gorilla.
+	
+	mclocale $locale
+	mcload [file join $::gorillaDir msgs help]
+
 	set fname [file join $dir help.txt]
 	set fin [open $fname r]
 	set data [read $fin] ; list
@@ -99,6 +112,7 @@ proc ::Help::Help {{title ""}} {
 	foreach section [split $data \x01] {
 			set n [regexp -line {^title:\s*(.*)$} $section => title]
 			set title [mc $title]
+
 			if {! $n} {
 					puts "Bad help section\n'[string range $section 0 400]'"
 					continue
@@ -457,9 +471,10 @@ proc ::Help::DoDisplay { top } {
             }
             set line $txt
         } elseif {[string match " *" $line]} {  ;# Line beginning w/ a space
+						set line [mc $line]
             $w insert end $line\n fix
             unset -nocomplain number
-						set line [mc $line]
+
             continue
         }
 				

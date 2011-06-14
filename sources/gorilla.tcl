@@ -157,7 +157,6 @@ load-package msgcat
 
 namespace import msgcat::*
 
-mcload [file join $::gorillaDir msgs help]
 mcload [file join $::gorillaDir msgs]
 # The message files will be loaded according to the system's actual
 # language. During initialization of Gorilla's preferences the command
@@ -6477,7 +6476,7 @@ proc gorilla::Help {} {
 
 	# ReadHelpFiles is looking in the given directory 
 	# for a file named help.txt
-	::Help::ReadHelpFiles $::gorillaDir
+	::Help::ReadHelpFiles $::gorillaDir $::gorilla::preference(lang)
 	::Help::Help Overview
 }
 
