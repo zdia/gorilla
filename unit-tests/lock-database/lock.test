@@ -25,7 +25,7 @@ package require tcltest 2.2
 set argv ""
 eval ::tcltest::configure $argv
 
-puts "running tests for Password Gorilla ..."
+# puts "running tests for Password Gorilla ..."
 
 # ------------- samples -----------------
 
@@ -40,7 +40,6 @@ puts "running tests for Password Gorilla ..."
 	# -result {gorilla} \
 	# -cleanup {rename TestProcedure ""}
 	
-# -------------------------------------------------------------------------
 # create a safe environment for testing purposes
 
 namespace eval ::gorilla::test {
@@ -49,56 +48,46 @@ namespace eval ::gorilla::test {
 	# CATEGORY: Security
 	# ------------------
 	
-	# database is locked
-	
-	test gorilla-1.1 {isLocked} \
-		-setup {gorilla::LockDatabase} \
-		-body {return $::gorilla::isLocked} \
-		-result 1
-	
-	test gorilla-1.2 {windows withdrawn} \
-		-setup {set actualState withdrawn} \
+	# module is expected to run with option --test or --tcltest
+	# FIXME: Mac menu handling
+
+	# test will show if windows are withdrawn and opened
+	test lock-database-1.1 { general lock-unlock-run } \
+		-setup {} \
 		-body {
-			foreach top [array names ::gorilla::toplevel] {
-				if {[wm state .lockedDialog] eq "normal"} {
-					continue
-				} elseif {[wm state $top] ne "$actualState" } {
-					return ERROR
-				}
-			}
-			return OK
+			gorilla::LockDatabase
 		} \
-		-result OK
-		
-	test gorilla-1.3 {MacOSX Preferences menuitem disabled} \
-		-constraints mac \
-		-body { info commands ::tk::mac::ShowPreferences }
-		-result ""
-		
-	test gorilla-1.4 {MacOSX About menuitem disabled} \
-		-constraints mac \
-		-body {	return [.mbar.apple entryconfigure 0 -state] } \
-		-result disabled
-		
-	test gorilla-1.5 {MacOSX menuitems disabled} \
-		-constraints mac \
-		-setup {set widget .mbar}
-		-body {
-			foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
-				set index 0
-				foreach {title a b c d } $menu_itemlist {
-					if { $title ne "separator" } {
-						if { [$widget.$menu_widget entryconfigure $index -state] ne "disabled" } {
-							return ERROR
-						}
-					}
-					incr index
-				}
-			}
-			return OK
-		} \
-		-result OK
-		
+		-result GORILLA_OK
+	
+	# test gorilla-1.3 {MacOSX Preferences menuitem disabled} \
+		# -constraints mac \
+		# -body { info commands ::tk::mac::ShowPreferences }
+		# -result ""
+		# 
+	# test gorilla-1.4 {MacOSX About menuitem disabled} \
+		# -constraints mac \
+		# -body {	return [.mbar.apple entryconfigure 0 -state] } \
+		# -result disabled
+		# 
+	# test gorilla-1.5 {MacOSX menuitems disabled} \
+		# -constraints mac \
+		# -setup {set widget .mbar}
+		# -body {
+			# foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
+				# set index 0
+				# foreach {title a b c d } $menu_itemlist {
+					# if { $title ne "separator" } {
+						# if { [$widget.$menu_widget entryconfigure $index -state] ne "disabled" } {
+							# return ERROR
+						# }
+					# }
+					# incr index
+				# }
+			# }
+			# return OK
+		# } \
+		# -result OK
+		# 
 	
 } ;# end of namespace eval ::gorilla::test
 
@@ -107,4 +96,4 @@ namespace eval ::gorilla::test {
 # cleanup
 
 namespace delete ::gorilla::test
-puts "Tests for unit Password Gorilla finished."
+# puts "Tests for unit Password Gorilla finished."

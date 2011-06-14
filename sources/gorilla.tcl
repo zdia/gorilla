@@ -3373,7 +3373,7 @@ proc gorilla::Import { {input_file ""} } {
 	}
 
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
-		error-popup [ mc "Error opening import CSV file" ] \
+		ErrorPopup [ mc "Error opening import CSV file" ] \
 					"[ mc "Could not access file " ] ${input_file}:\n$oops"
 		return GORILLA_OPENERROR
 	}
@@ -3382,7 +3382,7 @@ proc gorilla::Import { {input_file ""} } {
 
 	load-package csv
 	# if { [ catch { package require csv } oops ] } {
-		# error-popup [ mc "Error loading CSV parsing package." ] \
+		# ErrorPopup [ mc "Error loading CSV parsing package." ] \
 		           # "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
 		# return
 	# }
@@ -3396,7 +3396,7 @@ proc gorilla::Import { {input_file ""} } {
 				url user uuid }
 
 	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
-		error-popup [ mc "Error parsing CSV file" ] \
+		ErrorPopup [ mc "Error parsing CSV file" ] \
 		           "[ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
@@ -3408,7 +3408,7 @@ proc gorilla::Import { {input_file ""} } {
    
 	# Must have at least one data column present
 	if { [ llength $columns_present ] == 0 } {
-		error-popup [ mc "Error, nothing to import." ] \
+		ErrorPopup [ mc "Error, nothing to import." ] \
 		            [ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
@@ -3428,7 +3428,7 @@ proc gorilla::Import { {input_file ""} } {
 	}
    
 	if { [ info exists error_columns ] } {
-		error-popup [ mc "Error, undefined data columns" ] \
+		ErrorPopup [ mc "Error, undefined data columns" ] \
 			"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
 		catch { close $infd }
 			. configure -cursor $myOldCursor
@@ -4222,7 +4222,7 @@ proc gorilla::Save {} {
 		unset ::gorilla::savePercent
 
 		. configure -cursor $myOldCursor
-		gorilla::errorPopup [ mc "Error Saving Backup of Database"] \
+		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
 			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
 		return GORILLA_SAVEBACKUPERROR
 	}
@@ -4237,20 +4237,13 @@ proc gorilla::Save {} {
 		return GORILLA_SAVEBACKUPERROR
 	}
 
-	# TODO: refactoring for saveErrorPopup
-	# need central place for all GUI states
-	# e.g. ::GUI(OLDCURSOR)
-	
+	# TODO: refactoring
 	trace remove variable ::gorilla::savePercent [list "write"] \
 		::gorilla::SavePercentTrace
 	unset ::gorilla::savePercent
 
 	. configure -cursor $myOldCursor
 
-	# TODO:
-	# Initialisation: array set ::MESSAGES "SAVEOK [mc "My message text]"
-	# set ::gorilla::status $::MESSAGES(SAVEOK)
-	
 	if {$::gorilla::preference(keepBackupFile)} {
 		set ::gorilla::status [mc "Password database saved with backup copy %s." $nativeName ] 
 	} else {
@@ -4275,6 +4268,8 @@ proc gorilla::SaveAs {} {
 	if {![info exists ::gorilla::db]} {
 		gorilla::ErrorPopup [ mc "Nothing To Save" ] \
 		[ mc "No password database to save." ]
+		# ERROR-save
+		# ERROR-no-db
 		return GORILLA_SAVEERROR
 	}
 
@@ -4411,6 +4406,7 @@ proc gorilla::SaveBackup { filename } {
 
 	# TODO: set errorType $::ERROR(GORILLA_SAVEBACKUPERROR)	
 	set errorType [ mc "Error Saving Backup of Database"]
+	# ERROR-backup
 	set backupFileName "[file rootname [file tail $filename] ].bak"
 
 	if { ! $::gorilla::preference(keepBackupFile) } {
@@ -4420,16 +4416,19 @@ proc gorilla::SaveBackup { filename } {
 				$errorType \
 				[ mc "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."] \
 			]
+			# ERROR-no-directory
 	}	elseif { ! [file isdirectory $::gorilla::preference(backupPath)] } {
 			return [list \
 				$errorType \
 				[ mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] \
 			]
+			# ERROR-invalid-directory
 	}	elseif { ! [file exists $::gorilla::fileName] } {
 			return [list \
 				$errorType \
 				[ mc "Unknown file. - \nPlease select a valid database filename."] \
 			]
+			# ERROR-unknown-file
 	}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
 			set backupFileName "[ file tail $filename ]~"
 	} elseif { $::gorilla::preference(timeStampBackup) } {
@@ -4460,6 +4459,7 @@ proc gorilla::SaveBackup { filename } {
 		set backupNativeName [file nativename $backupFileName]
 		return $errorType \
 			[ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]
+			# ERROR-backup-failed
 	}
 
 	return GORILLA_OK
@@ -4906,35 +4906,37 @@ proc gorilla::LockDatabase {} {
 	if { $::gorilla::preference(iconifyOnAutolock) } {
 		wm iconify $top
 	}
-		
-	while {42} {
-		set ::gorilla::lockedMutex 0
-		vwait ::gorilla::lockedMutex
 
-		if {$::gorilla::lockedMutex == 1} {
-			if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
-				break
+	if { ! $::DEBUG(TEST) } {		
+		while {42} {
+			set ::gorilla::lockedMutex 0
+			vwait ::gorilla::lockedMutex
+	
+			if {$::gorilla::lockedMutex == 1} {
+				if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
+					break
+				}
+	
+				tk_messageBox -parent $top \
+					-type ok -icon error -default ok \
+					-title [ mc "Wrong Password" ] \
+					-message [ mc "That password is not correct." ]
+	
+				 # clear the PW entry upon invalid PW
+				 $aframe.mitte.pw.pw delete 0 end
+						 
+			} elseif {$::gorilla::lockedMutex == 2} {
+				#
+				# This may return, if the database was modified, and the user
+				# answers "Cancel" to the question whether to save the database
+				# or not.
+				#
+	
+				gorilla::Exit
 			}
-
-			tk_messageBox -parent $top \
-				-type ok -icon error -default ok \
-				-title [ mc "Wrong Password" ] \
-				-message [ mc "That password is not correct." ]
-
-			 # clear the PW entry upon invalid PW
-			 $aframe.mitte.pw.pw delete 0 end
-		       
-		} elseif {$::gorilla::lockedMutex == 2} {
-			#
-			# This may return, if the database was modified, and the user
-			# answers "Cancel" to the question whether to save the database
-			# or not.
-			#
-
-			gorilla::Exit
 		}
 	}
-
+	
 	# restore all closed window statuses and positions
 	foreach tl [array names withdrawn] {
 		wm state    $tl [ lindex $withdrawn($tl) 0 ]
@@ -4960,6 +4962,7 @@ proc gorilla::LockDatabase {} {
 	wm deiconify .
 	raise .
 	ArrangeIdleTimeout
+	return GORILLA_OK
 }
 
 
