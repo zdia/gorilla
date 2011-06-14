@@ -63,4 +63,4 @@ namespace eval ::gorilla::test {
 # ----------------------------------------------------------------------
 # cleanup
 namespace delete ::gorilla::test
-puts "Tests for unit $testname finished."
+# puts "Tests for unit $testname finished."

@@ -199,4 +199,4 @@ namespace eval ::gorilla::test {
 } ;# end of namespace eval ::gorilla::test
 
 namespace delete ::gorilla::test
-puts "Tests for unit $testname finished."
+# puts "Tests for unit $testname finished."

@@ -4404,9 +4404,8 @@ proc gorilla::SaveBackup { filename } {
 	# filename - name of current database containing full path
 	#
 
-	# TODO: set errorType $::ERROR(GORILLA_SAVEBACKUPERROR)	
 	set errorType [ mc "Error Saving Backup of Database"]
-	# ERROR-backup
+	# ERROR-SaveBackup
 	set backupFileName "[file rootname [file tail $filename] ].bak"
 
 	if { ! $::gorilla::preference(keepBackupFile) } {
@@ -4416,19 +4415,19 @@ proc gorilla::SaveBackup { filename } {
 				$errorType \
 				[ mc "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."] \
 			]
-			# ERROR-no-directory
+			# ERROR-SaveBackup-no-directory
 	}	elseif { ! [file isdirectory $::gorilla::preference(backupPath)] } {
 			return [list \
 				$errorType \
 				[ mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] \
 			]
-			# ERROR-invalid-directory
+			# ERROR-SaveBackup-invalid-directory
 	}	elseif { ! [file exists $::gorilla::fileName] } {
 			return [list \
 				$errorType \
 				[ mc "Unknown file. - \nPlease select a valid database filename."] \
 			]
-			# ERROR-unknown-file
+			# ERROR-SaveBackup-unknown-file
 	}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
 			set backupFileName "[ file tail $filename ]~"
 	} elseif { $::gorilla::preference(timeStampBackup) } {
@@ -4436,21 +4435,12 @@ proc gorilla::SaveBackup { filename } {
 			#
 			# Note: The following characters are reserved in Windows and
 			# cannot be used in a file name: < > : " / \ | ? *
-			#
-			# Timestamping uses Tcl's msgcat package for month's name
-			# with adding option -locale
 			
 			set backupFileName [ file rootname [file tail $filename] ]
-			append backupFileName "[clock format [clock seconds] -format "_%b-%d-%Y_%H-%M-%S" -locale [mclocale] ]"
+			append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
 			append backupFileName [file extension $filename]
 	}
 	
-			# TODO:
-			# Create a central place for all error messages
-			# array set ::ERRORMESSAGE {
-			# GORILLA_SAVEBACKUPERROR "Error Saving Backup of Database"
-			# }
-
 	set backupFile [ file join $::gorilla::preference(backupPath) $backupFileName ]
 
 	if {[catch {
@@ -4459,7 +4449,7 @@ proc gorilla::SaveBackup { filename } {
 		set backupNativeName [file nativename $backupFileName]
 		return $errorType \
 			[ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]
-			# ERROR-backup-failed
+			# ERROR-SaveBackup-failed
 	}
 
 	return GORILLA_OK
