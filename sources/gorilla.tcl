@@ -4404,35 +4404,25 @@ proc gorilla::SaveBackup { filename } {
 	# filename - name of current database containing full path
 	#
 
-	set errorType [ mc "Error Saving Backup of Database"]
-	# ERROR-SaveBackup
+	set errorType [ mc ERROR-SaveBackup ]
+	# "Error Saving Backup of Database"
 	set backupFileName "[file rootname [file tail $filename] ].bak"
 
 	if { ! $::gorilla::preference(keepBackupFile) } {
 		return GORILLA_OK
 	}	elseif { $::gorilla::preference(backupPath) eq "" } {
-			return [list \
-				$errorType \
-				[ mc "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."] \
-			]
-			# ERROR-SaveBackup-no-directory
+			return [list $errorType [mc ERROR-SaveBackup-no-directory] ]
+			# "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."
 	}	elseif { ! [file isdirectory $::gorilla::preference(backupPath)] } {
-			return [list \
-				$errorType \
-				[ mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] \
-			]
-			# ERROR-SaveBackup-invalid-directory
+			return [list $errorType [mc ERROR-SaveBackup-invalid-directory] ]
+			# "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."
 	}	elseif { ! [file exists $::gorilla::fileName] } {
-			return [list \
-				$errorType \
-				[ mc "Unknown file. - \nPlease select a valid database filename."] \
-			]
-			# ERROR-SaveBackup-unknown-file
+			return [list $errorType [mc ERROR-SaveBackup-unknown-file] ]
+			# "Unknown file. - \nPlease select a valid database filename."
 	}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
 			set backupFileName "[ file tail $filename ]~"
 	} elseif { $::gorilla::preference(timeStampBackup) } {
-			# e.g. locale de: testdb_Jun-12-2011_23-58-09.psafe3
-			#
+
 			# Note: The following characters are reserved in Windows and
 			# cannot be used in a file name: < > : " / \ | ? *
 			
@@ -4447,9 +4437,8 @@ proc gorilla::SaveBackup { filename } {
 		file copy -force -- $filename $backupFile
 		} oops]} {
 		set backupNativeName [file nativename $backupFileName]
-		return $errorType \
-			[ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]
-			# ERROR-SaveBackup-failed
+		return $errorType [ mc ERROR-SaveBackup-failed $backupNativeName $oops ]
+			# "Failed to make backup copy of password\ndatabase as %s: \n%s"
 	}
 
 	return GORILLA_OK
