@@ -6045,7 +6045,8 @@ proc gorilla::SavePreferencesToRCFile {} {
 	}
 
 	if {[catch {close $f}]} {
-		gorilla::msg [mc "Error while saving RC-File"]
+		gorilla::ErrorPopup [mc "Error"] [mc "Error while saving RC-File"]
+		# [mc ERROR-Save-rcfile]
 		return 0
 	}
 	return 1
