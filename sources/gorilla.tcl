@@ -289,11 +289,12 @@ proc gorilla::Init {} {
 	# two element list.  Each two element list is preference default and
 	# anonymous validation proc in that order.  The validation proc
 	# returns true for valid, false for invalid.
-	
+
 	set ::gorilla::preference(all-preferences) {
 
 		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
+		backupPath						 { {}      { {value} { file exists $value } }                                                   }
 		browser-exe            { {}      { {value} { return true } }                                                          }
 		browser-param          { {}      { {value} { return true } }                                                          }
 		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
@@ -325,6 +326,7 @@ proc gorilla::Init {} {
 		lru                    { {}      { {value} { file exists $value } }                                                   }
 		rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
 		saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
+		timeStampBackup        { 0       { {value} { string is boolean $value } }                                             }
 		unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 
 	} ; # end set ::gorilla::preferences(all-preferences)
@@ -333,7 +335,6 @@ proc gorilla::Init {} {
 	dict for {pref value} $::gorilla::preference(all-preferences) {
 		set ::gorilla::preference($pref) [ lindex $value 0 ] 
 	}
-		
 } ; # end proc gorilla::Init
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -3373,7 +3374,7 @@ proc gorilla::Import { {input_file ""} } {
 	}
 
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
-		error-popup [ mc "Error opening import CSV file" ] \
+		ErrorPopup [ mc "Error opening import CSV file" ] \
 					"[ mc "Could not access file " ] ${input_file}:\n$oops"
 		return GORILLA_OPENERROR
 	}
@@ -3382,7 +3383,7 @@ proc gorilla::Import { {input_file ""} } {
 
 	load-package csv
 	# if { [ catch { package require csv } oops ] } {
-		# error-popup [ mc "Error loading CSV parsing package." ] \
+		# ErrorPopup [ mc "Error loading CSV parsing package." ] \
 		           # "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
 		# return
 	# }
@@ -3396,7 +3397,7 @@ proc gorilla::Import { {input_file ""} } {
 				url user uuid }
 
 	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
-		error-popup [ mc "Error parsing CSV file" ] \
+		ErrorPopup [ mc "Error parsing CSV file" ] \
 		           "[ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
@@ -3408,7 +3409,7 @@ proc gorilla::Import { {input_file ""} } {
    
 	# Must have at least one data column present
 	if { [ llength $columns_present ] == 0 } {
-		error-popup [ mc "Error, nothing to import." ] \
+		ErrorPopup [ mc "Error, nothing to import." ] \
 		            [ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
@@ -3428,7 +3429,7 @@ proc gorilla::Import { {input_file ""} } {
 	}
    
 	if { [ info exists error_columns ] } {
-		error-popup [ mc "Error, undefined data columns" ] \
+		ErrorPopup [ mc "Error, undefined data columns" ] \
 			"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
 		catch { close $infd }
 			. configure -cursor $myOldCursor
@@ -3587,7 +3588,7 @@ proc gorilla::Import { {input_file ""} } {
 
 } ; # end proc gorilla::Import
 
-proc gorilla::error-popup {title message} {
+proc gorilla::ErrorPopup {title message} {
 
 	# a small helper proc to encapsulate all the details of opening a
 	# tk_messageBox with a title and message
@@ -3598,7 +3599,7 @@ proc gorilla::error-popup {title message} {
 		-title $title \
 		-message $message 
 
-} ; # end proc gorilla::error-popup
+} ; # end proc gorilla::ErrorPopup
 
 proc gorilla::setup-default-dirname { } {
 
@@ -4193,27 +4194,8 @@ proc gorilla::Save {} {
 	. configure -cursor watch
 	update idletasks
 
-	#
-	# Create backup file, if desired
-	#
-
-	if {$::gorilla::preference(keepBackupFile)} {
-		set backupFileName [file rootname $::gorilla::fileName]
-		append backupFileName ".bak"
-		if {[catch {
-			file copy -force -- $::gorilla::fileName $backupFileName
-			} oops]} {
-			. configure -cursor $myOldCursor
-			set backupNativeName [file nativename $backupFileName]
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title "Error Saving Database" \
-				-message "Failed to make backup copy of password \
-				database as $backupNativeName: $oops"
-			return 0
-		}
-	}
-
 	set nativeName [file nativename $::gorilla::fileName]
+	
 	#
 	# Determine file version. If there is a header field of type 0,
 	# it should indicate the version. Otherwise, default to version 2.
@@ -4231,7 +4213,7 @@ proc gorilla::Save {} {
 	set ::gorilla::savePercent 0
 	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
 
-	# verhindert einen grauen Fleck bei Speichervorgang
+	# avoid gray area during save
 	update
 
 	if {[catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
@@ -4241,25 +4223,38 @@ proc gorilla::Save {} {
 		unset ::gorilla::savePercent
 
 		. configure -cursor $myOldCursor
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Error Saving Database" \
-			-message "Failed to save password database as\
-			$nativeName: $oops"
-		return 0
+		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
+			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
+		return GORILLA_SAVEBACKUPERROR
 	}
 
+	# The actual data are saved. Now take care of a backup file
+
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
+
+	if { $message ne "GORILLA_OK" } {
+		. configure -cursor $myOldCursor
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
+
+	# TODO: refactoring
 	trace remove variable ::gorilla::savePercent [list "write"] \
 		::gorilla::SavePercentTrace
 	unset ::gorilla::savePercent
 
 	. configure -cursor $myOldCursor
-	# set ::gorilla::status [mc "Password database saved as $nativeName"] 
-	set ::gorilla::status [mc "Password database saved."] 
+
+	if {$::gorilla::preference(keepBackupFile)} {
+		set ::gorilla::status [mc "Password database saved with backup copy %s." $nativeName ] 
+	} else {
+		set ::gorilla::status [mc "Password database saved."] 
+	}
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 
 	UpdateMenu
-	return 1
+	return GORILLA_OK
 }
 
 #
@@ -4272,10 +4267,11 @@ proc gorilla::SaveAs {} {
 	ArrangeIdleTimeout
 
 	if {![info exists ::gorilla::db]} {
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Nothing To Save" \
-			-message "No password database to save."
-		return 1
+		gorilla::ErrorPopup [ mc "Nothing To Save" ] \
+		[ mc "No password database to save." ]
+		# ERROR-save
+		# ERROR-no-db
+		return GORILLA_SAVEERROR
 	}
 
 	#
@@ -4336,62 +4332,53 @@ proc gorilla::SaveAs {} {
 	. configure -cursor watch
 	update idletasks
 
-	#
-	# Create backup file, if desired
-	#
+	set ::gorilla::savePercent 0
+	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
 
-	if {$::gorilla::preference(keepBackupFile) && \
-		[file exists $fileName]} {
-		set backupFileName [file rootname $fileName]
-		append backupFileName ".bak"
-		set ::gorilla::status $backupFileName
-		if {[catch {
-			file copy -force -- $fileName $backupFileName
-		   } oops]} {
-			. configure -cursor $myOldCursor
-			set backupNativeName [file nativename $backupFileName]
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title [mc "Error Saving Database"] \
-				-message [mc "Failed to make backup copy of password database as \"%s\": %s" \
-				$backupNativeName $oops]
-			return 0
-		}
+	if {[ catch {	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
+							} oops]
+			} {
+		trace remove variable ::gorilla::savePercent [list "write"] \
+				::gorilla::SavePercentTrace
+		unset ::gorilla::savePercent
+	
+		. configure -cursor $myOldCursor
+		tk_messageBox -parent . -type ok -icon error -default ok \
+			-title [mc "Error Saving Database"] \
+			-message [mc "Failed to save password database as \"%s\": %s" \
+			$nativeName $oops]
+		return 0
 	}
 
-	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] \
-	::gorilla::SavePercentTrace
+	# The actual data are saved. Now take care of a backup file
 
-		if {[catch {
-	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
-		} oops]} {
-	trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
 
-	. configure -cursor $myOldCursor
-	tk_messageBox -parent . -type ok -icon error -default ok \
-		-title [mc "Error Saving Database"] \
-		-message [mc "Failed to save password database as \"%s\": %s" \
-		$nativeName $oops]
-	return 0
-		}
-
-		trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
-
+	if { $message ne "GORILLA_OK" } {
 		. configure -cursor $myOldCursor
-		set ::gorilla::dirty 0
-		$::gorilla::widgets(tree) item "RootNode" -tags black
-		set ::gorilla::fileName $fileName
-		wm title . "Password Gorilla - $nativeName"
-		$::gorilla::widgets(tree) item "RootNode" -text $nativeName
-		set ::gorilla::status [mc "Password database saved as %s" $nativeName]
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
 
-	#
+	# clean up
+	
+	trace remove variable ::gorilla::savePercent [list "write"] \
+		::gorilla::SavePercentTrace
+	unset ::gorilla::savePercent
+	. configure -cursor $myOldCursor
+	set ::gorilla::dirty 0
+	$::gorilla::widgets(tree) item "RootNode" -tags black
+	set ::gorilla::fileName $fileName
+	wm title . "Password Gorilla - $nativeName"
+	$::gorilla::widgets(tree) item "RootNode" -text $nativeName
+	
+	if {$::gorilla::preference(keepBackupFile)} {
+		set ::gorilla::status [mc "Password database saved with backup copy" ] 
+	} else {
+		set ::gorilla::status [mc "Password database saved."] 
+	}
+	
 	# Add file to LRU preference
-	#
 
 	set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
 	if {$found == -1} {
@@ -4400,10 +4387,63 @@ proc gorilla::SaveAs {} {
 		set tmp [lreplace $::gorilla::preference(lru) $found $found]
 		set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 	}
+	
 	UpdateMenu
-	$::gorilla::widgets(tree) item "RootNode" -tags black
-	return 1
+	return GORILLA_OK
 }
+
+proc gorilla::SaveBackup { filename } {
+	# tries to backup the actual database observing the keepBackupFile flag.
+	# If the backup fails an errorType and a errorMessage string filtered
+	# by msgcat are returned.
+	#
+	# If the timestamp flag is set the backup file gets a timestamp appendix
+	# according to the local settings
+	#
+	# If automatic backup is activated 
+	#
+	# filename - name of current database containing full path
+	#
+
+	set errorType [ mc ERROR-SaveBackup ]
+	# "Error Saving Backup of Database"
+	set backupFileName "[file rootname [file tail $filename] ].bak"
+
+	if { ! $::gorilla::preference(keepBackupFile) } {
+		return GORILLA_OK
+	}	elseif { $::gorilla::preference(backupPath) eq "" } {
+			return [list $errorType [mc ERROR-SaveBackup-no-directory] ]
+			# "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."
+	}	elseif { ! [file isdirectory $::gorilla::preference(backupPath)] } {
+			return [list $errorType [mc ERROR-SaveBackup-invalid-directory] ]
+			# "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."
+	}	elseif { ! [file exists $::gorilla::fileName] } {
+			return [list $errorType [mc ERROR-SaveBackup-unknown-file] ]
+			# "Unknown file. - \nPlease select a valid database filename."
+	}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
+			set backupFileName "[ file tail $filename ]~"
+	} elseif { $::gorilla::preference(timeStampBackup) } {
+
+			# Note: The following characters are reserved in Windows and
+			# cannot be used in a file name: < > : " / \ | ? *
+			
+			set backupFileName [ file rootname [file tail $filename] ]
+			append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
+			append backupFileName [file extension $filename]
+	}
+	
+	set backupFile [ file join $::gorilla::preference(backupPath) $backupFileName ]
+
+	if {[catch {
+		file copy -force -- $filename $backupFile
+		} oops]} {
+		set backupNativeName [file nativename $backupFileName]
+		return $errorType [ mc ERROR-SaveBackup-failed $backupNativeName $oops ]
+			# "Failed to make backup copy of password\ndatabase as %s: \n%s"
+	}
+
+	return GORILLA_OK
+} ;# end of proc gorilla::SaveBackup
 
 # ----------------------------------------------------------------------
 # Rebuild Tree
@@ -4745,40 +4785,20 @@ proc gorilla::LockDatabase {} {
 		setmenustate $::gorilla::widgets(main) all disabled
 		rename ::tk::mac::ShowPreferences ""
 	}
-	
+
+	# FIXME: perhaps it's better to backup the db in any case?
+	if { $::gorilla::preference(keepBackupFile) } {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { $message ne "GORILLA_OK" } {
+			gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		}
+	} ;# endif $::gorilla::preference(keepBackupFile)
+
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
 		
-	toplevel $top -class "Gorilla"
-	TryResizeFromPreference $top
-
-		 if {$::gorilla::preference(gorillaIcon)} {
-			 ttk::label $top.splash -image $::gorilla::images(splash)
-			 pack $top.splash -side left -fill both
-
-			 ttk::separator $top.vsep -orient vertical
-			 pack $top.vsep -side left -fill y -padx 3
-		 }
-
-	set aframe [ttk::frame $top.right -padding {10 10}]
-
-	# Titel packen	
-	# ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
-	ttk::label $aframe.title -anchor center
-	pack $aframe.title -side top -fill x -pady 10
-
-	ttk::labelframe $aframe.file -text [mc "Database:"]
-	ttk::entry $aframe.file.f -width 40 -state disabled
-	pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
-	pack $aframe.file -side top -pady 5 -fill x -expand yes
-
-	ttk::frame $aframe.mitte
-	ttk::labelframe $aframe.mitte.pw -text [mc "Password:"] 
-	entry $aframe.mitte.pw.pw -width 20 -show "*" 
-	# -background #FFFFCC
-	pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
-	
-	pack $aframe.mitte.pw -side left -pady 5 -expand 0
+		toplevel $top -class "Gorilla"
+		TryResizeFromPreference $top
 
 		if {$::gorilla::preference(gorillaIcon)} {
 			ttk::label $top.splash -image $::gorilla::images(splash)
@@ -4866,35 +4886,37 @@ proc gorilla::LockDatabase {} {
 	if { $::gorilla::preference(iconifyOnAutolock) } {
 		wm iconify $top
 	}
-		
-	while {42} {
-		set ::gorilla::lockedMutex 0
-		vwait ::gorilla::lockedMutex
 
-		if {$::gorilla::lockedMutex == 1} {
-			if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
-				break
+	if { ! $::DEBUG(TEST) } {		
+		while {42} {
+			set ::gorilla::lockedMutex 0
+			vwait ::gorilla::lockedMutex
+	
+			if {$::gorilla::lockedMutex == 1} {
+				if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
+					break
+				}
+	
+				tk_messageBox -parent $top \
+					-type ok -icon error -default ok \
+					-title [ mc "Wrong Password" ] \
+					-message [ mc "That password is not correct." ]
+	
+				 # clear the PW entry upon invalid PW
+				 $aframe.mitte.pw.pw delete 0 end
+						 
+			} elseif {$::gorilla::lockedMutex == 2} {
+				#
+				# This may return, if the database was modified, and the user
+				# answers "Cancel" to the question whether to save the database
+				# or not.
+				#
+	
+				gorilla::Exit
 			}
-
-			tk_messageBox -parent $top \
-				-type ok -icon error -default ok \
-				-title [ mc "Wrong Password" ] \
-				-message [ mc "That password is not correct." ]
-
-			 # clear the PW entry upon invalid PW
-			 $aframe.mitte.pw.pw delete 0 end
-		       
-		} elseif {$::gorilla::lockedMutex == 2} {
-			#
-			# This may return, if the database was modified, and the user
-			# answers "Cancel" to the question whether to save the database
-			# or not.
-			#
-
-			gorilla::Exit
 		}
 	}
-
+	
 	# restore all closed window statuses and positions
 	foreach tl [array names withdrawn] {
 		wm state    $tl [ lindex $withdrawn($tl) 0 ]
@@ -4920,6 +4942,7 @@ proc gorilla::LockDatabase {} {
 	wm deiconify .
 	raise .
 	ArrangeIdleTimeout
+	return GORILLA_OK
 }
 
 
@@ -5600,7 +5623,7 @@ proc gorilla::PreferencesDialog {} {
 
 
 		#
-		# Second NoteBook tab: database defaults
+		# Second NoteBook tab: (d)efault (p)re(f)erences
 		#
 
 		set dpf $top.nb.dpf
@@ -5622,8 +5645,22 @@ proc gorilla::PreferencesDialog {} {
 			-onvalue 3 -offvalue 2
 		ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
 			-variable ::gorilla::prefTemp(unicodeSupport)
+		ttk::checkbutton $dpf.ts -text [mc "Time stamp backup"] \
+			-variable ::gorilla::prefTemp(timeStampBackup)
 
-		pack $dpf.si $dpf.ver $dpf.uni -side top -anchor w -pady 3 -padx 10
+		ttk::frame $dpf.bakpath
+# puts $::gorilla::prefTemp(backupPath)
+		ttk::entry $dpf.bakpath.e -textvariable ::gorilla::prefTemp(backupPath)
+		ttk::label $dpf.bakpath.l -text [mc "Backup path:"]
+		ttk::button $dpf.bakpath.b -image $::gorilla::images(browse) \
+			-command { eval set ::gorilla::prefTemp(backupPath) \
+				[tk_chooseDirectory -initialdir $::gorilla::prefTemp(backupPath) \
+				-title [mc "Choose a directory"] ] }
+		pack $dpf.bakpath.l -side left
+		pack $dpf.bakpath.e -side left -padx 3 -expand 1 -fill x
+		pack $dpf.bakpath.b -side left -padx 3
+
+		pack $dpf.si $dpf.ver $dpf.uni $dpf.ts $dpf.bakpath -side top -anchor w -pady 3 -padx 10 -fill x
 
 		ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
 			-text [mc "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."]
@@ -6009,7 +6046,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 	}
 
 	if {[catch {close $f}]} {
-		gorilla::ErrorPopup [mc "Error"] "Error while saving RC-File"
+		gorilla::ErrorPopup [mc "Error"] [mc "Error while saving RC-File"]
 		# [mc ERROR-Save-rcfile]
 		return 0
 	}
@@ -6192,7 +6229,6 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				}
 				
 			}
-
 		} ; # end switch pref
 
 	} ; # end while ! eof f
