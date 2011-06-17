@@ -2,5 +2,5 @@ uuid,group,title,url,user,password,notes
 ,Shopping.Games,Game1,,Chris,rKtAExh5,This is game1\n\n
 ,Shopping.Games,Game2,,Peter,Atmd6l1B,This is game2\n
 ,Shopping.Forums,Forum 2,http://support.zenwalk.org,John,EKZnWiH6,A Slackware based distro\n\n\n
-,Shopping.Forums,Forum 1,,George,qcEKc73O,This is a testforum\n\n\n
-04f95217-611a-4d47-4229-7554b3f14de5,,README forever,,Ben,Orbn3lh9,"Test for special characters:\n	tab\nöäüÖÄÜß\\{}% ""Quote""\nend"
+806e6d70-8061-4dc1-5ace-215a3b646bf6,Shopping.Forums,Forum 1,www.george.bl,George,qcEKc73O,This is a testforum
+04f95217-611a-4d47-4229-7554b3f14de5,,README,www.google.ru,Ben,Orbn3lh9,Toplevel entry\nThe following characters will be tested:\n/ : ; \\ #\näößÖÄüÜ
