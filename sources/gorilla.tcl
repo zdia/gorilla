@@ -34,7 +34,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.5 $}
+set ::gorillaVersion 1.5.3.5
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -5911,11 +5911,12 @@ proc gorilla::SavePreferencesToRegistry {} {
 
 	set key {HKEY_CURRENT_USER\Software\FPX\Password Gorilla}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
-		set revision "<unknown>"
-	}
+	# if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+		# set revision "<unknown>"
+	# }
 
-	registry set $key revision $revision sz
+	# registry set $key revision $revision sz
+	registry set $key revision $::gorillaVersion sz
 
 	#
 	# Note: findInText omitted on purpose. It might contain a password.
@@ -6006,11 +6007,12 @@ proc gorilla::SavePreferencesToRCFile {} {
 		return 0
 	}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
-		set revision "<unknown>"
-	}
+	# if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+		# set revision "<unknown>"
+	# }
 
-	puts $f "revision=$revision"
+	# puts $f "revision=$revision"
+	puts $f "revision=$::gorillaVersion"
 
 	#
 	# Note: findThisText omitted on purpose. It might contain a password.
@@ -6079,10 +6081,11 @@ proc gorilla::LoadPreferencesFromRegistry {} {
 		return 0
 	}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
-		set revision "<unmatchable>"
-	}
-
+	# if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+		# set revision "<unmatchable>"
+	# }
+	set revision ::gorillaVersion
+	
 	if {[llength [registry values $key revision]] == 1} {
 		set prefsRevision [registry get $key revision]
 	} else {
@@ -6174,10 +6177,11 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 
 	} ; # end if info exists ::gorilla::preference(rc)
 
-	if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion -> revision ] } {
-		set revision "<unmatchable>"
-	}
+	# if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion -> revision ] } {
+		# set revision "<unmatchable>"
+	# }
 
+	set revision $::gorillaVersion
 	set prefsRevision "<unknown>"
 
 	if { [ catch { set f [ open $fileName ] } ] } {
@@ -6536,13 +6540,13 @@ proc gorilla::About {} {
 		
 		set w .about.mainframe
 		
-		if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
-			set revision "<unknown>"
-		}
-		
+		# if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+			# set revision "<unknown>"
+		# }
+
 		ttk::frame $w -padding {10 10}
 		ttk::label $w.image -image $::gorilla::images(splash)
-		ttk::label $w.title -text "[ mc "Password Gorilla" ] $revision" \
+		ttk::label $w.title -text "[ mc "Password Gorilla" ] $::gorillaVersion" \
 			-font {sans 16 bold} -padding {10 10}
 		ttk::label $w.description -text [ mc "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" ] -wraplength 350 -padding {10 0}
 		ttk::label $w.copyright \
@@ -8070,8 +8074,12 @@ namespace eval cli {
 	# set ::gorilla::argv $argv
 	# set argv ""
 	#
-	# [ list command-name command ]
-	array set commands {
+
+	set options [list --test -t --tcltest --chkmsgcat -cli --sourcedoc \
+		--help --rc]
+
+	# [ list option-name option-command ]
+	array set OptionCommands {
 		--rc					cli::Rc
 		--test 				cli::Test
 		-t						cli::Test
@@ -8082,9 +8090,20 @@ namespace eval cli {
 		--sourcedoc		cli::SourceDoc
 		--help				cli::Help
 	}
-	set options [list --test -t --tcltest --chkmsgcat -cli --sourcedoc \
-		--help --rc]
-}
+	
+	set LoopCommands [list open quit]
+	
+	array set Commands {
+		open					cli::Open
+		quit					cli::Quit
+	}
+
+	array set Arguments {
+		open					{file}
+		quit					{}
+	}
+	
+} ;# end eval cli
 
 
 proc cli::usage {} {
@@ -8181,21 +8200,50 @@ proc cli::ChkMsgcat {  } {
 			
 } ;# end of proc cli::ChkMsgcat
 
+proc cli::Quit {  } {
+	# check if database is changed
+	return quit
+} ;# end of proc cli::Quit
+
 proc cli::Open { file } {
-	puts $file
+	return "$file opened"
 } ;# end of proc
+
+proc cli::ParseCommand { line } {
+	set command [lindex $line 0]
+	set args ""
+	set index 1
+
+	# check commands
+	if { [lsearch $::cli::LoopCommands $command] < 0 } {
+		return "Unknown command: \"$command\". - Possible commands: [join $cli::LoopCommands ", "]"
+	}
+	# check arguments
+	foreach argument $cli::Arguments($command) {
+		if { [lindex $line $index] eq ""} {
+			return [mc "missing args: should be \"$command $cli::Arguments($command)\""]
+			# return [mc ERROR-Commandline] [mc ERROR-Commandline-missing-args]
+		} ;# end if
+		append args  [lindex $line $index]
+		incr index
+	}
+	
+	return [eval $::cli::Commands($command) $args]
+}
 
 proc cli::ParseLoop {  } {
 	# enters the main loop for the command-line module
-	
-	puts "Type \"exit\" to exit"
+
+	puts "Password Gorilla Command-Line Module ($::gorillaVersion)\nType \"quit\" to exit"
 	
 	set line ""
 	
-	while {$line ne "exit"} {
+	while {$line ne "quit"} {
+		puts -nonewline "> "
+		flush stdout
 		gets stdin line
-		puts "$line:>"
-		# cli::ParseCommand { $line }
+		set line [ cli::ParseCommand $line ]
+		puts $line
 	} ;# end while
 	
 	exit
@@ -8215,10 +8263,10 @@ proc gorilla::ParseOption {} {
 				 return "FILE $option"
 			} else {
 				return ERROR
-				# puts "Unknown option. - Possible options: [join $::cli::options ,]"
+				# puts "Unknown option. - Possible options: [join $::cli::options ", "]"
 			}
 		} else {
-			return "COMMAND $::cli::commands($option)"
+			return "COMMAND $::cli::OptionCommands($option)"
 		};# end if [lsearch $::cli::options $option]
 	} ;# end if { $option ne "" }
 
