@@ -1,3 +1,20 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-06-15 08:40+0200\n"
+"PO-Revision-Date: 2011-06-15 09:10+0100\n"
+"Last-Translator: zdia <z.dia@gmx.de>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 # This is the template for Gorilla's menuitems which are not marked by
 # a keyword in the source file
 #
@@ -15,267 +32,251 @@
 # msgcat -o de.po source_de.po menuitems_de.po
 #
 msgid "File"
-msgstr ""
+msgstr "File"
 
 msgid "New ..."
-msgstr ""
+msgstr "New ..."
 
 msgid "Open ..."
-msgstr ""
+msgstr "Open ..."
 
 msgid "Merge ..."
-msgstr ""
+msgstr "Merge ..."
 
 msgid "Save"
-msgstr ""
+msgstr "Save"
 
 msgid "Save As ..."
-msgstr ""
+msgstr "Save As ..."
 
 msgid "Export ..."
-msgstr ""
+msgstr "Export ..."
 
 msgid "Import ..."
-msgstr ""
+msgstr "Import ..."
 
 msgid "Preferences ..."
-msgstr ""
+msgstr "Preferences ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1170
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4833
 msgid "Exit"
-msgstr ""
+msgstr "Exit"
 
 msgid "Edit"
-msgstr ""
+msgstr "Edit"
 
 msgid "Copy Username"
-msgstr ""
+msgstr "Copy Username"
 
 msgid "Copy Password"
-msgstr ""
+msgstr "Copy Password"
 
 msgid "Copy URL"
-msgstr ""
+msgstr "Copy URL"
 
 msgid "Clear Clipboard"
-msgstr ""
+msgstr "Clear Clipboard"
 
 msgid "Find ..."
-msgstr ""
+msgstr "Find ..."
 
 msgid "Find next"
-msgstr ""
+msgstr "Find next"
 
 msgid "Login"
-msgstr ""
+msgstr "Login"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:789
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:872
 msgid "Add Login"
-msgstr ""
+msgstr "Add Login"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:875
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5576
 msgid "Edit Login"
-msgstr ""
+msgstr "Edit Login"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:878
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7423
 msgid "View Login"
-msgstr ""
+msgstr "View Login"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:886
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2605
 msgid "Delete Login"
-msgstr ""
+msgstr "Delete Login"
 
 msgid "Move Login ..."
-msgstr ""
+msgstr "Move Login ..."
 
 msgid "Add Group ..."
-msgstr ""
+msgstr "Add Group ..."
 
 msgid "Add Subgroup ..."
-msgstr ""
+msgstr "Add Subgroup ..."
 
 msgid "Rename Group ..."
-msgstr ""
+msgstr "Rename Group ..."
 
 msgid "Move Group ..."
-msgstr ""
+msgstr "Move Group ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:799
 msgid "Delete Group"
-msgstr ""
+msgstr "Delete Group"
 
 msgid "Security"
-msgstr ""
+msgstr "Security"
 
 msgid "Password Policy ..."
-msgstr ""
+msgstr "Password Policy ..."
 
 msgid "Customize ..."
-msgstr ""
+msgstr "Customize ..."
 
 msgid "Change Master Password ..."
-msgstr ""
+msgstr "Change Master Password ..."
 
 msgid "Lock now"
-msgstr ""
+msgstr "Lock now"
 
 msgid "Help"
-msgstr ""
+msgstr "Help"
 
 msgid "Help ..."
-msgstr ""
+msgstr "Help ..."
 
 msgid "License ..."
-msgstr ""
+msgstr "License ..."
 
 msgid "About ..."
-msgstr ""
-
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
-msgid ""
-msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-06-15 08:40+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
-"Content-Transfer-Encoding: 8bit\n"
+msgstr "About ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:175
 #, tcl-format
 msgid "Need %s"
-msgstr ""
+msgstr "Need %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:176
 #, tcl-format
 msgid ""
-"The Password Gorilla requires the \"%s\" package. This seems to be an "
-"installation problem, as this file ought to be part of the Password Gorilla "
-"distribution.\n"
+"The Password Gorilla requires the \"%s\" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.\n"
 "\n"
 "Error message: %s"
 msgstr ""
+"The Password Gorilla requires the \"%s\" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.\n"
+"\n"
+"Error message: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:221
 msgid "Need [Incr Tcl]"
-msgstr ""
+msgstr "Need [Incr Tcl]"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:222
 #, tcl-format
 msgid ""
-"The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install "
-"the [incr Tcl] package.\n"
+"The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.\n"
 "\n"
 "Error Message: %s"
 msgstr ""
+"The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.\n"
+"\n"
+"Error Message: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:230
 msgid "Need PWSafe"
-msgstr ""
+msgstr "Need PWSafe"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:231
 #, tcl-format
 msgid ""
-"The Password Gorilla requires the \"pwsafe\" package. This seems to be an "
-"installation problem, as the pwsafe package ought to be part of the Password "
-"Gorilla distribution.\n"
+"The Password Gorilla requires the \"pwsafe\" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.\n"
 "\n"
 "Error Message: %s"
 msgstr ""
+"The Password Gorilla requires the \"pwsafe\" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.\n"
+"\n"
+"Error Message: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:348
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:8176
 msgid "Welcome to the Password Gorilla."
-msgstr ""
+msgstr "Welcome to the Password Gorilla."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:488
 msgid "About"
-msgstr ""
+msgstr "About"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:792
 msgid "Add Subgroup"
-msgstr ""
+msgstr "Add Subgroup"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:795
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3041
 msgid "Rename Group"
-msgstr ""
+msgstr "Rename Group"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:859
 msgid "Open URL"
-msgstr ""
+msgstr "Open URL"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:862
 msgid "Copy Username to Clipboard"
-msgstr ""
+msgstr "Copy Username to Clipboard"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:865
 msgid "Copy Password to Clipboard"
-msgstr ""
+msgstr "Copy Password to Clipboard"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:868
 msgid "Copy URL to Clipboard"
-msgstr ""
+msgstr "Copy URL to Clipboard"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:882
 msgid "Move Login to:"
-msgstr ""
+msgstr "Move Login to:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:991
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4621
 msgid "Save changes?"
-msgstr ""
+msgstr "Save changes?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:992
-msgid ""
-"The current password database is modified. Do you want to save the current "
-"database before creating the new database?"
-msgstr ""
+msgid "The current password database is modified. Do you want to save the current database before creating the new database?"
+msgstr "The current password database is modified. Do you want to save the current database before creating the new database?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1021
 msgid "New Database: Choose Master Password"
-msgstr ""
+msgstr "New Database: Choose Master Password"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1034
 msgid "Password Gorilla - <New Database>"
-msgstr ""
+msgstr "Password Gorilla - <New Database>"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1080
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4872
 msgid "<New Database>"
-msgstr ""
+msgstr "<New Database>"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1083
 msgid "Add logins using <Add Login> in the <Login> menu."
-msgstr ""
+msgstr "Add logins using <Add Login> in the <Login> menu."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1120
 #, tcl-format
 msgid "Opening ... %2.0f %%"
-msgstr ""
+msgstr "Opening ... %2.0f %%"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1151
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4817
 msgid "Database:"
-msgstr ""
+msgstr "Database:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1160
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4823
 msgid "Password:"
-msgstr ""
+msgstr "Password:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1168
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1877
@@ -287,47 +288,45 @@ msgstr ""
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5462
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5828
 msgid "OK"
-msgstr ""
+msgstr "OK"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1172
 msgid "New"
-msgstr ""
+msgstr "New"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1211
-msgid ""
-"Select a database, and enter its password. Click \"New\" to create a new "
-"database."
-msgstr ""
+msgid "Select a database, and enter its password. Click \"New\" to create a new database."
+msgstr "Select a database, and enter its password. Click \"New\" to create a new database."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1295
 msgid "Please be patient. Verifying password ..."
-msgstr ""
+msgstr "Please be patient. Verifying password ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1323
 msgid "Error Opening Database"
-msgstr ""
+msgstr "Error Opening Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1324
 #, tcl-format
 msgid "Can not open password database \"%s\": %s"
-msgstr ""
+msgstr "Can not open password database \"%s\": %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1357
 msgid "Browse for a password database ..."
-msgstr ""
+msgstr "Browse for a password database ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1506
 msgid "Open Password Database"
-msgstr ""
+msgstr "Open Password Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1528
 #, tcl-format
 msgid "Password database %s loaded."
-msgstr ""
+msgstr "Password database %s loaded."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1716
 msgid "Add/Edit/View Login"
-msgstr ""
+msgstr "Add/Edit/View Login"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1878
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2483
@@ -339,7 +338,7 @@ msgstr ""
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5464
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5830
 msgid "Cancel"
-msgstr ""
+msgstr "Cancel"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1884
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2117
@@ -347,188 +346,184 @@ msgstr ""
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7499
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7504
 msgid "Show Password"
-msgstr ""
+msgstr "Show Password"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1886
 msgid "Generate Password"
-msgstr ""
+msgstr "Generate Password"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1887
 msgid "Override Password Policy"
-msgstr ""
+msgstr "Override Password Policy"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1910
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5174
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5231
 msgid "Password Length"
-msgstr ""
+msgstr "Password Length"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2110
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7501
 msgid "Hide Password"
-msgstr ""
+msgstr "Hide Password"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2135
 msgid "Password policy settings invalid."
-msgstr ""
+msgstr "Password policy settings invalid."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2201
 msgid "<unknown>"
-msgstr ""
+msgstr "<unknown>"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2299
 msgid "This login must have a title, url or username."
-msgstr ""
+msgstr "This login must have a title, url or username."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2308
 msgid "This login's group name is not valid."
-msgstr ""
+msgstr "This login's group name is not valid."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2329
 msgid "New login added."
-msgstr ""
+msgstr "New login added."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2336
 msgid "Login modified."
-msgstr ""
+msgstr "Login modified."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2359
 msgid "Group entries may be renamed, not edited."
-msgstr ""
+msgstr "Group entries may be renamed, not edited."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2469
 msgid "Destination Group with format <Group.Subgroup> :"
-msgstr ""
+msgstr "Destination Group with format <Group.Subgroup> :"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2543
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2557
 msgid "Invalid Group Name"
-msgstr ""
+msgstr "Invalid Group Name"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2544
 msgid "The group name can not be empty."
-msgstr ""
+msgstr "The group name can not be empty."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2558
 msgid "The name of the parent group is invalid."
-msgstr ""
+msgstr "The name of the parent group is invalid."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2606
 msgid "Are you sure that you want to delete this login?"
-msgstr ""
+msgstr "Are you sure that you want to delete this login?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2615
 msgid "Login deleted."
-msgstr ""
+msgstr "Login deleted."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2694
 msgid "Add a new Group"
-msgstr ""
+msgstr "Add a new Group"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2696
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3049
 msgid "Parent:"
-msgstr ""
+msgstr "Parent:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2702
 msgid "New Group Name:"
-msgstr ""
+msgstr "New Group Name:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2791
 msgid "Addition of group canceled."
-msgstr ""
+msgstr "Addition of group canceled."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2808
 msgid "New group added."
-msgstr ""
+msgstr "New group added."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2832
 msgid "Root Node Can Not Be Moved"
-msgstr ""
+msgstr "Root Node Can Not Be Moved"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2833
 msgid "The root node can not be moved."
-msgstr ""
+msgstr "The root node can not be moved."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2886
 msgid "Can Not Move Node"
-msgstr ""
+msgstr "Can Not Move Node"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2887
 msgid "Can not move a group to a subgroup of itself."
-msgstr ""
+msgstr "Can not move a group to a subgroup of itself."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2960
 msgid "Are you sure that you want to delete group and all its contents?"
-msgstr ""
+msgstr "Are you sure that you want to delete group and all its contents?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2970
 msgid "Group deleted."
-msgstr ""
+msgstr "Group deleted."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3150
 msgid "Group name unchanged."
-msgstr ""
+msgstr "Group name unchanged."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3218
 msgid "Group renamed."
-msgstr ""
+msgstr "Group renamed."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3239
 msgid "Export Security Warning"
-msgstr ""
+msgstr "Export Security Warning"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3240
-msgid ""
-"You are about to export the password database to a plain-text file. The file "
-"will not be encrypted or password-protected. Anybody with access can read "
-"the file, and learn your user names and passwords. Make sure to store the "
-"file in a secure location. Do you want to continue?"
-msgstr ""
+msgid "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"
+msgstr "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3264
 msgid "Export password database as text ..."
-msgstr ""
+msgstr "Export password database as text ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3285
 msgid "Error Exporting Database"
-msgstr ""
+msgstr "Error Exporting Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3286
 msgid "Failed to export password database to"
-msgstr ""
+msgstr "Failed to export password database to"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3292
 msgid "Exporting ..."
-msgstr ""
+msgstr "Exporting ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3339
 msgid "Database exported."
-msgstr ""
+msgstr "Database exported."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3365
 msgid "Import CSV datafile"
-msgstr ""
+msgstr "Import CSV datafile"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3376
 msgid "Error opening import CSV file"
-msgstr ""
+msgstr "Error opening import CSV file"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3377
 msgid "Could not access file "
-msgstr ""
+msgstr "Could not access file "
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3399
 msgid "Error parsing CSV file"
-msgstr ""
+msgstr "Error parsing CSV file"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3400
 msgid "Error parsing first line of CSV file, unable to continue."
-msgstr ""
+msgstr "Error parsing first line of CSV file, unable to continue."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3411
 msgid "Error, nothing to import."
-msgstr ""
+msgstr "Error, nothing to import."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3412
 msgid ""
@@ -536,47 +531,54 @@ msgid ""
 "the help for details on how to format import\n"
 "CSV data files for Password Gorilla."
 msgstr ""
+"No valid import data was found.  Please see\n"
+"the help for details on how to format import\n"
+"CSV data files for Password Gorilla."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3431
 msgid "Error, undefined data columns"
-msgstr ""
+msgstr "Error, undefined data columns"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3432
 msgid ""
 "The following data items are not recognized as import data items.\n"
 "Unable to continue."
 msgstr ""
+"The following data items are not recognized as import data items.\n"
+"Unable to continue."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3563
 msgid ""
 "Some records from the CSV file were not imported.\n"
 "Do you wish to save a log of skipped records?"
 msgstr ""
+"Some records from the CSV file were not imported.\n"
+"Do you wish to save a log of skipped records?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3564
 msgid "Some records skipped during import"
-msgstr ""
+msgstr "Some records skipped during import"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3566
 msgid "Enter a file into which to save the log"
-msgstr ""
+msgstr "Enter a file into which to save the log"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3579
 msgid "record(s) successfully imported."
-msgstr ""
+msgstr "record(s) successfully imported."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3664
 #, tcl-format
 msgid "Saving ... %2.0f %%"
-msgstr ""
+msgstr "Saving ... %2.0f %%"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3709
 msgid "Merge Password Database"
-msgstr ""
+msgstr "Merge Password Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3719
 msgid "Merging"
-msgstr ""
+msgstr "Merging"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4064
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6561
@@ -584,29 +586,27 @@ msgstr ""
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6735
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7478
 msgid "Close"
-msgstr ""
+msgstr "Close"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4181
 msgid "Warning: Can not save to"
-msgstr ""
+msgstr "Warning: Can not save to"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4181
 msgid "because the file permissions are set for read-only access."
-msgstr ""
+msgstr "because the file permissions are set for read-only access."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4182
-msgid ""
-"Please change the file permissions to read-write and hit 'Retry' or hit "
-"'Cancel' and use 'File'->'Save As' to save into a different file."
-msgstr ""
+msgid "Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file."
+msgstr "Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4184
 msgid "Warning: Read-only password file"
-msgstr ""
+msgstr "Warning: Read-only password file"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4225
 msgid "Error Saving Backup of Database"
-msgstr ""
+msgstr "Error Saving Backup of Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4226
 #, tcl-format
@@ -614,234 +614,244 @@ msgid ""
 "Failed to save password database as\n"
 "%s: %s"
 msgstr ""
+"Failed to save password database as\n"
+"%s: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4248
 #, tcl-format
 msgid "Password database saved with backup copy %s."
-msgstr ""
+msgstr "Password database saved with backup copy %s."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4250
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4377
 msgid "Password database saved."
-msgstr ""
+msgstr "Password database saved."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4269
 msgid "Nothing To Save"
-msgstr ""
+msgstr "Nothing To Save"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4270
 msgid "No password database to save."
-msgstr ""
+msgstr "No password database to save."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4315
 msgid "Save password database ..."
-msgstr ""
+msgstr "Save password database ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4346
 msgid "Error Saving Database"
-msgstr ""
+msgstr "Error Saving Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4347
 #, tcl-format
 msgid "Failed to save password database as \"%s\": %s"
-msgstr ""
+msgstr "Failed to save password database as \"%s\": %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4375
 msgid "Password database saved with backup copy"
-msgstr ""
+msgstr "Password database saved with backup copy"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4408
 msgid "ERROR-SaveBackup"
-msgstr ""
+msgstr "Error Saving Backup of Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4414
 msgid "ERROR-SaveBackup-no-directory"
 msgstr ""
+"No directory selected. - \n"
+"Please define a backup directory\n"
+"in the Preferences menu."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4417
 msgid "ERROR-SaveBackup-invalid-directory"
 msgstr ""
+"No valid directory. - \n"
+"Please define a valid backup directory\n"
+"in the Preferences menu."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4420
 msgid "ERROR-SaveBackup-unknown-file"
 msgstr ""
+"Unknown file. - \n"
+"Please select a valid database filename."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4440
 msgid "ERROR-SaveBackup-failed"
 msgstr ""
+"Failed to make backup copy of password\n"
+"database as %s: \n"
+"%s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4622
-msgid ""
-"The current password database is modified. Do you want to save the database? "
-"<Yes> saves the database and exits. <No> discards all changes and exits. "
-"<Cancel> returns to the main menu."
-msgstr ""
+msgid "The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu."
+msgstr "The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4681
 msgid "Clipboard cleared."
-msgstr ""
+msgstr "Clipboard cleared."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4860
 msgid "Database Locked"
-msgstr ""
+msgstr "Database Locked"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4862
 msgid "Enter the Master Password."
-msgstr ""
+msgstr "Enter the Master Password."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4882
 #, tcl-format
 msgid "error: %s"
-msgstr ""
+msgstr "error: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4901
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6297
 msgid "Wrong Password"
-msgstr ""
+msgstr "Wrong Password"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4902
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6298
 msgid "That password is not correct."
-msgstr ""
+msgstr "That password is not correct."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4937
 msgid "Welcome back."
-msgstr ""
+msgstr "Welcome back."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:4978
 msgid "Confirm:"
-msgstr ""
+msgstr "Confirm:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5048
 msgid "Passwords Do Not Match"
-msgstr ""
+msgstr "Passwords Do Not Match"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5049
 msgid "The confirmed password does not match."
-msgstr ""
+msgstr "The confirmed password does not match."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5139
 msgid "Password policy changed."
-msgstr ""
+msgstr "Password policy changed."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5182
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5239
 msgid "Use lowercase letters"
-msgstr ""
+msgstr "Use lowercase letters"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5184
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5241
 msgid "Use UPPERCASE letters"
-msgstr ""
+msgstr "Use UPPERCASE letters"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5186
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5243
 msgid "Use digits"
-msgstr ""
+msgstr "Use digits"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5188
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5245
 msgid "Use hexadecimal digits"
-msgstr ""
+msgstr "Use hexadecimal digits"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5190
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5247
 msgid "Use symbols (%, $, @, #, etc.)"
-msgstr ""
+msgstr "Use symbols (%, $, @, #, etc.)"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5193
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5250
 msgid "Use easy to read characters only (e.g. no \"0\" or \"O\")"
-msgstr ""
+msgstr "Use easy to read characters only (e.g. no \"0\" or \"O\")"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5425
 msgid "Database Preferences"
-msgstr ""
+msgstr "Database Preferences"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5429
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5632
 msgid "Lock when idle after"
-msgstr ""
+msgstr "Lock when idle after"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5433
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5636
 msgid "minutes (0=never)"
-msgstr ""
+msgstr "minutes (0=never)"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5437
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5640
 msgid "Auto-save database immediately when changed"
-msgstr ""
+msgstr "Auto-save database immediately when changed"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5441
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5642
 msgid "Use Password Safe 3 format"
-msgstr ""
+msgstr "Use Password Safe 3 format"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5446
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5645
 msgid "V2 Unicode support"
-msgstr ""
+msgstr "V2 Unicode support"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5454
 msgid "V3 key stretching iterations"
-msgstr ""
+msgstr "V3 key stretching iterations"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5559
 msgid "Preferences"
-msgstr ""
+msgstr "Preferences"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5569
 msgid "General"
-msgstr ""
+msgstr "General"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5571
 msgid "When double clicking a login ..."
-msgstr ""
+msgstr "When double clicking a login ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5573
 msgid "Copy password to clipboard"
-msgstr ""
+msgstr "Copy password to clipboard"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5579
 msgid "Launch Browser directed to URL"
-msgstr ""
+msgstr "Launch Browser directed to URL"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5582
 msgid "Do nothing"
-msgstr ""
+msgstr "Do nothing"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5589
 msgid "Clear clipboard after"
-msgstr ""
+msgstr "Clear clipboard after"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5593
 msgid "seconds (0=never)"
-msgstr ""
+msgstr "seconds (0=never)"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5598
 msgid "Remember"
-msgstr ""
+msgstr "Remember"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5602
 msgid "database names"
-msgstr ""
+msgstr "database names"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5603
 msgid "Clear"
-msgstr ""
+msgstr "Clear"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5609
 msgid "Backup database on save"
-msgstr ""
+msgstr "Backup database on save"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5611
 msgid "Remember sizes of dialog boxes"
-msgstr ""
+msgstr "Remember sizes of dialog boxes"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5613
 msgid "Use Gorilla auto-copy"
-msgstr ""
+msgstr "Use Gorilla auto-copy"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5616
 msgid ""
@@ -849,6 +859,9 @@ msgid ""
 "with login to clipboard after pasting\n"
 "of user-name."
 msgstr ""
+"Automatically copy password associated\n"
+"with login to clipboard after pasting\n"
+"of user-name."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5618
 msgid ""
@@ -856,105 +869,105 @@ msgid ""
 "Windows(TM) or MacOS(TM) platforms.\n"
 "See the help system for details."
 msgstr ""
+"This option does not function on\n"
+"Windows(TM) or MacOS(TM) platforms.\n"
+"See the help system for details."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5629
 msgid "Defaults"
-msgstr ""
+msgstr "Defaults"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5647
 msgid "Time stamp backup"
-msgstr ""
+msgstr "Time stamp backup"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5653
 msgid "Backup path:"
-msgstr ""
+msgstr "Backup path:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5657
 msgid "Choose a directory"
-msgstr ""
+msgstr "Choose a directory"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5665
-msgid ""
-"Note: these defaults will be applied to new databases. To change a setting "
-"for an existing database, go to \"Customize\" in the \"Security\" menu."
-msgstr ""
+msgid "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."
+msgstr "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5673
 msgid "Export"
-msgstr ""
+msgstr "Export"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5675
 msgid "Include password field"
-msgstr ""
+msgstr "Include password field"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5677
 msgid "Include \"Notes\" field"
-msgstr ""
+msgstr "Include \"Notes\" field"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5681
 msgid "Field separator"
-msgstr ""
+msgstr "Field separator"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5690
 msgid "Show security warning"
-msgstr ""
+msgstr "Show security warning"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5709
 msgid "Display"
-msgstr ""
+msgstr "Display"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5712
 msgid "Language:"
-msgstr ""
+msgstr "Language:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5729
 msgid "Size"
-msgstr ""
+msgstr "Size"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5756
 msgid "Show Gorilla Icon"
-msgstr ""
+msgstr "Show Gorilla Icon"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5763
 msgid "Iconify upon auto-lock"
-msgstr ""
+msgstr "Iconify upon auto-lock"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5770
 msgid "Hide login name in tree view"
-msgstr ""
+msgstr "Hide login name in tree view"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5772
 msgid ""
 "This option takes effect after exiting\n"
 "and restarting of Password Gorilla"
 msgstr ""
+"This option takes effect after exiting\n"
+"and restarting of Password Gorilla"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5778
 msgid "Browser"
-msgstr ""
+msgstr "Browser"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5779
 msgid "Browser executable to launch (required):"
-msgstr ""
+msgstr "Browser executable to launch (required):"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5781
 msgid "Command line parameter (if any) to pass (optional):"
-msgstr ""
+msgstr "Command line parameter (if any) to pass (optional):"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5783
 msgid "Find Browser"
-msgstr ""
+msgstr "Find Browser"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5785
-msgid ""
-"If a command line parameter is provided, it must contain the character "
-"sequence: %url%. This sequence will be replaced with the actual URL during "
-"launch. See the help system for details."
-msgstr ""
+msgid "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details."
+msgstr "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5789
 msgid "Also copy username to clipboard"
-msgstr ""
+msgstr "Also copy username to clipboard"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5790
 msgid ""
@@ -963,6 +976,10 @@ msgid ""
 "be copied to the clipboard\n"
 "when opening a browser."
 msgstr ""
+"When selected the username\n"
+"from the login entry will also\n"
+"be copied to the clipboard\n"
+"when opening a browser."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5794
 msgid ""
@@ -974,188 +991,198 @@ msgid ""
 "\n"
 "See Help for details."
 msgstr ""
+"Determines how Password\n"
+"Gorilla handles clearing the\n"
+"clipboard.\n"
+"\n"
+"Range zero to twenty.\n"
+"\n"
+"See Help for details."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5800
 msgid "Clipboard autoclear multiplier"
-msgstr ""
+msgstr "Clipboard autoclear multiplier"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:5859
 msgid "History deleted. After a restart the list will be empty."
-msgstr ""
+msgstr "History deleted. After a restart the list will be empty."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6048
 msgid "Error while saving RC-File"
-msgstr ""
+msgstr "Error while saving RC-File"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6285
 msgid "No Database"
-msgstr ""
+msgstr "No Database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6286
 msgid ""
 "Please create a new database, or open an existing\n"
 "database first."
 msgstr ""
+"Please create a new database, or open an existing\n"
+"database first."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6290
 msgid "Current Master Password:"
-msgstr ""
+msgstr "Current Master Password:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6304
 msgid "New Master Password:"
-msgstr ""
+msgstr "New Master Password:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6307
 msgid "Password Not Changed"
-msgstr ""
+msgstr "Password Not Changed"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6308
 msgid ""
 "You canceled the setting of a new password.\n"
 "Therefore, the existing password remains in effect."
 msgstr ""
+"You canceled the setting of a new password.\n"
+"Therefore, the existing password remains in effect."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6313
 msgid "Master password changed."
-msgstr ""
+msgstr "Master password changed."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6374
 #, tcl-format
 msgid "Can not copy %s to clipboard: no %s defined."
-msgstr ""
+msgstr "Can not copy %s to clipboard: no %s defined."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6400
 #, tcl-format
 msgid "Copied %s to clipboard."
-msgstr ""
+msgstr "Copied %s to clipboard."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6543
 msgid "Password Gorilla"
-msgstr ""
+msgstr "Password Gorilla"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6545
-msgid ""
-"Gorilla will protect your passwords and help you to manage them with a "
-"pwsafe 3.2 compatible database"
-msgstr ""
+msgid "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database"
+msgstr "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6553
 msgid "Contributors"
-msgstr ""
+msgstr "Contributors"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6554
 #, tcl-format
 msgid "Gorilla artwork contributed by %s"
-msgstr ""
+msgstr "Gorilla artwork contributed by %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6555
 #, tcl-format
 msgid "German translation by %s"
-msgstr ""
+msgstr "German translation by %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6556
 #, tcl-format
 msgid "Russian translation by %s"
-msgstr ""
+msgstr "Russian translation by %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6557
 #, tcl-format
 msgid "Italian translation by %s"
-msgstr ""
+msgstr "Italian translation by %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6560
 msgid "License"
-msgstr ""
+msgstr "License"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6576
 msgid "About Password Gorilla"
-msgstr ""
+msgstr "About Password Gorilla"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6605
 msgid "Password Gorilla License"
-msgstr ""
+msgstr "Password Gorilla License"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6703
 msgid "Find Text:"
-msgstr ""
+msgstr "Find Text:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6708
 msgid "Find Options ..."
-msgstr ""
+msgstr "Find Options ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6710
 msgid "Any field"
-msgstr ""
+msgstr "Any field"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6712
 msgid "Title"
-msgstr ""
+msgstr "Title"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6714
 msgid "Username"
-msgstr ""
+msgstr "Username"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6716
 msgid "Password"
-msgstr ""
+msgstr "Password"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6718
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7444
 msgid "Notes"
-msgstr ""
+msgstr "Notes"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6720
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6722
 msgid "Case sensitive find"
-msgstr ""
+msgstr "Case sensitive find"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6733
 msgid "Find"
-msgstr ""
+msgstr "Find"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6922
 msgid "Text not found."
-msgstr ""
+msgstr "Text not found."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7389
 msgid "Please select a login entry first."
-msgstr ""
+msgstr "Please select a login entry first."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7581
 msgid "The selected login does not contain a URL value."
-msgstr ""
+msgstr "The selected login does not contain a URL value."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7583
 msgid "Browser launching is not configured. See help."
-msgstr ""
+msgstr "Browser launching is not configured. See help."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7590
 msgid "Browser parameter lacks '%url%' string. See help."
-msgstr ""
+msgstr "Browser parameter lacks '%url%' string. See help."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7595
 msgid "Error"
-msgstr ""
+msgstr "Error"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7595
 msgid "Error launching browser, the OS error message is:"
-msgstr ""
+msgstr "Error launching browser, the OS error message is:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7595
 msgid "Oh well..."
-msgstr ""
+msgstr "Oh well..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7597
 msgid "Launched browser:"
-msgstr ""
+msgstr "Launched browser:"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7802
 msgid "Generate gorilladoc.html"
-msgstr ""
+msgstr "Generate gorilladoc.html"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7946
 msgid "Can not drag the selected items (see documentation)"
-msgstr ""
+msgstr "Can not drag the selected items (see documentation)"
+

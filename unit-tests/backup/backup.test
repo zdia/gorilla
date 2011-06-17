@@ -1,0 +1,67 @@
+# backup.test:  tests for the CSV module in Password Gorilla
+#
+# This file contains a collection of tests for the password manager
+# Password Gorilla version 1.5.3.4
+#
+# Dependencies:
+#		package tcltest 2.2
+#
+# Note: Only test failures will be reported
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+# -------------------------------------------------------------------------
+
+package require tcltest 2.2
+set argv ""
+eval ::tcltest::configure $argv
+
+# WARNING: config the correct backup folder!
+set backupDir "~/gorilla-backup"
+
+# puts "------------------------------------------------------------------"
+# puts "+++ Running module backup for Password Gorilla ..."
+
+# work in a safe environment for testing purposes
+
+namespace eval ::gorilla::test {
+	namespace import ::tcltest::*
+	
+	# CATEGORY: BACKUP
+	# ----------------
+
+	test backup-1.1 {General test} \
+    -setup {
+			set oldflag $::gorilla::preference(keepBackupFile)
+			set ::gorilla::preference(keepBackupFile) 1
+			set timestamp [clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S"] } \
+    -body { gorilla::Save } \
+    -cleanup { set ::gorilla::preference(keepBackupFile) $oldflag } \
+    -result GORILLA_OK
+
+	test backup-1.2 {Timestamp check} \
+    -body { return [ file exists [file join $backupDir "testdb$timestamp.psafe3" ] ] } \
+    -cleanup { set timestamp "" } \
+    -result 1
+
+# The following errors are caught in procedure gorilla::SaveBackup:
+# ERROR-SaveBackup-no-directory
+# ERROR-SaveBackup-invalid-directory
+# ERROR-SaveBackup-unknown-file
+# ERROR-SaveBackup-failed
+# error erzwingen
+
+	# cleanup
+	
+} ;# end of namespace eval ::gorilla::test
+
+namespace delete ::gorilla::test
+# puts "ok"
