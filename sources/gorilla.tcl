@@ -32,7 +32,6 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 # pushed to http:/github.com/zdia/gorilla
 #
-
 package provide app-gorilla 1.0
 
 set ::gorillaVersion {$Revision: 1.5.3.5 $}
@@ -254,6 +253,8 @@ catch {package require uuid}
 namespace eval gorilla {}
 
 if {![info exists ::gorilla::init]} {
+	# close the wish window
+	# TODO: there must be an other way to check it
 	wm withdraw .
 	set ::gorilla::init 0
 }
@@ -6008,7 +6009,8 @@ proc gorilla::SavePreferencesToRCFile {} {
 	}
 
 	if {[catch {close $f}]} {
-		gorilla::msg "Error while saving RC-File"
+		gorilla::ErrorPopup [mc "Error"] "Error while saving RC-File"
+		# [mc ERROR-Save-rcfile]
 		return 0
 	}
 	return 1
@@ -7989,11 +7991,212 @@ namespace eval ::gorilla::dnd {
 
 } ; # end namespace eval ::gorilla::dnd
 
+# ----------------------------------------------------------------------
+# Command-line interface module
+# ----------------------------------------------------------------------
+
+# Usage: gorilla ?options|database?
+#
+# gorilla testdb.psafe				-> opens an existing db (GUI mode)
+# gorilla -cli|--comand-line	-> enters the parsing loop and waits for commands
+
+# For inspiration see http://nsd.dyndns.org/pwsafe/releases/pwsafe-0.2.0.tar.gz:
+# pwsafe.cpp:
+# "Usage: program_name [OPTION] command [ARG]\n"
+			# "Options:\n"
+			# "  -F, --config=CONFIG_FILE   specify a configuration (defaults is ~/.pwsaferc + /etc/pwsaferc)\n"
+			# "  -f, --file=DATABASE_FILE   specify the database file (default is ~/.pwsafe.dat)\n"
+			# "  -I, --case                 perform case sensative matching\n"
+			# "  -l                         long listing (show username & notes)\n"
+			# "  -u, --username             emit username of listed account\n"
+			# "  -p, --password             emit password of listed account\n"
+			# "  -E, --echo                 force echoing of entry to stdout\n"
+			# "  -o, --output=FILE          redirect output to file (implies -E)\n"
+			# "  --dbversion=[1|2]          specify database file version (default is 2)\n"
+			# "  -q, --quiet                print no extra information\n"
+			# "  -v, --verbose              print more information (can be repeated)\n"
+			# "  -h, --help                 display this help and exit\n"
+			# "  -V, --version              output version information and exit\n"
+			# "Commands:\n"
+			# "  --createdb                 create an empty database\n"
+			# "  --exportdb                 dump database as text\n"
+			# "  --mergedb=DATABASE_FILE2   merge entries from FILE2 into database\n"
+			# "  --passwd                   change database passphrase\n"
+			# "  [--list] [REGEX]           list all [matching] entries. If -u and/or -p are given, only one entry may match\n"
+			# "  -a, --add [NAME]           add an entry\n"
+			# "  -e, --edit REGEX           edit an entry\n"
+			# "  --delete NAME              delete an entry\n"
+				
+namespace eval cli {
+	# FIXME: Option -h causes error "Tk not found"
+	# Error can be fixed if argv is cleaned at the very beginning before
+	# requirung package Tk.
+	# set ::gorilla::argv $argv
+	# set argv ""
+	#
+	# [ list command-name command ]
+	array set commands {
+		--rc					cli::Rc
+		--test 				cli::Test
+		-t						cli::Test
+		--tcltest			cli::Tcltest
+		--tcltest			cli::Tcltest
+		--chkmsgcat 	cli::ChkMsgcat
+		-cli 					cli::ParseLoop
+		--sourcedoc		cli::SourceDoc
+		--help				cli::Help
+	}
+	set options [list --test -t --tcltest --chkmsgcat -cli --sourcedoc \
+		--help --rc]
+}
+
+
+proc cli::usage {} {
+	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
+	puts stdout "\nOptions:"
+	puts stdout "  --rc <name>\t\tUse <name> as configuration file (not the Registry)."
+	# puts stdout "   --norc       Do not use a configuration file (or the Registry)."
+	puts stdout "  --sourcedoc\t\tCreate source documentation with Ruff."
+	puts stdout "  -t, --test\t\tOpen directly test database testdb.psafe3"
+	puts stdout "  --tcltest\t\tRun all tcltest modules for Password Gorilla."
+	puts stdout "  -cli, --command-line\tUse Password Gorilla in command-line mode."
+	puts stdout "  --chkmsgcat\t\tRedefine msgcat::unknown for internal use."
+	puts stdout "  --help\t\tShow this message."
+	puts stdout "  <database>\t\tOpen <database> on startup."
+}
+
+proc cli::Norc {} {
+	# This option is useful only for Windows users who want to use the registry
+	set ::gorilla::preference(norc) 1
+}
+
+proc cli::Rc {  } {
+	set file [lindex $::argv 1]
+	if { $file eq "" } {
+		puts stderr "Error: [lindex $argv 0] needs a parameter."
+		# ERROR-Commandline-missing-parameter
+		exit 
+	 }
+	set ::gorilla::preference(rc) $file
+} ;# end of proc
+
+proc cli::Help {  } {
+	cli::usage
+	exit
+} ;# end of proc
+
+proc cli::SourceDoc { } {
+	# Need ruff! and struct::list from tcllib - both should be
+	# installed properly for this option to work
+
+	set error false
+	foreach pkg { ruff struct::list } {
+		if { [ catch { package require $pkg } ] } {
+			puts stderr "Could not load package $pkg, aborting documentation processing."
+			set error true 
+		}
+	} ; # end foreach pkg
+
+	# FIXME: Exiting with load-package?
+	# foreach pkg { ruff struct::list } {
+		# load-package $pkg
+	# }
+	# document all namespaces, except for tcl/tk system namespaces
+	# (tk, ttk, itcl, etc.)
+	# ...
+	
+	if { ! $error } {
+		# document all namespaces, except for tcl/tk system namespaces
+		# (tk, ttk, itcl, etc.)
+		set nslist [ ::struct::list filterfor z [ namespace children :: ] \
+		{ ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
+		::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
+	}
+
+	cleanup after ourselves
+	unset -nocomplain error nslist pkg z 
+} ;# end of proc cli::SourceDoc
+
+proc cli::Test {  } {
+	puts cli::Test
+	array set ::DEBUG { TEST 1 }
+} ;# end of proc
+
+proc cli::Tcltest {  } {
+	puts cli::Tcltest
+	array set ::DEBUG { TCLTEST 1 TEST 1 }
+} ;# end of proc
+
+proc cli::ChkMsgcat {  } {
+	puts cli::ChkMsgcat
+	# Redefine mcunknown to dump to stderr unknown msgcat translations
+	# in a format almost suitable for adding to the msgcat files.  The
+	# one difference is that each line is prefixed with the locale ID to
+	# which it belongs.  Note, no effort is made to filter duplicates. 
+	# sort and uniq will already handle that task externally to
+	# PWGorilla.
+	#
+	# I realized this would work after reading the msgcat(n) man page.
+	
+	proc ::msgcat::mcunknown {locale src_string} {
+		puts stderr "$locale \"[ string map [ list "\n" "\\n" ] $src_string ]\" \"\" \\"
+		return $src_string
+	}
+			
+} ;# end of proc cli::ChkMsgcat
+
+proc cli::Open { file } {
+	puts $file
+} ;# end of proc
+
+proc cli::ParseLoop {  } {
+	# enters the main loop for the command-line module
+	
+	puts "Type \"exit\" to exit"
+	
+	set line ""
+	
+	while {$line ne "exit"} {
+		gets stdin line
+		puts "$line:>"
+		# cli::ParseCommand { $line }
+	} ;# end while
+	
+	exit
+} ;# end of proc
+
+proc gorilla::ParseOption {} {
+	# Scans the option and evaluates them. If a filename is given then
+	# pass it through to GUI part.
+	# Returns command to execute or filename to load or ERROR
+	
+	set option [lindex $::argv 0]
+	# puts "Option: $option"
+	
+	if { $option ne "" } {
+		if { [lsearch $::cli::options $option] < 0 } {
+			if {[file exists $option]} {
+				 return "FILE $option"
+			} else {
+				return ERROR
+				# puts "Unknown option. - Possible options: [join $::cli::options ,]"
+			}
+		} else {
+			return "COMMAND $::cli::commands($option)"
+		};# end if [lsearch $::cli::options $option]
+	} ;# end if { $option ne "" }
+
+} ;# end proc gorilla::ParseOption {}
+
+# ------------------- end of cli::procedures ---------------------------
+
 #
 # ----------------------------------------------------------------------
 # Init
 # ----------------------------------------------------------------------
 #
+
+# proc Init {}
 
 if {[tk windowingsystem] == "aqua"} {
 	# we have to delete the psn_nr in argv
@@ -8004,82 +8207,104 @@ if {[tk windowingsystem] == "aqua"} {
 			gorilla::PreferencesDialog
 		}
 	}
+	# will be modified at runtime
+	eval $gorilla::MacShowPreferences
 
 	proc ::tk::mac::Quit {} {
 		gorilla::Exit
 	}
 
 }
-	
-proc usage {} {
-	puts stdout "usage: $::argv0 \[Options\] \[<database>\]"
-	puts stdout " Options:"
-	puts stdout "   --rc <name>  Use <name> as configuration file (not the Registry)."
-	puts stdout "   --norc       Do not use a configuration file (or the Registry)."
-	puts stdout "   <database>   Open <database> on startup."
+
+array set ::DEBUG {
+	TCLTEST 0 \
+	TEST 0 \
+	CSVEXPORT 0 \
+	CSVIMPORT 0 \
+}
+# end proc Init
+
+# proc gorilla::HandleOption {}
+set databaseToLoad ""
+set answer [gorilla::ParseOption]
+# puts "answer $answer"
+
+if { $answer eq "ERROR" } {
+	puts [mc ERROR-CommandLine-unknown-option]
+	exit
+} elseif {[lindex $answer 0] eq "FILE"} {
+	set databaseToLoad [lindex $answer 1]
+} elseif {[lindex $answer 0] eq "COMMAND"} {
+		eval [lindex $answer 1]
 }
 
-if {$::gorilla::init == 0} {
-	if {[string first "-norc" $argv0] != -1} {
-		set ::gorilla::preference(norc) 1
-	}
+# Now we can clean the argv
+set argv ""
 
-	set haveDatabaseToLoad 0
-	set databaseToLoad ""
-	array set ::DEBUG {
-		TCLTEST 0 \
-		TEST 0 \
-		CSVEXPORT 0 \
-		CSVIMPORT 0 \
-	}
+;# end proc gorilla::HandleOption
+
+# ----------------------- begin original code --------------------------------
+# if {$::gorilla::init == 0} {
+	# if {[string first "-norc" $argv0] != -1} {
+		# set ::gorilla::preference(norc) 1
+	# }
+# 
+	# set haveDatabaseToLoad 0
+	# set databaseToLoad ""
+	# array set ::DEBUG {
+		# TCLTEST 0 \
+		# TEST 0 \
+		# CSVEXPORT 0 \
+		# CSVIMPORT 0 \
+	# }
 
 	# set argc [llength $argv]	;# obsolete
 
-	for {set i 0} {$i < $argc} {incr i} {
-		switch -- [lindex $argv $i] {
-			--sourcedoc {
+	# for {set i 0} {$i < $argc} {incr i} {
+		# switch -- [lindex $argv $i] {
+			# --sourcedoc {
 					# Need ruff! and struct::list from tcllib - both should be
 					# installed properly for this option to work
 
-					set error false
-					foreach pkg { ruff struct::list } {
-						if { [ catch { package require $pkg } ] } {
-							puts stderr "Could not load package $pkg, aborting documentation processing."
-							set error true 
-						}
-					} ; # end foreach pkg
-
-					if { ! $error } {
+					# set error false
+					# foreach pkg { ruff struct::list } {
+						# if { [ catch { package require $pkg } ] } {
+							# puts stderr "Could not load package $pkg, aborting documentation processing."
+							# set error true 
+						# }
+					# } ; # end foreach pkg
+# 
+					# if { ! $error } {
 						# document all namespaces, except for tcl/tk system namespaces
 						# (tk, ttk, itcl, etc.)
-						set nslist [ ::struct::list filterfor z [ namespace children :: ] \
-						{ ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
-						::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
-					}
+						# set nslist [ ::struct::list filterfor z [ namespace children :: ] \
+						# { ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
+						# ::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
+					# }
 
 					# cleanup after ourselves
-					unset -nocomplain error nslist pkg z 
-				}
-			--norc -
-			-norc {
-				set ::gorilla::preference(norc) 1
-			}
-			--rc -
-			-rc {
-				if {$i+1 >= $argc} {
-					puts stderr "Error: [lindex $argv $i] needs a parameter."
-					exit 1
-				}
-				incr i
-				set ::gorilla::preference(rc) [lindex $argv $i]
-			}
-			--help -
-			-help {
-				usage
-				exit 0
-			}
-			--chkmsgcat -
-			-chkmsgcat {
+					# unset -nocomplain error nslist pkg z 
+				# }
+			# --norc -
+			# -norc {
+				# set ::gorilla::preference(norc) 1
+			# }
+			# --rc -
+			# -rc {
+				# if {$i+1 >= $argc} {
+					# puts stderr "Error: [lindex $argv $i] needs a parameter."
+					# exit 1
+				# }
+				# incr i
+				# set ::gorilla::preference(rc) [lindex $argv $i]
+			# }
+			# --help -
+			# -help {
+				# usage
+				# exit 0
+			# }
+			# --chkmsgcat -
+			# -chkmsgcat {
 				# Redefine mcunknown to dump to stderr unknown msgcat translations
 				# in a format almost suitable for adding to the msgcat files.  The
 				# one difference is that each line is prefixed with the locale ID to
@@ -8088,49 +8313,53 @@ if {$::gorilla::init == 0} {
 				# PWGorilla.
 				#
 				# I realized this would work after reading the msgcat(n) man page.
-				proc ::msgcat::mcunknown {locale src_string} {
-				  puts stderr "$locale \"[ string map [ list "\n" "\\n" ] $src_string ]\" \"\" \\"
-				  return $src_string
-				}			
-			}
-			--tcltest {
+				# proc ::msgcat::mcunknown {locale src_string} {
+				  # puts stderr "$locale \"[ string map [ list "\n" "\\n" ] $src_string ]\" \"\" \\"
+				  # return $src_string
+				# }			
+			# }
+			# --tcltest {
 				# TCLTEST 1 and TEST 1:
 				# skip the OpenDatabase dialog and load testdb.psafe3
-				array set ::DEBUG { TCLTEST 1 TEST 1 }
-			}
-			--test {
-				array set ::DEBUG { TEST 1 }
-			}
-			default {
-				if {$haveDatabaseToLoad} {
-					usage
-					exit 0
-				}
-				set haveDatabaseToLoad 1
-				set databaseToLoad [lindex $argv $i]
-			}
-		}
-	}
-}
+				# array set ::DEBUG { TCLTEST 1 TEST 1 }
+			# }
+			# --test {
+				# array set ::DEBUG { TEST 1 }
+			# }
+			# default {
+				# if {$haveDatabaseToLoad} {
+					# usage
+					# exit 0
+				# }
+				# set haveDatabaseToLoad 1
+				# set databaseToLoad [lindex $argv $i]
+			# }
+		# }
+	# }
+# } ; end if {$::gorilla::init == 0}
+# ---------------------end original code -------------------------------
 
+# ----------------------------------------------------------------------
+# GUI Gorilla
+# ----------------------------------------------------------------------
+
+# proc gorilla::InitAll
 gorilla::Init
 gorilla::LoadPreferences
 gorilla::InitGui
 set ::gorilla::init 1
 
-if {$haveDatabaseToLoad} {
-	set action [gorilla::Open $databaseToLoad]
-} else {
-	set action [gorilla::Open]
-}
+# if {$haveDatabaseToLoad} {
+	# set action [gorilla::Open $databaseToLoad]
+# } else {
+	# set action [gorilla::Open]
+# }
+
+set action [gorilla::Open $databaseToLoad]
 
 if {$action == "Cancel"} {
 	destroy .
 	exit		
-}
-
-if { [tk windowingsystem] eq "aqua" } {
-	eval $gorilla::MacShowPreferences
 }
 
 wm deiconify .
@@ -8138,6 +8367,7 @@ raise .
 update
 
 set ::gorilla::status [mc "Welcome to the Password Gorilla."]
+# end proc gorilla::InitAll
 
 if { $DEBUG(TCLTEST) } {
 	set argv ""
