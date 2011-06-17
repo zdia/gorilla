@@ -624,22 +624,101 @@ proc gorilla::InitGui {} {
 #
 
 proc gorilla::InitPRNG {{seed ""}} {
+
+	# Initialize the ISAAC PRNG seed.  Takes one parameter.
+
 	#
 	# Try to compose a not very predictable seed
 	#
 
 	append seed "20041201"
-	append seed [clock seconds] [clock clicks] [pid]
-	append seed [winfo id .] [winfo geometry .] [winfo pointerxy .]
-	set hashseed [pwsafe::int::sha1isz $seed]
+	append seed [ clock seconds ] [ clock clicks ] [ pid ]
+	append seed [ winfo id . ] [ winfo geometry . ] [ winfo pointerxy . ]
+	set hashseed [ ::sha2::sha256 -bin $seed ]
+
+	# Determine if a /dev/urandom device exists, if so attempt to obtain 992
+	# bytes more random data to produce an even better seed.  Wrap everything
+	# in a catch so that if something goes wrong, PWGorilla will continue on
+	# as if nothing had happened - lack of a better seed value is not a reason
+	# to abort.  This will also cover instances where [file] thinks urandom
+	# exists and is readable, but open throws an error for some reason.
+	
+	if { [ file exists /dev/urandom ] && [ file readable /dev/urandom ] } {
+		catch {
+			set rfd [ open /dev/urandom {RDONLY BINARY} ]
+			append hashseed [ read $rfd 992 ]
+			close $rfd
+		}
+	}
+	
+	# Help the randomness for our friends on Windows or anywhere else that
+	# /dev/urandom does not exist or is unreadable - this recommendation comes
+	# from the IASSC webpage (http://burtleburtle.net/bob/rand/isaacafa.html)
+	# where it states:
+	#
+	#   As ISAAC is intended to be a secure cipher, if you want to reseed it,
+	#   one way is to use some other cipher to seed some initial version of
+	#   ISAAC, then use ISAAC's output as a seed for other instances of ISAAC
+	#   whenever they need to be reseeded.
+	#
+	# As it happens, PWGorilla calls this seed function twice.  Once when
+	# first starting, then a second time after entry of the unlock password. 
+	# The second call includes some additional entropy derived from timing the
+	# time between keystrokes during password entry.  Leverage that second
+	# call to add ISAAC feedback entropy when /dev/urandom has not been
+	# available to pad out to 1024 bytes of seed material.
+	
+	if {    $::gorilla::isPRNGInitialized 
+	     && ( [ string length $hashseed ] < 1024 ) } {
+		while { [ string length $hashseed ] < 1024 } {
+		  append hashseed [ binary format i [ ::isaac::int32 ] ]
+		}
+	}
 
 	#
 	# Init PRNG
 	#
-
+	#puts "seeding with [ string length $hashseed ] bytes" ; # debugging
 	isaac::srand $hashseed
 	set ::gorilla::isPRNGInitialized 1
-}
+	
+	# The original version of this proc utilized the pwsafe v2 modified sha1
+	# hash to scramble the incoming seed value.  In the time since PWGorilla
+	# was first written, there have been some cryptanalysis results that have
+	# weakened the sha1 hash function.  So this seems like a good time to move
+	# up to a better hash.  In this case sha256.
+	
+	#ruff
+	# seed - a value to use as the seed for the PRNG.  The input value will
+	# have some more tidbits of system details appended to hopefully increase
+	# the possible entropy and will then be hashed by sha256 to obtain 32
+	# bytes of binary seed data.
+	#
+	# If /dev/urandom is available, it will be used to obtain 992 more bytes
+	# of higher quality random data to fill out the full 256 by 32bit seed
+	# size of the ISAAC PRNG.  If /dev/urandom is not available, ISAAC itself
+	# will be used to pad out 992 additional bytes of seed data during a
+	# second call to this proc by the password unlock code.
+	#
+	# Note as well that the choice of /dev/urandom for additional PRNG seed
+	# randomness is purposeful.  The /dev/random device is defined as blocking
+	# if there is insufficient entropy in the kernel random pool to generate
+	# random output data.  Blocking on /dev/random will make all of PWGorilla
+	# appear to hang, potentially for a quite lengthy and completely
+	# indeterminate amount of time given that 992 bytes of data are being
+	# read.
+	#
+	# 992 bytes of very good quality random data from /dev/urandom is an order
+	# of magnitude or more (likely much more) better random seed source than
+	# what PWGorilla was historically utilizing (16 bytes of modified sha1
+	# output).  As such the fact that /dev/urandom is not defined as
+	# cryptographic quality is mitigated somewhat by obtaining such a large
+	# amount of data, of a much higher quality than previously, that the net
+	# effect is that PWGorilla's random number generation has increased in
+	# quality significantly on any system having a working /dev/urandom
+	# device.  All without appearing to hang for a lengthy period of time.
+
+} ; # end proc gorilla::InitPRNG
 
 proc setmenustate {widget tag_pattern state} {
 	if {$tag_pattern eq "all"} {
