@@ -156,9 +156,11 @@ load-package msgcat
 
 namespace import msgcat::*
 
-# mcload [file join $::gorillaDir msgs]
-# mcload has to be called after having set 'mclocale' which will happen
-# during initialization of Gorilla's preferences
+mcload [file join $::gorillaDir msgs]
+
+# The following error messages are translated to the actual local language.
+# gorilla::LoadPreferences will set the local language to the prefered one
+# and load them into the namespace gorilla
 #
 # Look out! If you use a file ROOT.msg in the msgs folder it will be used 
 # without regard to the Unix LOCALE configuration
@@ -8450,7 +8452,11 @@ wm deiconify .
 raise .
 update
 
-set ::gorilla::status [mc "Welcome to the Password Gorilla."]
+# The msgcat libraries were loaded in namespace gorilla with
+# gorilla::LoadPreferences. So to get here we have to call mc in the
+# namespace gorilla
+namespace eval gorilla { set ::gorilla::status [mc "Welcome to the Password Gorilla."] }
+
 # end proc gorilla::InitAll
 
 if { $DEBUG(TCLTEST) } {
