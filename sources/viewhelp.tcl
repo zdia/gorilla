@@ -23,9 +23,20 @@
     array unset state
     array set state {history {} seen {} current {} all {} allTOC {} haveTOC 0}
     array set W {top .helpSystem main "" tree ""}
-    array set alias {index Index previous Previous back Back search Search
-        history History next Next}
-
+		
+		# The following array has to restore the GUI navigation title which
+		# will be lowered by Help::FindPage:
+		#
+    # array set alias {index Index previous Previous back Back search Search
+		#		 history History next Next}
+		#
+		# It was replaced by "aliasList" in Help::FindPage which takes care
+		# of the navigation titles and can be filled with msgcat entries.
+		# This list is placed in Help::ReadHelpFiles because at this early
+		# stage package msgcat is not loaded.
+		#
+		# FIXME: Rework all the initialisation stuff
+			
  }
  
  ## BEGIN ON HELP
@@ -73,7 +84,7 @@ proc ::Help::Help {{title ""}} {
 			::Help::DoDisplay $W(top)
 	}
 
-	raise $W(top)
+	wm deiconify $W(top)
 	::Help::Show $title
 
 }
@@ -98,9 +109,13 @@ proc ::Help::Help {{title ""}} {
 
 	# viewhelp.tcl is sourced before the preference() array is populated.
 	# Thus we have to get the locale by parameter from namespace ::gorilla.
-	
+
+	variable aliasList
+
 	mclocale $locale
 	mcload [file join $::gorillaDir msgs help]
+
+	set aliasList [list [mc Back] [mc Search] [mc Previous] [mc Next] [mc History] [mc Index] ]
 
 	set fname [file join $dir help.txt]
 	set fin [open $fname r]
@@ -162,37 +177,36 @@ proc ::Help::DoDisplay { top } {
   if {[info exists ::gorilla::toplevel($top)]} {
     wm deiconify $top
   } else {
-
-    toplevel $top
-    wm title $top [ mc "Help" ]
-    wm transient $top .
-    set ::gorilla::toplevel($top) $top
-    wm protocol $top WM_DELETE_WINDOW "gorilla::CloseDialog $top"
+		toplevel $top
+		wm title $top [ mc "Help" ]
+		wm transient $top .
+		set ::gorilla::toplevel($top) $top
+		wm protocol $top WM_DELETE_WINDOW "gorilla::CloseDialog $top"
 		
-    gorilla::TryResizeFromPreference $top
+		gorilla::TryResizeFromPreference $top
 		
-    frame $top.bottom -bd 2 -relief ridge
-    button $top.b -text [mc "Close"] -command "gorilla::CloseDialog $top"
-    pack $top.bottom -side bottom -fill both
-    pack $top.b -side bottom -expand 1 -pady 10 -in $top.bottom
- 
-    set P $top.p
-    
-    ;# Need tags on treeview
+		frame $top.bottom -bd 2 -relief ridge
+		button $top.b -text [mc "Close"] -command "gorilla::CloseDialog $top"
+		pack $top.bottom -side bottom -fill both
+		pack $top.b -side bottom -expand 1 -pady 10 -in $top.bottom
+	
+		set P $top.p
+		
+		;# Need tags on treeview
 		set state(haveTOC) 1
 		::ttk::panedwindow $P -orient horizontal
-
+	
 		pack $P -side top -fill both -expand 1
 		ttk::frame $P.toc -relief ridge
 		frame $P.help -bd 2 -relief ridge
-
+	
 		$P add $P.toc -weight 1
 		$P add $P.help -weight 1
 		::Help::CreateTOC $P.toc
 		::Help::CreateHelp $P.help
-    CenterWindow $top
-    }
- }
+		CenterWindow $top
+	}
+}
  ##+##########################################################################
  #
  # ::Help::CreateTOC -- Creates a TOC display from the treeview widget
@@ -305,7 +319,6 @@ proc ::Help::DoDisplay { top } {
  
     set what $state(all)
     if {$state(allTOC) ne {}} {set what $state(allTOC)} ;# TOC order if we can
- 
     set n [lsearch -exact $what $state(current)]
     set n [expr {($n + $dir) % [llength $what]}]
     set next [lindex $what $n]
@@ -366,9 +379,11 @@ proc ::Help::DoDisplay { top } {
  
     set tag [concat $tag link]
     set title [::Help::FindPage $link]
+
     if {[lsearch -exact $state(seen) $title] > -1} {
         lappend tag seen
     }
+		
     $w insert end $link $tag
  }
  ##+##########################################################################
@@ -378,9 +393,12 @@ proc ::Help::DoDisplay { top } {
  proc ::Help::FindPage {title} {
     variable pages
     variable alias
+		variable aliasList
+
     if {[info exists pages($title)]} { return $title }
     set title2 [string tolower $title]
     if {[info exists alias($title2)]} { return $alias($title2) }
+    if {[lsearch $aliasList $title] >= 0} { return $title }
     return "ERROR!"
  }
  ##+##########################################################################
@@ -394,23 +412,29 @@ proc ::Help::DoDisplay { top } {
     variable W
  
     set w $W(main)
-    set title [::Help::FindPage $title]
- 
+    set title [ ::Help::FindPage $title ]
     if {[lsearch -exact $state(seen) $title] == -1} {lappend state(seen) $title}
     $w config -state normal
     $w delete 1.0 end
     $w insert end $title hdr "\n"
     set next 0                                  ;# Some pages have no next page
-    switch -- $title {
-        Back    { ::Help::Back $w; return}
-        History { ::Help::Listpage $w $state(history)}
-        Next    { ::Help::Next $w 1; return}
-        Previous { ::Help::Next $w -1; return}
-        Index   { ::Help::Listpage $w $state(all)}
-        Search  { ::Help::Search $w}
-        default { ::Help::ShowPage $w $title ; set next 1 }
-    }
- 
+		# A tricky way to set the arry because we have to include runtime
+		# msgcat string translation and procedure calls with string and list arguments
+		array set navigation "
+			[mc Back]    { ::Help::Back $w; return}
+			[mc History] { ::Help::Listpage $w [list $state(history)]}
+			[mc Next]    { ::Help::Next $w 1; return}
+			[mc Previous] { ::Help::Next $w -1; return}
+			[mc Index]   { ::Help::Listpage $w [list $state(all)] }
+			[mc Search]  { ::Help::Search $w}
+			default  { ::Help::ShowPage $w \"$title\" ; set next 1}"
+
+		if { [array get navigation $title] eq "" } {
+			eval $navigation(default)
+		} else {
+			eval $navigation($title)
+		}
+		
     # Add bottom of the page links
     $w insert end \n------\n {}
     if {! $state(haveTOC) && [info exists alias(toc)]} {
@@ -477,7 +501,7 @@ proc ::Help::DoDisplay { top } {
 
             continue
         }
-				
+
 				set line [mc $line]
 
         if {$op1 ne "1"} {unset -nocomplain number}

@@ -37,8 +37,8 @@ Close Chiudi
 Search Cerca
 Previous Precedente
 Next Successivo
-{[Starting]} {[Avvio]}
-{[Choosing a Master Password]} {[Scelta di una password generale]}
+{[Starting]} {[Iniziare]}
+{[Choosing a Master Password]} {[Scegliere la password generale]}
 {[Organization Into Groups]} {[Organizzare in gruppi]}
 {[Moving Groups and/or Logins]} {[Spostamento di gruppi e/o login]}
 {[Logins]} {[Login]}
