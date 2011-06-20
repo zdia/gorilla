@@ -284,24 +284,6 @@ proc gorilla::Init {} {
 		trace add variable ::gorilla::status write ::gorilla::StatusModified
 	}
 
-	if {[tk windowingsystem] == "aqua"} {
-		# we have to delete the psn_nr in argv
-		if {[string first "-psn" [lindex $argv 0]] == 0} { set argv [lrange $argv 1 end]}
-	
-		set ::gorilla::MacShowPreferences {
-			proc ::tk::mac::ShowPreferences {} {
-				gorilla::PreferencesDialog
-			}
-		}
-		# will be modified at runtime
-		eval $gorilla::MacShowPreferences
-	
-		proc ::tk::mac::Quit {} {
-			gorilla::Exit
-		}
-	
-	}
-
 	# New preferences system by Richard Ellis
 	# 
 	# This dict defines all the preference variables, their defaults, and
@@ -418,12 +400,24 @@ proc gorilla::InitGui {} {
 	set menu_meta Ctrl
 		
 	if {[tk windowingsystem] == "aqua"}	{
+		
+		# we have to delete the psn_nr in argv
+		if {[string first "-psn" [lindex $argv 0]] == 0} { set argv [lrange $argv 1 end]}
+	
 		set meta Command
 		set menu_meta Cmd
-		# mac is showing the Apple key icon but app is hanging if a procedure
-		# is calling a vwait loop. So we just show the letter. Both meta keys
-		# are working later on (Tk 8.5.8)
-		# set menu_meta ""
+		
+		set ::gorilla::MacShowPreferences {
+			proc ::tk::mac::ShowPreferences {} {
+				gorilla::PreferencesDialog
+			}
+		}
+		# will be modified later at runtime
+		eval $gorilla::MacShowPreferences
+	
+		proc ::tk::mac::Quit {} {
+			gorilla::Exit
+		}
 	}
 
 	set ::gorilla::menu_desc {
@@ -8107,25 +8101,33 @@ namespace eval cli {
 		--tcltest			cli::Tcltest
 		--tcltest			cli::Tcltest
 		--chkmsgcat 	cli::ChkMsgcat
-		-cli 					cli::ParseLoop
+		-cli 					cli::CommandLine
 		--sourcedoc		cli::SourceDoc
 		--help				cli::Help
 	}
 	
-	set LoopCommands [list open quit]
+	set LoopCommands [list open quit list]
 	
 	array set Commands {
 		open					cli::Open
 		quit					cli::Quit
+		list					cli::List
 	}
 
 	array set Arguments {
 		open					{file}
 		quit					{}
+		list					{field rn}
 	}
 	
 } ;# end eval cli
 
+proc cli::List { field rn } {
+	# Options: -all -nr -title ...
+	
+	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
+	
+} ;# end of proc cli::List
 
 proc cli::usage {} {
 	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
@@ -8194,17 +8196,17 @@ proc cli::SourceDoc { } {
 } ;# end of proc cli::SourceDoc
 
 proc cli::Test {  } {
-	puts cli::Test
+puts "Debug: starting cli::Test"
 	array set ::DEBUG { TEST 1 }
 } ;# end of proc
 
 proc cli::Tcltest {  } {
-	puts cli::Tcltest
+puts "Debug: starting cli::Tcltest"
 	array set ::DEBUG { TCLTEST 1 TEST 1 }
 } ;# end of proc
 
 proc cli::ChkMsgcat {  } {
-	puts cli::ChkMsgcat
+puts "Debug: starting cli::ChkMsgcat"
 	# Redefine mcunknown to dump to stderr unknown msgcat translations
 	# in a format almost suitable for adding to the msgcat files.  The
 	# one difference is that each line is prefixed with the locale ID to
@@ -8221,14 +8223,43 @@ proc cli::ChkMsgcat {  } {
 			
 } ;# end of proc cli::ChkMsgcat
 
-proc cli::Quit {  } {
-	# check if database is changed
-	return quit
+proc cli::Quit {} {
+	# check if database has changed
+	exit
 } ;# end of proc cli::Quit
 
-proc cli::Open { file } {
-	return "$file opened"
-} ;# end of proc
+proc cli::Open { fileName } {
+	# Note: for test purposes the filename is preset!
+	set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
+	
+	if { ![file exists $fileName] } {
+		return [ list ERROR [mc "Could not find $file."] ]
+		# mc ERROR-OpenError-nofile
+	} ;# end if
+
+	if {$::gorilla::dirty} {
+		puts "should we save the db?"
+	}
+
+	set ::gorilla::collectedTicks [list [clock clicks]]
+	gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
+	set newdb [pwsafe::createFromFile $fileName test ::gorilla::openPercent]
+	# if newdb eq "" then return [list ERROR [mc "Could not open $filename"]]
+
+	if {[info exists ::gorilla::db]} {
+		itcl::delete object $::gorilla::db
+	}
+	
+	set nativeName [file nativename $fileName]
+	set ::gorilla::fileName $fileName
+	set ::gorilla::db $newdb
+	set ::gorilla::dirty 0
+	
+# puts "Debug fileName: $fileName newdb: $newdb"
+	
+	return [ list OK [mc "Ok. Actual database is %s." $fileName] ]
+	# mc STATUS-Open-ok
+} ;# end of proc cli::Open
 
 proc cli::ParseCommand { line } {
 	set command [lindex $line 0]
@@ -8237,34 +8268,47 @@ proc cli::ParseCommand { line } {
 
 	# check commands
 	if { [lsearch $::cli::LoopCommands $command] < 0 } {
-		return "Unknown command: \"$command\". - Possible commands: [join $cli::LoopCommands ", "]"
+		return [list ERROR "Unknown command: \"$command\". - Possible commands: [join $cli::LoopCommands ", "]"]
+		# mc ERROR-Commandline-unknown-command
 	}
 	# check arguments
 	foreach argument $cli::Arguments($command) {
 		if { [lindex $line $index] eq ""} {
-			return [mc "missing args: should be \"$command $cli::Arguments($command)\""]
+			return [list ERROR [mc "missing args: should be \"$command $cli::Arguments($command)\""] ]
 			# return [mc ERROR-Commandline] [mc ERROR-Commandline-missing-args]
 		} ;# end if
-		append args  [lindex $line $index]
+		append args  "[lindex $line $index] "
 		incr index
 	}
 	
-	return [eval $::cli::Commands($command) $args]
+	# return [list $::cli::Commands($command) $args]
+	return [list "$::cli::Commands($command) $args"]
 }
 
-proc cli::ParseLoop {  } {
+proc cli::CommandLine {  } {
 	# enters the main loop for the command-line module
+	# make use of package vt100 for color, cursor placement ...
+	# replace gets by a editable input routine
 
 	puts "Password Gorilla Command-Line Module ($::gorillaVersion)\nType \"quit\" to exit"
 	
+	gorilla::Init
+
 	set line ""
 	
-	while {$line ne "quit"} {
+	while 1 {
 		puts -nonewline "> "
 		flush stdout
 		gets stdin line
 		set line [ cli::ParseCommand $line ]
-		puts $line
+		if { [lindex $line 0] eq "ERROR" } {
+			puts [lindex $line 1]
+		} else {
+# puts  "Debug command: [lindex $line 0]"
+			set answer [ eval [lindex $line 0] ]
+			puts [lindex $answer 1]
+			# if not ok ... error
+		}
 	} ;# end while
 	
 	exit
@@ -8305,7 +8349,7 @@ proc gorilla::HandleOption {} {
 	
 	set databaseToLoad ""
 	set answer [gorilla::ParseOption]
-	# puts "answer $answer"
+	# puts "Debug: answer $answer"
 	
 	if { [lindex $answer 0] eq "ERROR" } {
 		# puts [mc ERROR-CommandLine-unknown-option]
@@ -8314,7 +8358,6 @@ proc gorilla::HandleOption {} {
 	} elseif {[lindex $answer 0] eq "FILE"} {
 		set databaseToLoad [lindex $answer 1]
 	} elseif {[lindex $answer 0] eq "COMMAND"} {
-puts stdout [lindex $answer 1]
 		eval [lindex $answer 1]
 	}
 	
@@ -8353,18 +8396,20 @@ proc gorilla::Launch { {database ""} } {
 
 } ;# end of proc gorilla::Launch
 
+proc InitDebug {} {
+	array set ::DEBUG {
+			TCLTEST 0 \
+			TEST 0 \
+			CSVEXPORT 0 \
+			CSVIMPORT 0 \
+		}
+} ;# end proc InitDebug
+
 # ----------------------------------------------------------------------
-# Handle options
+# End of procedures' definition part
 # ----------------------------------------------------------------------
 
-# proc InitDebug {}
-array set ::DEBUG {
-		TCLTEST 0 \
-		TEST 0 \
-		CSVEXPORT 0 \
-		CSVIMPORT 0 \
-	}
-# end proc InitDebug
+InitDebug
 
 set databaseToLoad [gorilla::HandleOption]
 gorilla::Launch $databaseToLoad
