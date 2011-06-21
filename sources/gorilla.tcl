@@ -1847,11 +1847,11 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		foreach {child label w} { group    Group    combobox
-		                          title    Title    entry
-		                          url      URL      entry
-		                          user     Username entry
-		                          password Password entry  } {
+		foreach {child label w} " group    [mc Group]    combobox
+		                          title    [mc Title]    entry
+		                          url      [mc URL]      entry
+		                          user     [mc Username] entry
+		                          password [mc Password] entry  " {
 			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
@@ -1873,14 +1873,14 @@ namespace eval ::gorilla::LoginDialog {
 		grid rowconfigure $textframe $widget(notes) -weight 1
 		grid columnconfigure $textframe $widget(notes) -weight 1
 
-		grid [ make-label $top Notes: ] \
+		grid [ make-label $top [mc Notes] ] \
 		     $textframe \
 		     -sticky news -pady 5
 
 		grid rowconfigure    $top $textframe -weight 1
 		grid columnconfigure $top $textframe -weight 1
 
-		set lastChangeList [list last-pass-change "Last Password Change" last-modified "Last Modified" ]
+		set lastChangeList [list last-pass-change [mc "Last Password Change"] last-modified [mc "Last Modified"] ]
 		
 		foreach {child label} $lastChangeList {
 			grid [ make-label $top $label ] \
@@ -8123,7 +8123,8 @@ namespace eval cli {
 # list field		-> lists all field records
 # list 					-> all records with all fields
 #
-# edit
+# edit field rn
+# 
 # add group|login
 # merge
 
