@@ -7,13 +7,13 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # Password Gorilla, a password database manager
 # Copyright (c) 2005-2009 Frank Pilhofer
 # Copyright (c) 2010 Zbigniew Diaczyszyn
+# Copyright (c) 2011 Richard Ellis, Zbigniew Diaczyszyn
 #
 # modified for use with wish8.5, ttk-Widgets and with German localisation
 # modified GUI to work without bwidget
 # z_dot_dia_at_gmx_dot_de
 #
-# tested with ActiveTcl 8.5.7, 8.5.8
-# Mac Version compiled from official sources at Sourceforge
+# tested with ActiveState (TM) Tcl/Tk 8.5.7, 8.5.8, 8.5.9
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,8 +30,9 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 # ----------------------------------------------------------------------
 #
-# pushed to http:/github.com/zdia/gorilla
+# Git repository: https:/github.com/zdia/gorilla
 #
+
 package provide app-gorilla 1.0
 
 set ::gorillaVersion 1.5.3.5
@@ -53,6 +54,9 @@ if { [ file type [ info script ] ] eq "link" } {
 if {[catch {package require Tk 8.5} oops]} {
 	#
 	# Because of using Themed Widgets we need Tk 8.5
+	# Although a pure command-line use doesn't need Tk it is required
+	# at the moment because it is embedded in the GUI version
+	# TODO: package Tk is not required
 	#
 
 	puts "This application requires Tk 8.5, which does not seem to be available."
@@ -8090,11 +8094,7 @@ namespace eval cli {
 	# set argv ""
 	#
 
-	set options [list --test -t --tcltest --chkmsgcat -cli --sourcedoc \
-		--help --rc]
-
-	# [ list option-name option-command ]
-	array set OptionCommands {
+	array set Options {
 		--rc					cli::Rc
 		--test 				cli::Test
 		-t						cli::Test
@@ -8102,11 +8102,10 @@ namespace eval cli {
 		--tcltest			cli::Tcltest
 		--chkmsgcat 	cli::ChkMsgcat
 		-cli 					cli::CommandLine
+		--commandline	cli::CommandLine
 		--sourcedoc		cli::SourceDoc
 		--help				cli::Help
 	}
-	
-	set LoopCommands [list open quit list]
 	
 	array set Commands {
 		open					cli::Open
@@ -8114,20 +8113,19 @@ namespace eval cli {
 		list					cli::List
 	}
 
-	array set Arguments {
-		open					{file}
-		quit					{}
-		list					{field rn}
-	}
-	
+	set FieldList [list uuid group title user notes password url \
+		create-time last-pass-change last-access lifetime last-modified]
+		
 } ;# end eval cli
 
-proc cli::List { field rn } {
-	# Options: -all -nr -title ...
-	
-	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
-	
-} ;# end of proc cli::List
+# --------------- list of commands -------------------------------------
+# list field rn	-> list single record rn
+# list field		-> lists all field records
+# list 					-> all records with all fields
+#
+# edit
+# add group|login
+# merge
 
 proc cli::usage {} {
 	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
@@ -8261,31 +8259,58 @@ proc cli::Open { fileName } {
 	# mc STATUS-Open-ok
 } ;# end of proc cli::Open
 
-proc cli::ParseCommand { line } {
-	set command [lindex $line 0]
-	set args ""
-	set index 1
-
-	# check commands
-	if { [lsearch $::cli::LoopCommands $command] < 0 } {
-		return [list ERROR "Unknown command: \"$command\". - Possible commands: [join $cli::LoopCommands ", "]"]
-		# mc ERROR-Commandline-unknown-command
-	}
-	# check arguments
-	foreach argument $cli::Arguments($command) {
-		if { [lindex $line $index] eq ""} {
-			return [list ERROR [mc "missing args: should be \"$command $cli::Arguments($command)\""] ]
-			# return [mc ERROR-Commandline] [mc ERROR-Commandline-missing-args]
-		} ;# end if
-		append args  "[lindex $line $index] "
-		incr index
+proc cli::List { args } {
+	# list field rn	-> list single record rn
+	# list field		-> lists all field records
+	# list 					-> all records with all fields
+	
+	# check exists ::gorilla::db?
+	if { ! [info exists ::gorilla::db] } {
+		return [list ERROR "No database available. Please type: \"open <database>\"."]
+	} ;# end if
+	# check list options
+	if { [lindex $args 0] ne ""} {
+		# list field
+		set field [lindex $args 0]
+		if { [lsearch $::cli::FieldList $field] < 0 } {
+			return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
+		}
+	} else {
+		return [list OK "all fields, all records"]
 	}
 	
-	# return [list $::cli::Commands($command) $args]
-	return [list "$::cli::Commands($command) $args"]
+	if { [lindex $args 1] ne ""} {
+		# list field rn
+		set rn [lindex $args 1]
+	} else {
+		set allrecords ""
+		foreach rn [$::gorilla::db getAllRecordNumbers] {
+			append allrecords "[ ::gorilla::dbget $field $rn ] "
+		}
+		return [list OK $allrecords]
+	}
+	
+	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
+	
+} ;# end of proc cli::List
+
+proc cli::ParseCommand { line } {
+	# check if the passed command is valid. Return the line without
+	# command name
+	#
+	# line - The line entered by the user on the console
+	#
+	
+	set command [lindex $line 0]
+
+	if { [array names ::cli::Commands $command] eq "" } {
+		return [list ERROR "Unknown command: \"$command\". - Possible commands:\
+			[join [array names cli::Commands] ", "]"] 
+	}
+	return [list "$::cli::Commands($command) [lrange $line 1 end]"]
 }
 
-proc cli::CommandLine {  } {
+proc cli::CommandLine { } {
 	# enters the main loop for the command-line module
 	# make use of package vt100 for color, cursor placement ...
 	# replace gets by a editable input routine
@@ -8304,10 +8329,9 @@ proc cli::CommandLine {  } {
 		if { [lindex $line 0] eq "ERROR" } {
 			puts [lindex $line 1]
 		} else {
-# puts  "Debug command: [lindex $line 0]"
 			set answer [ eval [lindex $line 0] ]
+			# [lindex $answer 0] contains OK, ERROR ... perhaps we will need it
 			puts [lindex $answer 1]
-			# if not ok ... error
 		}
 	} ;# end while
 	
@@ -8328,15 +8352,15 @@ proc gorilla::ParseOption {} {
 	# puts "Option: $option"
 	
 	if { $option ne "" } {
-		if { [lsearch $::cli::options $option] < 0 } {
+		if { [array names ::cli::Options $option] eq "" } {
 			if {[file exists $option]} {
 				 return "FILE $option"
 			} else {
-				return [ list ERROR "Unknown option. - Possible options: [join $::cli::options ", "]" ]
+				return [ list ERROR "Unknown option. - Possible options: [join [array names ::cli::Options] ", "]" ]
 				# puts "Unknown option. - Possible options: [join $::cli::options ", "]"
 			}
 		} else {
-			return "COMMAND $::cli::OptionCommands($option)"
+			return "COMMAND $::cli::Options($option)"
 		};# end if [lsearch $::cli::options $option]
 	} ;# end if { $option ne "" }
 
