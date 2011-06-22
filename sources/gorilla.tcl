@@ -8111,6 +8111,7 @@ namespace eval cli {
 		open					cli::Open
 		quit					cli::Quit
 		list					cli::List
+		edit					cli::Edit
 	}
 
 	set FieldList [list uuid group title user notes password url \
@@ -8127,6 +8128,42 @@ namespace eval cli {
 # 
 # add group|login
 # merge
+
+proc cli::ValidArguments { args } {
+	# at the moment: field rn
+	# TODO: args = descriptor value descriptor value ...
+	
+} ;# end of proc
+
+proc cli::Edit { args } {
+	# edit field rn
+
+	if { ! [info exists ::gorilla::db] } {
+		return [list ERROR "No database available. Please type: \"open <database>\"."]
+	}
+	# check options
+	if { [llength $args] < 2 } {
+		return [list ERROR "Argument missing. Should be \"Edit field rn\"."]
+	 }
+	set field [lindex $args 0]
+	if { [lsearch $::cli::FieldList $field] < 0 } {
+		return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
+	}
+	set rn [lindex $args 1]
+	if { [lsearch [$::gorilla::db getAllRecordNumbers] $rn] < 0} {
+		return [list ERROR "Invalid record-number. Possible values: 1-[lindex [$::gorilla::db getAllRecordNumbers] end]"]
+	}
+	
+	# edit string with line-at-a-time mode
+	# c.f http://wiki.tcl.tk/16139: tcl-readline
+	puts "Old string $field #$rn: [ ::gorilla::dbget $field $rn ]"
+	puts -nonewline "New string $field #$rn: "
+	flush stdout
+	gets stdin newString
+	gorilla::dbset $field $rn $newString
+	set ::gorilla::dirty 1
+	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
+} ;# end of proc cli::Edit
 
 proc cli::usage {} {
 	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
@@ -8223,7 +8260,9 @@ puts "Debug: starting cli::ChkMsgcat"
 } ;# end of proc cli::ChkMsgcat
 
 proc cli::Quit {} {
-	# check if database has changed
+	if { $::gorilla::dirty } {
+		puts "Database has changed. Save it? ([mc yes|no]) :"
+	} ;# end if# check if database has changed
 	exit
 } ;# end of proc cli::Quit
 
@@ -8270,9 +8309,9 @@ proc cli::List { args } {
 		return [list ERROR "No database available. Please type: \"open <database>\"."]
 	} ;# end if
 	# check list options
-	if { [lindex $args 0] ne ""} {
+	set field [lindex $args 0]
+	if { $field ne ""} {
 		# list field
-		set field [lindex $args 0]
 		if { [lsearch $::cli::FieldList $field] < 0 } {
 			return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
 		}
@@ -8301,14 +8340,16 @@ proc cli::ParseCommand { line } {
 	#
 	# line - The line entered by the user on the console
 	#
-	
+
+	# get a proper list without unnecessary white spaces
+	set line [ regexp -all -inline {\S+} $line ]
 	set command [lindex $line 0]
 
 	if { [array names ::cli::Commands $command] eq "" } {
 		return [list ERROR "Unknown command: \"$command\". - Possible commands:\
 			[join [array names cli::Commands] ", "]"] 
 	}
-	return [list "$::cli::Commands($command) [lrange $line 1 end]"]
+	return [list OK "$::cli::Commands($command) [lrange $line 1 end]"]
 }
 
 proc cli::CommandLine { } {
@@ -8330,7 +8371,7 @@ proc cli::CommandLine { } {
 		if { [lindex $line 0] eq "ERROR" } {
 			puts [lindex $line 1]
 		} else {
-			set answer [ eval [lindex $line 0] ]
+			set answer [ eval [lindex $line 1] ]
 			# [lindex $answer 0] contains OK, ERROR ... perhaps we will need it
 			puts [lindex $answer 1]
 		}
