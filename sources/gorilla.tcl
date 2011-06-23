@@ -2313,43 +2313,41 @@ namespace eval ::gorilla::LoginDialog {
 					}                              
 				}
 
-				foreach element $varlist {
+				foreach element [ list {*}$varlist notes ] {
 
-					set value [ set $element ]
-
-					if { $value != "" } {
-						if { ! [ string equal $value [ dbget $element $rn ] ] } {
-							set modified 1
-							if { $element eq "password" } {
-								dbset last-pass-change $rn $now
-							}
-						}
-						dbset $element $rn $value
+					if { $element ne "notes" } {
+						set new_value [ set $element ]
 					} else {
-						dbunset $element $rn
-						set modified 1
+						set new_value [ string trimright [ -m:notes- get 0.0 end ] ]
 					}
 
-					::pwsafe::int::randomizeVar $element 
+					set old_value [ dbget $element $rn ]
+					
+					if { $new_value ne $old_value } {
+						set modified 1
+						if { $new_value eq "" } {
+							dbunset $element $rn
+						} else {
+
+							dbset $element $rn $new_value
+
+							if { $element eq "password" } {
+								dbset last-pass-change $rn $now
+							} ; # end if element eq password
+
+						} ; # end if new_value eq ""
+
+					} ; # end if new_value ne old_value
+
+					# note - "$element" is correct below.  For all but "notes", the
+					# element variable contains a variable name, it is that inner
+					# variable name that should be cleansed
+					if { $element ne "notes" } {
+						::pwsafe::int::randomizeVar $element new_value old_value
+					}
 
 				} ; # end foreach element
 				
-				# handle notes separately - trimming
-				# trailing whitespace and newlines
-				
-				set value [ string trimright [ -m:notes- get 0.0 end ] ]
-				if { $value != "" } {
-					if { ! [ string equal $value [ dbget notes $rn ] ] } {
-						set modified 1
-					}
-					dbset notes $rn $value
-				} else {
-					dbunset notes $rn
-					set modified 1
-				}
-
-				::pwsafe::int::randomizeVar value
-
 				if { $modified } {
 					dbset last-modified $rn $now
 				}
