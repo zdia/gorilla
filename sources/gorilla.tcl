@@ -1847,11 +1847,12 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		foreach {child label w} " group    [mc Group]    combobox
-		                          title    [mc Title]    entry
-		                          url      [mc URL]      entry
-		                          user     [mc Username] entry
-		                          password [mc Password] entry  " {
+		foreach {child label w} [ list \
+					group    [mc Group]    combobox \
+					title    [mc Title]    entry \
+					url      [mc URL]      entry \
+					user     [mc Username] entry \
+					password [mc Password] entry ] {
 			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
@@ -8112,6 +8113,7 @@ namespace eval cli {
 		quit					cli::Quit
 		list					cli::List
 		edit					cli::Edit
+		save					cli::Save
 	}
 
 	set FieldList [list uuid group title user notes password url \
@@ -8129,11 +8131,28 @@ namespace eval cli {
 # add group|login
 # merge
 
-proc cli::ValidArguments { args } {
-	# at the moment: field rn
-	# TODO: args = descriptor value descriptor value ...
+proc cli::Save { } {
+	set nativeName [file nativename $::gorilla::fileName] 
+	if { ! [ file writable $nativeName ]	} {
+		return [list ERROR "$::gorilla::fileName is write-protected."]
+	}
 	
-} ;# end of proc
+	set majorVersion 2
+	
+	if {[$::gorilla::db hasHeaderField 0]} {
+		set version [$::gorilla::db getHeaderField 0]
+
+		if {[lindex $version 0] == 3} {
+			set majorVersion 3
+		}
+	}
+	
+	if { [catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion } oops] } {
+		return [list ERROR "$oops"]
+	}
+	
+	# set message [ gorilla::SaveBackup $::gorilla::fileName ]
+} ;# end of proc Save
 
 proc cli::Edit { args } {
 	# edit field rn
@@ -8261,7 +8280,9 @@ puts "Debug: starting cli::ChkMsgcat"
 
 proc cli::Quit {} {
 	if { $::gorilla::dirty } {
-		puts "Database has changed. Save it? ([mc yes|no]) :"
+		puts -nonewline "Database has changed. Save it? ([mc yes|no]) :"
+		flush
+		# gets stdin anwer
 	} ;# end if# check if database has changed
 	exit
 } ;# end of proc cli::Quit
@@ -8345,7 +8366,7 @@ proc cli::ParseCommand { line } {
 	set line [ regexp -all -inline {\S+} $line ]
 	set command [lindex $line 0]
 
-	if { [array names ::cli::Commands $command] eq "" } {
+	if { ! [info exists ::cli::Commands($command)] } {
 		return [list ERROR "Unknown command: \"$command\". - Possible commands:\
 			[join [array names cli::Commands] ", "]"] 
 	}
@@ -8394,7 +8415,7 @@ proc gorilla::ParseOption {} {
 	# puts "Option: $option"
 	
 	if { $option ne "" } {
-		if { [array names ::cli::Options $option] eq "" } {
+		if { ! [info exists ::cli::Options($option) ] } {
 			if {[file exists $option]} {
 				 return "FILE $option"
 			} else {
