@@ -8141,7 +8141,6 @@ proc cli::Save { } {
 	
 	if {[$::gorilla::db hasHeaderField 0]} {
 		set version [$::gorilla::db getHeaderField 0]
-
 		if {[lindex $version 0] == 3} {
 			set majorVersion 3
 		}
@@ -8151,7 +8150,8 @@ proc cli::Save { } {
 		return [list ERROR "$oops"]
 	}
 	
-	# set message [ gorilla::SaveBackup $::gorilla::fileName ]
+	# backup?
+	return [list OK "Saved database [ file tail $::gorilla::fileName ]"]
 } ;# end of proc Save
 
 proc cli::Edit { args } {
@@ -8280,10 +8280,14 @@ puts "Debug: starting cli::ChkMsgcat"
 
 proc cli::Quit {} {
 	if { $::gorilla::dirty } {
-		puts -nonewline "Database has changed. Save it? ([mc yes|no]) :"
-		flush
-		# gets stdin anwer
-	} ;# end if# check if database has changed
+		puts -nonewline "Database has changed. Save it? ([mc yes]|[mc no]) :"
+		flush stdout
+		set choice [read stdin 1]
+		if { $choice eq [string index [mc yes] 0] } {
+			cli::Save
+			puts "Database saved"
+		}
+	}
 	exit
 } ;# end of proc cli::Quit
 
