@@ -624,22 +624,101 @@ proc gorilla::InitGui {} {
 #
 
 proc gorilla::InitPRNG {{seed ""}} {
+
+	# Initialize the ISAAC PRNG seed.  Takes one parameter.
+
 	#
 	# Try to compose a not very predictable seed
 	#
 
 	append seed "20041201"
-	append seed [clock seconds] [clock clicks] [pid]
-	append seed [winfo id .] [winfo geometry .] [winfo pointerxy .]
-	set hashseed [pwsafe::int::sha1isz $seed]
+	append seed [ clock seconds ] [ clock clicks ] [ pid ]
+	append seed [ winfo id . ] [ winfo geometry . ] [ winfo pointerxy . ]
+	set hashseed [ ::sha2::sha256 -bin $seed ]
+
+	# Determine if a /dev/urandom device exists, if so attempt to obtain 992
+	# bytes more random data to produce an even better seed.  Wrap everything
+	# in a catch so that if something goes wrong, PWGorilla will continue on
+	# as if nothing had happened - lack of a better seed value is not a reason
+	# to abort.  This will also cover instances where [file] thinks urandom
+	# exists and is readable, but open throws an error for some reason.
+	
+	if { [ file exists /dev/urandom ] && [ file readable /dev/urandom ] } {
+		catch {
+			set rfd [ open /dev/urandom {RDONLY BINARY} ]
+			append hashseed [ read $rfd 992 ]
+			close $rfd
+		}
+	}
+	
+	# Help the randomness for our friends on Windows or anywhere else that
+	# /dev/urandom does not exist or is unreadable - this recommendation comes
+	# from the IASSC webpage (http://burtleburtle.net/bob/rand/isaacafa.html)
+	# where it states:
+	#
+	#   As ISAAC is intended to be a secure cipher, if you want to reseed it,
+	#   one way is to use some other cipher to seed some initial version of
+	#   ISAAC, then use ISAAC's output as a seed for other instances of ISAAC
+	#   whenever they need to be reseeded.
+	#
+	# As it happens, PWGorilla calls this seed function twice.  Once when
+	# first starting, then a second time after entry of the unlock password. 
+	# The second call includes some additional entropy derived from timing the
+	# time between keystrokes during password entry.  Leverage that second
+	# call to add ISAAC feedback entropy when /dev/urandom has not been
+	# available to pad out to 1024 bytes of seed material.
+	
+	if {    $::gorilla::isPRNGInitialized 
+	     && ( [ string length $hashseed ] < 1024 ) } {
+		while { [ string length $hashseed ] < 1024 } {
+		  append hashseed [ binary format i [ ::isaac::int32 ] ]
+		}
+	}
 
 	#
 	# Init PRNG
 	#
-
+	#puts "seeding with [ string length $hashseed ] bytes" ; # debugging
 	isaac::srand $hashseed
 	set ::gorilla::isPRNGInitialized 1
-}
+	
+	# The original version of this proc utilized the pwsafe v2 modified sha1
+	# hash to scramble the incoming seed value.  In the time since PWGorilla
+	# was first written, there have been some cryptanalysis results that have
+	# weakened the sha1 hash function.  So this seems like a good time to move
+	# up to a better hash.  In this case sha256.
+	
+	#ruff
+	# seed - a value to use as the seed for the PRNG.  The input value will
+	# have some more tidbits of system details appended to hopefully increase
+	# the possible entropy and will then be hashed by sha256 to obtain 32
+	# bytes of binary seed data.
+	#
+	# If /dev/urandom is available, it will be used to obtain 992 more bytes
+	# of higher quality random data to fill out the full 256 by 32bit seed
+	# size of the ISAAC PRNG.  If /dev/urandom is not available, ISAAC itself
+	# will be used to pad out 992 additional bytes of seed data during a
+	# second call to this proc by the password unlock code.
+	#
+	# Note as well that the choice of /dev/urandom for additional PRNG seed
+	# randomness is purposeful.  The /dev/random device is defined as blocking
+	# if there is insufficient entropy in the kernel random pool to generate
+	# random output data.  Blocking on /dev/random will make all of PWGorilla
+	# appear to hang, potentially for a quite lengthy and completely
+	# indeterminate amount of time given that 992 bytes of data are being
+	# read.
+	#
+	# 992 bytes of very good quality random data from /dev/urandom is an order
+	# of magnitude or more (likely much more) better random seed source than
+	# what PWGorilla was historically utilizing (16 bytes of modified sha1
+	# output).  As such the fact that /dev/urandom is not defined as
+	# cryptographic quality is mitigated somewhat by obtaining such a large
+	# amount of data, of a much higher quality than previously, that the net
+	# effect is that PWGorilla's random number generation has increased in
+	# quality significantly on any system having a working /dev/urandom
+	# device.  All without appearing to hang for a lengthy period of time.
+
+} ; # end proc gorilla::InitPRNG
 
 proc setmenustate {widget tag_pattern state} {
 	if {$tag_pattern eq "all"} {
@@ -2444,11 +2523,11 @@ proc gorilla::EditLogin {} {
 #
 
 proc gorilla::MoveLogin {} {
-	gorilla::MoveDialog Login
+	gorilla::MoveDialog [mc Login]
 }
 
 proc gorilla::MoveGroup {} {
-	gorilla::MoveDialog Group
+	gorilla::MoveDialog [mc Group]
 }
 
 proc gorilla::MoveDialog {type} {
@@ -2461,9 +2540,9 @@ proc gorilla::MoveDialog {type} {
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
-		wm title $top [mc "Move $type"]
+		wm title $top [mc "Move %s" "$type"]
 
-		ttk::labelframe $top.source -text [mc $type] -padding [list 10 10]
+		ttk::labelframe $top.source -text $type -padding [list 10 10]
 		ttk::entry $top.source.e -width 40 -textvariable ::gorilla::MoveDialogSource
 		ttk::labelframe $top.dest \
 		-text [mc "Destination Group with format <Group.Subgroup> :"] \
@@ -2571,7 +2650,7 @@ proc gorilla::MoveDialog {type} {
 	wm withdraw $top
 
 	if {$::gorilla::guimutex != 1} {
-		set ::gorilla::status [mc "Moving of $type canceled."]
+		set ::gorilla::status [mc "Moving of %s canceled." $type]
 		return
 	}
 
@@ -2579,7 +2658,7 @@ proc gorilla::MoveDialog {type} {
 	
 	$::gorilla::widgets(tree) item $destNode -open 1
 	$::gorilla::widgets(tree) item "RootNode" -open 1
-	set ::gorilla::status [mc "$type moved."]
+	set ::gorilla::status [mc "%s moved." $type]
 	MarkDatabaseAsDirty
 }
 
@@ -4224,17 +4303,7 @@ proc gorilla::Save {} {
 		. configure -cursor $myOldCursor
 		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
 			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
-		return GORILLA_SAVEBACKUPERROR
-	}
-
-	# The actual data are saved. Now take care of a backup file
-
-	set message [ gorilla::SaveBackup $::gorilla::fileName ]
-
-	if { $message ne "GORILLA_OK" } {
-		. configure -cursor $myOldCursor
-		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-		return GORILLA_SAVEBACKUPERROR
+		return GORILLA_SAVEERROR
 	}
 
 	# TODO: refactoring
@@ -4244,15 +4313,26 @@ proc gorilla::Save {} {
 
 	. configure -cursor $myOldCursor
 
-	if {$::gorilla::preference(keepBackupFile)} {
-		set ::gorilla::status [mc "Password database saved with backup copy %s." $nativeName ] 
-	} else {
-		set ::gorilla::status [mc "Password database saved."] 
-	}
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 
 	UpdateMenu
+
+	# The actual data are saved. Now take care of a backup file
+
+	if {$::gorilla::preference(keepBackupFile)} {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { [lindex $message 0] ne "GORILLA_OK" } {
+			# gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+			set ::gorilla::status [mc "Password database saved but backup copy failed: [lindex $message 1]." ]
+			return GORILLA_SAVEBACKUPERROR
+		} else {
+			set ::gorilla::status [mc "Password database saved with backup copy." ]
+			return GORILLA_OK
+		}
+	}
+	set ::gorilla::status [mc "Password database saved."] 
+	
 	return GORILLA_OK
 }
 
@@ -4268,8 +4348,8 @@ proc gorilla::SaveAs {} {
 	if {![info exists ::gorilla::db]} {
 		gorilla::ErrorPopup [ mc "Nothing To Save" ] \
 		[ mc "No password database to save." ]
-		# ERROR-save
-		# ERROR-no-db
+		# ERROR-Save
+		# ERROR-Save-no-db
 		return GORILLA_SAVEERROR
 	}
 
@@ -4321,9 +4401,7 @@ proc gorilla::SaveAs {} {
 		return 0
 	}
 
-	# Dateiname auf Default Extension testen 
-	# not necessary
-	# -defaultextension funktioniert nur auf Windowssystemen und Mac
+	# -defaultextension seems not to work on Linux
 	# set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
 	set nativeName [file nativename $fileName]
 	
@@ -4347,16 +4425,6 @@ proc gorilla::SaveAs {} {
 			-message [mc "Failed to save password database as \"%s\": %s" \
 			$nativeName $oops]
 		return 0
-	}
-
-	# The actual data are saved. Now take care of a backup file
-
-	set message [ gorilla::SaveBackup $::gorilla::fileName ]
-
-	if { $message ne "GORILLA_OK" } {
-		. configure -cursor $myOldCursor
-		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-		return GORILLA_SAVEBACKUPERROR
 	}
 
 	# clean up
@@ -4388,6 +4456,22 @@ proc gorilla::SaveAs {} {
 	}
 	
 	UpdateMenu
+
+	# The actual data are saved. Now take care of a backup file
+
+	if {$::gorilla::preference(keepBackupFile)} {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { [lindex $message 0] ne "GORILLA_OK" } {
+			# gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+			set ::gorilla::status [mc "Password database saved but backup copy failed: [lindex $message 1]." ]
+			return GORILLA_SAVEBACKUPERROR
+		} else {
+			set ::gorilla::status [mc "Password database saved with backup copy." ]
+			return GORILLA_OK
+		}
+	}
+	set ::gorilla::status [mc "Password database saved."] 
+	
 	return GORILLA_OK
 }
 
@@ -4399,8 +4483,6 @@ proc gorilla::SaveBackup { filename } {
 	# If the timestamp flag is set the backup file gets a timestamp appendix
 	# according to the local settings
 	#
-	# If automatic backup is activated 
-	#
 	# filename - name of current database containing full path
 	#
 
@@ -4408,31 +4490,29 @@ proc gorilla::SaveBackup { filename } {
 	# "Error Saving Backup of Database"
 	set backupFileName "[file rootname [file tail $filename] ].bak"
 
-	if { ! $::gorilla::preference(keepBackupFile) } {
-		return GORILLA_OK
-	}	elseif { $::gorilla::preference(backupPath) eq "" } {
-			return [list $errorType [mc ERROR-SaveBackup-no-directory] ]
-			# "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."
-	}	elseif { ! [file isdirectory $::gorilla::preference(backupPath)] } {
+	if { $::gorilla::preference(backupPath) ne "" } {
+		
+		if { ! [file isdirectory $::gorilla::preference(backupPath)] } {
 			return [list $errorType [mc ERROR-SaveBackup-invalid-directory] ]
 			# "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."
-	}	elseif { ! [file exists $::gorilla::fileName] } {
+			
+		}	elseif { ! [file exists $::gorilla::fileName] } {
 			return [list $errorType [mc ERROR-SaveBackup-unknown-file] ]
 			# "Unknown file. - \nPlease select a valid database filename."
-	}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
-			set backupFileName "[ file tail $filename ]~"
-	} elseif { $::gorilla::preference(timeStampBackup) } {
-
+			
+		}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
+				set backupFileName "[ file tail $filename ]~"
+				
+		} elseif { $::gorilla::preference(timeStampBackup) } {
 			# Note: The following characters are reserved in Windows and
 			# cannot be used in a file name: < > : " / \ | ? *
-			
 			set backupFileName [ file rootname [file tail $filename] ]
 			append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
 			append backupFileName [file extension $filename]
+		}
 	}
 	
 	set backupFile [ file join $::gorilla::preference(backupPath) $backupFileName ]
-
 	if {[catch {
 		file copy -force -- $filename $backupFile
 		} oops]} {
@@ -6364,7 +6444,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 		Username { set ::gorilla::activeSelection 1 }
 		Password { set ::gorilla::activeSelection 2 }
 		URL      { set ::gorilla::activeSelection 3 }
-		default  { error "gorilla::CopyToClipboard: parameter 'what' not one of 'Username', 'Password', 'URL'" }
+		default  { error [mc "gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'" [mc $what]] }
 	}
 
 	ArrangeIdleTimeout
@@ -7818,10 +7898,13 @@ namespace eval ::gorilla::dnd {
 	namespace ensemble create
 
 	variable dragging      0        ; # flag to indicate if user is dragging items
-	variable selectedItems [ list ]	; # list of items (tree node names) that are being dragged
-	variable clickPx       -Inf     ; # mouse cursor x position for click that started drag
-	variable clickPy       -Inf     ; # mouse cursor y position for click that started drag
-	variable invalidDrag   0        ; # flag to indicate if the selected item list is a valid set of items for a drag
+
+	variable selectedItems [ list ]	; # list of items (tree node names) that
+	                                  # need to be "moved" to perform the move
+	                                  # action
+
+	variable clickPx       -Inf     ; # mouse cursor x position at start of drag
+	variable clickPy       -Inf     ; # mouse cursor y position at start of drag
 
 	# ----------------------------------------------------------------------
 
@@ -7843,13 +7926,13 @@ namespace eval ::gorilla::dnd {
 		ttk::label $tree.dnd
 
 		#ruff
-		# Attaches event bindings to the widget passed as the sole
-		# parameter for handling drag and drop operations.  Also
-		# creates a single label widget as a child of the parameter
-		# which will be utilized as a drag indicator.
+		# Attaches event bindings to the widget passed as the sole parameter for
+		# handling drag and drop operations.  Also creates a single label widget
+		# as a child of the parameter which will be utilized as a drag
+		# indicator.
 		#
-		# tree - the widget name to attach the event bindings.  The
-		#        created label will be a child of this widget
+		# tree - the widget name to attach the event bindings.  The created
+		#        label will be a child of this widget
 		
 	} ; # end ::gorilla::dnd::init
 
@@ -7858,50 +7941,53 @@ namespace eval ::gorilla::dnd {
 	proc ::gorilla::dnd::select { tree } {
 		variable dragging
 		variable selectedItems
-		variable invalidDrag 0
 		
 		if { ! $dragging } {
-			# numG and numL are utilized to exclude attempting
-			# to drag and drop groups and logins or plural
-			# groups
-			set numG [ set numL 0 ]
+			set tempitems [ $tree selection ]
+			
+			# keep only items that are 1) visible 2) not a child of an item
+			# already in the list
+			
+			set selectedItems [ list ]
+			set labeltexts    [ list ]
+			foreach item $tempitems {
 
-			set selectedItems [ $tree selection ]
+				# bbox is documented as returning empty list for a not visible item
+				if { [ llength [ $tree bbox $item ] ] == 0 } {
+					continue
+				}
 
-			set temp [ list ]
-			foreach item $selectedItems {
-				# name of the item
-				lappend temp [ $tree item $item -text ]
+				# at this point the item is visible, so add its label to the
+				# labeltexts list
 
-				# type (Login,Group) of the item
-				switch -exact -- [ lindex [ $tree item $item -values ] 0 ] {
-				  	Group { incr numG } 
-				  	Login { incr numL }
-				} ; # end switch
+				lappend labeltexts [ $tree item $item -text ]
+				
+				# skip if parent item already in selection list
+				if { [ $tree parent $item ] in $tempitems } {
+					continue
+				}
 
- 			} ; # end foreach item
+				# otherwise remember the item as a move candidate
+				lappend selectedItems $item
 
- 			# put the selected item names into the label widget
- 			# that is the drag feedback indicator
-			$tree.dnd configure -text [ join $temp "\n" ]
+			} ; # end foreach item in tempitems
 
-			if { ( ( $numG > 0 ) && ( $numL > 0 ) )
-			    || ( $numG > 1 ) } {
-				# can not drag both groups and logins
-				# can not drag plural groups
-				set invalidDrag 1
-			}
-		}
+ 			# put the selected item names into the label widget that is the drag
+ 			# feedback indicator
+
+			$tree.dnd configure -text [ join $labeltexts "\n" ]
+
+		} ; # end if not dragging
 
 		#ruff
-		# Called by event loop when treeview selection changes
+		# Called by event loop when treeview selection changes 
+		#
 		# tree - the name of the treeview widget
 		#
-		# If a drag is happening then retreives the list of selected
-		# treeview rows and stores them in a namespace varaible in
-		# prepraration for a drag operation occurring.  Also inserts
-		# the names of the rows in the drag label as feedback to a
-		# user for what items are being dragged.
+		# If a drag is happening then retreives the list of selected treeview
+		# rows and stores them in a namespace varaible in prepraration for a
+		# drag operation occurring.  Also inserts the names of the rows in the
+		# drag label as feedback to a user for what items are being dragged.
 		#
 		# If a drag is not happening then do nothing.
 
@@ -7913,21 +7999,17 @@ namespace eval ::gorilla::dnd {
 		variable clickPx     -Inf
 		variable clickPy     -Inf
 		
-		# can not drag empty area of tree, nor root node of tree -
-		# the -Inf is the magic which makes this work.  Any x,y
-		# position subtracted from -Inf is still -Inf, and -Inf is
-		# always smaller than zero, so as long as Px,Py are -Inf, a
-		# drag will never initiate
-
+		# can not drag empty area of tree, nor root node of tree - leave set to
+		# -Inf in those cases
+		
 		if { ( [ $tree identify row $x $y ] ni {"" RootNode} ) } {
 			set clickPx $x
 			set clickPy $y
 		} ; # end if selrow ni ""/RootNode
 
 		#ruff
-		# Callled by mouse button press event to record the x,y
-		# position of the mouse cursor in preparation for a possible
-		# drag occurring.
+		# Called by mouse button press event to record the x,y position of the
+		# mouse cursor in preparation for a possible drag occurring.
 		#
 		# tree - the tree widget 
 		# x - x mouse cursor position
@@ -7941,16 +8023,14 @@ namespace eval ::gorilla::dnd {
 		variable dragging
 		variable clickPx
 		variable clickPy
-		variable invalidDrag
 
-		if { $invalidDrag } { 
-			::gorilla::Feedback [ mc "Can not drag the selected items (see documentation)" ]
-			set dragging 0
-			return
-		}
+		# the -Inf default for clickP[xy] is the magic which makes this code
+		# below work.  Any x,y position subtracted from -Inf is still -Inf, and
+		# -Inf is always smaller than zero, so as long as Px,Py are -Inf, a drag
+		# will never initiate
 
-		# a small hysteresis of 5 pixels of motion before we decide
-		# that a drag is occurring
+		# a small hysteresis of 5 pixels of motion before we decide that a drag
+		# is occurring
 		if { ( ! $dragging )
 		  && ( 
 		          ( [ expr { abs( $clickPx - $x ) } ] > 5 )
@@ -7960,9 +8040,9 @@ namespace eval ::gorilla::dnd {
 		}
 
 		if { $dragging } {
-			# I do not understand why, but configuring -cursor
-			# on the tree did not work, yet configuring it on .
-			# did work properly.
+
+			# I do not understand why, but configuring -cursor on the tree did not
+			# work, yet configuring it on .  did work properly.
 			. configure -cursor double_arrow
 
 			set selrow [ $tree identify row $x $y ]
@@ -7972,18 +8052,17 @@ namespace eval ::gorilla::dnd {
 				$tree see $selrow
 			}
 
-			# use place to position the drag indicator - the +5
-			# pixels positions it just to the right of the
-			# cursor bitmap so it does not overlap with the
-			# cursor
+			# use place to position the drag indicator - the +5 pixels positions
+			# it just to the right of the cursor bitmap so it does not overlap
+			# with the cursor
 
 			place $tree.dnd -x [ expr { $x + 5 } ] -y $y -anchor w
 
 		} ; # end if dragging
 
 		#ruff
-		# Called by mouse motion event to both decide when to
-		# initiate a drag and to animate the drag as it occurs
+		# Called by mouse motion event to both decide when to initiate a drag
+		# and to animate the drag as it occurs
 		#
 		# tree - the tree widget
 		# x - new mouse x position
@@ -7999,24 +8078,28 @@ namespace eval ::gorilla::dnd {
 
 		if { $dragging } {
 			# clean up
-			. configure -cursor {}
 			set dragging 0
 			place forget $tree.dnd
 
 			set dropIdx [ $tree identify row $x $y ]
+
 			# can not drop into empty section of tree
 			if { $dropIdx ne "" } {
+				. configure -cursor watch
+				update idletasks
 				foreach item $selectedItems {
 					::gorilla::MoveTreeNode $item $dropIdx
 				}
 			}
 
+			. configure -cursor {}
+
 		} ; # end if dragging
 		
 		#ruff
-		# Called by mouse button release event.  If a drag was
-		# occurring then handle actually performing the "move" of
-		# the selected items to the destination location in the tree.
+		# Called by mouse button release event.  If a drag was occurring then
+		# handle actually performing the "move" of the selected items to the
+		# destination location in the tree.
 		#
 		# tree - the tree widget
 		# x - mouse x position of release event

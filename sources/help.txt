@@ -146,22 +146,19 @@ this item will cause a second menu to appear listing all current groups in
 the database.  Selecting one of the current group names will cause the
 right-clicked login to be moved to the selected group. 
 
-3) A group or login can be selected by clicking with the left mouse button. 
-If the button is held down and the mouse is moved a short distance, a drag
-and drop operation will occur.  When this happens the cursor will change to
-a double vertical arrow and a floating window will appear showing the title
-of the item that is being dragged.  As the item is being dragged the active
-drop location will be highlighted in the tree and will correspond to the
-tree item that is underneath the cursor.  Drop the item by releasing the
-mouse button.
+3) A set of groups or logins can be selected by clicking with the left mouse
+button.  Use shift plus click or control plus click to select multiple
+items.  If the button is held down and the mouse is moved a short distance,
+a drag and drop operation will begin.  When this happens the cursor will
+change to a double vertical arrow and a floating window will appear showing
+the title of the item(s) being dragged.  As the item(s) are being dragged
+the active drop location will be highlighted in the tree and will correspond
+to the tree item that is underneath the cursor.  Drop the item by releasing
+the mouse button with the cursor located above a line in the tree.
 
 Dropping a login or a group onto a login name will perform a move to the
 group location where the drop occurred.  Dropping a login or a group onto a
 group name will perform a move into the group where the drop occurred.
-
-At the moment, due to some small issues with the ttk::treeview widget that
-implements the tree, dragging plural items is limited to dragging plural
-logins or dragging single groups.  
 
 4) Within the edit login dialog the entry for group name for the login is
 also a drop down select list containing all current group names.  To move a
@@ -286,8 +283,8 @@ editing, or to do neither.
 '''Backup database on save'''
 
  | If enabled, then a backup file of the password database is made whenever
-the database is saved. The backup file has the same name as the database
-itself, but with the ''.bak'' extension.
+the database is saved. The backup file is located in the same directory and
+has the same name as the database itself, but with the ''.bak'' extension.
 
 '''Remember sizes of dialog boxes'''
 
@@ -410,6 +407,16 @@ both Password Gorilla and Password Safe, the latter will not read accented
 characters correctly. (The database will open, but non-ASCII characters will
 not show up correctly.) This option has no effect if your database uses only
 ASCII characters.
+
+'''Timestamp Backup'''
+
+ | If the option ''Auto-Save'' is enabled then the copy can be saved with
+a timestamp in the chosen backup directory. The timestamp format is: YYYY-mm-dd-hh-mm-ss
+
+'''Backup Path'''
+
+ | If no backup path is entered then the backup copy has the suffix ".bak" and is
+put into the same directory as the Password database itself.
 
 '''V3 key stretching iterations'''
 
