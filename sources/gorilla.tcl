@@ -257,7 +257,22 @@ load-package uuid
 # ----------------------------------------------------------------------
 #
 
-namespace eval gorilla {}
+namespace eval gorilla {
+	
+	array set Options {
+	--rc					gorilla::CLIRc
+	--test 				gorilla::CLITest
+	-t						gorilla::CLITest
+	--tcltest			gorilla::CLITcltest
+	--tcltest			gorilla::CLITcltest
+	--chkmsgcat 	gorilla::CLIChkMsgcat
+	-cli 					gorilla::CLICommandline
+	--commandline	gorilla::CLICommandline
+	--sourcedoc		gorilla::CLISourceDoc
+	--help				gorilla::CLIHelp
+	}
+	
+}
 
 if {![info exists ::gorilla::init]} {
 	# close the wish window
@@ -8051,159 +8066,13 @@ namespace eval ::gorilla::dnd {
 
 } ; # end namespace eval ::gorilla::dnd
 
-# ----------------------------------------------------------------------
-# Command-line interface module
-# ----------------------------------------------------------------------
-
-# Usage: gorilla ?options|database?
 #
-# gorilla testdb.psafe				-> opens an existing db (GUI mode)
-# gorilla -cli|--comand-line	-> enters the parsing loop and waits for commands
-
-# For inspiration see http://nsd.dyndns.org/pwsafe/releases/pwsafe-0.2.0.tar.gz:
-# pwsafe.cpp:
-# "Usage: program_name [OPTION] command [ARG]\n"
-			# "Options:\n"
-			# "  -F, --config=CONFIG_FILE   specify a configuration (defaults is ~/.pwsaferc + /etc/pwsaferc)\n"
-			# "  -f, --file=DATABASE_FILE   specify the database file (default is ~/.pwsafe.dat)\n"
-			# "  -I, --case                 perform case sensative matching\n"
-			# "  -l                         long listing (show username & notes)\n"
-			# "  -u, --username             emit username of listed account\n"
-			# "  -p, --password             emit password of listed account\n"
-			# "  -E, --echo                 force echoing of entry to stdout\n"
-			# "  -o, --output=FILE          redirect output to file (implies -E)\n"
-			# "  --dbversion=[1|2]          specify database file version (default is 2)\n"
-			# "  -q, --quiet                print no extra information\n"
-			# "  -v, --verbose              print more information (can be repeated)\n"
-			# "  -h, --help                 display this help and exit\n"
-			# "  -V, --version              output version information and exit\n"
-			# "Commands:\n"
-			# "  --createdb                 create an empty database\n"
-			# "  --exportdb                 dump database as text\n"
-			# "  --mergedb=DATABASE_FILE2   merge entries from FILE2 into database\n"
-			# "  --passwd                   change database passphrase\n"
-			# "  [--list] [REGEX]           list all [matching] entries. If -u and/or -p are given, only one entry may match\n"
-			# "  -a, --add [NAME]           add an entry\n"
-			# "  -e, --edit REGEX           edit an entry\n"
-			# "  --delete NAME              delete an entry\n"
-				
-namespace eval cli {
-	# FIXME: Option -h causes error "Tk not found"
-	# Error can be fixed if argv is cleaned at the very beginning before
-	# requirung package Tk.
-	# set ::gorilla::argv $argv
-	# set argv ""
-	#
-
-	array set Options {
-		--rc					cli::Rc
-		--test 				cli::Test
-		-t						cli::Test
-		--tcltest			cli::Tcltest
-		--tcltest			cli::Tcltest
-		--chkmsgcat 	cli::ChkMsgcat
-		-cli 					cli::CommandLine
-		--commandline	cli::CommandLine
-		--sourcedoc		cli::SourceDoc
-		--help				cli::Help
-	}
-	
-	array set Commands {
-		open					cli::Open
-		quit					cli::Quit
-		list					cli::List
-		edit					cli::Edit
-		save					cli::Save
-	}
-
-	set FieldList [list uuid group title user notes password url \
-		create-time last-pass-change last-access lifetime last-modified]
-		
-} ;# end eval cli
-
-# --------------- list of commands -------------------------------------
-# list field rn	-> list single record rn
-# list field		-> lists all field records
-# list 					-> all records with all fields
+# ----------------------------------------------------------------------
+# Command-line procedures handling the argv string
+# ----------------------------------------------------------------------
 #
-# edit field rn
-# 
-# add group|login
-# merge
 
-proc cli::Save { } {
-	set nativeName [file nativename $::gorilla::fileName] 
-	if { ! [ file writable $nativeName ]	} {
-		return [list ERROR "$::gorilla::fileName is write-protected."]
-	}
-	
-	set majorVersion 2
-	
-	if {[$::gorilla::db hasHeaderField 0]} {
-		set version [$::gorilla::db getHeaderField 0]
-		if {[lindex $version 0] == 3} {
-			set majorVersion 3
-		}
-	}
-	
-	if { [catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion } oops] } {
-		return [list ERROR "$oops"]
-	}
-	
-	# backup?
-	return [list OK "Saved database [ file tail $::gorilla::fileName ]"]
-} ;# end of proc Save
-
-proc cli::Edit { args } {
-	# edit field rn
-
-	if { ! [info exists ::gorilla::db] } {
-		return [list ERROR "No database available. Please type: \"open <database>\"."]
-	}
-	# check options
-	if { [llength $args] < 2 } {
-		return [list ERROR "Argument missing. Should be \"Edit field rn\"."]
-	 }
-	set field [lindex $args 0]
-	if { [lsearch $::cli::FieldList $field] < 0 } {
-		return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
-	}
-	set rn [lindex $args 1]
-	if { [lsearch [$::gorilla::db getAllRecordNumbers] $rn] < 0} {
-		return [list ERROR "Invalid record-number. Possible values: 1-[lindex [$::gorilla::db getAllRecordNumbers] end]"]
-	}
-	
-	# edit string with line-at-a-time mode
-	# c.f http://wiki.tcl.tk/16139: tcl-readline
-	puts "Old string $field #$rn: [ ::gorilla::dbget $field $rn ]"
-	puts -nonewline "New string $field #$rn: "
-	flush stdout
-	gets stdin newString
-	gorilla::dbset $field $rn $newString
-	set ::gorilla::dirty 1
-	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
-} ;# end of proc cli::Edit
-
-proc cli::usage {} {
-	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
-	puts stdout "\nOptions:"
-	puts stdout "  --rc <name>\t\tUse <name> as configuration file (not the Registry)."
-	# puts stdout "   --norc       Do not use a configuration file (or the Registry)."
-	puts stdout "  --sourcedoc\t\tCreate source documentation with Ruff."
-	puts stdout "  -t, --test\t\tOpen directly test database testdb.psafe3"
-	puts stdout "  --tcltest\t\tRun all tcltest modules for Password Gorilla."
-	puts stdout "  -cli, --command-line\tUse Password Gorilla in command-line mode."
-	puts stdout "  --chkmsgcat\t\tRedefine msgcat::unknown for internal use."
-	puts stdout "  --help\t\tShow this message."
-	puts stdout "  <database>\t\tOpen <database> on startup."
-}
-
-proc cli::Norc {} {
-	# This option is useful only for Windows users who want to use the registry
-	set ::gorilla::preference(norc) 1
-}
-
-proc cli::Rc {  } {
+proc gorilla::CLIRc {  } {
 	set file [lindex $::argv 1]
 	if { $file eq "" } {
 		puts stderr "Error: [lindex $argv 0] needs a parameter."
@@ -8213,12 +8082,12 @@ proc cli::Rc {  } {
 	set ::gorilla::preference(rc) $file
 } ;# end of proc
 
-proc cli::Help {  } {
+proc gorilla::CLIHelp {  } {
 	cli::usage
 	exit
 } ;# end of proc
 
-proc cli::SourceDoc { } {
+proc gorilla::CLISourceDoc { } {
 	# Need ruff! and struct::list from tcllib - both should be
 	# installed properly for this option to work
 
@@ -8230,7 +8099,7 @@ proc cli::SourceDoc { } {
 		}
 	} ; # end foreach pkg
 
-	# FIXME: Exiting with load-package?
+	# FIXME: Use of load-package
 	# foreach pkg { ruff struct::list } {
 		# load-package $pkg
 	# }
@@ -8248,20 +8117,17 @@ proc cli::SourceDoc { } {
 
 	cleanup after ourselves
 	unset -nocomplain error nslist pkg z 
-} ;# end of proc cli::SourceDoc
+} ;# end of proc gorilla::CLISourceDoc
 
-proc cli::Test {  } {
-puts "Debug: starting cli::Test"
+proc gorilla::CLITest {  } {
 	array set ::DEBUG { TEST 1 }
 } ;# end of proc
 
-proc cli::Tcltest {  } {
-puts "Debug: starting cli::Tcltest"
+proc gorilla::CLITcltest {  } {
 	array set ::DEBUG { TCLTEST 1 TEST 1 }
 } ;# end of proc
 
-proc cli::ChkMsgcat {  } {
-puts "Debug: starting cli::ChkMsgcat"
+proc gorilla::CLIChkMsgcat {  } {
 	# Redefine mcunknown to dump to stderr unknown msgcat translations
 	# in a format almost suitable for adding to the msgcat files.  The
 	# one difference is that each line is prefixed with the locale ID to
@@ -8276,136 +8142,17 @@ puts "Debug: starting cli::ChkMsgcat"
 		return $src_string
 	}
 			
-} ;# end of proc cli::ChkMsgcat
+} ;# end of proc gorilla::CLIChkMsgcat
 
-proc cli::Quit {} {
-	if { $::gorilla::dirty } {
-		puts -nonewline "Database has changed. Save it? ([mc yes]|[mc no]) :"
-		flush stdout
-		set choice [read stdin 1]
-		if { $choice eq [string index [mc yes] 0] } {
-			cli::Save
-			puts "Database saved"
-		}
-	}
+proc gorilla::CLICommandline { } {
+	# sources namespace cli with its procedures and launches the main
+	# commandline loop
+	
+	source cli.tcl
+	::cli::MainLoop
 	exit
-} ;# end of proc cli::Quit
-
-proc cli::Open { fileName } {
-	# Note: for test purposes the filename is preset!
-	set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
 	
-	if { ![file exists $fileName] } {
-		return [ list ERROR [mc "Could not find $file."] ]
-		# mc ERROR-OpenError-nofile
-	} ;# end if
-
-	if {$::gorilla::dirty} {
-		puts "should we save the db?"
-	}
-
-	set ::gorilla::collectedTicks [list [clock clicks]]
-	gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
-	set newdb [pwsafe::createFromFile $fileName test ::gorilla::openPercent]
-	# if newdb eq "" then return [list ERROR [mc "Could not open $filename"]]
-
-	if {[info exists ::gorilla::db]} {
-		itcl::delete object $::gorilla::db
-	}
-	
-	set nativeName [file nativename $fileName]
-	set ::gorilla::fileName $fileName
-	set ::gorilla::db $newdb
-	set ::gorilla::dirty 0
-	
-# puts "Debug fileName: $fileName newdb: $newdb"
-	
-	return [ list OK [mc "Ok. Actual database is %s." $fileName] ]
-	# mc STATUS-Open-ok
-} ;# end of proc cli::Open
-
-proc cli::List { args } {
-	# list field rn	-> list single record rn
-	# list field		-> lists all field records
-	# list 					-> all records with all fields
-	
-	# check exists ::gorilla::db?
-	if { ! [info exists ::gorilla::db] } {
-		return [list ERROR "No database available. Please type: \"open <database>\"."]
-	} ;# end if
-	# check list options
-	set field [lindex $args 0]
-	if { $field ne ""} {
-		# list field
-		if { [lsearch $::cli::FieldList $field] < 0 } {
-			return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
-		}
-	} else {
-		return [list OK "all fields, all records"]
-	}
-	
-	if { [lindex $args 1] ne ""} {
-		# list field rn
-		set rn [lindex $args 1]
-	} else {
-		set allrecords ""
-		foreach rn [$::gorilla::db getAllRecordNumbers] {
-			append allrecords "[ ::gorilla::dbget $field $rn ] "
-		}
-		return [list OK $allrecords]
-	}
-	
-	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
-	
-} ;# end of proc cli::List
-
-proc cli::ParseCommand { line } {
-	# check if the passed command is valid. Return the line without
-	# command name
-	#
-	# line - The line entered by the user on the console
-	#
-
-	# get a proper list without unnecessary white spaces
-	set line [ regexp -all -inline {\S+} $line ]
-	set command [lindex $line 0]
-
-	if { ! [info exists ::cli::Commands($command)] } {
-		return [list ERROR "Unknown command: \"$command\". - Possible commands:\
-			[join [array names cli::Commands] ", "]"] 
-	}
-	return [list OK "$::cli::Commands($command) [lrange $line 1 end]"]
-}
-
-proc cli::CommandLine { } {
-	# enters the main loop for the command-line module
-	# make use of package vt100 for color, cursor placement ...
-	# replace gets by a editable input routine
-
-	puts "Password Gorilla Command-Line Module ($::gorillaVersion)\nType \"quit\" to exit"
-	
-	gorilla::Init
-
-	set line ""
-	
-	while 1 {
-		puts -nonewline "> "
-		flush stdout
-		gets stdin line
-		set line [ cli::ParseCommand $line ]
-		if { [lindex $line 0] eq "ERROR" } {
-			puts [lindex $line 1]
-		} else {
-			set answer [ eval [lindex $line 1] ]
-			# [lindex $answer 0] contains OK, ERROR ... perhaps we will need it
-			puts [lindex $answer 1]
-		}
-	} ;# end while
-	
-	exit
 } ;# end of proc
-
-# ------------------- end of cli::procedures ---------------------------
 
 proc gorilla::ParseOption {} {
 	# Scans the option and evaluates them. If a filename is given then
@@ -8416,19 +8163,17 @@ proc gorilla::ParseOption {} {
 	# c) { COMMAND command }
 	
 	set option [lindex $::argv 0]
-	# puts "Option: $option"
 	
 	if { $option ne "" } {
-		if { ! [info exists ::cli::Options($option) ] } {
+		if { ! [info exists ::gorilla::Options($option) ] } {
 			if {[file exists $option]} {
 				 return "FILE $option"
 			} else {
-				return [ list ERROR "Unknown option. - Possible options: [join [array names ::cli::Options] ", "]" ]
-				# puts "Unknown option. - Possible options: [join $::cli::options ", "]"
+				return [ list ERROR "Unknown option. - Possible options: [join [array names ::gorilla::Options] ", "]" ]
 			}
 		} else {
-			return "COMMAND $::cli::Options($option)"
-		};# end if [lsearch $::cli::options $option]
+			return "COMMAND $::gorilla::Options($option)"
+		};# end if [lsearch $::gorilla::Options $option]
 	} ;# end if { $option ne "" }
 
 	return OK
@@ -8436,14 +8181,13 @@ proc gorilla::ParseOption {} {
 } ;# end proc gorilla::ParseOption {}
 
 proc gorilla::HandleOption {} {
-	# parses and evaluates the argv options
+	# parses and evaluates PWGorilla's argv options
 	
 	set databaseToLoad ""
 	set answer [gorilla::ParseOption]
 	# puts "Debug: answer $answer"
 	
 	if { [lindex $answer 0] eq "ERROR" } {
-		# puts [mc ERROR-CommandLine-unknown-option]
 		puts stderr [lindex $answer 1]
 		exit
 	} elseif {[lindex $answer 0] eq "FILE"} {
