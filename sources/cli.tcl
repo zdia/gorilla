@@ -38,6 +38,7 @@ namespace eval ::cli {
 		list					cli::List
 		edit					cli::Edit
 		save					cli::Save
+		find					::cli::Find
 	}
 
 	set FieldList [list uuid group title user notes password url \
@@ -174,10 +175,13 @@ proc ::cli::Open { fileName } {
 } ;# end of proc ::cli::Open
 
 proc ::cli::List { args } {
-	# list field rn	-> list single record rn
-	# list field		-> lists all field records
+	# list -f|--field field rn	-> list single record rn
+	# list -f|--field field		-> lists all field records
 	# list 					-> all records with all fields
-	
+	# list -r rn, --record rn
+	# list -g|--group groupname -> all records in a group
+	# list -g|--group -> all groupnames
+
 	# check exists ::gorilla::db?
 	if { ! [info exists ::gorilla::db] } {
 		return [list ERROR "No database available. Please type: \"open <database>\"."]
@@ -193,9 +197,19 @@ proc ::cli::List { args } {
 		return [list OK "all fields, all records"]
 	}
 	
-	if { [lindex $args 1] ne ""} {
+	set rn [lindex $args 1]
+	if { $rn ne ""} {
 		# list field rn
-		set rn [lindex $args 1]
+		
+		# set result [::cli::CheckRecordNr $rn]
+		# if { [lindex $result 0] eq "ERROR" } {
+			# return [list ERROR [lindex $result 1] ]
+		# } ;# end if
+		if { ! [string is integer $rn] } {
+			return [list ERROR [mc "expected integer but got \"%s\"" $rn] ]
+		}
+		# TODO range check: see EDIT
+		
 	} else {
 		set allrecords ""
 		foreach rn [$::gorilla::db getAllRecordNumbers] {
@@ -207,6 +221,47 @@ proc ::cli::List { args } {
 	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
 	
 } ;# end of proc ::cli::List
+
+proc ::cli::Find { args } {
+	# find the passed text in the records
+	# Usage: find ?-field? text
+	# find ?-g group? ?-f field? text
+	# find -l, --list	-> list the fields where text is found
+	# find -h, --help (lists all options)
+	# find -nc, --nocase
+	# find -t, --title
+	# returns all records and all fields in which the text was found
+	# args - text to search
+	#
+	# make an AND search if multiple words?
+
+	# database open?
+
+	set text [lindex $args 0]
+	set found [list ]
+	set rn 0
+	set totalRecords [llength [$::gorilla::db getAllRecordNumbers]]
+
+	set field title
+	puts stdout "searching in $field ..."
+ 	while { $rn < $totalRecords } {
+		incr rn
+		# set percent [expr {int(100.*$recordsSearched/$totalRecords)}]
+		# set ::gorilla::status "Searching ... ${percent}%"
+		# set cs $::gorilla::preference(caseSensitiveFind)
+		if { [string match *$text* [::gorilla::dbget $field $rn] ] } {
+			lappend found $field "#$rn"
+		} ;# end if
+		
+	} ;# end while
+
+	if { [llength $found] == 0 } {
+		return [list ERROR  [mc "Did not find \"%s\"." $text]]
+	}
+
+	return [ list OK [mc "found \"%s\" in %s" $text $found] ]
+
+} ;# end of proc find
 
 proc ::cli::ParseCommand { line } {
 	# check if the passed command is valid. Return the line without
@@ -226,8 +281,6 @@ proc ::cli::ParseCommand { line } {
 	return [list OK "$::cli::Commands($command) [lrange $line 1 end]"]
 }
 
-puts "info [info commands ::cli::*]"
-
 proc ::cli::MainLoop { } {
 	# enters the main loop for the command-line module
 	#
@@ -239,11 +292,11 @@ proc ::cli::MainLoop { } {
 	gorilla::Init
 
 	set line ""
-puts "namespace: [namespace exists cli]"
 	while 1 {
 		puts -nonewline "> "
 		flush stdout
 		gets stdin line
+		
 		set line [ cli::ParseCommand $line ]
 		if { [lindex $line 0] eq "ERROR" } {
 			puts [lindex $line 1]
@@ -253,4 +306,6 @@ puts "namespace: [namespace exists cli]"
 			puts [lindex $answer 1]
 		}
 	} ;# end while
+	
+	return
 }
