@@ -174,51 +174,88 @@ proc ::cli::Open { fileName } {
 	# mc STATUS-Open-ok
 } ;# end of proc ::cli::Open
 
-proc ::cli::List { args } {
-	# list -f|--field field rn	-> list single record rn
-	# list -f|--field field		-> lists all field records
-	# list 					-> all records with all fields
-	# list -r rn, --record rn
-	# list -g|--group groupname -> all records in a group
-	# list -g|--group -> all groupnames
+proc ::cli::CheckRecordNr { rn } {
+	# range
+	if { $rn ni [$::gorilla::db getAllRecordNumbers] } {
+		return [list ERROR  "Invalid record-number. Possible values: 1-[lindex [$::gorilla::db getAllRecordNumbers] end]"]
+	}
+	return [list OK $rn]
+} ;# end of proc
 
-	# check exists ::gorilla::db?
+proc ::cli::List { args } {
+	# list field fieldname rn	-> list single record rn
+	# list field fieldname		-> lists all records for fieldname
+	# list 					-> all records with all fields (treeview?)
+	# list rn	-> list single record
+	# list group groupname -> all records in a group
+	# list group -> all groupnames
+
 	if { ! [info exists ::gorilla::db] } {
 		return [list ERROR "No database available. Please type: \"open <database>\"."]
 	} ;# end if
+
 	# check list options
-	set field [lindex $args 0]
-	if { $field ne ""} {
-		# list field
-		if { [lsearch $::cli::FieldList $field] < 0 } {
-			return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
-		}
-	} else {
+
+	if { $args eq "" } {
 		return [list OK "all fields, all records"]
-	}
+	} ;# end if
 	
-	set rn [lindex $args 1]
-	if { $rn ne ""} {
-		# list field rn
-		
-		# set result [::cli::CheckRecordNr $rn]
-		# if { [lindex $result 0] eq "ERROR" } {
-			# return [list ERROR [lindex $result 1] ]
-		# } ;# end if
-		if { ! [string is integer $rn] } {
-			return [list ERROR [mc "expected integer but got \"%s\"" $rn] ]
+	if { [string is integer [lindex $args 0]] } {
+		set result [ ::cli::CheckRecordNr [lindex $args 0] ]
+		if { [lindex $result 0] eq "ERROR" } {
+			return $result
+		} else {
+			set rn [lindex $result 1]
+			return [list OK "list record $rn"] 
 		}
-		# TODO range check: see EDIT
-		
-	} else {
+	} ;# end if
+
+	set option [lindex $args 0]
+
+	# array set cli::OptionsExecute { field cli::OptionField }
+	# eval cli::OptionsExecute($option) $args
+	
+	switch $option {
+		field {
+			set fieldname [lindex $args 1]
+			if { $fieldname ne ""} {
+				if { $fieldname ni $::cli::FieldList } {
+					return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
+				}
+				set rn [lindex $args 2]
+				if { $rn ne ""} {
+					set result [ ::cli::CheckRecordNr $rn ]
+					if { [lindex $result 0] eq "ERROR" } {
+						return $result
+					}
+					return [list OK "$fieldname #$rn: [ ::gorilla::dbget $fieldname $rn ]"]
+				} else {
+					puts "field fieldname"
+				}
+			} else {
+				puts field
+			}
+		}
+		group {
+			puts group
+			if { [lindex $args 1] ne ""} {
+				puts "group groupname"
+			} else {
+				puts group
+			}
+		}
+		default {
+			return [list ERROR  "Invalid option. Must be: field, group"]
+		}
+	} ;# end switch
+	
+	return
+
 		set allrecords ""
 		foreach rn [$::gorilla::db getAllRecordNumbers] {
 			append allrecords "[ ::gorilla::dbget $field $rn ] "
 		}
 		return [list OK $allrecords]
-	}
-	
-	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
 	
 } ;# end of proc ::cli::List
 
