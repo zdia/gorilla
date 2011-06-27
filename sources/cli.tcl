@@ -77,6 +77,9 @@ proc ::cli::Save { } {
 	
 	# backup?
 	return [list OK "Saved database [ file tail $::gorilla::fileName ]"]
+
+	# Todo: unset stuff
+	
 } ;# end of proc Save
 
 proc ::cli::Edit { args } {
@@ -109,7 +112,7 @@ proc ::cli::Edit { args } {
 	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
 } ;# end of proc ::cli::Edit
 
-proc ::cli::usage {} {
+proc ::cli::Usage {} {
 	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
 	puts stdout "\nOptions:"
 	puts stdout "  --rc <name>\t\tUse <name> as configuration file (not the Registry)."
@@ -141,6 +144,15 @@ proc ::cli::Quit {} {
 	exit
 } ;# end of proc ::cli::Quit
 
+proc ::cli::GetGroupNames {} {
+	# Todo: init variable ::cli::AllRecordNumbers
+	set output [list ]
+	foreach number [$::gorilla::db getAllRecordNumbers] {
+		lappend output [ ::gorilla::dbget group $number ]
+	}
+	return [lsort -unique $output]
+} ;# end of proc cli::GetGroupNames
+
 proc ::cli::Open { fileName } {
 	# Note: for test purposes the filename is preset!
 	set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
@@ -162,11 +174,13 @@ proc ::cli::Open { fileName } {
 	if {[info exists ::gorilla::db]} {
 		itcl::delete object $::gorilla::db
 	}
-	
+
+	# initialization of database variables
 	set nativeName [file nativename $fileName]
 	set ::gorilla::fileName $fileName
 	set ::gorilla::db $newdb
 	set ::gorilla::dirty 0
+	set ::cli::GroupNames [cli::GetGroupNames]
 	
 # puts "Debug fileName: $fileName newdb: $newdb"
 	
@@ -183,12 +197,12 @@ proc ::cli::CheckRecordNr { rn } {
 } ;# end of proc
 
 proc ::cli::List { args } {
-	# list field fieldname rn	-> list single record rn
-	# list field fieldname		-> lists all records for fieldname
-	# list 					-> all records with all fields (treeview?)
-	# list rn	-> list single record
-	# list group groupname -> all records in a group
-	# list group -> all groupnames
+	# list field fieldname rn   -> list single record rn
+	# list field fieldname      -> lists all records for fieldname
+	# list field                -> lists all fieldnames
+	# list rn                   -> list single record
+	# list group groupname      -> lists all records in a group
+	# list group                -> lists all groupnames with valid entries
 
 	if { ! [info exists ::gorilla::db] } {
 		return [list ERROR "No database available. Please type: \"open <database>\"."]
@@ -197,7 +211,8 @@ proc ::cli::List { args } {
 	# check list options
 
 	if { $args eq "" } {
-		return [list OK "all fields, all records"]
+		# list all records per title? Not helpful with a large db.
+		return [list ERROR "Missing option. Should be: group, field."]
 	} ;# end if
 	
 	if { [string is integer [lindex $args 0]] } {
@@ -206,7 +221,11 @@ proc ::cli::List { args } {
 			return $result
 		} else {
 			set rn [lindex $result 1]
-			return [list OK "list record $rn"] 
+			set output "Contents of record $rn:\n--------------------"
+			foreach item $::cli::FieldList {
+				append output "[format "%-*s" 18 \n$item]:[ ::gorilla::dbget $item $rn ]"
+			}
+			return [list OK $output] 
 		}
 	} ;# end if
 
@@ -228,20 +247,35 @@ proc ::cli::List { args } {
 					if { [lindex $result 0] eq "ERROR" } {
 						return $result
 					}
+					# list field fieldname rn
 					return [list OK "$fieldname #$rn: [ ::gorilla::dbget $fieldname $rn ]"]
 				} else {
-					puts "field fieldname"
+					# list field fieldname
+					set output ""
+					foreach number [$::gorilla::db getAllRecordNumbers] {
+						append output "$fieldname #$number: [ ::gorilla::dbget $fieldname $number ]\n"
+					}
+					return [list OK $output]
 				}
 			} else {
-				puts field
+				# list field
+				return [list OK $::cli::FieldList]
 			}
 		}
 		group {
-			puts group
-			if { [lindex $args 1] ne ""} {
-				puts "group groupname"
+			set groupname [lindex $args 1]
+			if { $groupname ne ""} {
+				# list group groupname
+				set output "+++ Found:"
+				foreach number [$::gorilla::db getAllRecordNumbers] {
+					if { [::gorilla::dbget group $number] eq $groupname } {
+						append output "\nTitle #$number: [::gorilla::dbget title $number]"
+					} ;# end if
+				}
+				return [list OK $output]
 			} else {
-				puts group
+				# list group
+				return [ list OK "+++ Groups with valid entries are:\n[::cli::GetGroupNames]" ]
 			}
 		}
 		default {
@@ -249,14 +283,8 @@ proc ::cli::List { args } {
 		}
 	} ;# end switch
 	
-	return
+	return OK
 
-		set allrecords ""
-		foreach rn [$::gorilla::db getAllRecordNumbers] {
-			append allrecords "[ ::gorilla::dbget $field $rn ] "
-		}
-		return [list OK $allrecords]
-	
 } ;# end of proc ::cli::List
 
 proc ::cli::Find { args } {
