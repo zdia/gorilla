@@ -255,7 +255,7 @@ proc ::cli::List { args } {
 					foreach number [$::gorilla::db getAllRecordNumbers] {
 						append output "$fieldname #$number: [ ::gorilla::dbget $fieldname $number ]\n"
 					}
-					return [list OK $output]
+					# return [list OK $output]
 				}
 			} else {
 				# list field
@@ -265,6 +265,10 @@ proc ::cli::List { args } {
 		group {
 			set groupname [lindex $args 1]
 			if { $groupname ne ""} {
+				if { $groupname ni [::cli::GetGroupNames] } {
+					# Todo: {} eq root
+					return [list ERROR "Unknown group. Should be: [join [::cli::GetGroupNames] ", "]" ]
+				} ;# end if
 				# list group groupname
 				set output "+++ Found:"
 				foreach number [$::gorilla::db getAllRecordNumbers] {
@@ -272,7 +276,7 @@ proc ::cli::List { args } {
 						append output "\nTitle #$number: [::gorilla::dbget title $number]"
 					} ;# end if
 				}
-				return [list OK $output]
+				# return [list OK $output]
 			} else {
 				# list group
 				return [ list OK "+++ Groups with valid entries are:\n[::cli::GetGroupNames]" ]
@@ -283,14 +287,16 @@ proc ::cli::List { args } {
 		}
 	} ;# end switch
 	
-	return OK
+	return [list OK $output]
 
 } ;# end of proc ::cli::List
 
 proc ::cli::Find { args } {
 	# find the passed text in the records
-	# Usage: find ?-field? text
-	# find ?-g group? ?-f field? text
+	# Usage:
+	# find text                    find text in all records and fields
+	# find field fieldname text    find text in fieldname of all records
+	# 
 	# find -l, --list	-> list the fields where text is found
 	# find -h, --help (lists all options)
 	# find -nc, --nocase
@@ -300,31 +306,51 @@ proc ::cli::Find { args } {
 	#
 	# make an AND search if multiple words?
 
-	# database open?
+	if { ! [info exists ::gorilla::db] } {
+		return [list ERROR "No database available. Please type: \"open <database>\"."]
+	}
 
 	set text [lindex $args 0]
+	if { $text eq "" } { return [list ERROR "Usage: find ?options? text"] }
+	
 	set found [list ]
-	set rn 0
 	set totalRecords [llength [$::gorilla::db getAllRecordNumbers]]
 
-	set field title
-	puts stdout "searching in $field ..."
- 	while { $rn < $totalRecords } {
-		incr rn
+	if { $text eq "field" } {
+		set fieldname [lindex $args 1]
+		if { $fieldname eq ""} { return [list ERROR "Missing fieldname."]	}
+		if { $fieldname ni $::cli::FieldList } {
+			return [list ERROR "Invalid field. Must be: $::cli::FieldList"]
+		}
+		set text [lindex $args 2]
+		if { $text eq "" } { return [list ERROR "Missing search text."]	}
+		
+		# find field fieldname
+		foreach rn [$::gorilla::db getAllRecordNumbers] {
+			if { [string match *$text* [::gorilla::dbget $fieldname $rn] ] } {
+				lappend found [list $fieldname "#$rn"]
+			}
+		}
+	} else {
+		# find text
+		foreach field $::cli::FieldList {
+			foreach rn [$::gorilla::db getAllRecordNumbers] {
+				if { [string match *$text* [::gorilla::dbget $field $rn] ] } {
+					lappend found [list $field "#$rn"]
+				}
+			} ;# end foreach rn
+		} ;# end foreach field
+	} ;# end if { $text eq "field" }
+
 		# set percent [expr {int(100.*$recordsSearched/$totalRecords)}]
 		# set ::gorilla::status "Searching ... ${percent}%"
 		# set cs $::gorilla::preference(caseSensitiveFind)
-		if { [string match *$text* [::gorilla::dbget $field $rn] ] } {
-			lappend found $field "#$rn"
-		} ;# end if
-		
-	} ;# end while
 
 	if { [llength $found] == 0 } {
 		return [list ERROR  [mc "Did not find \"%s\"." $text]]
 	}
 
-	return [ list OK [mc "found \"%s\" in %s" $text $found] ]
+	return [ list OK [mc "found \"%s\" in: %s" $text [join $found ", "] ] ]
 
 } ;# end of proc find
 
