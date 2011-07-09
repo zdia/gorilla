@@ -4488,31 +4488,43 @@ proc gorilla::SaveBackup { filename } {
 
 	set errorType [ mc ERROR-SaveBackup ]
 	# "Error Saving Backup of Database"
-	set backupFileName "[file rootname [file tail $filename] ].bak"
 
-	if { $::gorilla::preference(backupPath) ne "" } {
-		
-		if { ! [file isdirectory $::gorilla::preference(backupPath)] } {
+	# create a backup filename based upon timeStampBackup preference
+
+	if { ! $::gorilla::preference(timeStampBackup) } {
+		set backupFileName "[file rootname [file tail $filename] ].bak"
+	} else {
+		# Note: The following characters are reserved in Windows and
+		# cannot be used in a file name: < > : " / \ | ? *
+		set backupFileName [ file rootname [file tail $filename] ]
+		append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
+		append backupFileName [file extension $filename]
+	}
+
+        # determine where to save the backup based upon preference setting
+        
+	if { $::gorilla::preference(backupPath) eq "" } {
+		# place backup file into same directory as current password db file
+		set backupPath [ file dirname $filename ]
+	} else {
+		# place backup file into users preference directory
+
+		set backupPath $::gorilla::preference(backupPath)
+		if { ! [file isdirectory $backupPath] } {
 			return [list $errorType [mc ERROR-SaveBackup-invalid-directory] ]
 			# "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."
 			
-		}	elseif { ! [file exists $::gorilla::fileName] } {
+		}	elseif { ! [file exists $filename] } {
 			return [list $errorType [mc ERROR-SaveBackup-unknown-file] ]
 			# "Unknown file. - \nPlease select a valid database filename."
 			
 		}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
 				set backupFileName "[ file tail $filename ]~"
-				
-		} elseif { $::gorilla::preference(timeStampBackup) } {
-			# Note: The following characters are reserved in Windows and
-			# cannot be used in a file name: < > : " / \ | ? *
-			set backupFileName [ file rootname [file tail $filename] ]
-			append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
-			append backupFileName [file extension $filename]
 		}
-	}
+	} ; # end if backupPath preference
 	
-	set backupFile [ file join $::gorilla::preference(backupPath) $backupFileName ]
+	set backupFile [ file join $backupPath $backupFileName ]
+
 	if {[catch {
 		file copy -force -- $filename $backupFile
 		} oops]} {
