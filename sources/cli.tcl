@@ -64,6 +64,9 @@ list -group                -> lists all groupnames with valid entries"
 		find { set output "find text                    find text in all records and fields
 find -field fieldname text    find text in fieldname of all records"
 		}
+		help { set output "\"help commands\" shows possible commands
+\"help <command-name>\" shows help for a single command" }
+		quit { set output "quits Passwort Gorilla" }
 		default { return [list ERROR "Command unknown"] }
 	} ;# end switch
 	return [list OK $output]
@@ -152,6 +155,15 @@ proc ::cli::GetGroupNames {} {
 	return [lsort -unique $output]
 } ;# end of proc cli::GetGroupNames
 
+# http://wiki.tcl.tk/14693
+proc ::cli::enableRaw {{channel stdin}} {
+     exec /bin/stty raw -echo <@$channel
+}
+
+proc ::cli::disableRaw {{channel stdin}} {
+	 exec /bin/stty -raw echo <@$channel
+}
+
 proc ::cli::Open { fileName {password ""} } {
 	# Note: for test purposes the filename is preset!
 	# set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
@@ -167,15 +179,30 @@ proc ::cli::Open { fileName {password ""} } {
 	}
 
 	if { $password eq "" } {
-		puts -nonewline "Please enter password: "
+
+		puts -nonewline "Please enter password:"
 		flush stdout
-		# Todo: password can be seen!
-		gets stdin password
+
+		if {$::tcl_platform(platform)!="unix"} {
+      # FIXME:  This routine only works on unix.  On other platforms, the
+      # password is still echoed to the screen as it is typed.
+      gets stdin password
+    } else {
+			::cli::enableRaw
+			gets stdin password
+			::cli::disableRaw
+		}
 	}
 	
 	set ::gorilla::collectedTicks [list [clock clicks]]
 	gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
-	set newdb [pwsafe::createFromFile $fileName $password ::gorilla::openPercent]
+
+	if { [catch {
+					set newdb [pwsafe::createFromFile $fileName $password ::gorilla::openPercent]
+				} oops ] } {
+		return [list ERROR $oops]
+	}
+	
 	# if newdb eq "" then return [list ERROR [mc "Could not open $filename"]]
 
 	if {[info exists ::gorilla::db]} {
