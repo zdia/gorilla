@@ -27,7 +27,7 @@
 namespace eval ::cli {
 	# FIXME: Option -h causes error "Tk not found"
 	# Error can be fixed if argv is cleaned at the very beginning before
-	# requirung package Tk.
+	# requiring package Tk.
 	# set ::gorilla::argv $argv
 	# set argv ""
 	#
@@ -39,6 +39,7 @@ namespace eval ::cli {
 		edit					cli::Edit
 		save					cli::Save
 		find					::cli::Find
+		help					::cli::Help
 	}
 
 	set FieldList [list uuid group title user notes password url \
@@ -46,15 +47,27 @@ namespace eval ::cli {
 		
 } ;# end eval cli
 
-# --------------- list of commands -------------------------------------
-# list field rn	-> list single record rn
-# list field		-> lists all field records
-# list 					-> all records with all fields
-#
-# edit field rn
-# 
-# add group|login
-# merge
+proc ::cli::Help { args } {
+	set output ""
+	switch [lindex $args 0] {
+		commands { return [list OK [array names ::cli::Commands] ] }
+		list { set output "list -field fieldname rn   -> list single record rn
+list -field fieldname      -> lists all records for fieldname
+list -field                -> lists all fieldnames
+list rn                   -> list single record
+list -group groupname      -> lists all records in a group
+list -group                -> lists all groupnames with valid entries"
+		}
+		open { set output "open database ?password?" }
+		save { set output "save    -> saves the current database" }
+		edit { set output "edit fieldname recordnumber" }
+		find { set output "find text                    find text in all records and fields
+find -field fieldname text    find text in fieldname of all records"
+		}
+		default { return [list ERROR "Command unknown"] }
+	} ;# end switch
+	return [list OK $output]
+} ;# end of proc ::cli::Help
 
 proc ::cli::Save { } {
 	set nativeName [file nativename $::gorilla::fileName] 
@@ -112,20 +125,6 @@ proc ::cli::Edit { args } {
 	return [list OK "$field #$rn: [ ::gorilla::dbget $field $rn ]"]
 } ;# end of proc ::cli::Edit
 
-proc ::cli::Usage {} {
-	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
-	puts stdout "\nOptions:"
-	puts stdout "  --rc <name>\t\tUse <name> as configuration file (not the Registry)."
-	# puts stdout "   --norc       Do not use a configuration file (or the Registry)."
-	puts stdout "  --sourcedoc\t\tCreate source documentation with Ruff."
-	puts stdout "  -t, --test\t\tOpen directly test database testdb.psafe3"
-	puts stdout "  --tcltest\t\tRun all tcltest modules for Password Gorilla."
-	puts stdout "  -cli, --command-line\tUse Password Gorilla in command-line mode."
-	puts stdout "  --chkmsgcat\t\tRedefine msgcat::unknown for internal use."
-	puts stdout "  --help\t\tShow this message."
-	puts stdout "  <database>\t\tOpen <database> on startup."
-}
-
 proc ::cli::Norc {} {
 	# This option is useful only for Windows users who want to use the registry
 	set ::gorilla::preference(norc) 1
@@ -153,12 +152,13 @@ proc ::cli::GetGroupNames {} {
 	return [lsort -unique $output]
 } ;# end of proc cli::GetGroupNames
 
-proc ::cli::Open { fileName } {
+proc ::cli::Open { fileName {password ""} } {
 	# Note: for test purposes the filename is preset!
-	set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
+	# set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
+	# set password test
 	
 	if { ![file exists $fileName] } {
-		return [ list ERROR [mc "Could not find $file."] ]
+		return [ list ERROR [mc "Could not find $fileName."] ]
 		# mc ERROR-OpenError-nofile
 	} ;# end if
 
@@ -166,9 +166,16 @@ proc ::cli::Open { fileName } {
 		puts "should we save the db?"
 	}
 
+	if { $password eq "" } {
+		puts -nonewline "Please enter password: "
+		flush stdout
+		# Todo: password can be seen!
+		gets stdin password
+	}
+	
 	set ::gorilla::collectedTicks [list [clock clicks]]
 	gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
-	set newdb [pwsafe::createFromFile $fileName test ::gorilla::openPercent]
+	set newdb [pwsafe::createFromFile $fileName $password ::gorilla::openPercent]
 	# if newdb eq "" then return [list ERROR [mc "Could not open $filename"]]
 
 	if {[info exists ::gorilla::db]} {
@@ -197,9 +204,9 @@ proc ::cli::CheckRecordNr { rn } {
 } ;# end of proc
 
 proc ::cli::List { args } {
-	# list field fieldname rn   -> list single record rn
-	# list field fieldname      -> lists all records for fieldname
-	# list field                -> lists all fieldnames
+	# list -field fieldname rn   -> list single record rn
+	# list -field fieldname      -> lists all records for fieldname
+	# list -field                -> lists all fieldnames
 	# list rn                   -> list single record
 	# list group groupname      -> lists all records in a group
 	# list group                -> lists all groupnames with valid entries
@@ -212,7 +219,7 @@ proc ::cli::List { args } {
 
 	if { $args eq "" } {
 		# list all records per title? Not helpful with a large db.
-		return [list ERROR "Missing option. Should be: group, field."]
+		return [list ERROR "Missing option. Should be: group, field or ."]
 	} ;# end if
 	
 	if { [string is integer [lindex $args 0]] } {
@@ -231,11 +238,11 @@ proc ::cli::List { args } {
 
 	set option [lindex $args 0]
 
-	# array set cli::OptionsExecute { field cli::OptionField }
+	# array set cli::ListOptionsExecute { option execute }
 	# eval cli::OptionsExecute($option) $args
 	
 	switch $option {
-		field {
+		-field {
 			set fieldname [lindex $args 1]
 			if { $fieldname ne ""} {
 				if { $fieldname ni $::cli::FieldList } {
@@ -247,10 +254,10 @@ proc ::cli::List { args } {
 					if { [lindex $result 0] eq "ERROR" } {
 						return $result
 					}
-					# list field fieldname rn
+					# list -field fieldname rn
 					return [list OK "$fieldname #$rn: [ ::gorilla::dbget $fieldname $rn ]"]
 				} else {
-					# list field fieldname
+					# list -field fieldname
 					set output ""
 					foreach number [$::gorilla::db getAllRecordNumbers] {
 						append output "$fieldname #$number: [ ::gorilla::dbget $fieldname $number ]\n"
@@ -258,11 +265,11 @@ proc ::cli::List { args } {
 					# return [list OK $output]
 				}
 			} else {
-				# list field
+				# list -field
 				return [list OK $::cli::FieldList]
 			}
 		}
-		group {
+		-group {
 			set groupname [lindex $args 1]
 			if { $groupname ne ""} {
 				if { $groupname ni [::cli::GetGroupNames] } {
@@ -295,16 +302,11 @@ proc ::cli::Find { args } {
 	# find the passed text in the records
 	# Usage:
 	# find text                    find text in all records and fields
-	# find field fieldname text    find text in fieldname of all records
+	# find -field fieldname text    find text in fieldname of all records
 	# 
-	# find -l, --list	-> list the fields where text is found
-	# find -h, --help (lists all options)
-	# find -nc, --nocase
-	# find -t, --title
-	# returns all records and all fields in which the text was found
 	# args - text to search
 	#
-	# make an AND search if multiple words?
+	# make an AND search if text has multiple words?
 
 	if { ! [info exists ::gorilla::db] } {
 		return [list ERROR "No database available. Please type: \"open <database>\"."]
@@ -316,7 +318,7 @@ proc ::cli::Find { args } {
 	set found [list ]
 	set totalRecords [llength [$::gorilla::db getAllRecordNumbers]]
 
-	if { $text eq "field" } {
+	if { $text eq "-field" } {
 		set fieldname [lindex $args 1]
 		if { $fieldname eq ""} { return [list ERROR "Missing fieldname."]	}
 		if { $fieldname ni $::cli::FieldList } {
@@ -378,7 +380,10 @@ proc ::cli::MainLoop { } {
 	# TODO: make use of package vt100 for color, cursor placement ...
 	# replace gets by a editable input routine like Tcl-Readline
 
-	puts "Password Gorilla Command-Line Module ($::gorillaVersion)\nType \"quit\" to exit"
+	puts "Password Gorilla Command-Line Module ($::gorillaVersion)
+Type \"quit\" to exit
+\"help commands\" shows possible commands
+\"help <command-name>\" shows help for a single command"
 	
 	gorilla::Init
 

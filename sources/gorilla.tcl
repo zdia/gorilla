@@ -8082,8 +8082,21 @@ proc gorilla::CLIRc {  } {
 	set ::gorilla::preference(rc) $file
 } ;# end of proc
 
+proc gorilla::CLIUsage {} {
+	puts stdout "usage: [file tail $::argv0] \[Options\|<database>\]"
+	puts stdout "\nOptions:"
+	puts stdout "  --rc <name>            Use <name> as configuration file (not the Registry)."
+	# puts stdout "   --norc       Do not use a configuration file (or the Registry)."
+	puts stdout "  --sourcedoc            Create source documentation with Ruff."
+	puts stdout "  -t, --test             Open directly test database testdb.psafe3"
+	puts stdout "  --tcltest              Run all tcltest modules for Password Gorilla."
+	puts stdout "  -cli, --command-line   Use Password Gorilla in command-line mode."
+	puts stdout "  --chkmsgcat            Redefine msgcat::unknown for internal use."
+	puts stdout "  --help                 Show this message."
+	puts stdout "  <database>             Open <database> on startup."
+}
 proc gorilla::CLIHelp {  } {
-	cli::usage
+	gorilla::CLIUsage
 	exit
 } ;# end of proc
 
