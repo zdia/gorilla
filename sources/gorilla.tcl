@@ -5525,8 +5525,8 @@ proc gorilla::DatabasePreferencesDialog {} {
 		pack $top.uni -anchor w -side top -pady 3 -padx 10
 
 		ttk::frame $top.stretch -padding [list 10 5]
-		spinbox $top.stretch.spin -from 2048 -to 65535 -increment 256 \
-			-justify right -width 8 \
+		spinbox $top.stretch.spin -from 2048 -to 2147483647 -increment 256 \
+			-justify right -width 12 \
 			-textvariable ::gorilla::dpd(keyStretchingIterations)
 		ttk::label $top.stretch.label -text [mc "V3 key stretching iterations"]
 		pack $top.stretch.spin $top.stretch.label -side left -padx 3

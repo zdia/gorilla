@@ -411,16 +411,27 @@ ASCII characters.
 '''V3 key stretching iterations'''
 
  | The Password Safe 3 format supports ''variable key stretching'', which is a
-means of protecting a database against brute-force attacks. Key stretching
-is a complex operation that must be performed when validating a master
-password for correctness. When an authorized user enters the correct
-password, this may take a second and is barely noticeable. But it slows down
-mass-testing password guesses by an automated program. The ''iterations''
+means of protecting a database against brute-force attacks (an attempt to find
+the password by trying all possible password character combinations). Key
+stretching is a complex operation that must be performed when validating a
+master password for correctness.  When an authorized user enters the correct
+password, this may take a second and is barely noticeable.  But it slows down
+mass-testing password guesses by an automated program.  The ''iterations''
 parameter indicates the complexity of the key stretching: the higher this
 value, the longer it takes to open a database, and the longer it takes an
-attacker to test one password. It is recommended to leave the value at its
-default of 2048, which is a good compromise between promptly opening
-databases and hampering attackers.
+attacker to test one password.
+
+ | The correct choice for this value depends upon several factors, one of
+which is the expected computational performance that an attacker may utilize
+against any given password database file.  It should be chosen such that an
+attacker can only test a few password possibilities per second instead of
+testing millions or billions of possibilities per second.  A rule of thumb
+is to pick a value such that it takes Gorilla about 1-2 seconds during the
+"Please be patient. Verifying password ..." phase of opening a database. 
+The value can range from a low of 2,048 to a high of 2,147,483,647.  Use
+care in searching for a reasonable value, setting too large a value
+initially will create a password safe file which can take a very long time
+to open later.
 
  | Note that this option can only be changed on a per-database basis and
 does not appear in the Database Default Preferences Menu. This prevents a

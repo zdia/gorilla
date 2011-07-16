@@ -372,16 +372,7 @@ itcl::class pwsafe::v3::reader {
 	#
 
 	if {[binary scan $biter i iter] != 1} {
-	    error "oops"
-	}
-
-	if {$iter > 65536} {
-	    #
-	    # More than 65536 iterations looks unreasonable, at least today.
-	    # Sounds more like a file format bug. We don't want to spend such
-	    # a long time iterating, appearing dead.
-	    #
-	    error "Key stretching wants $iter iterations, which seems unreasonable"
+	    error "Failed to scan key stretch iteration count from binary data."
 	}
 
 	if {$iter < 2048} {
