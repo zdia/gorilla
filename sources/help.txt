@@ -572,10 +572,20 @@ executable.
 
 '''Notes for Mac Users'''
 
- | To open the default Mac browser (Safari) you should enter the single word
-'''open''' in the '''Browser executable to launch''' entry.  If you utilize
-Firefox on the Mac, usually entering '''firefox''' is sufficient to launch
-Firefox from Password Gorilla.
+ | The value ''open'' is preset per default for the '''Browser executable to launch''' entry.
+If the url entry of the login record contains a value like ''http://www.google.com''
+then the default browser will launch with this site. To choose a default Web browser other
+than Safari you
+
+ | 1. Open Safari (/Applications).
+ | 2. Choose Preferences from the Safari menu.
+ | 3. Click the General button.
+ | 4. Choose a different browser from the Default Web Browser pop-up menu.
+
+ | If you want to launch a Web browser independently from the Safari installation
+mechanism you have to add the path of the browser's executable, e.g.
+
+ | ''/Applications/Firefox.app/Contents/MacOS/firefox''
 
 '''Notes for Unix/Linux Users'''
 
