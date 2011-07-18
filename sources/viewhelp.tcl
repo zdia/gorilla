@@ -166,6 +166,7 @@ proc ::Help::Help {{title ""}} {
         set state(all) [lsort [lappend state(all) $title]]
     }
  }
+
  ##+##########################################################################
  #
  # ::Help::DoDisplay -- Creates our help display. If we have tile 0.7.8 then
@@ -427,7 +428,7 @@ proc ::Help::DoDisplay { top } {
 			[mc Previous] { ::Help::Next $w -1; return}
 			[mc Index]   { ::Help::Listpage $w [list $state(all)] }
 			[mc Search]  { ::Help::Search $w}
-			default  { ::Help::ShowPage $w \"$title\" ; set next 1}"
+			default  { ::Help::ShowPage $w [list $title] ; set next 1}"
 
 		if { [array get navigation $title] eq "" } {
 			eval $navigation(default)
@@ -453,7 +454,9 @@ proc ::Help::DoDisplay { top } {
     $w config -state disabled
  
     set state(current) $title
+
  }
+
  ##+##########################################################################
  #
  # ::Help::ShowPage -- Shows a text help page, doing wiki type transforms
@@ -591,6 +594,13 @@ proc ::Help::DoDisplay { top } {
 			set ::Help::oldLink ""
 		}
 
+		# Closing the Help window does not unset ::Help::oldLink so we do it
+		# here
+		# Todo: write ::Help::CloseDialog with unsetting of ::Help::oldLink
+		if { ![$W(tree) exists $::Help::oldLink]} {
+			set ::Help::oldLink ""
+		}
+
     set id [$W(tree) selection]
     set title [$W(tree) item $id -text]
     set tag [$W(tree) item $id -tag]
@@ -601,7 +611,7 @@ proc ::Help::DoDisplay { top } {
 		
     if {$tag eq "link"} {
 			$W(tree) item $id -tag linkSelected
-			$W(tree) item $::Help::oldLink -tag link				
+			$W(tree) item $::Help::oldLink -tag link
 			set ::Help::oldLink $id
 			::Help::Show $title
     } else {                                    ;# Make all children visible
