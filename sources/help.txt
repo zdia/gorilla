@@ -393,7 +393,7 @@ with Password Safe 2.0 or higher, and Password Gorilla 1.0 or higher.
 
  | It is highly recommended to enable this option, and to upgrade existing
 databases to the Password Safe 3 format, which features enhanced security.
-See below, Information about the new Database Format, for more information.
+See [The "V3" Database Format] for more information.
 
 '''V2 Unicode support'''
 
@@ -437,6 +437,34 @@ to open later.
 does not appear in the Database Default Preferences Menu. This prevents a
 malicious user from changing the preference in the registry and degrading
 the protection of future databases.
+
+'''Calculate delay time'''
+
+ | Pressing the ''Calculate'' button in this section will cause Gorilla to
+display how long it took to perform PasswordSafe V3 format keystretching
+using the number of iterations in the ''V3 key stretching iterations'' box. 
+If this option has not been previously utilized, underscores ("___") will be
+present where the time value is to appear.
+
+'''Automatic iteration calculation'''
+
+ | This section allows for automatic calculation of an iteration value
+that produces approximately the number of seconds delay present in the
+''Delay for X seconds'' area.  The range for seconds is from 1 to 600 (ten
+minutes).  Simply enter or use the up/down arrows to select a desired number
+of seconds of delay, and press the adjacent ''Calculate'' button.  Gorilla
+will compute a value and automatically fill in the ''V3 key stretching
+iterations'' box with the new value.
+
+ | Note that the computation of the value occurs by measuring the time delay
+for a small iteration count and then scaling that count by the requested
+length of time.  As a result the actual computed value will depend upon
+several factors out of Gorilla's control, including the CPU load level when
+the calculate button is depressed.  The computed value should be close to
+the proper value but may need to be manually adjusted slightly to achieve
+exactly the selected seconds of delay.  Utilize the ''Calculate delay time''
+section to determine the amount of time consumed by the calculated iteration
+value.
           
 -------------------
 title: Display

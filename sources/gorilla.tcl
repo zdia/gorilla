@@ -5469,6 +5469,7 @@ proc gorilla::DestroyDatabasePreferencesDialog {} {
 }
 
 proc gorilla::DatabasePreferencesDialog {} {
+
 	ArrangeIdleTimeout
 
 	set top .dbPrefsDialog
@@ -5524,6 +5525,8 @@ proc gorilla::DatabasePreferencesDialog {} {
 			-variable ::gorilla::dpd(IsUTF8)
 		pack $top.uni -anchor w -side top -pady 3 -padx 10
 
+		# === keystretch spinbox
+
 		ttk::frame $top.stretch -padding [list 10 5]
 		spinbox $top.stretch.spin -from 2048 -to 2147483647 -increment 256 \
 			-justify right -width 12 \
@@ -5531,6 +5534,41 @@ proc gorilla::DatabasePreferencesDialog {} {
 		ttk::label $top.stretch.label -text [mc "V3 key stretching iterations"]
 		pack $top.stretch.spin $top.stretch.label -side left -padx 3
 		pack $top.stretch -anchor w -side top
+
+		# === keystretch delay timer
+
+		set delayf [ ttk::labelframe $top.delay -padding {10 5} -text [ mc SECURITY-db-calc-delay-time ] ]
+		pack $delayf -anchor w -side top -fill x -expand true -padx {10 10} -pady {0 2m}
+		
+		ttk::label  $delayf.feedback -text [ mc SECURITY-db-%d-iter-%s-secs $::gorilla::dpd(keyStretchingIterations) "___" ]
+		ttk::button $delayf.compute  -text [ mc SECURITY-db-calc ] -command [ namespace code [ subst {
+			$delayf.compute configure -text [ mc SECURITY-db-calcing ]
+			update idletasks
+		  	$delayf.feedback configure -text \[ mc SECURITY-db-%d-iter-%s-secs \
+			                                 \[ $top.stretch.spin get ] \
+		                                         \[ expr { \[ pwsafe::int::keyStretchMsDelay \[ $top.stretch.spin get ] ] / 1000.0 } ] ]
+			$delayf.compute configure -text [ mc SECURITY-db-calc ]
+		  } ] ]
+		grid $delayf.feedback $delayf.compute -sticky news -padx {1m 1m} -pady {1m 1m}
+		
+		# === auto iter computation
+		
+		set aiterf [ ttk::labelframe $top.autoiter -padding {10 5} -text [ mc SECURITY-db-auto-iter-calc ] ]
+		pack $aiterf -anchor w -side top -fill x -expand true -padx {10 10}
+
+                ttk::label $aiterf.label1 -text [ mc SECURITY-db-delay-for ]		
+		spinbox $aiterf.spin -from 1 -to 600 -increment 1 -justify right -width 5 
+		ttk::label $aiterf.spinlabel2 -text [ mc SECURITY-db-seconds ]
+		ttk::button $aiterf.calculate -text [ mc SECURITY-db-calc ] \
+			-command [ namespace code [ subst { 
+				$aiterf.calculate configure -text [ mc SECURITY-db-calcing ]
+				update idletasks
+		    		$top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
+		    		$aiterf.calculate configure -text [ mc SECURITY-db-calc ]
+			} ] ]
+		grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
+
+		# ===
 
 		ttk::separator $top.sep -orient horizontal
 		pack $top.sep -side top -fill x -pady 10
@@ -5607,7 +5645,8 @@ proc gorilla::DatabasePreferencesDialog {} {
 	}
 
 	ArrangeIdleTimeout
-}
+
+} ; # end proc gorilla::DatabasePreferencesDialog
 
 # ----------------------------------------------------------------------
 # Preferences Dialog
