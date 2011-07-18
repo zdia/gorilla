@@ -4303,17 +4303,7 @@ proc gorilla::Save {} {
 		. configure -cursor $myOldCursor
 		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
 			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
-		return GORILLA_SAVEBACKUPERROR
-	}
-
-	# The actual data are saved. Now take care of a backup file
-
-	set message [ gorilla::SaveBackup $::gorilla::fileName ]
-
-	if { $message ne "GORILLA_OK" } {
-		. configure -cursor $myOldCursor
-		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-		return GORILLA_SAVEBACKUPERROR
+		return GORILLA_SAVEERROR
 	}
 
 	# TODO: refactoring
@@ -4323,15 +4313,26 @@ proc gorilla::Save {} {
 
 	. configure -cursor $myOldCursor
 
-	if {$::gorilla::preference(keepBackupFile)} {
-		set ::gorilla::status [mc "Password database saved with backup copy %s." $nativeName ] 
-	} else {
-		set ::gorilla::status [mc "Password database saved."] 
-	}
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 
 	UpdateMenu
+
+	# The actual data are saved. Now take care of a backup file
+
+	if {$::gorilla::preference(keepBackupFile)} {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { [lindex $message 0] ne "GORILLA_OK" } {
+			# gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+			set ::gorilla::status [mc "Password database saved but backup copy failed: [lindex $message 1]." ]
+			return GORILLA_SAVEBACKUPERROR
+		} else {
+			set ::gorilla::status [mc "Password database saved with backup copy." ]
+			return GORILLA_OK
+		}
+	}
+	set ::gorilla::status [mc "Password database saved."] 
+	
 	return GORILLA_OK
 }
 
@@ -4347,8 +4348,8 @@ proc gorilla::SaveAs {} {
 	if {![info exists ::gorilla::db]} {
 		gorilla::ErrorPopup [ mc "Nothing To Save" ] \
 		[ mc "No password database to save." ]
-		# ERROR-save
-		# ERROR-no-db
+		# ERROR-Save
+		# ERROR-Save-no-db
 		return GORILLA_SAVEERROR
 	}
 
@@ -4400,9 +4401,7 @@ proc gorilla::SaveAs {} {
 		return 0
 	}
 
-	# Dateiname auf Default Extension testen 
-	# not necessary
-	# -defaultextension funktioniert nur auf Windowssystemen und Mac
+	# -defaultextension seems not to work on Linux
 	# set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
 	set nativeName [file nativename $fileName]
 	
@@ -4426,16 +4425,6 @@ proc gorilla::SaveAs {} {
 			-message [mc "Failed to save password database as \"%s\": %s" \
 			$nativeName $oops]
 		return 0
-	}
-
-	# The actual data are saved. Now take care of a backup file
-
-	set message [ gorilla::SaveBackup $::gorilla::fileName ]
-
-	if { $message ne "GORILLA_OK" } {
-		. configure -cursor $myOldCursor
-		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-		return GORILLA_SAVEBACKUPERROR
 	}
 
 	# clean up
@@ -4467,6 +4456,22 @@ proc gorilla::SaveAs {} {
 	}
 	
 	UpdateMenu
+
+	# The actual data are saved. Now take care of a backup file
+
+	if {$::gorilla::preference(keepBackupFile)} {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { [lindex $message 0] ne "GORILLA_OK" } {
+			# gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+			set ::gorilla::status [mc "Password database saved but backup copy failed: [lindex $message 1]." ]
+			return GORILLA_SAVEBACKUPERROR
+		} else {
+			set ::gorilla::status [mc "Password database saved with backup copy." ]
+			return GORILLA_OK
+		}
+	}
+	set ::gorilla::status [mc "Password database saved."] 
+	
 	return GORILLA_OK
 }
 
@@ -4478,39 +4483,47 @@ proc gorilla::SaveBackup { filename } {
 	# If the timestamp flag is set the backup file gets a timestamp appendix
 	# according to the local settings
 	#
-	# If automatic backup is activated 
-	#
 	# filename - name of current database containing full path
 	#
 
 	set errorType [ mc ERROR-SaveBackup ]
 	# "Error Saving Backup of Database"
-	set backupFileName "[file rootname [file tail $filename] ].bak"
 
-	if { ! $::gorilla::preference(keepBackupFile) } {
-		return GORILLA_OK
-	}	elseif { $::gorilla::preference(backupPath) eq "" } {
-			return [list $errorType [mc ERROR-SaveBackup-no-directory] ]
-			# "No directory selected. - \nPlease define a backup directory\nin the Preferences menu."
-	}	elseif { ! [file isdirectory $::gorilla::preference(backupPath)] } {
+	# create a backup filename based upon timeStampBackup preference
+
+	if { ! $::gorilla::preference(timeStampBackup) } {
+		set backupFileName "[file rootname [file tail $filename] ].bak"
+	} else {
+		# Note: The following characters are reserved in Windows and
+		# cannot be used in a file name: < > : " / \ | ? *
+		set backupFileName [ file rootname [file tail $filename] ]
+		append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
+		append backupFileName [file extension $filename]
+	}
+
+        # determine where to save the backup based upon preference setting
+        
+	if { $::gorilla::preference(backupPath) eq "" } {
+		# place backup file into same directory as current password db file
+		set backupPath [ file dirname $filename ]
+	} else {
+		# place backup file into users preference directory
+
+		set backupPath $::gorilla::preference(backupPath)
+		if { ! [file isdirectory $backupPath] } {
 			return [list $errorType [mc ERROR-SaveBackup-invalid-directory] ]
 			# "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."
-	}	elseif { ! [file exists $::gorilla::fileName] } {
+			
+		}	elseif { ! [file exists $filename] } {
 			return [list $errorType [mc ERROR-SaveBackup-unknown-file] ]
 			# "Unknown file. - \nPlease select a valid database filename."
-	}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
-			set backupFileName "[ file tail $filename ]~"
-	} elseif { $::gorilla::preference(timeStampBackup) } {
-
-			# Note: The following characters are reserved in Windows and
-			# cannot be used in a file name: < > : " / \ | ? *
 			
-			set backupFileName [ file rootname [file tail $filename] ]
-			append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
-			append backupFileName [file extension $filename]
-	}
+		}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
+				set backupFileName "[ file tail $filename ]~"
+		}
+	} ; # end if backupPath preference
 	
-	set backupFile [ file join $::gorilla::preference(backupPath) $backupFileName ]
+	set backupFile [ file join $backupPath $backupFileName ]
 
 	if {[catch {
 		file copy -force -- $filename $backupFile

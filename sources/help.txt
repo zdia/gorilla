@@ -283,8 +283,8 @@ editing, or to do neither.
 '''Backup database on save'''
 
  | If enabled, then a backup file of the password database is made whenever
-the database is saved. The backup file has the same name as the database
-itself, but with the ''.bak'' extension.
+the database is saved. The backup file is located in the same directory and
+has the same name as the database itself, but with the ''.bak'' extension.
 
 '''Remember sizes of dialog boxes'''
 
@@ -407,6 +407,16 @@ both Password Gorilla and Password Safe, the latter will not read accented
 characters correctly. (The database will open, but non-ASCII characters will
 not show up correctly.) This option has no effect if your database uses only
 ASCII characters.
+
+'''Timestamp Backup'''
+
+ | If the option ''Auto-Save'' is enabled then the copy can be saved with
+a timestamp in the chosen backup directory. The timestamp format is: YYYY-mm-dd-hh-mm-ss
+
+'''Backup Path'''
+
+ | If no backup path is entered then the backup copy has the suffix ".bak" and is
+put into the same directory as the Password database itself.
 
 '''V3 key stretching iterations'''
 
