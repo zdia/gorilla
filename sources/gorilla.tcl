@@ -1077,11 +1077,11 @@ proc gorilla::New {} {
 		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					return
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					return
 				}
 			}
@@ -1561,11 +1561,11 @@ proc gorilla::Open {{defaultFile ""}} {
 			\"Cancel\" returns to the main menu."]
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					return
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					return
 				}
 			}
@@ -4700,11 +4700,11 @@ proc gorilla::Exit {} {
 		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					set ::gorilla::exiting 0
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					set ::gorilla::exiting 0
 				}
 			}
