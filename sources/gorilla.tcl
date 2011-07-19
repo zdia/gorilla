@@ -294,7 +294,7 @@ proc gorilla::Init {} {
 
 		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
-		backupPath						 { {}      { {value} { file exists $value } }                                                   }
+		backupPath             { {}      { {value} { file exists $value } }                                                   }
 		browser-exe            { {}      { {value} { return true } }                                                          }
 		browser-param          { {}      { {value} { return true } }                                                          }
 		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
@@ -335,6 +335,7 @@ proc gorilla::Init {} {
 	dict for {pref value} $::gorilla::preference(all-preferences) {
 		set ::gorilla::preference($pref) [ lindex $value 0 ] 
 	}
+
 } ; # end proc gorilla::Init
 
 # This callback traces writes to the ::gorilla::status variable, which
@@ -6324,6 +6325,11 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 		} ; # end switch pref
 
 	} ; # end while ! eof f
+
+	# MacOS launches default browser with "open http://url"
+	if {[tk windowingsystem] == "aqua" && $::gorilla::preference(browser-exe) eq "" }	{
+			set ::gorilla::preference(browser-exe) "open"
+	}
 
 	# initialize locale and fonts from the preference values
 
