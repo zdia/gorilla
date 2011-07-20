@@ -102,12 +102,12 @@ tcl_platform: [ array get ::tcl_platform ]
 info library: [ info library ]
 gorillaDir: $::gorillaDir
 gorillaDir contents:
-	[ join [ glob -directory $::gorillaDir * ] "\n\t" ]
+	[ join [ glob -directory $::gorillaDir -nocomplain * ] "\n\t" ]
 auto_path dir contents:
 [ set result ""
   foreach dir $::auto_path {
     append result "$dir\n"
-    append result "[ join [ glob -directory $dir -- * ] "\n\t" ]\n"
+    append result "[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
   } 
   return $result ]
 -end--------------------------------------------------------------------
