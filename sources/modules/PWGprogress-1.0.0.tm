@@ -1,13 +1,13 @@
 
-# gorillaprogress - a component of Password Gorilla
+# PWGprogress - a component of Password Gorilla
 #
 # ----------------------------------------------------------------------
 #
 # See the gorilla.tcl file for Password Gorilla copyright, authorship, and
 # license information.
 #
-# This module authored by and copyright 2011 by Richard Ellis
-# <rellis@dp100.com>
+# This module authored by Richard Ellis <rellis@dp100.com>
+# Copyright 2011 Richard Ellis
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -22,10 +22,10 @@
 # You should have received a copy of the GNU General Public License
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# A copy of the GNU General Public License can be found in the file
+# LICENSE.txt located in the same directory as gorilla.tcl.
 # ----------------------------------------------------------------------
-
-# for testing - visibly see that the module has loaded
-puts stderr "gorillaprogress 1.0.0 loaded"
 
 # this makes use of several 8.5 features, so make sure we are running at
 # least 8.5

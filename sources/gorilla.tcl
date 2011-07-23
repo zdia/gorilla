@@ -208,6 +208,9 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 # installed items
 set auto_path [ list $::gorillaDir [ file join $::gorillaDir tcllib ] {*}$auto_path ]
 
+# Initialize the Tcl modules system to look into modules/ directory
+::tcl::tm::add [ file join $::gorillaDir modules ]
+
 #
 # Look for Itcl
 #
@@ -236,7 +239,9 @@ if {[catch {package require pwsafe} oops]} {
 	# the parameter 1 is setting gorilla.tcl's filelength to 0
 }
 
-load-package tooltip
+foreach package {tooltip PWGprogress} {
+	load-package $package
+}
 
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
