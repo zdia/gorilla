@@ -1396,17 +1396,17 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 						 $pvar ] } oops ] } {
 				pwsafe::int::randomizeVar password
 				::gorilla::progress finished
-		. configure -cursor $dotOldCursor
-		$top configure -cursor $myOldCursor
+				. configure -cursor $dotOldCursor
+				$top configure -cursor $myOldCursor
 
-		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title [mc "Error Opening Database"] \
-			-message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
-		$aframe.info configure -text $info
-		$aframe.pw.pw delete 0 end
-		focus $aframe.pw.pw
-		continue
-		}
+				tk_messageBox -parent $top -type ok -icon error -default ok \
+					-title [mc "Error Opening Database"] \
+					-message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
+				$aframe.info configure -text $info
+				$aframe.pw.pw delete 0 end
+				focus $aframe.pw.pw
+				continue
+			}
 #set b [ clock milliseconds ]
 #puts stderr "elapsed open time: [ expr { $b - $a } ]ms"
 		# all seems well
