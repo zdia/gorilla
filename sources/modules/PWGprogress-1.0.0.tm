@@ -34,11 +34,11 @@ package require Tcl 8.5
 package provide gorillaprogress 1.0.0
 
 # 
-# This module provides for a generic framework for text based feedback
-# progress bars (generally label widgets) for Password Gorilla.  This
-# encapsulates all the code related to handling the progress bars into one
-# location, in a private namespace, and thereby simplifies the remainder of
-# the Password Gorilla codebase.
+# This module provides for a generic framework for feedback progress bars
+# (currently label widgets) for Password Gorilla.  This encapsulates all the
+# code related to handling the progress bars into one location, in a private
+# namespace, and thereby simplifies the remainder of the Password Gorilla
+# codebase.
 #
 
 namespace eval ::gorilla::progress {
@@ -58,11 +58,17 @@ namespace eval ::gorilla::progress {
 	# 250ms
 	variable lastupdate 0
 
+	# Current value of the "progress" - an integer within the range 0
+	# ... 100.  This variable also has a write trace attached when
+	# in active state, writes to the variable are then reflected in the
+	# progress widget.
+	variable currentvalue
+
 	namespace ensemble create
 
 	namespace path { ::tcl::mathop ::tcl::mathfunc }
 
-	namespace export init update finished
+	namespace export init update finished newmessage
 
 } ; # end namespace eval ::gorilla::progress
 
@@ -78,13 +84,16 @@ proc ::gorilla::progress::init { config } {
 
 	variable win     [ dict get $config widget  ]
 	variable message [ dict get $config message ]
+	variable value 0
 
 	variable active 1
 	variable lastupdate [ clock milliseconds ]
 
 	$win configure -text [ format $message 0 ]
 
-	return GORILLA_OK
+	trace add variable [ namespace current ]::value write [ namespace code { tracefired } ]
+
+	return [ namespace current ]::value
 
 	#ruff
 	#
@@ -115,6 +124,20 @@ proc ::gorilla::progress::validate { config } {
 	# contains required elements, and that the elements make sense.
 
 	# validate widget key
+	validate_widget $config
+
+	# validate message key
+	validate_message $config
+
+	return GORILLA_OK
+
+} ; # end proc ::gorilla::progress::validate
+
+#
+# ----------------------------------------------------------------------
+#
+
+proc ::gorilla::progress::validate_widget { config } {
 
 	if { ! [ dict exists $config widget ] } {
 		error "Required 'widget' key missing from dictionary."
@@ -124,7 +147,13 @@ proc ::gorilla::progress::validate { config } {
 		error "Widget path [ dict get $config widget ] does not exist."
 	}
 
-	# validate message key
+}
+
+#
+# ----------------------------------------------------------------------
+#
+
+proc ::gorilla::progress::validate_message { config } {
 
 	if { ! [ dict exists $config message ] } {
 		error "Required 'message' key missing from dictionary."
@@ -136,9 +165,7 @@ proc ::gorilla::progress::validate { config } {
 		error "Message string contains more than one '%d' substitution, only a single occurrence allowed."
 	}
 
-	return GORILLA_OK
-
-} ; # end proc ::gorilla::progress::validate
+} ; # end proc ::gorilla::progress::validate_message
 
 #
 # ----------------------------------------------------------------------
@@ -155,6 +182,17 @@ proc ::gorilla::progress::active? {} {
 	}
 
 } ; # end proc ::gorilla::progress::active?
+
+#
+# ----------------------------------------------------------------------
+#
+
+proc ::gorilla::progress::tracefired { args } {
+	# Handles variable trace callbacks by passing current value of
+	# "value" variable to update proc
+	variable value
+	update $value
+} ; # end proc ::gorilla::progress::trace
 
 #
 # ----------------------------------------------------------------------
@@ -189,6 +227,8 @@ proc ::gorilla::progress::update { value } {
 	set lastupdate [ clock milliseconds ]
 	update idletasks
 
+	return GORILLA_OK
+
 	#ruff
 	#
 	# value - the new value, can be integer or floating point, will be
@@ -201,10 +241,30 @@ proc ::gorilla::progress::update { value } {
 # ----------------------------------------------------------------------
 #
 
+proc ::gorilla::progress::newmessage { text } {
+
+	# Updates the internal message string and current widget text value
+	# without modifying the widget name being utilized for feedback.
+
+	validate_message [ list message $text ]
+
+	variable message $text
+
+	variable value
+	variable win
+
+	$win configure -text [ format $message $value ]
+
+} ; # end proc ::gorilla::progress::newmessage
+
+#
+# ----------------------------------------------------------------------
+#
+
 proc ::gorilla::progress::finished {} {
 
-	# Sets progress subsystem state to inactive and clears message text
-	# from the configured widget.
+	# Sets progress subsystem state to inactive, clears message text
+	# from the configured widget, deletes variable trace.
 
 	active?
 
@@ -212,6 +272,8 @@ proc ::gorilla::progress::finished {} {
 	variable win
 	$win configure -text ""
 	set win ""
+
+	trace remove variable [ namespace current ]::value write [ list [ namespace code { trace } ] ]
 
 	return GORILLA_OK
 
