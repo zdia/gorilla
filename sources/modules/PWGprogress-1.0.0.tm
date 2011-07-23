@@ -55,7 +55,7 @@ namespace eval ::gorilla::progress {
 	variable message ""
 
 	# Used to limit the number of "update idletask" calls to one every
-	# 250ms
+	# 500ms
 	variable lastupdate 0
 
 	# Current value of the "progress" - an integer within the range 0
@@ -204,10 +204,10 @@ proc ::gorilla::progress::update { value } {
 
 	active?
 
-	# limit update rate to once every 250ms
+	# limit update rate to once every 500ms
 
 	variable lastupdate
-	if { [ - [ clock milliseconds ] $lastupdate ] < 250 } {
+	if { [ - [ clock milliseconds ] $lastupdate ] < 500 } {
 		return
 	}
 
@@ -225,7 +225,7 @@ proc ::gorilla::progress::update { value } {
 	$win configure -text [ format $message $value ]
 
 	set lastupdate [ clock milliseconds ]
-	update idletasks
+	::update
 
 	return GORILLA_OK
 

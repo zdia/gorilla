@@ -1389,17 +1389,13 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 			set password [$aframe.pw.pw get]
 			
-			set ::gorilla::openPercent 0
-			set ::gorilla::openPercentWidget $aframe.info
-			trace add variable ::gorilla::openPercent [list "write"] \
-			::gorilla::OpenPercentTrace
+			set pvar [ ::gorilla::progress init [ list widget $aframe.info message [ mc "Opening ... %d %%" ] ] ]
+
 #set a [ clock milliseconds ]
-			if {[catch {set newdb [pwsafe::createFromFile $fileName $password \
-						 ::gorilla::openPercent]} oops]} {
+			if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
+						 $pvar ] } oops ] } {
 				pwsafe::int::randomizeVar password
-				trace remove variable ::gorilla::openPercent [list "write"] \
-					::gorilla::OpenPercentTrace
-				unset ::gorilla::openPercent
+				::gorilla::progress finished
 		. configure -cursor $dotOldCursor
 		$top configure -cursor $myOldCursor
 
@@ -1414,10 +1410,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 #set b [ clock milliseconds ]
 #puts stderr "elapsed open time: [ expr { $b - $a } ]ms"
 		# all seems well
-		trace remove variable ::gorilla::openPercent [list "write"] \
-	::gorilla::OpenPercentTrace
-		unset ::gorilla::openPercent
 
+			::gorilla::progress finished
 			. configure -cursor $dotOldCursor
 			$top configure -cursor $myOldCursor
 			pwsafe::int::randomizeVar password
