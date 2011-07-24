@@ -62,7 +62,11 @@ namespace eval ::gorilla::progress {
 	# ... 100.  This variable also has a write trace attached when
 	# in active state, writes to the variable are then reflected in the
 	# progress widget.
-	variable currentvalue
+	variable value
+
+	# Current widget path name of the graphical ttk::progress bar tied
+	# to the value
+	variable pbar
 
 	namespace ensemble create
 
@@ -92,6 +96,12 @@ proc ::gorilla::progress::init { config } {
 	$win configure -text [ format $message 0 ]
 
 	trace add variable [ namespace current ]::value write [ namespace code { tracefired } ]
+
+	variable pbar [ frame [ winfo toplevel $win ].pbar -borderwidth 1m -relief ridge ]
+	pack [ ttk::label       $pbar.lbl -text [ format $message 0 ]            ] -side top -fill both -expand true -padx {1m 1m} -pady {1m 0}
+	pack [ ttk::progressbar $pbar.bar -variable [ namespace current ]::value ] -side top -fill both -expand true -padx {1m 1m} -pady {0 1m}
+	place $pbar -anchor center -relx 0.5 -rely 0.5 -width 3i 
+	raise $pbar	
 
 	return [ namespace current ]::value
 
@@ -217,12 +227,14 @@ proc ::gorilla::progress::update { value } {
 
 	variable win
 	variable message
+	variable pbar
 
 	# limit the value to the integer range 0 ... 100
 
 	set value [ max 0 [ min [ int $value ] 100 ] ]
 
 	$win configure -text [ format $message $value ]
+	$pbar.lbl configure -text [ format $message $value ]
 
 	set lastupdate [ clock milliseconds ]
 	::update
@@ -274,6 +286,10 @@ proc ::gorilla::progress::finished {} {
 	set win ""
 
 	trace remove variable [ namespace current ]::value write [ list [ namespace code { trace } ] ]
+
+	variable pbar
+	destroy $pbar
+	set pbar ""
 
 	return GORILLA_OK
 
