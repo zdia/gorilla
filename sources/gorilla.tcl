@@ -1185,28 +1185,6 @@ proc gorilla::DestroyOpenDatabaseDialog {} {
 	set ::gorilla::guimutex 2
 }
 
-proc gorilla::OpenPercentTrace {name1 name2 op} {
-
-	if {![info exists ::gorilla::openPercentLastUpdate]} {
-		set ::gorilla::openPercentLastUpdate [clock clicks -milliseconds]
-		return
-	}
-	set now [clock clicks -milliseconds]
-	set td [expr {$now - $::gorilla::openPercentLastUpdate}]
-	# time difference
-	if {$td < 200} {
-		return
-	}
-
-	set ::gorilla::openPercentLastUpdate $now
-
-	if {$::gorilla::openPercent > 0} {
-		set info [format [mc "Opening ... %2.0f %%"] $::gorilla::openPercent]
-		$::gorilla::openPercentWidget configure -text $info
-		update idletasks
-	}
-}
-
 ;# proc gorilla::OpenDatabase {title defaultFile} {}
 	
 # proc gorilla::OpenDatabase {title {defaultFile ""}} {
@@ -3717,32 +3695,6 @@ proc gorilla::MarkDatabaseAsDirty {} {
 }
 
 # ----------------------------------------------------------------------
-# Save file
-# ----------------------------------------------------------------------
-#
-# what with name1 name2 op?
-
-proc gorilla::SavePercentTrace {name1 name2 op} {
-	if {![info exists ::gorilla::savePercentLastUpdate]} {
-		set ::gorilla::savePercentLastUpdate [clock clicks -milliseconds]
-		return
-	}
-
-	set now [clock clicks -milliseconds]
-	set td [expr {$now - $::gorilla::savePercentLastUpdate}]
-	if {$td < 100} {
-		return
-	}
-
-	set ::gorilla::savePercentLastUpdate $now
-
-	if {$::gorilla::savePercent > 0} {
-		set ::gorilla::status [format [mc "Saving ... %2.0f %%"] $::gorilla::savePercent]
-		update idletasks
-	}
-}
-
-# ----------------------------------------------------------------------
 # Merge file
 # ----------------------------------------------------------------------
 #
@@ -4285,24 +4237,23 @@ proc gorilla::Save {} {
 			set majorVersion 3
 		}
 	}
-	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
+	set pvar [ ::gorilla::progress init [ list widget .status message [ mc "Saving ... %d %%" ] ] ]
 
 	# avoid gray area during save
 	update
 
-	if {[catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
-	::gorilla::savePercent} oops]} {
-		trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
-
+	if { [ catch { pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
+			$pvar } oops ] } {
+		::gorilla::progress finished
+		
 		. configure -cursor $myOldCursor
 		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
 			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
 		return GORILLA_SAVEBACKUPERROR
 	}
 
+	::gorilla::progress finished
+	
 	# The actual data are saved. Now take care of a backup file
 
 	set message [ gorilla::SaveBackup $::gorilla::fileName ]
@@ -4312,11 +4263,6 @@ proc gorilla::Save {} {
 		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
 		return GORILLA_SAVEBACKUPERROR
 	}
-
-	# TODO: refactoring
-	trace remove variable ::gorilla::savePercent [list "write"] \
-		::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
 
 	. configure -cursor $myOldCursor
 
@@ -4407,16 +4353,10 @@ proc gorilla::SaveAs {} {
 	. configure -cursor watch
 	update idletasks
 
-	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
+	set pvar [ ::gorilla::progress init [ list widget .status message [ mc "Saving ... %d %%" ] ] ]
 
-	if {[ catch {	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
-							} oops]
-			} {
-		trace remove variable ::gorilla::savePercent [list "write"] \
-				::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
-	
+	if { [ catch { pwsafe::writeToFile $::gorilla::db $fileName $majorVersion $pvar } oops] } {
+		::gorilla::progress finished
 		. configure -cursor $myOldCursor
 		tk_messageBox -parent . -type ok -icon error -default ok \
 			-title [mc "Error Saving Database"] \
@@ -4424,6 +4364,8 @@ proc gorilla::SaveAs {} {
 			$nativeName $oops]
 		return 0
 	}
+
+	::gorilla::progress finished
 
 	# The actual data are saved. Now take care of a backup file
 
@@ -4437,9 +4379,6 @@ proc gorilla::SaveAs {} {
 
 	# clean up
 	
-	trace remove variable ::gorilla::savePercent [list "write"] \
-		::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
 	. configure -cursor $myOldCursor
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
