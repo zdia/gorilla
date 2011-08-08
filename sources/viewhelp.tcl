@@ -116,7 +116,6 @@ proc ::Help::Help {{title ""}} {
 	mcload [file join $::gorillaDir msgs help]
 
 	set aliasList [list [mc Back] [mc Search] [mc Previous] [mc Next] [mc History] [mc Index] ]
-
 	set fname [file join $dir help.txt]
 	set fin [open $fname r]
 	set data [read $fin] ; list
@@ -440,7 +439,7 @@ proc ::Help::DoDisplay { top } {
     if {! $state(haveTOC) && [info exists alias(toc)]} {
         $w insert end TOC link " - " {}
     }
-    $w insert end Index link " - " {} [mc Search] link
+    $w insert end [mc Index] link " - " {} [mc Search] link
     if {$next} {
         $w insert end " - " {} [mc Previous] link " - " {} [mc Next] link
     }
