@@ -1,3 +1,17 @@
+# Password Gorilla italian translation catalog.
+# Copyright (C) 2011 Free Software Foundation, Inc.
+# Marco Ciampa <ciampix@libero.it>, 2011.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Gorila Password 1.*\n"
+"PO-Revision-Date: 2011-08-08 00:27+0200\n"
+"Last-Translator: Marco Ciampa <ciampix@libero.it>\n"
+"Language-Team: Italian <it@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
 msgid "File"
 msgstr "File"
 
@@ -120,22 +134,10 @@ msgstr "Licenza ..."
 msgid "About ..."
 msgstr "Informazioni ..."
 
-msgid ""
-msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-05-22 12:19+0200\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:175
 #, tcl-format
 msgid "Need %s"
-msgstr ""
+msgstr "Serve %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:176
 #, tcl-format
@@ -146,10 +148,13 @@ msgid ""
 "\n"
 "Error message: %s"
 msgstr ""
+"Password Gorilla rechiede il pacchetto \"%s\". Sembra ci sia un problema di installazione, dato che questo file dovrebbe far parte della distribuzione di Password Gorilla.\n"
+"\n"
+"Messaggio d'errore: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:221
 msgid "Need [Incr Tcl]"
-msgstr ""
+msgstr "Serve [Incr Tcl]"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:222
 #, tcl-format
@@ -159,10 +164,13 @@ msgid ""
 "\n"
 "Error Message: %s"
 msgstr ""
+"Password Gorilla richiede che il Tcl includa [incr Tcl]. Installare il pacchetto [incr Tcl].\n"
+"\n"
+"Messaggio d'errore: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:230
 msgid "Need PWSafe"
-msgstr ""
+msgstr "Serve PWSafe"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:231
 #, tcl-format
@@ -173,6 +181,9 @@ msgid ""
 "\n"
 "Error Message: %s"
 msgstr ""
+"Password Gorilla richiede il pacchetto \"pwsafe\". Sembra ci sia un problema di installazione dato che il pacchetto pwsafe dovrebbe far parte della distribuzione di Password Gorilla.\n"
+"\n"
+"Messaggio d'errore: %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:347
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:8055
@@ -303,9 +314,9 @@ msgid "Open Password Database"
 msgstr "Apri archivio password"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1527
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Password database %s loaded."
-msgstr "Archivio password salvato."
+msgstr "Archivio password %s caricato."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:1715
 msgid "Add/Edit/View Login"
@@ -357,9 +368,8 @@ msgid "<unknown>"
 msgstr "<sconosciuto>"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2298
-#, fuzzy
 msgid "This login must have a title, url or username."
-msgstr "Questo login deve avere un titolo."
+msgstr "Questo login deve avere un titolo, url o nomeutente."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2307
 msgid "This login's group name is not valid."
@@ -425,20 +435,19 @@ msgstr "Nuovo gruppo aggiunto."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2831
 msgid "Root Node Can Not Be Moved"
-msgstr ""
+msgstr "Il nodo radice non può essere spostato"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2832
-#, fuzzy
 msgid "The root node can not be moved."
-msgstr "Il nome gruppo non può essere vuoto."
+msgstr "Il nodo radice non può essere spostato."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2885
 msgid "Can Not Move Node"
-msgstr ""
+msgstr "Impossibile spostare il nodo"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2886
 msgid "Can not move a group to a subgroup of itself."
-msgstr ""
+msgstr "Impossibile spostare un gruppo ad un proprio sottogruppo."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:2959
 msgid "Are you sure that you want to delete group and all its contents?"
@@ -461,31 +470,24 @@ msgid "Export Security Warning"
 msgstr "Avvertimento di sicurezza all'esportazione"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3239
-#, fuzzy
 msgid ""
 "You are about to export the password database to a plain-text file. The file "
 "will not be encrypted or password-protected. Anybody with access can read "
 "the file, and learn your user names and passwords. Make sure to store the "
 "file in a secure location. Do you want to continue?"
-msgstr ""
-"Si sta per esportare l'archivio delle password su di un file di testo in "
-"chiaro. Il file non sarà criptato né protetto da password. Chiunque ne "
-"quadagni l'accesso potrà leggere il file, ed apprendere i nomi utenti e le "
-"password. Assicuratevi di salvare il file in un posto sicuro. Continuare?"
+msgstr "Si sta per esportare l'archivio delle password su di un file di testo in chiaro. Il file non sarà criptato né protetto da password. Chiunque ne quadagni l'accesso potrà leggere il file, ed apprendere i nomi utenti e le password. Assicurarsii di salvare il file in un posto sicuro. Continuare?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3263
 msgid "Export password database as text ..."
 msgstr "Esporta l'archivio delle password come testo ..."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3284
-#, fuzzy
 msgid "Error Exporting Database"
-msgstr "Errore durante l'apertura dell'archivio"
+msgstr "Errore durante l'esportazione dell'archivio"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3285
-#, fuzzy
 msgid "Failed to export password database to"
-msgstr "Fallito il salvataggio dell'archivio password come \"%s\": %s"
+msgstr "Fallita l'esportazione dell'archivio password su"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3291
 msgid "Exporting ..."
@@ -497,27 +499,27 @@ msgstr "Archivio esportato."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3364
 msgid "Import CSV datafile"
-msgstr ""
+msgstr "Importazione dati CSV"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3375
 msgid "Error opening import CSV file"
-msgstr ""
+msgstr "Errore durante l'importazione di un file CSV"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3376
 msgid "Could not access file "
-msgstr ""
+msgstr "Impossibile accedere al file "
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3398
 msgid "Error parsing CSV file"
-msgstr ""
+msgstr "Errore durante l'elaborazione del file CSV"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3399
 msgid "Error parsing first line of CSV file, unable to continue."
-msgstr ""
+msgstr "Errore durante l'elaborazione della prima riga del file CSV, impossibile continuare."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3410
 msgid "Error, nothing to import."
-msgstr ""
+msgstr "Errore, nulla da importare."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3411
 msgid ""
@@ -525,34 +527,41 @@ msgid ""
 "the help for details on how to format import\n"
 "CSV data files for Password Gorilla."
 msgstr ""
+"Non è stato trovato nessun dato di importazione valido.\n"
+"Consultare il manuale per in dettagli su come formattare\n"
+"i file dati CSV di importazione per Password Gorilla."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3430
 msgid "Error, undefined data columns"
-msgstr ""
+msgstr "Errore, colonne dati non definite"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3431
 msgid ""
 "The following data items are not recognized as import data items.\n"
 "Unable to continue."
 msgstr ""
+"Gli elementi dati seguenti non sono stati riconosciuti come elementi dati di importazione.\n"
+"Impossibile continuare."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3562
 msgid ""
 "Some records from the CSV file were not imported.\n"
 "Do you wish to save a log of skipped records?"
 msgstr ""
+"Alcuni record dal file CSV non sono stati importati.\n"
+"Salvare una registrazione dei record saltati?"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3563
 msgid "Some records skipped during import"
-msgstr ""
+msgstr "Alcuni record saltati durante l'importazione"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3565
 msgid "Enter a file into which to save the log"
-msgstr ""
+msgstr "Inserire un file nel quale salvare la registrazione"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3578
 msgid "record(s) successfully imported."
-msgstr ""
+msgstr "record importati con successo."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:3663
 #, tcl-format
@@ -957,6 +966,8 @@ msgid ""
 "Please create a new database, or open an existing\n"
 "database first."
 msgstr ""
+"Creare un nuovo archivio o aprirne prima \n"
+"uno esistente."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6169
 msgid "Current Master Password:"
@@ -983,9 +994,9 @@ msgid "Master password changed."
 msgstr "Password principale modificata."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6253
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Can not copy %s to clipboard: no %s defined."
-msgstr "Impossibile copiare $what negli appunti: $what non è definito."
+msgstr "Impossibile copiare %s negli appunti: %s non è definito."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6279
 #, tcl-format
@@ -993,9 +1004,8 @@ msgid "Copied %s to clipboard."
 msgstr "Copiato %s negli appunti."
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6422
-#, fuzzy
 msgid "Password Gorilla"
-msgstr "Informazioni su Password Gorilla"
+msgstr "Password Gorilla"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6424
 msgid ""
@@ -1072,7 +1082,7 @@ msgstr "Note"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6599
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:6601
 msgid "Case sensitive find"
@@ -1127,53 +1137,4 @@ msgstr "Genera gorilladoc.html"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:7825
 msgid "Can not drag the selected items (see documentation)"
-msgstr ""
-
-#~ msgid "Group:"
-#~ msgstr "Gruppo:"
-
-#~ msgid "Last Modified:"
-#~ msgstr "Ultima modifica:"
-
-#~ msgid "Last Password Change:"
-#~ msgstr "Ultima modifica della password:"
-
-#~ msgid "Move $type"
-#~ msgstr "Sposta $type"
-
-#~ msgid "Moving of $type canceled."
-#~ msgstr "Spostamento di $type annullato."
-
-#~ msgid "Notes:"
-#~ msgstr "Note:"
-
-#~ msgid "Password database $nativeName loaded."
-#~ msgstr "Archivio password $nativeName caricato."
-
-#~ msgid "Password database saved as $nativeName"
-#~ msgstr "Archivio password salvato come $nativeName"
-
-#~ msgid "Save as Unicode text file"
-#~ msgstr "Salva come file di testo Unicode"
-
-#~ msgid "Title:"
-#~ msgstr "Titolo:"
-
-#~ msgid "Username:"
-#~ msgstr "Nome utente:"
-
-#~ msgid "Using Password Gorilla"
-#~ msgstr "Usando Password Gorilla"
-
-#~ msgid "Resolve Conflicts ..."
-#~ msgstr "Risolvi i conflitti ..."
-
-#~ msgid ""
-#~ "Password database /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 "
-#~ "loaded."
-#~ msgstr ""
-#~ "Archivio password /home/dia/Projekte/git/gorilla/unit-tests/testdb.psafe3 "
-#~ "caricato."
-
-#~ msgid "Please select an entry in the tree to move."
-#~ msgstr "Selezionare la voce dall'albero da spostare."
+msgstr "Impossibile trascinare le voci selezionate (vedere la documentazione)"
