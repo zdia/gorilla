@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# Note - this script requests bash because I use Bash and therefore it
+# contains some Bashisms.  Your mileage may vary running it under another
+# shell.
+
+# Part of Password Gorilla
+
+# Copyright 2011 - Richard L Ellis
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 675 Mass Ave, Cambridge, MA 02139, USA.
+#
+# A copy of the GNU General Public License may be found in the Password
+# Gorilla sources/ directory, named LICENSE.txt.
+
+# see if we are running from the utilities directory
+
+if [[ $PWD != ${PWD%%/gorilla/utilities} ]] ; then
+  POPATH=gettext
+  HELPPATH=help2po
+else
+  echo
+  echo "ERROR - this script must be run from the gorilla/utilities directory"
+  echo "It is being run from $PWD at present"
+  echo "Unable to continue"
+  echo
+  exit 1
+fi
+
+function mk-msg () {
+  local OUTDIR=$1 ; shift
+  for POFILE in "$@" ; do
+    LANG=$( basename $POFILE .po )
+    echo $POFILE LANG=$LANG
+    msgfmt --tcl -l$LANG -d $OUTDIR $POFILE
+  done
+}
+
+# create everything in a new temp directory
+
+OUTDIR=$( mktemp -d )
+
+# rebuild translation files
+mk-msg $OUTDIR $POPATH/*.po
+
+# rebuild help.txt file
+mkdir $OUTDIR/help
+
+mk-msg $OUTDIR/help $HELPPATH/*.po
+
+# convert and add DO NOT EDIT header
+./mcset2mcmset.tcl $( find $OUTDIR -type f )
+
+# replace msg files with converted files
+for name in $( find $OUTDIR -name \*conv ) ; do
+  mv -fv $name ${name/.conv}
+done
+
+# done
+
+echo
+echo New msg files have been created in $OUTDIR
+echo
