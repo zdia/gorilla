@@ -6506,7 +6506,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 	set item [ gorilla::GetSelected$what ]
 
 	if {$item == ""} {
-		set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] ]
+		set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] [ mc $what ] ]
 	} else {
 		switch -exact -- [ tk windowingsystem ] {
 			aqua    -
