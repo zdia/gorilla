@@ -1861,7 +1861,7 @@ namespace eval ::gorilla::LoginDialog {
 		# Returns the generated label name.
 	
 		variable seq
-		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure [ mc "${text}:" ] ] -style Wrapping.TLabel ]
+		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure "[ mc ${text} ]:" ] -style Wrapping.TLabel ]
 	} ; # end 
 
 # -----------------------------------------------------------------------------
@@ -3105,7 +3105,7 @@ proc gorilla::RenameGroup {} {
 		pack $top.parent.e -side left -expand yes -fill x -pady 5 -padx 10
 		pack $top.parent -side top -expand yes -fill x -pady 5 -padx 10
 
-		ttk::labelframe $top.group -text "Name"
+		ttk::labelframe $top.group -text [ mc Name ]
 		ttk::entry $top.group.e -width 40 -textvariable ::gorilla::renameGroupName
 		pack $top.group.e -side top -expand yes -fill x -pady 5 -padx 10
 		pack $top.group -side top -expand yes -fill x -pady 5 -padx 10
