@@ -46,10 +46,13 @@ fi
 
 OUTDIR=$( mktemp -d )
 
-xgettext -kmc -o $OUTDIR/source.pot -L Tcl $SRCPATH/gorilla.tcl $SRCPATH/viewhelp.tcl
+xgettext -kmc -o $OUTDIR/source.pot -L Tcl $SRCPATH/gorilla.tcl $SRCPATH/viewhelp.tcl $SRCPATH/pwsafe/*.tcl
 msgcat -o $OUTDIR/gorilla.pot $GETTXT/menuitems.pot $OUTDIR/source.pot
-cp -v $GETTXT/en.po $OUTDIR
-msgmerge --update $OUTDIR/en.po --backup=simple $OUTDIR/gorilla.pot
+
+for PO in $GETTXT/??.po ; do
+  cp -v $PO $OUTDIR
+  msgmerge --update $OUTDIR/$(basename $PO) --backup=simple $OUTDIR/gorilla.pot
+done
 
 # done
 

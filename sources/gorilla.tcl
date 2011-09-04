@@ -6289,7 +6289,10 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	# initialize locale and fonts from the preference values
 
 	mclocale $::gorilla::preference(lang)
-	mcload [file join $::gorillaDir msgs]
+
+	# Load msgcat data into the global namespace so that it is visible
+	# from both the ::gorilla and ::pwsafe namespaces.
+	namespace eval :: { mcload [file join $::gorillaDir msgs] }
 	
 	set value $::gorilla::preference(fontsize) 
 	font configure TkDefaultFont -size $value
