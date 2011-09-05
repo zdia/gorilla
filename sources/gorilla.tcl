@@ -2734,7 +2734,7 @@ proc gorilla::AddSubgroup {} {
 			if {[string equal $parent "RootNode"]} {
 				gorilla::AddSubgroupToGroup ""
 			} else {
-				set pdata [$::gorilla::widgets(tree) item $node -values]
+				set pdata [ $::gorilla::widgets(tree) item $parent -values ]
 				gorilla::AddSubgroupToGroup [lindex $pdata 1]
 			}
 		}
