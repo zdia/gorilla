@@ -19,9 +19,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, 51
+# Franklin Street, Suite 500, Boston, MA 02110
 #
 # A copy of the GNU General Public License can be found in the file
 # LICENSE.txt located in the same directory as gorilla.tcl.
