@@ -18,8 +18,8 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # for more details.
 #
 # You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 675 Mass Ave, Cambridge, MA 02139, USA.
+# with this program; if not, write to the Free Software Foundation 51
+# Franklin Street, Suite 500 Boston, MA 02110-1335
 
 # A copy of the GNU GPL may be found in the LICENCE.txt file in the main
 # gorilla/sources directory.
