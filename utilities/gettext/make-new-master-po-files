@@ -46,8 +46,7 @@ fi
 
 OUTDIR=$( mktemp -d )
 
-xgettext -kmc -o $OUTDIR/source.pot -L Tcl $SRCPATH/gorilla.tcl $SRCPATH/viewhelp.tcl $SRCPATH/pwsafe/*.tcl
-msgcat -o $OUTDIR/gorilla.pot $GETTXT/menuitems.pot $OUTDIR/source.pot
+xgettext -kmc -o $OUTDIR/gorilla.pot -L Tcl $SRCPATH/gorilla.tcl $SRCPATH/viewhelp.tcl $SRCPATH/pwsafe/*.tcl
 
 for PO in $GETTXT/??.po ; do
   cp -v $PO $OUTDIR

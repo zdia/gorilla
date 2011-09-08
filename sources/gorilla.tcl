@@ -404,64 +404,76 @@ proc gorilla::InitGui {} {
 		# set menu_meta ""
 	}
 
-	set ::gorilla::menu_desc {
-		File	file	{"New ..." {} gorilla::New "" ""
-								"Open ..." {} gorilla::Open $menu_meta O
-								"Merge ..." open gorilla::Merge "" ""
-								"Save" save gorilla::Save $menu_meta S
-								"Save As ..." open gorilla::SaveAs "" ""
-								separator "" "" "" ""
-								"Export ..." open gorilla::Export "" ""
-								"Import ..." open gorilla::Import "" ""
-								separator mac "" "" ""
-								"Preferences ..." mac gorilla::Preferences "" ""
-								separator mac "" "" ""
-								Exit mac gorilla::Exit $menu_meta X
-								}	
-		Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
-								"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
-								"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
-								separator "" "" "" ""
-								"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
-								separator "" "" "" ""
-								"Find ..." open gorilla::Find $menu_meta F
-								"Find next" open gorilla::FindNext $menu_meta G
-								}
-		Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
-								"Edit Login" open gorilla::EditLogin $menu_meta E
-								"View Login" open gorilla::ViewLogin $menu_meta V
-								"Delete Login" login gorilla::DeleteLogin "" ""
-								"Move Login ..." login gorilla::MoveLogin "" ""
-								separator "" "" "" ""
-								"Add Group ..." open gorilla::AddGroup "" ""
-								"Add Subgroup ..." group gorilla::AddSubgroup "" ""
-								"Rename Group ..." group gorilla::RenameGroup "" ""
-								"Move Group ..." group gorilla::MoveGroup "" ""
-								"Delete Group" group gorilla::DeleteGroup "" ""
-								}
-		Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
-								"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
-								separator "" "" "" ""
-								"Change Master Password ..." open gorilla::ChangePassword "" ""
-								separator "" "" "" ""
-								"Lock now" open gorilla::LockDatabase "" ""
-								}
-		Help	help	{ "Help ..." "" gorilla::Help "" ""
-								"License ..." "" gorilla::License "" ""
-								separator mac "" "" ""
-								"About ..." mac tkAboutDialog "" ""
-								}
-	} ;# end ::gorilla::menu_desc
+	# Note - the string below, because it is passed through subst, needs
+	# to be formatted as a proper string representation of a list.  That
+	# is why all of the [mc] calls are surrounded by quotes.  This
+	# assures that the result of the [mc] call (unless the result
+	# contains a ") will be a proper single element of the string rep.
+	# of a list.
+	
+	set ::gorilla::menu_desc [ subst {
+		"[ mc File ]" file {"[ mc New ] ..."         {}   gorilla::New         ""
+		                    "[ mc Open ] ..."        {}   gorilla::Open        $menu_meta+O
+		                    "[ mc Merge ] ..."       open gorilla::Merge       ""
+		                    "[ mc Save ]"            save gorilla::Save        $menu_meta+S
+		                    "[ mc Save As ] ..."     open gorilla::SaveAs      ""
+		                    separator                ""   ""                   ""
+		                    "[ mc Export ] ..."      open gorilla::Export      ""
+		                    "[ mc Import ] ..."      open gorilla::Import      ""
+		                    separator                mac  ""                   ""
+		                    "[ mc Preferences ] ..." mac  gorilla::Preferences ""
+		                    separator                mac  ""                   ""
+		                    "[ mc Exit ]"            mac  gorilla::Exit        $menu_meta+X
+		                   }
+
+		"[ mc Edit ]" edit {"[ mc Copy Username ]"   login  {gorilla::CopyToClipboard Username} $menu_meta+U
+		                    "[ mc Copy Password ]"   login  {gorilla::CopyToClipboard Password} $menu_meta+P
+		                    "[ mc Copy URL ]"        login  {gorilla::CopyToClipboard URL}      $menu_meta+W
+		                    separator                ""     ""                                  ""
+		                    "[ mc Clear Clipboard ]" ""     gorilla::ClearClipboard             $menu_meta+C
+		                    separator                ""     ""                                  ""
+		                    "[ mc Find ] ..."        open   gorilla::Find                       $menu_meta+F
+		                    "[ mc Find next ]"       open   gorilla::FindNext                   $menu_meta+G
+		                   }
+		                
+		"[ mc Login ]" login {"[ mc Add Login ]"        open  gorilla::AddLogin    $menu_meta+A
+				      "[ mc Edit Login ]"       open  gorilla::EditLogin   $menu_meta+E
+				      "[ mc View Login ]"       open  gorilla::ViewLogin   $menu_meta+V
+				      "[ mc Delete Login ]"     login gorilla::DeleteLogin ""
+				      "[ mc Move Login ] ..."   login gorilla::MoveLogin   ""
+				      separator                 ""    ""                   ""
+				      "[ mc Add Group ] ..."    open  gorilla::AddGroup    ""
+				      "[ mc Add Subgroup ] ..." group gorilla::AddSubgroup ""
+				      "[ mc Rename Group ] ..." group gorilla::RenameGroup ""
+				      "[ mc Move Group ] ..."   group gorilla::MoveGroup   ""
+				      "[ mc Delete Group ]"     group gorilla::DeleteGroup ""
+				     }
+				
+		"[ mc Security ]" security {"[ mc Password Policy ] ..."        open gorilla::PasswordPolicy            ""
+				            "[ mc Customize ] ..."              open gorilla::DatabasePreferencesDialog ""
+				            separator                           ""   ""                                 ""
+				            "[ mc Change Master Password ] ..." open gorilla::ChangePassword            ""
+				            separator                           ""   ""                                 ""
+				            "[ mc Lock now ]"                   open gorilla::LockDatabase              ""
+				           }
+
+		"[ mc Help ]" help {"[ mc Help ] ..."    ""  gorilla::Help    ""
+				    "[ mc License ] ..." ""  gorilla::License ""
+				    separator            mac ""               ""
+				    "[ mc About ] ..."   mac tkAboutDialog    ""
+				   }
+
+	} ] ;# end ::gorilla::menu_desc
 
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 		
-		.mbar add cascade -label [mc $menu_name] -menu .mbar.$menu_widget
+		.mbar add cascade -label $menu_name -menu .mbar.$menu_widget
 	
 		menu .mbar.$menu_widget
 		
 		set taglist ""
 		
-		foreach {menu_item menu_tag menu_command meta_key shortcut} $menu_itemlist {
+		foreach {menu_item menu_tag menu_command shortcut} $menu_itemlist {
 	
 			# erstelle für jedes widget eine Tag-Liste
 			lappend taglist $menu_tag
@@ -471,9 +483,7 @@ proc gorilla::InitGui {} {
 			if {$menu_item eq "separator"} {
 				.mbar.$menu_widget add separator
 			} else {
-			  eval set meta_key $meta_key
-				set shortcut [join "$meta_key $shortcut" +]
-				.mbar.$menu_widget add command -label [mc $menu_item] \
+				.mbar.$menu_widget add command -label $menu_item \
 					-command $menu_command -accelerator $shortcut
 			} 	
 			set ::gorilla::tag_list($menu_widget) $taglist
@@ -724,7 +734,7 @@ proc setmenustate {widget tag_pattern state} {
 	if {$tag_pattern eq "all"} {
 		foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 			set index 0
-			foreach {title a b c d } $menu_itemlist {
+			foreach {title a b c } $menu_itemlist {
 				if { $title ne "separator" } {
 					$widget.$menu_widget entryconfigure $index -state $state
 				}
@@ -1884,7 +1894,7 @@ namespace eval ::gorilla::LoginDialog {
 		# Returns the generated label name.
 	
 		variable seq
-		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure "[ mc ${text} ]:" ] -style Wrapping.TLabel ]
+		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure "${text}:" ] -style Wrapping.TLabel ]
 	} ; # end 
 
 # -----------------------------------------------------------------------------
@@ -1906,11 +1916,11 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		foreach {child label w} { group    Group    combobox
-		                          title    Title    entry
-		                          url      URL      entry
-		                          user     Username entry
-		                          password Password entry  } {
+		foreach {child label w} [ list group    [ mc Group    ] combobox \
+		                               title    [ mc Title    ] entry    \
+		                               url      [ mc URL      ] entry    \
+		                               user     [ mc Username ] entry    \
+		                               password [ mc Password ] entry  ] {
 			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
