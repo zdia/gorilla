@@ -6436,6 +6436,7 @@ proc gorilla::About {} {
 		lappend ctr [ ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib6 -text "\u2022 [ mc "Spanish translation by %s" "Juan Roldan Ruiz" ]" {*}$stdopts ]
 		
 		ttk::frame $w.buttons
 		ttk::button $w.buttons.license -text [mc License] -command gorilla::License
