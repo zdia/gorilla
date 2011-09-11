@@ -5,7 +5,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2011-05-23 23:59+0200\n"
+"PO-Revision-Date: 2011-09-11 22:52+0200\n"
 "Last-Translator: Marco Ciampa <ciampix@libero.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -137,7 +137,7 @@ msgstr "Informazioni ..."
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:175
 #, tcl-format
 msgid "Need %s"
-msgstr "Server %s"
+msgstr "Serve %s"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:176
 #, tcl-format
@@ -154,7 +154,7 @@ msgstr ""
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:221
 msgid "Need [Incr Tcl]"
-msgstr "Server [Incr Tcl]"
+msgstr "Serve [Incr Tcl]"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:222
 #, tcl-format
@@ -170,7 +170,7 @@ msgstr ""
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:230
 msgid "Need PWSafe"
-msgstr "Server PWSafe"
+msgstr "Serve PWSafe"
 
 #: /home/dia/Projekte/git/gorilla/sources/gorilla.tcl:231
 #, tcl-format
