@@ -1367,13 +1367,13 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 			set password [$aframe.pw.pw get]
 			
-			set pvar [ ::gorilla::progress init [ list widget $aframe.info message [ mc "Opening ... %d %%" ] ] ]
+			set pvar [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
 
 #set a [ clock milliseconds ]
 			if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
 						 $pvar ] } oops ] } {
 				pwsafe::int::randomizeVar password
-				::gorilla::progress finished
+				::gorilla::progress finished $aframe.info
 				. configure -cursor $dotOldCursor
 				$top configure -cursor $myOldCursor
 
@@ -1389,7 +1389,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 #puts stderr "elapsed open time: [ expr { $b - $a } ]ms"
 		# all seems well
 
-			::gorilla::progress finished
+			::gorilla::progress finished $aframe.info
 			. configure -cursor $dotOldCursor
 			$top configure -cursor $myOldCursor
 			pwsafe::int::randomizeVar password
@@ -4237,14 +4237,14 @@ proc gorilla::Save {} {
 			set majorVersion 3
 		}
 	}
-	set pvar [ ::gorilla::progress init [ list widget .status message [ mc "Saving ... %d %%" ] ] ]
+	set pvar [ ::gorilla::progress init -win .status -message [ mc "Saving ... %d %%" ] -max 200 ]
 
 	# avoid gray area during save
 	update
 
 	if { [ catch { pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
 			$pvar } oops ] } {
-		::gorilla::progress finished
+		::gorilla::progress finished .status
 		
 		. configure -cursor $myOldCursor
 		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
@@ -4252,7 +4252,7 @@ proc gorilla::Save {} {
 		return GORILLA_SAVEBACKUPERROR
 	}
 
-	::gorilla::progress finished
+	::gorilla::progress finished .status
 	
 	# The actual data are saved. Now take care of a backup file
 
@@ -4353,10 +4353,10 @@ proc gorilla::SaveAs {} {
 	. configure -cursor watch
 	update idletasks
 
-	set pvar [ ::gorilla::progress init [ list widget .status message [ mc "Saving ... %d %%" ] ] ]
+	set pvar [ ::gorilla::progress init -win .status -message [ mc "Saving ... %d %%" ] -max 200 ]
 
 	if { [ catch { pwsafe::writeToFile $::gorilla::db $fileName $majorVersion $pvar } oops] } {
-		::gorilla::progress finished
+		::gorilla::progress finished .status
 		. configure -cursor $myOldCursor
 		tk_messageBox -parent . -type ok -icon error -default ok \
 			-title [mc "Error Saving Database"] \
@@ -4365,7 +4365,7 @@ proc gorilla::SaveAs {} {
 		return 0
 	}
 
-	::gorilla::progress finished
+	::gorilla::progress finished .status
 
 	# The actual data are saved. Now take care of a backup file
 

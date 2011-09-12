@@ -35,38 +35,26 @@ package provide gorillaprogress 1.0.0
 
 # 
 # This module provides for a generic framework for feedback progress bars
-# (currently label widgets) for Password Gorilla.  This encapsulates all the
-# code related to handling the progress bars into one location, in a private
-# namespace, and thereby simplifies the remainder of the Password Gorilla
-# codebase.
+# for Password Gorilla.  This encapsulates all the code related to handling
+# the progress bars into one location, in a private namespace, and thereby
+# simplifies the remainder of the Password Gorilla codebase.
 #
 
 namespace eval ::gorilla::progress {
 
-	# Indicates if the sub-system has been initialized and is ready.
-	variable active 0
+	# stores the state of the progress subsystem
+	variable state [ dict create ]
 
-	# Holds the pathname of the widget to update.
-	variable win ""
+	# The dict "state" is a two level dict.  Toplevel key is the window
+	# toplevel name.  Each toplevel key has one or more of:
+	#   message    - the message to be displayed in the label widget
+	#   active     - boolean indicating if this pbar is active
+	#   lastupdate - integer milliseconds since last update of the value
+	#   pbar       - window name for the progress bar itself
 
-	# Holds the unformatted message string to display in the widget on
-	# update.  This will be passed through [format] to insert the
-	# numerical progress percentage.
-	variable message ""
-
-	# Used to limit the number of "update idletask" calls to one every
-	# 500ms
-	variable lastupdate 0
-
-	# Current value of the "progress" - an integer within the range 0
-	# ... 100.  This variable also has a write trace attached when
-	# in active state, writes to the variable are then reflected in the
-	# progress widget.
-	variable value
-
-	# Current widget path name of the graphical ttk::progress bar tied
-	# to the value
-	variable pbar
+	# stores the current values of the various progress bars - this is
+	# an array because tk/ttk widgets can not link to dict entries
+	variable values
 
 	namespace ensemble create
 
@@ -80,42 +68,61 @@ namespace eval ::gorilla::progress {
 # ----------------------------------------------------------------------
 #
 
-proc ::gorilla::progress::init { config } {
+proc ::gorilla::progress::init { args } {
 
 	# Initializes the progress subsystem for use.  
 
-	validate $config
+	validate $args
 
-	variable win     [ dict get $config widget  ]
-	variable message [ dict get $config message ]
-	variable value 0
+	variable state
+	variable values
 
-	variable active 1
-	variable lastupdate [ clock milliseconds ]
+	set tl [ winfo toplevel [ dict get $args -win ] ]
 
-	$win configure -text [ format $message 0 ]
+	if { [ dict exists $state $tl active ] } { return }
 
-	trace add variable [ namespace current ]::value write [ namespace code { tracefired } ]
+	dict set state $tl message [ set message [ dict get $args -message ] ]
+	set values($tl) 0
+	dict set state $tl active 1
+	dict set state $tl lastupdate [ clock milliseconds ]
+	dict set state $tl max [ expr { [ dict exists $args -max ] ? [ dict get $args -max ] : 100 } ]
 
-	variable pbar [ frame [ winfo toplevel $win ].pbar -borderwidth 1m -relief ridge ]
-	pack [ ttk::label       $pbar.lbl -text [ format $message 0 ]            ] -side top -fill both -expand true -padx {1m 1m} -pady {1m 0}
-	pack [ ttk::progressbar $pbar.bar -variable [ namespace current ]::value ] -side top -fill both -expand true -padx {1m 1m} -pady {0 1m}
+	# build the progress bar
+	# Note - use a tk frame because it allows control of the border
+	dict set state $tl pbar [ set pbar [ frame $tl.pbar -borderwidth 1m -relief ridge ] ]
+	set opts {-sticky news -padx {1m 1m}}
+	grid [ ttk::label       $pbar.label -text [ format $message 0 ] ] {*}$opts -pady {1m 0}
+	grid [ ttk::progressbar $pbar.bar -value 0 -maximum [ dict get $state $tl max ] ] {*}$opts -pady {0 1m}
+	grid columnconfigure $pbar 0 -weight 1
+
+	if { [ llength [ trace info variable [ namespace current ]::values($tl) ] ] == 0 } {
+		trace add variable [ namespace current ]::values($tl) write [ namespace code [ list tracefired $tl ] ]
+	}
+
 	place $pbar -anchor center -relx 0.5 -rely 0.5 -width 3i 
 	raise $pbar	
 
-	return [ namespace current ]::value
+	::update idletasks
+
+	return [ namespace current ]::values($tl)
 
 	#ruff
 	#
-	# config - a dictionary containing at least the following keys: 
+	# parameters 
 	#
-	#   widget { the widget pathname to update }
-	#   message { the unsubstituted message to insert into the widget }
+	#   -win window R Where the progress bar should appear - uses
+	#                 toplevel window name as internal key.
+	#
+	#   -message string R The message string to display in the label
+	#                     widget associated with the progress bar.
+	#
+	#   -max integer O Defines the range of the progress bar.  The value
+	#                  should be integer multiplies of 100.
 	#
 	# The message entry must contain one, and only one, %d format
 	# substitution marker.  This will be replaced by the percent
-	# complete as given in calls to the ::gorilla::progress::update
-	# subcommand.
+	# complete (scaled to the -max range) as given in calls to the
+	# ::gorilla::progress::update subcommand.
 	#
 	# Note, init simply utilizes the passed message string unaltered,
 	# msgcat translations are outside the scope of this module and are
@@ -133,11 +140,14 @@ proc ::gorilla::progress::validate { config } {
 	# Validates the contents of the passed dictionary to make sure it
 	# contains required elements, and that the elements make sense.
 
-	# validate widget key
-	validate_widget $config
+	# validate window option
+	validate_window $config
 
 	# validate message key
 	validate_message $config
+
+	# validate optional max
+	validate_max $config
 
 	return GORILLA_OK
 
@@ -147,17 +157,17 @@ proc ::gorilla::progress::validate { config } {
 # ----------------------------------------------------------------------
 #
 
-proc ::gorilla::progress::validate_widget { config } {
+proc ::gorilla::progress::validate_window { config } {
 
-	if { ! [ dict exists $config widget ] } {
-		error "Required 'widget' key missing from dictionary."
+	if { ! [ dict exists $config -win ] } {
+		error "Required '-win' parameter missing."
 	}
 
-	if { ! [ winfo exists [ dict get $config widget ] ] } {
-		error "Widget path [ dict get $config widget ] does not exist."
+	if { ! [ winfo exists [ dict get $config -win ] ] } {
+		error "Window '[ dict get $config -win ]' does not exist."
 	}
 
-}
+} ; # end proc validate_window
 
 #
 # ----------------------------------------------------------------------
@@ -165,13 +175,13 @@ proc ::gorilla::progress::validate_widget { config } {
 
 proc ::gorilla::progress::validate_message { config } {
 
-	if { ! [ dict exists $config message ] } {
-		error "Required 'message' key missing from dictionary."
+	if { ! [ dict exists $config -message ] } {
+		error "Required '-message' parameter missing."
 	}
 
-	if { -1 == [ set i [ string first "%d" [ dict get $config message ] ] ] } {
+	if { -1 == [ set i [ string first "%d" [ dict get $config -message ] ] ] } {
 		error "Message string does not contain a '%d' substitution."
-	} elseif { -1 != [ string first "%d" [ dict get $config message ] $i+1 ] } {
+	} elseif { -1 != [ string first "%d" [ dict get $config -message ] $i+1 ] } {
 		error "Message string contains more than one '%d' substitution, only a single occurrence allowed."
 	}
 
@@ -181,13 +191,31 @@ proc ::gorilla::progress::validate_message { config } {
 # ----------------------------------------------------------------------
 #
 
-proc ::gorilla::progress::active? {} {
+proc ::gorilla::progress::validate_max { config } {
 
-	# tests for progress subsystem being in active state.  If not forces
-	# calling proc to unconditionally return.
+	if { [ dict exists $config -max ] } {
+		if { ! [ string is integer -strict [ dict get $config -max ] ] } {
+			error "Value for -max must be an integer."
+		} elseif { ( [ dict get $config -max ] % 100 ) != 0 } {
+			error "Value for -max must be an integer multiple of 100."
+		} 
+	}
 
-	variable active
-	if { ! $active } {
+} ; # end proc validate_variable
+
+#
+# ----------------------------------------------------------------------
+#
+
+proc ::gorilla::progress::active? { tl } {
+
+	# tests for progress subsystem being in active state for toplevel
+	# tl.  If not forces calling proc to unconditionally return.
+
+	set tl [ winfo toplevel $tl ]
+
+	variable state
+	if { ! [ dict exists $state $tl active ] } {
 		return -code return
 	}
 
@@ -197,75 +225,77 @@ proc ::gorilla::progress::active? {} {
 # ----------------------------------------------------------------------
 #
 
-proc ::gorilla::progress::tracefired { args } {
+proc ::gorilla::progress::tracefired { tl a b c } {
 	# Handles variable trace callbacks by passing current value of
 	# "value" variable to update proc
-	variable value
-	update $value
+	variable state
+
+	# limit update rate to once every 500ms
+	if { [ - [ clock milliseconds ] [ dict get $state $tl lastupdate ] ] < 500 } {
+		return
+	}
+
+	variable values
+	set values($tl) [ max 0 [ min [ int $values($tl) ] [ dict get $state $tl max ] ] ]
+
+	[ dict get $state $tl pbar ].label configure -text [ format [ dict get $state $tl message ] [ / [ * 100 $values($tl) ] [ dict get $state $tl max ] ] ]
+
+	[ dict get $state $tl pbar ].bar configure -value $values($tl)
+
+	dict set state $tl lastupdate [ clock milliseconds ]
+
+	::update idletasks
+
 } ; # end proc ::gorilla::progress::trace
 
 #
 # ----------------------------------------------------------------------
 #
 
-proc ::gorilla::progress::update { value } {
+proc ::gorilla::progress::update-pbar { tl value } {
 
 	# called to update the configured progress bar with a new value
 
-	active?
+	set tl [ winfo toplevel $tl ]
 
-	# limit update rate to once every 500ms
-
-	variable lastupdate
-	if { [ - [ clock milliseconds ] $lastupdate ] < 500 } {
-		return
-	}
+	active? $tl
 
 	if { ! [ string is double -strict $value ] } {
 		error "progress update called with non-numeric value '$value'"
 	}
 
-	variable win
-	variable message
-	variable pbar
-
-	# limit the value to the integer range 0 ... 100
-
-	set value [ max 0 [ min [ int $value ] 100 ] ]
-
-	$win configure -text [ format $message $value ]
-	$pbar.lbl configure -text [ format $message $value ]
-
-	set lastupdate [ clock milliseconds ]
-	::update
+	variable values
 
 	return GORILLA_OK
 
 	#ruff
 	#
+	# tl    - the toplevel that this pbar is attached to
+	#
 	# value - the new value, can be integer or floating point, will be
 	#         truncated to an integer and limited to the range 0 ... 
 	#         100.
 
-} ; # end proc ::gorilla::progress::update
+} ; # end proc ::gorilla::progress::update-pbar
 
 #
 # ----------------------------------------------------------------------
 #
 
-proc ::gorilla::progress::newmessage { text } {
+proc ::gorilla::progress::newmessage { tl text } {
 
 	# Updates the internal message string and current widget text value
 	# without modifying the widget name being utilized for feedback.
 
-	validate_message [ list message $text ]
+	validate_message [ list -message $text ]
 
-	variable message $text
+	set tl [ winfo toplevel $tl ]
 
-	variable value
-	variable win
+	variable state
+	variable values
+	dict set state $tl message $text
 
-	$win configure -text [ format $message $value ]
+	set values($tl) $values($tl)
 
 } ; # end proc ::gorilla::progress::newmessage
 
@@ -273,23 +303,21 @@ proc ::gorilla::progress::newmessage { text } {
 # ----------------------------------------------------------------------
 #
 
-proc ::gorilla::progress::finished {} {
+proc ::gorilla::progress::finished { tl } {
 
 	# Sets progress subsystem state to inactive, clears message text
 	# from the configured widget, deletes variable trace.
 
-	active?
+	set tl [ winfo toplevel $tl ]
 
-	variable active 0
-	variable win
-	$win configure -text ""
-	set win ""
+	active? $tl
 
-	trace remove variable [ namespace current ]::value write [ list [ namespace code { trace } ] ]
+	variable state
+	destroy [ dict get $state $tl pbar ]
+	dict unset state $tl 
 
-	variable pbar
-	destroy $pbar
-	set pbar ""
+	variable values
+	unset values($tl)
 
 	return GORILLA_OK
 
