@@ -167,7 +167,7 @@ proc pwsafe::writeToFile {db fileName version {percentvar ""}} {
     } elseif {$version == 2} {
 	set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
     } else {
-	error "invalid version $version"
+	error [ mc "invalid version %s" $version ]
     }
 
     if {[catch {$writer writeFile $pcvp} oops]} {
@@ -213,7 +213,7 @@ proc pwsafe::writeToString {db version {percentvar ""}} {
     } elseif {$version == 2} {
 	set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
     } else {
-	error "invalid version $version"
+	error [ mc "invalid version %s" $version ]
     }
 
     if {[catch {$writer writeFile $pcvp} oops]} {

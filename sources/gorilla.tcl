@@ -102,12 +102,12 @@ tcl_platform: [ array get ::tcl_platform ]
 info library: [ info library ]
 gorillaDir: $::gorillaDir
 gorillaDir contents:
-	[ join [ glob -directory $::gorillaDir * ] "\n\t" ]
+	[ join [ glob -directory $::gorillaDir -nocomplain * ] "\n\t" ]
 auto_path dir contents:
 [ set result ""
   foreach dir $::auto_path {
     append result "$dir\n"
-    append result "[ join [ glob -directory $dir -- * ] "\n\t" ]\n"
+    append result "[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
   } 
   return $result ]
 -end--------------------------------------------------------------------
@@ -412,64 +412,76 @@ proc gorilla::InitGui {} {
 		# set menu_meta ""
 	}
 
-	set ::gorilla::menu_desc {
-		File	file	{"New ..." {} gorilla::New "" ""
-				 "Open ..." {} gorilla::Open $menu_meta O
-				 "Merge ..." open gorilla::Merge "" ""
-				 "Resolve Conflicts ..." conflict {gorilla::conflict-dialog $::gorilla::merge_conflict_data} "" ""
-				 "Save" save gorilla::Save $menu_meta S
-				 "Save As ..." open gorilla::SaveAs "" ""
-				 separator "" "" "" ""
-				 "Export ..." open gorilla::Export "" ""
-				 separator mac "" "" ""
-				 "Preferences ..." mac gorilla::Preferences "" ""
-				 separator mac "" "" ""
-				 Exit mac gorilla::Exit $menu_meta X
-				}	
-		Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
-				 "Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
-				 "Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
-				 separator "" "" "" ""
-				 "Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
-				 separator "" "" "" ""
-				 "Find ..." open gorilla::Find $menu_meta F
-				 "Find next" open gorilla::FindNext $menu_meta G
-				}
-		Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
-				 "Edit Login" open gorilla::EditLogin $menu_meta E
-				 "View Login" open gorilla::ViewLogin $menu_meta V
-				 "Delete Login" login gorilla::DeleteLogin "" ""
-				 "Move Login ..." login gorilla::MoveLogin "" ""
-				 separator "" "" "" ""
-				 "Add Group ..." open gorilla::AddGroup "" ""
-				 "Add Subgroup ..." group gorilla::AddSubgroup "" ""
-				 "Rename Group ..." group gorilla::RenameGroup "" ""
-				 "Move Group ..." group gorilla::MoveGroup "" ""
-				 "Delete Group" group gorilla::DeleteGroup "" ""
-				}
-		Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
-					   "Customize ..." open gorilla::DatabasePreferencesDialog "" ""
-					   separator "" "" "" ""
-					   "Change Master Password ..." open gorilla::ChangePassword "" ""
-					   separator "" "" "" ""
-					   "Lock now" open gorilla::LockDatabase "" ""
-					 }
-		Help	help	{ "Help ..." "" gorilla::Help "" ""
-				 "License ..." "" gorilla::License "" ""
-				 separator mac "" "" ""
-				 "About ..." mac tkAboutDialog "" ""
-				}
-	} ;# end ::gorilla::menu_desc
+	# Note - the string below, because it is passed through subst, needs
+	# to be formatted as a proper string representation of a list.  That
+	# is why all of the [mc] calls are surrounded by quotes.  This
+	# assures that the result of the [mc] call (unless the result
+	# contains a ") will be a proper single element of the string rep.
+	# of a list.
+	
+	set ::gorilla::menu_desc [ subst {
+		"[ mc File ]" file {"[ mc New ] ..."         {}   gorilla::New         ""
+		                    "[ mc Open ] ..."        {}   gorilla::Open        $menu_meta+O
+		                    "[ mc Merge ] ..."       open gorilla::Merge       ""
+		                    "[ mc Save ]"            save gorilla::Save        $menu_meta+S
+		                    "[ mc Save As ] ..."     open gorilla::SaveAs      ""
+		                    separator                ""   ""                   ""
+		                    "[ mc Export ] ..."      open gorilla::Export      ""
+		                    "[ mc Import ] ..."      open gorilla::Import      ""
+		                    separator                mac  ""                   ""
+		                    "[ mc Preferences ] ..." mac  gorilla::Preferences ""
+		                    separator                mac  ""                   ""
+		                    "[ mc Exit ]"            mac  gorilla::Exit        $menu_meta+X
+		                   }
+
+		"[ mc Edit ]" edit {"[ mc Copy Username ]"   login  {gorilla::CopyToClipboard Username} $menu_meta+U
+		                    "[ mc Copy Password ]"   login  {gorilla::CopyToClipboard Password} $menu_meta+P
+		                    "[ mc Copy URL ]"        login  {gorilla::CopyToClipboard URL}      $menu_meta+W
+		                    separator                ""     ""                                  ""
+		                    "[ mc Clear Clipboard ]" ""     gorilla::ClearClipboard             $menu_meta+C
+		                    separator                ""     ""                                  ""
+		                    "[ mc Find ] ..."        open   gorilla::Find                       $menu_meta+F
+		                    "[ mc Find next ]"       open   gorilla::FindNext                   $menu_meta+G
+		                   }
+		                
+		"[ mc Login ]" login {"[ mc Add Login ]"        open  gorilla::AddLogin    $menu_meta+A
+				      "[ mc Edit Login ]"       open  gorilla::EditLogin   $menu_meta+E
+				      "[ mc View Login ]"       open  gorilla::ViewLogin   $menu_meta+V
+				      "[ mc Delete Login ]"     login gorilla::DeleteLogin ""
+				      "[ mc Move Login ] ..."   login gorilla::MoveLogin   ""
+				      separator                 ""    ""                   ""
+				      "[ mc Add Group ] ..."    open  gorilla::AddGroup    ""
+				      "[ mc Add Subgroup ] ..." group gorilla::AddSubgroup ""
+				      "[ mc Rename Group ] ..." group gorilla::RenameGroup ""
+				      "[ mc Move Group ] ..."   group gorilla::MoveGroup   ""
+				      "[ mc Delete Group ]"     group gorilla::DeleteGroup ""
+				     }
+				
+		"[ mc Security ]" security {"[ mc Password Policy ] ..."        open gorilla::PasswordPolicy            ""
+				            "[ mc Customize ] ..."              open gorilla::DatabasePreferencesDialog ""
+				            separator                           ""   ""                                 ""
+				            "[ mc Change Master Password ] ..." open gorilla::ChangePassword            ""
+				            separator                           ""   ""                                 ""
+				            "[ mc Lock now ]"                   open gorilla::LockDatabase              ""
+				           }
+
+		"[ mc Help ]" help {"[ mc Help ] ..."    ""  gorilla::Help    ""
+				    "[ mc License ] ..." ""  gorilla::License ""
+				    separator            mac ""               ""
+				    "[ mc About ] ..."   mac tkAboutDialog    ""
+				   }
+
+	} ] ;# end ::gorilla::menu_desc
 
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 		
-		.mbar add cascade -label [mc $menu_name] -menu .mbar.$menu_widget
+		.mbar add cascade -label $menu_name -menu .mbar.$menu_widget
 	
 		menu .mbar.$menu_widget
 		
 		set taglist ""
 		
-		foreach {menu_item menu_tag menu_command meta_key shortcut} $menu_itemlist {
+		foreach {menu_item menu_tag menu_command shortcut} $menu_itemlist {
 	
 			# erstelle für jedes widget eine Tag-Liste
 			lappend taglist $menu_tag
@@ -479,9 +491,7 @@ proc gorilla::InitGui {} {
 			if {$menu_item eq "separator"} {
 				.mbar.$menu_widget add separator
 			} else {
-			  eval set meta_key $meta_key
-				set shortcut [join "$meta_key $shortcut" +]
-				.mbar.$menu_widget add command -label [mc $menu_item] \
+				.mbar.$menu_widget add command -label $menu_item \
 					-command $menu_command -accelerator $shortcut
 			} 	
 			set ::gorilla::tag_list($menu_widget) $taglist
@@ -732,7 +742,7 @@ proc setmenustate {widget tag_pattern state} {
 	if {$tag_pattern eq "all"} {
 		foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 			set index 0
-			foreach {title a b c d } $menu_itemlist {
+			foreach {title a b c } $menu_itemlist {
 				if { $title ne "separator" } {
 					$widget.$menu_widget entryconfigure $index -state $state
 				}
@@ -1085,11 +1095,11 @@ proc gorilla::New {} {
 		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					return
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					return
 				}
 			}
@@ -1569,11 +1579,11 @@ proc gorilla::Open {{defaultFile ""}} {
 			\"Cancel\" returns to the main menu."]
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					return
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					return
 				}
 			}
@@ -1892,7 +1902,7 @@ namespace eval ::gorilla::LoginDialog {
 		# Returns the generated label name.
 	
 		variable seq
-		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure [ mc "${text}:" ] ] -style Wrapping.TLabel ]
+		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure "${text}:" ] -style Wrapping.TLabel ]
 	} ; # end 
 
 # -----------------------------------------------------------------------------
@@ -1914,11 +1924,11 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		foreach {child label w} { group    Group    combobox
-		                          title    Title    entry
-		                          url      URL      entry
-		                          user     Username entry
-		                          password Password entry  } {
+		foreach {child label w} [ list group    [ mc Group    ] combobox \
+		                               title    [ mc Title    ] entry    \
+		                               url      [ mc URL      ] entry    \
+		                               user     [ mc Username ] entry    \
+		                               password [ mc Password ] entry  ] {
 			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
@@ -2321,43 +2331,41 @@ namespace eval ::gorilla::LoginDialog {
 					}                              
 				}
 
-				foreach element $varlist {
+				foreach element [ list {*}$varlist notes ] {
 
-					set value [ set $element ]
-
-					if { $value != "" } {
-						if { ! [ string equal $value [ dbget $element $rn ] ] } {
-							set modified 1
-							if { $element eq "password" } {
-								dbset last-pass-change $rn $now
-							}
-						}
-						dbset $element $rn $value
+					if { $element ne "notes" } {
+						set new_value [ set $element ]
 					} else {
-						dbunset $element $rn
-						set modified 1
+						set new_value [ string trimright [ -m:notes- get 0.0 end ] ]
 					}
 
-					::pwsafe::int::randomizeVar $element 
+					set old_value [ dbget $element $rn ]
+					
+					if { $new_value ne $old_value } {
+						set modified 1
+						if { $new_value eq "" } {
+							dbunset $element $rn
+						} else {
+
+							dbset $element $rn $new_value
+
+							if { $element eq "password" } {
+								dbset last-pass-change $rn $now
+							} ; # end if element eq password
+
+						} ; # end if new_value eq ""
+
+					} ; # end if new_value ne old_value
+
+					# note - "$element" is correct below.  For all but "notes", the
+					# element variable contains a variable name, it is that inner
+					# variable name that should be cleansed
+					if { $element ne "notes" } {
+						::pwsafe::int::randomizeVar $element new_value old_value
+					}
 
 				} ; # end foreach element
 				
-				# handle notes separately - trimming
-				# trailing whitespace and newlines
-				
-				set value [ string trimright [ -m:notes- get 0.0 end ] ]
-				if { $value != "" } {
-					if { ! [ string equal $value [ dbget notes $rn ] ] } {
-						set modified 1
-					}
-					dbset notes $rn $value
-				} else {
-					dbunset notes $rn
-					set modified 1
-				}
-
-				::pwsafe::int::randomizeVar value
-
 				if { $modified } {
 					dbset last-modified $rn $now
 				}
@@ -2744,7 +2752,7 @@ proc gorilla::AddSubgroup {} {
 			if {[string equal $parent "RootNode"]} {
 				gorilla::AddSubgroupToGroup ""
 			} else {
-				set pdata [$::gorilla::widgets(tree) item $node -values]
+				set pdata [ $::gorilla::widgets(tree) item $parent -values ]
 				gorilla::AddSubgroupToGroup [lindex $pdata 1]
 			}
 		}
@@ -3138,7 +3146,7 @@ proc gorilla::RenameGroup {} {
 		pack $top.parent.e -side left -expand yes -fill x -pady 5 -padx 10
 		pack $top.parent -side top -expand yes -fill x -pady 5 -padx 10
 
-		ttk::labelframe $top.group -text "Name"
+		ttk::labelframe $top.group -text [ mc Name ]
 		ttk::entry $top.group.e -width 40 -textvariable ::gorilla::renameGroupName
 		pack $top.group.e -side top -expand yes -fill x -pady 5 -padx 10
 		pack $top.group -side top -expand yes -fill x -pady 5 -padx 10
@@ -4752,11 +4760,11 @@ proc gorilla::Exit {} {
 		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					set ::gorilla::exiting 0
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					set ::gorilla::exiting 0
 				}
 			}
@@ -5521,6 +5529,7 @@ proc gorilla::DestroyDatabasePreferencesDialog {} {
 }
 
 proc gorilla::DatabasePreferencesDialog {} {
+
 	ArrangeIdleTimeout
 
 	set top .dbPrefsDialog
@@ -5576,13 +5585,50 @@ proc gorilla::DatabasePreferencesDialog {} {
 			-variable ::gorilla::dpd(IsUTF8)
 		pack $top.uni -anchor w -side top -pady 3 -padx 10
 
+		# === keystretch spinbox
+
 		ttk::frame $top.stretch -padding [list 10 5]
-		spinbox $top.stretch.spin -from 2048 -to 65535 -increment 256 \
-			-justify right -width 8 \
+		spinbox $top.stretch.spin -from 2048 -to 2147483647 -increment 256 \
+			-justify right -width 12 \
 			-textvariable ::gorilla::dpd(keyStretchingIterations)
 		ttk::label $top.stretch.label -text [mc "V3 key stretching iterations"]
 		pack $top.stretch.spin $top.stretch.label -side left -padx 3
 		pack $top.stretch -anchor w -side top
+
+		# === keystretch delay timer
+
+		set delayf [ ttk::labelframe $top.delay -padding {10 5} -text [ mc SECURITY-db-calc-delay-time ] ]
+		pack $delayf -anchor w -side top -fill x -expand true -padx {10 10} -pady {0 2m}
+		
+		ttk::label  $delayf.feedback -text [ mc SECURITY-db-%d-iter-%s-secs $::gorilla::dpd(keyStretchingIterations) "___" ]
+		ttk::button $delayf.compute  -text [ mc SECURITY-db-calc ] -command [ namespace code [ subst {
+			$delayf.compute configure -text [ mc SECURITY-db-calcing ]
+			update idletasks
+		  	$delayf.feedback configure -text \[ mc SECURITY-db-%d-iter-%s-secs \
+			                                 \[ $top.stretch.spin get ] \
+		                                         \[ expr { \[ pwsafe::int::keyStretchMsDelay \[ $top.stretch.spin get ] ] / 1000.0 } ] ]
+			$delayf.compute configure -text [ mc SECURITY-db-calc ]
+		  } ] ]
+		grid $delayf.feedback $delayf.compute -sticky news -padx {1m 1m} -pady {1m 1m}
+		
+		# === auto iter computation
+		
+		set aiterf [ ttk::labelframe $top.autoiter -padding {10 5} -text [ mc SECURITY-db-auto-iter-calc ] ]
+		pack $aiterf -anchor w -side top -fill x -expand true -padx {10 10}
+
+                ttk::label $aiterf.label1 -text [ mc SECURITY-db-delay-for ]		
+		spinbox $aiterf.spin -from 1 -to 600 -increment 1 -justify right -width 5 
+		ttk::label $aiterf.spinlabel2 -text [ mc SECURITY-db-seconds ]
+		ttk::button $aiterf.calculate -text [ mc SECURITY-db-calc ] \
+			-command [ namespace code [ subst { 
+				$aiterf.calculate configure -text [ mc SECURITY-db-calcing ]
+				update idletasks
+		    		$top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
+		    		$aiterf.calculate configure -text [ mc SECURITY-db-calc ]
+			} ] ]
+		grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
+
+		# ===
 
 		ttk::separator $top.sep -orient horizontal
 		pack $top.sep -side top -fill x -pady 10
@@ -5659,7 +5705,8 @@ proc gorilla::DatabasePreferencesDialog {} {
 	}
 
 	ArrangeIdleTimeout
-}
+
+} ; # end proc gorilla::DatabasePreferencesDialog
 
 # ----------------------------------------------------------------------
 # Preferences Dialog
@@ -6369,7 +6416,10 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 	# initialize locale and fonts from the preference values
 
 	mclocale $::gorilla::preference(lang)
-	mcload [file join $::gorillaDir msgs]
+
+	# Load msgcat data into the global namespace so that it is visible
+	# from both the ::gorilla and ::pwsafe namespaces.
+	namespace eval :: { mcload [file join $::gorillaDir msgs] }
 	
 	set value $::gorilla::preference(fontsize) 
 	font configure TkDefaultFont -size $value

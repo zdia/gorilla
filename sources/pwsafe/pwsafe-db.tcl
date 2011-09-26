@@ -275,7 +275,7 @@ itcl::class pwsafe::db {
 
 	    if {$prefType != "B" && $prefType != "I" && \
 		    $prefType != "S"} {
-		error "unknown preference type: $prefType"
+		error [ mc "unknown preference type: %s" $prefType ]
 	    }
 
 	    #
@@ -300,11 +300,11 @@ itcl::class pwsafe::db {
 	    }
 
 	    if {$i >= [string length $newPreferences]} {
-		error "premature end of preference"
+		error [ mc "premature end of preference" ]
 	    }
 
 	    if {[scan $prefNumberString "%d" prefNumber] != 1} {
-		error "expected preference number, got $prefNumberString"
+		error [ "expected preference number, got %s" $prefNumberString ]
 	    }
 
 	    #
@@ -328,11 +328,11 @@ itcl::class pwsafe::db {
 		    incr i
 		}
 		if {[scan $prefValString "%d" prefValue] != 1} {
-		    error "expected number for value, got $prefValString"
+		    error [ mc "expected number for value, got %s" $prefValString ]
 		}
 	    } elseif {$prefType == "S"} {
 		if {[string index $newPreferences $i] != "\""} {
-		    error "expected initial quote for string value"
+		    error [ mc "expected initial quote for string value" ]
 		}
 		incr i
 		set prefValue ""
@@ -348,7 +348,7 @@ itcl::class pwsafe::db {
 		    incr i
 		}
 		if {$i >= [string length $newPreferences]} {
-		    error "premature end of string value"
+		    error [ mc "premature end of string value" ]
 		}
 		incr i
 
@@ -384,7 +384,7 @@ itcl::class pwsafe::db {
 		}
 	    }
 	}
-	error "no such preference: $name"
+	error [ mc "no such preference: %s" $name ]
     }
 
     public method getPreference {name} {
@@ -402,7 +402,7 @@ itcl::class pwsafe::db {
 		}
 	    }
 	}
-	error "no such preference: $name"
+	error [ mc "no such preference: %s" $name ]
     }
 
     public method setPreference {name value} {
@@ -421,7 +421,7 @@ itcl::class pwsafe::db {
 		return
 	    }
 	}
-	error "no such preference: $name"
+	error [ mc "no such preference: %s" $name ]
     }
 
     #
@@ -442,7 +442,7 @@ itcl::class pwsafe::db {
 	    set result [split $group .]
 	    foreach element $result {
 		if {$element == ""} {
-		    error "group name can not be empty"
+		    error [ mc "group name can not be empty" ]
 		}
 	    }
 	    return $result
@@ -461,7 +461,7 @@ itcl::class pwsafe::db {
 		append element [string index $group [incr index]]
 	    } elseif {$c == "."} {
 		if {$element == ""} {
-		    error "group name can not be empty"
+		    error [ mc "group name can not be empty" ]
 		}
 		lappend result $element
 		set element ""
@@ -471,7 +471,7 @@ itcl::class pwsafe::db {
 	}
 
 	if {$element == ""} {
-	    error "group name can not be empty"
+	    error [ mc "group name can not be empty" ]
 	}
 
 	lappend result $element
@@ -490,7 +490,7 @@ itcl::class pwsafe::db {
 		append result "."
 	    }
 	    if {$element == ""} {
-		error "group name can not be empty"
+		error [ mc "group name can not be empty" ]
 	    }
 	    append result [string map {\\ \\\\ . \\.} $element]
 	    incr index
@@ -546,7 +546,7 @@ itcl::class pwsafe::db {
     public method existsField {rn field} {
 	if {![info exists records($rn,$field)]} {
 	    if {![existsRecord $rn]} {
-		error "record $rn does not exist"
+		error [ mc "record %d does not exist" $rn ]
 	    }
 	    return 0
 	}
@@ -560,7 +560,7 @@ itcl::class pwsafe::db {
     public method getFieldsForRecord {rn} {
 	set names [array names records -glob $rn,*]
 	if {[llength $names] == 0} {
-	    error "record $rn does not exist"
+	    error [ mc "record %d does not exist" $rn ]
 	}
 	set result [list]
 	foreach name $names {
@@ -576,9 +576,9 @@ itcl::class pwsafe::db {
     public method getFieldValue {rn field} {
 	if {![info exists records($rn,$field)]} {
 	    if {![existsRecord $rn]} {
-		error "record $rn does not exist"
+		error [ mc "record %d does not exist" $rn ]
 	    }
-	    error "record $rn does not have field $field"
+	    error [ mc "record %d does not have field %s" $rn $field ]
 	}
 
 	if {$field == 2 || $field == 3 || $field == 4 || \
@@ -597,7 +597,7 @@ itcl::class pwsafe::db {
 
     public method setFieldValue {rn field value} {
 	if {![existsRecord $rn]} {
-	    error "record $rn does not exist"
+	    error [ mc "record %d does not exist" $rn ]
 	}
 
 	if {$field == 2 || $field == 3 || $field == 4 || \
@@ -649,7 +649,7 @@ itcl::class pwsafe::db {
 	}
 
 	if {![info exists header($field)]} {
-	    error "no header field $field"
+	    error [ mc "no header field %s" $field ]
 	}
 
 	return $header($field)

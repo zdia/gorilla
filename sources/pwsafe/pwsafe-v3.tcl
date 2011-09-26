@@ -58,17 +58,17 @@ itcl::class pwsafe::v3::reader {
 	}
 
 	if {[string length $encryptedFirstBlock] == 0 && [$source eof]} {
-	    error "EOF while reading field"
+	    error [ mc "EOF while reading field" ]
 	}
 
 	if {[string length $encryptedFirstBlock] != 16} {
-	    error "less than 16 bytes remaining for first block"
+	    error [ mc "less than 16 bytes remaining for first block" ]
 	}
 
 	set decryptedFirstBlock [$engine decrypt $encryptedFirstBlock]
 
 	if {[binary scan $decryptedFirstBlock ic fieldLength fieldType] != 2} {
-	    error "oops"
+	    error [ mc "oops" ]
 	}
 
 	#
@@ -76,7 +76,7 @@ itcl::class pwsafe::v3::reader {
 	#
 
 	if {$fieldLength < 0 || $fieldLength > 65536} {
-	    error "field length $fieldLength looks insane"
+	    error [ mc "field length %d looks insane" $fieldLength ]
 	}
 
 	#
@@ -107,7 +107,7 @@ itcl::class pwsafe::v3::reader {
 	set encryptedData [$source read $dataLength]
 
 	if {[string length $encryptedData] != $dataLength} {
-	    error "out of data"
+	    error [ mc "out of data" ]
 	}
 
 	set decryptedData [$engine decrypt $encryptedData]
@@ -306,7 +306,7 @@ itcl::class pwsafe::v3::reader {
 
     public method readFile {{percentvar ""}} {
 	if {$used} {
-	    error "this object can not be reused"
+	    error [ mc "this object can not be reused" ]
 	}
 
 	set used 1
@@ -343,7 +343,7 @@ itcl::class pwsafe::v3::reader {
 	set tag [$source read 4]
 
 	if {$tag != "PWS3"} {
-	    error "file does not have PWS3 magic"
+	    error [ mc "file does not have PWS3 magic" ]
 	}
 
 	set salt [$source read 32]
@@ -364,7 +364,7 @@ itcl::class pwsafe::v3::reader {
 		[string length $b4] != 16 || \
 		[string length $iv] != 16} {
 	    pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv
-	    error "end of file while reading header"
+	    error [ mc "end of file while reading header" ]
 	}
 
 	#
@@ -372,16 +372,7 @@ itcl::class pwsafe::v3::reader {
 	#
 
 	if {[binary scan $biter i iter] != 1} {
-	    error "oops"
-	}
-
-	if {$iter > 65536} {
-	    #
-	    # More than 65536 iterations looks unreasonable, at least today.
-	    # Sounds more like a file format bug. We don't want to spend such
-	    # a long time iterating, appearing dead.
-	    #
-	    error "Key stretching wants $iter iterations, which seems unreasonable"
+	    error [ mc "Failed to scan key stretch iteration count from binary data." ]
 	}
 
 	if {$iter < 2048} {
@@ -401,7 +392,7 @@ itcl::class pwsafe::v3::reader {
 	set myhskey [sha2::sha256 -bin $myskey]
 	if {![string equal $hskey $myhskey]} {
 	    pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
-	    error "wrong password"
+	    error [ mc "wrong password" ]
 	}
 
 	pwsafe::int::randomizeVar salt hskey myhskey
@@ -562,7 +553,7 @@ itcl::class pwsafe::v3::writer {
 
 	set l [string length $data]
 	if {[expr {$l%16}] != 0} {
-	    error "oops"
+	    error [ mc "oops" ]
 	}
 
 	#
@@ -750,7 +741,7 @@ itcl::class pwsafe::v3::writer {
 
     public method writeFile {{percentvar ""}} {
 	if {$used} {
-	    error "this object can not be reused"
+	    error [ mc "this object can not be reused" ]
 	}
 
 	set used 1
