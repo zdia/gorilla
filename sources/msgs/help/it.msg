@@ -7,6 +7,7 @@
 # Content-Transfer-Encoding: 8bit
 
 mcmset it {
+Index Indice
 {Table of Contents} Indice
 {Using Password Gorilla} {Usare Password Gorilla}
 Risks Rischi

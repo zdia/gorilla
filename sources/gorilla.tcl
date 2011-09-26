@@ -6685,11 +6685,13 @@ proc gorilla::About {} {
 			-font {sans 10}
 
 		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
-		ttk::label $w.contributors -text [ mc "Contributors" ] {*}$stdopts -font {sans 10}
-		ttk::label $w.contrib1 -text "\u2022 [ mc "Gorilla artwork contributed by %s" "Andrew J. Sniezek." ]" {*}$stdopts
-		ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts
-		ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts
-		ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts
+		lappend ctr [ ttk::label $w.contributors -text [ mc "Contributors" ] {*}$stdopts -font {sans 10} ]
+		lappend ctr [ ttk::label $w.contrib1 -text "\u2022 [ mc "Gorilla artwork contributed by %s" "Andrew J. Sniezek." ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib6 -text "\u2022 [ mc "Spanish translation by %s" "Juan Roldan Ruiz" ]" {*}$stdopts ]
 		
 		ttk::frame $w.buttons
 		ttk::button $w.buttons.license -text [mc License] -command gorilla::License
@@ -6700,9 +6702,7 @@ proc gorilla::About {} {
 		pack $w.description -side top
 		pack $w.copyright -side top -pady 5 -fill x
 		pack $w.url -side top -pady 5 
-		foreach item [ list $w.contributors $w.contrib1 $w.contrib2 $w.contrib3 $w.contrib4 ] { 
-			pack $item -side top -pady 0 -fill x
-		} 
+		pack {*}$ctr -side top -pady 0 -fill x
 		pack $w.buttons.license $w.buttons.close \
 			-side left -padx 30
 		pack $w.buttons -side bottom -pady 10
