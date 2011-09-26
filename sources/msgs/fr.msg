@@ -9,54 +9,17 @@
 #
 # Project-Id-Version: Gorilla 1.5.3.5
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-05-22 12:19+0200
+# POT-Creation-Date: 2011-09-26 11:10-0400
 # PO-Revision-Date: 2011-09-07 15:59-0500
 # Last-Translator: Benoit Mercier <benoit.mercibe@gmail.com>
 # Language-Team: French
-# Language: fr
 # MIME-Version: 1.0
 # Content-Type: text/plain; charset=UTF-8
 # Content-Transfer-Encoding: 8bit
+# Language: fr
 # Plural-Forms: nplurals=2; plural=(n > 1);
 
 mcmset fr {
-File Fichier
-{New ...} Nouveau...
-{Open ...} Ouvrir...
-{Merge ...} {Fusionner ...}
-Save Enregistrer
-{Save As ...} {Enregistrer sous...}
-{Export ...} Exporter...
-{Import ...} Importer...
-{Preferences ...} Préférences...
-Exit Quitter
-Edit Édition
-{Copy Username} {Copier le nom d'utilisateur}
-{Copy Password} {Copier le mot de passe}
-{Copy URL} {Copier l'URL}
-{Clear Clipboard} {Vider le presse-papier}
-{Find ...} Rechercher...
-{Find next} {Rechercher le suivant}
-Login Connexion
-{Add Login} {Ajouter une connexion}
-{Edit Login} {Éditer la connexion}
-{View Login} {Afficher la connexion}
-{Delete Login} {Supprimer la connexion}
-{Move Login ...} {Déplacer la connexion...}
-{Add Group ...} {Ajouter un groupe}
-{Add Subgroup ...} {Ajouter un sous-groupe...}
-{Rename Group ...} {Renommer le groupe...}
-{Move Group ...} {Déplacer le groupe...}
-{Delete Group} {Supprimer le groupe}
-Security Sécurité
-{Password Policy ...} {Politique de mot de passe...}
-{Customize ...} Personnaliser...
-{Change Master Password ...} {Modifier le mot de passe maître...}
-{Lock now} {Verrouiller maintenant}
-Help Aide
-{Help ...} Aide...
-{License ...} Licence...
-{About ...} {À propos de...}
 {Need %s} {Besoin %s}
 {The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
 
@@ -76,14 +39,33 @@ Error Message: %s} {Password Gorilla nécessite le paquet"pwsafe".  Il s'agit pr
 
 Message d'erreur: %s}
 {Welcome to the Password Gorilla.} {Bienvenue dans Password Gorilla.}
+File Fichier
+New Nouveau
+Save Enregistrer
+Export Exporter
+Preferences Préférences
+Exit Quitter
+Edit Édition
+Clear Vider
+Find Rechercher
+Login Connexion
+Security Sécurité
+Password {Mot de passe}
+Help Aide
+License Licence
 About {À propos}
+{Add Login} {Ajouter une connexion}
 {Add Subgroup} {Ajouter un sous-groupe}
 {Rename Group} {Renommer un groupe}
+{Delete Group} {Supprimer le groupe}
 {Open URL} {Ouvrir l'URL}
 {Copy Username to Clipboard} {Copier le nom d'utilisateur dans le presse-papier}
 {Copy Password to Clipboard} {Copier le mot de passe dans le presse-papier}
 {Copy URL to Clipboard} {Copier l'URL dans le presse-papier}
+{Edit Login} {Éditer la connexion}
+{View Login} {Afficher la connexion}
 {Move Login to:} {Déplacer la connexion vers:}
+{Delete Login} {Supprimer la connexion}
 {Save changes?} {Enregistrer les modifications?}
 {The current password database is modified. Do you want to save the current database before creating the new database?} {La base de données actuelle des mots de passe a été modifiée.  Souhaitez-vous enregistrer cette version modifiée avant d'en créer une nouvelle?}
 {New Database: Choose Master Password} {Nouvelle base de données: sélectionner un mot de passe maître}
@@ -94,15 +76,16 @@ About {À propos}
 Database: {Base de données:}
 Password: {Mot de passe:}
 OK OK
-New Nouveau
 {Select a database, and enter its password. Click "New" to create a new database.} {Sélectionnez une base de données et introduisez son mot de passe.  CLiquez sur "Nouveau" pour créer une nouvelle base de données.}
 {Please be patient. Verifying password ...} {Veuillez patienter pendant la vérification du mot de passe...}
 {Error Opening Database} {Erreur lors de l'ouverture de la base de données}
-{Can not open password database "%s": %s} {Impossible d'ouvrir la base de données "%s": %s}
 {Browse for a password database ...} {Sélectionner un fichier de base de données de mot de passe...}
 {Open Password Database} {Ouvrir la base de données des mots de passe}
 {Password database %s loaded.} {La base de données des mots de passe %s a été chargée.}
 {Add/Edit/View Login} {Ajout/Modification/Affichage de connexion}
+Title Titre
+URL URL
+Username {Nom d'utilisateur}
 Cancel Annuler
 {Show Password} {Afficher le mot de passe}
 {Generate Password} {Générer un mot de passe}
@@ -174,9 +157,7 @@ Close Fermer
 {Password database saved.} {Base de données des mots de passe sauvegardée.}
 {Save password database ...} {Enregistrement de la base de données des mots de passe...}
 {Error Saving Database} {Erreur lors de l'enregistrement de la base de données.}
-{Failed to make backup copy of password database as "%s": %s} {Échec lors de la création d'une copie de sauvegarde de la base de données des mots de passe dans "%s": %s}
 {Failed to save password database as "%s": %s} {Échec de l'enregistrement de la base de données des mots de passe dans "%s": %s}
-{Password database saved as %s} {Base de données des mots de passe enregistrée dans %s}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {La base de données courante a été modifiée.  Souhaitez-vous enregistrer les modifications? Cliquer sur <Oui> pour enregistrer la base de données et quitter.  Cliquer sur <Non> pour annuler les modifications et quitter. Cliquer sur <Annuler> pour retourner au menu principal.}
 {Clipboard cleared.} {Presse-papier vidé.}
 {Database Locked} {Base de données verrouillée}
@@ -202,7 +183,6 @@ Confirm: Confirmer:
 {Use Password Safe 3 format} {Utiliser le format de fichier Password Safe 3}
 {V2 Unicode support} {Support Univode V2}
 {V3 key stretching iterations} {Itérations d'étirement de clé V3}
-Preferences Préférences
 General Général
 {When double clicking a login ...} {Un double-clic sur une connexion...}
 {Copy password to clipboard} {Copier le mot de passe dans le presse papier}
@@ -212,7 +192,6 @@ General Général
 {seconds (0=never)} {secondes (0=jamais)}
 Remember {Se souvenir}
 {database names} {noms de base de données}
-Clear Vider
 {Backup database on save} {Créer une copie de sauvegarde de la base de données lors de l'enregistrement}
 {Remember sizes of dialog boxes} {Mémoriser les dimensions des boîtes de dialogue}
 {Use Gorilla auto-copy} {Utiliser la copie automatique de Gorilla}
@@ -228,7 +207,6 @@ les plateformes  Windows(TM) ou MacOS(TM).
 Voir le système d'aide pour plus de détais.}
 Defaults {Valeurs par défauts}
 {Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Note: ces valeurs par défaut seront appliquées aux nouvelles bases de données.  Pour modifier les paramètres d'une base de données existante, aller dans  "Personnaliser" du menu "Sécurité".}
-Export Exporter
 {Include password field} {Inclure le champ "mot de passe"}
 {Include "Notes" field} {Inclure le champ "Notes"}
 {Field separator} {Séparateur de champ}
@@ -270,6 +248,7 @@ De zéro à vingt.
 Voir <Aide> pour plus de détails.}
 {Clipboard autoclear multiplier} {Multiplicateur de nettoyage automatique de presse-papier}
 {History deleted. After a restart the list will be empty.} {Historique supprimé.  Après un redémarrage la liste sera vide.}
+Error Erreur
 {No Database} {Pas de base de données.}
 {Please create a new database, or open an existing
 database first.} {Veuillez d'abord créer une nouvelle base de données ou en ouvrir une existante.}
@@ -289,28 +268,20 @@ Contributors Contributeurs
 {German translation by %s} {Traduction allemande par %s}
 {Russian translation by %s} {Traduction russe par %s}
 {Italian translation by %s} {Traduction italienne par %s}
-License Licence
 {About Password Gorilla} {Au sujet de Password Gorilla}
 {Password Gorilla License} {Licence d'utilisation de Password Gorilla}
 {Find Text:} {Recherche du texte:}
 {Find Options ...} {Options de recherche...}
 {Any field} {N'importe quel champ}
-Title Titre
-Username {Nom d'utilisateur}
-Password {Mot de passe}
 Notes Notes
-URL URL
 {Case sensitive find} {Recherche sensible à la casse}
-Find Rechercher
 {Text not found.} {Texte non trouvé.}
 {Please select a login entry first.} {Veuillez d'abord sélectionner une connexion.}
 {The selected login does not contain a URL value.} {La connexion sélectionnée ne contient pas d'URL}
 {Browser launching is not configured. See help.} {Le lancement d'un navigateur n'est pas configuré.  Voir l'aide.}
 {Browser parameter lacks '%url%' string. See help.} {Il manque le paramètre '%url%' dans la ligne de commande pour lancer le navigateur.  Voir l'aide.}
-Error Erreur
 {Error launching browser, the OS error message is:} {Erreur lors du lancement du navigateur.  Le message d'erreur système est:}
 {Oh well...} {Oh well...}
 {Launched browser:} {Navigateur démarré:}
 {Generate gorilladoc.html} {Générer gorilladoc.html}
-{Can not drag the selected items (see documentation)} {Impossible de déplacer à la souris les items sélectionnés (voir documentation)}
 }
