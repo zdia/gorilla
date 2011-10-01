@@ -38,10 +38,11 @@ namespace eval ::gorilla::test {
 	# CATEGORY: BACKUP
 	# ----------------
 
-	test backup-1.1 {General test} \
+	test backup-1.1 {General test with timestamp} \
     -setup {
 			set oldflag $::gorilla::preference(keepBackupFile)
 			set ::gorilla::preference(keepBackupFile) 1
+			set ::gorilla::preference(timeStampBackup) 1
 			set timestamp [clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S"] } \
     -body { gorilla::Save } \
     -cleanup { set ::gorilla::preference(keepBackupFile) $oldflag } \

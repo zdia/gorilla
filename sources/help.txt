@@ -17,6 +17,9 @@ alias: TOC
 	-- [Keyboard Shortcuts]
 	-- [The "V3" Database Format]
 	-- [Data Import]
+	-- [DB Merging]
+	--- [Performing a Merge]
+	--- [Resolving Merge Conflicts]
 
 - [Risks] 
 	-- [The Software Itself]
@@ -283,8 +286,8 @@ editing, or to do neither.
 '''Backup database on save'''
 
  | If enabled, then a backup file of the password database is made whenever
-the database is saved. The backup file has the same name as the database
-itself, but with the ''.bak'' extension.
+the database is saved. The backup file is located in the same directory and
+has the same name as the database itself, but with the ''.bak'' extension.
 
 '''Remember sizes of dialog boxes'''
 
@@ -407,6 +410,16 @@ both Password Gorilla and Password Safe, the latter will not read accented
 characters correctly. (The database will open, but non-ASCII characters will
 not show up correctly.) This option has no effect if your database uses only
 ASCII characters.
+
+'''Timestamp Backup'''
+
+ | If the option ''Auto-Save'' is enabled then the copy can be saved with
+a timestamp in the chosen backup directory. The timestamp format is: YYYY-mm-dd-hh-mm-ss
+
+'''Backup Path'''
+
+ | If no backup path is entered then the backup copy has the suffix ".bak" and is
+put into the same directory as the Password database itself.
 
 '''V3 key stretching iterations'''
 
@@ -601,10 +614,20 @@ executable.
 
 '''Notes for Mac Users'''
 
- | To open the default Mac browser (Safari) you should enter the single word
-'''open''' in the '''Browser executable to launch''' entry.  If you utilize
-Firefox on the Mac, usually entering '''firefox''' is sufficient to launch
-Firefox from Password Gorilla.
+ | The value ''open'' is preset per default for the '''Browser executable to launch''' entry.
+If the url entry of the login record contains a value like ''http://www.google.com''
+then the default browser will launch with this site. To choose a default Web browser other
+than Safari you
+
+ | 1. Open Safari (/Applications).
+ | 2. Choose Preferences from the Safari menu.
+ | 3. Click the General button.
+ | 4. Choose a different browser from the Default Web Browser pop-up menu.
+
+ | If you want to launch a Web browser independently from the Safari installation
+mechanism you have to add the path of the browser's executable, e.g.
+
+ | ''/Applications/Firefox.app/Contents/MacOS/firefox''
 
 '''Notes for Unix/Linux Users'''
 
@@ -952,6 +975,111 @@ uuid,group,title,user,password,notes
 fdc2aff8-04e1-4766-4ef4-ddae08377ba6,Group 1.Sub Group 1,A Title,A User Name,A Password,A note about this entry 
 63a1b066-148a-4bf6-40bc-a2b9afda00c6,Group 1.Sub Group 2,A Title,A User Name,A Password,A note about this entry 
 f29b9ef7-9e62-41e1-7dfd-14ae13986059,Group 2,A Title,A User Name,A Password,A note with \n an embedded newline 
+
+-------------------
+title: DB Merging
+
+Password Gorilla also has the ability to merge separate PWsafe databases
+together into a single database.  This feature is most useful if you
+maintain the same password file on multiple computers, say a desktop and
+laptop machine.  As you go about your daily routine, you can make changes to
+either file, and then periodically merge the two different databases together to
+produce an identical database on both machines.  
+
+-------------------
+title: Performing a Merge
+
+Merging always happens in the context of the currently open database.  Step
+one is to open the PWsafe database file into which you wish to merge another
+database (the "master database").  Once you have open the database you wish
+to merge into, then choose "File" -> "Merge ..." and select and open the
+PWsafe database you wish to merge into the currently open database (the
+"merge database").  Once you supply the correct master password for the
+merge database, Password Gorilla will perform a merge.  Password records
+that are identical between both databases will be unchanged, and only one
+record will remain after the merge is complete.  Password records that only
+exist in the merge database will become new records in the master database. 
+Password records that overlap between both databases will produce "conflict"
+records in the master database.
+
+Once the merge is complete, Password Gorilla will alert you to the number of
+total password entries merged, the number of identical entries
+(overlapping), the number of newly added entries, and the number of
+conflicting entries.  The status window which reports these values will then
+ask if you wish to view a detailed report.  The detailed report will list
+each entry that is conflicting, each entry which was added, and the entries
+that were identical between both files.
+
+-------------------
+title: Resolving Merge Conflicts
+
+If any merged password entries were conflicting (meaning they were the same
+record, with small differences) then there are two ways to access the
+conflict resolution dialog.  The first method is to push the "Resolve
+Conflicts" button at the bottom of the detailed merge report window.  The
+second method is to use the "File" -> "Resolve Conflicts ..." menu entry. 
+Both methods will cause the entry conflict resolution dialog to appear.
+
+The conflict resolution dialog is a tabbed window, each tab containing one
+pair of conflicting password entries from a merge operation.  The contents
+of each tab list the group, title, url, username, password, and notes fields
+from both conflicting entries adjacent to each other so you may see what
+differs and decide how you wish to handle the differences in the data.  Each
+individual entry is proceeded by a radio button, the radio button is used to
+select which one of the two entries you wish to keep in a merged record. 
+I.e., for the title value, there are two entries, if the radio button for
+the first title entry is checked, then when you combine and save the whole
+password entry the first title entry value will be utilized as the value to
+be inserted into the password database.
+
+Entries that are identical default to already having the first radio button
+checked.  Entries that differ do not have any radio button checked, and are
+also highlighted in a light green background color.
+
+All fields may be edited, but only the field adjacent to the checked radio
+button will be inserted into the password database.
+
+The password field initially defaults to a display of stars "*" for the
+password for security reasons.  Clicking the right mouse button within the
+password entries will toggle between display of stars and display of the
+actual password contents.
+
+To resolve conflicts, you should view each tab, select the radio buttons for
+the fields you wish to keep, make any additional edits you desire to the
+fields you wish to keep, and press the "Combine and Save" button when you
+have made all your selections.  The "Combine and Save" button will only
+become enabled once you have made a radio button selection in all
+conflicting fields (green background).
+
+If you wish to reset your edits, then press the "Reset Values" button.  That
+will undo all edits you have made to all fields and return the values to
+their initial condition.
+
+If you do not wish to resolve an individual conflict at this time, press the
+"Ignore Conflict" button.  You can return to the conflict resolution dialog
+at a later time to finish resolving the conflicts.  However, once you exit
+Password Gorilla the list of conflicting records will be lost, so please
+resolve all conflicts before exiting.  No password data will be lost
+however, as if you do not resolve a conflict but do save the database, you
+will simply have a pair of records in your database that you can manually
+resolve at a later time.
+
+Both the "Combine and Save" and "Ignore Conflict" buttons will remove the
+current tab when pressed.  Once there is only a single tab remaining then
+both buttons will also remove the conflict merge window from your screen. 
+If you ignored any conflicts, you can return to the conflict merge window by
+using the "File" -> "Resolve Conflicts ..." menu entry.
+
+Note, the merge system and conflict dialog are not infallible.  It is
+generally best to resolve all conflicts before performing a additional merge
+with another password safe database.  No harm occurs if this suggestion is
+not followed, but duplicate or nearly duplicate entries may result if plural
+merges are performed without resolving conflicts between each merge.  The
+duplicate or nearly duplicate entries will simply need to be manually
+resolved.
+
+
+
 
 
 

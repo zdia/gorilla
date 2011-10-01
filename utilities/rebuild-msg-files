@@ -25,36 +25,51 @@
 # A copy of the GNU General Public License may be found in the Password
 # Gorilla sources/ directory, named LICENSE.txt.
 
-# see if we are running from the gettext directory or sources directory
+# see if we are running from the utilities directory
 
-if [[ $PWD != ${PWD%%/gorilla/utilities/gettext} ]] ; then
-  SRCPATH=../../sources
-  GETTXT=.
-elif [[ $PWD != ${PWD%%/gorilla/sources} ]] ; then
-  SRCPATH=.
-  GETTXT=../utilities/gettext
+if [[ $PWD != ${PWD%%/gorilla/utilities} ]] ; then
+  POPATH=gettext
+  HELPPATH=help2po
 else
   echo
-  echo "ERROR - this script must be run from either the gorilla/utilities/gettext/ or gorilla/sources/ directories"
+  echo "ERROR - this script must be run from the gorilla/utilities directory"
   echo "It is being run from $PWD at present"
   echo "Unable to continue"
   echo
   exit 1
 fi
 
+function mk-msg () {
+  local OUTDIR=$1 ; shift
+  for POFILE in "$@" ; do
+    LANG=$( basename $POFILE .po )
+    echo $POFILE LANG=$LANG
+    msgfmt --tcl -l$LANG -d $OUTDIR $POFILE
+  done
+}
+
 # create everything in a new temp directory
 
 OUTDIR=$( mktemp -d )
 
-xgettext -kmc -o $OUTDIR/gorilla.pot -L Tcl $SRCPATH/gorilla.tcl $SRCPATH/viewhelp.tcl $SRCPATH/pwsafe/*.tcl
+# rebuild translation files
+mk-msg $OUTDIR $POPATH/*.po
 
-for PO in $GETTXT/??.po ; do
-  cp -v $PO $OUTDIR
-  msgmerge --update $OUTDIR/$(basename $PO) --backup=simple $OUTDIR/gorilla.pot
+# rebuild help.txt file
+mkdir $OUTDIR/help
+
+mk-msg $OUTDIR/help $HELPPATH/*.po
+
+# convert and add DO NOT EDIT header
+./mcset2mcmset.tcl $( find $OUTDIR -type f )
+
+# replace msg files with converted files
+for name in $( find $OUTDIR -name \*conv ) ; do
+  mv -fv $name ${name/.conv}
 done
 
 # done
 
 echo
-echo New pot/po template files created in $OUTDIR
+echo New msg files have been created in $OUTDIR
 echo

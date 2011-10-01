@@ -1,0 +1,1293 @@
+msgid "Table of Contents"
+msgstr ""
+
+msgid "Using Password Gorilla"
+msgstr ""
+
+msgid "Risks"
+msgstr ""
+
+msgid "Starting"
+msgstr ""
+
+msgid "Choosing a Master Password"
+msgstr ""
+
+msgid "Organization Into Groups"
+msgstr ""
+
+msgid "Moving Groups and/or Logins"
+msgstr ""
+
+msgid "Logins"
+msgstr ""
+
+msgid "Preferences"
+msgstr ""
+
+msgid "General Preferences"
+msgstr ""
+
+msgid "Database Default Preferences"
+msgstr ""
+
+msgid "Export Preferences"
+msgstr ""
+
+msgid "Database Preferences"
+msgstr ""
+
+msgid "Display"
+msgstr ""
+
+msgid "Launch Browser"
+msgstr ""
+
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+msgid "The \"V3\" Database Format"
+msgstr ""
+
+msgid "The Software Itself"
+msgstr ""
+
+msgid "System Failure"
+msgstr ""
+
+msgid "Other Users on a Shared Computer"
+msgstr ""
+
+msgid "Your System Administrator"
+msgstr ""
+
+msgid "Viruses, Backdoors, etc."
+msgstr ""
+
+msgid "Putting Risk In Perspective"
+msgstr ""
+
+msgid "Data Import"
+msgstr ""
+
+msgid "Help"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "This help page is missing."
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Previous"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "[Starting]"
+msgstr ""
+
+msgid "[Choosing a Master Password]"
+msgstr ""
+
+msgid "[Organization Into Groups]"
+msgstr ""
+
+msgid "[Moving Groups and/or Logins]"
+msgstr ""
+
+msgid "[Logins]"
+msgstr ""
+
+msgid "[Preferences]"
+msgstr ""
+
+msgid "[General Preferences]"
+msgstr ""
+
+msgid "[Database Default Preferences]"
+msgstr ""
+
+msgid "[Export Preferences]"
+msgstr ""
+
+msgid "[Database Preferences]"
+msgstr ""
+
+msgid "[Display]"
+msgstr ""
+
+msgid "[Launch Browser]"
+msgstr ""
+
+msgid "[Keyboard Shortcuts]"
+msgstr ""
+
+msgid "[The \"V3\" Database Format]"
+msgstr ""
+
+msgid "[Data Import]"
+msgstr ""
+
+msgid ""
+" This documentation is written using Keith Vetter's Hypertext Help System."
+msgstr ""
+
+msgid "History"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid ""
+"Upon start-up, Password Gorilla shows the ''Open Password Database'' dialog. "
+"It shows a list of recently used password database files, allows you to "
+"browse for a different password database file, and asks for the database's "
+"master password. Once a file is chosen, and the master password is entered "
+"correctly, the password database is opened, and its contents are shown."
+msgstr ""
+
+msgid ""
+"To create a new, empty password database, click the ''New'' button on the "
+"''Open Password Database'' dialog. You will be asked for an initial master "
+"password for the new password database.  Alternately a new database can be "
+"created by choosing the ''File'' menu and selecting ''New ...''."
+msgstr ""
+
+msgid "   "
+msgstr ""
+
+msgid ""
+"It goes without saying that the master password should be non-trivial. I.e., "
+"the master password should not be a word in any language nor a name. Such "
+"trivial passwords are subject to dictionary attacks, in which an attacker "
+"could gain access to your master password by simply using ''brute force,'' "
+"by trying all the words in the dictionary."
+msgstr ""
+
+msgid ""
+"Equally important is that the master password should not be kept in the same "
+"place as the password database. Ideally, the master password should not be "
+"written down at all, so that it remains in your personal memory only. If you "
+"decide to write down your master password, keep it away from your computer"
+"(s), in a location that only you know of."
+msgstr ""
+
+msgid ""
+"Because the password database is encrypted using your master password (using "
+"the peer-reviewed and commercially well-accepted Twofish algorithm, for the "
+"technically inclined), it is imperative that you do not forget your master "
+"password. It is impossible to recover a lost master password. An encrypted "
+"password database can not be \"cracked,\" as long as the master password is "
+"not trivial (see above)."
+msgstr ""
+
+msgid ""
+"Note that Password Gorilla does not try to second-guess your choice of "
+"password. It does not check for or complain about passwords that would "
+"generally be considered weak."
+msgstr ""
+
+msgid ""
+"Logins in the password database are shown as a tree, organized into nested "
+"groups. Groups allow you to arrange logins by category. Click on the symbol "
+"next to a group's name (or double click the group name) in order to view "
+"subgroups and logins that the group contains."
+msgstr ""
+
+msgid ""
+"New groups and subgroups can be added by right-clicking on a group name, and "
+"choosing the ''Add Subgroup'' option. (Macintosh users, hold the Control "
+"key, and click on a group name.) In the dialog box that opens, the ''Parent "
+"Group'' name will be set automatically, and the name of the new subgroup can "
+"be entered."
+msgstr ""
+
+msgid ""
+"Note that empty groups are not stored in the password database file. If you "
+"save and re-open a file, empty groups will disappear."
+msgstr ""
+
+msgid ""
+"Moving groups and/or logins to new locations in the tree can be accomplished "
+"in any one of several ways."
+msgstr ""
+
+msgid ""
+"1) The Login menu contains commands \"Move Login ...\" and \"Move Group ..."
+"\" which are active when a login or group is respectively selected in the "
+"tree. Selecting either of these commands will open a window that shows the "
+"current group location of the selected item on top, and contains an entry on "
+"the bottom into which a new group location may be typed.  Separate group "
+"names with a dot or period character (.) and do not use a dot character "
+"within a group name itself.  Pressing \"Ok\" after entering a new group name "
+"will move the selected login or group to the entered location.  "
+"Additionally, the destination entry is also a drop down select list with "
+"which an existing group can be selected as a destination."
+msgstr ""
+
+msgid ""
+"2) In the right-click menu that appears from right-clicking a login or group "
+"there is a sub-menu item \"Move login to:\" or \"Move group to:\".  "
+"Selecting this item will cause a second menu to appear listing all current "
+"groups in the database.  Selecting one of the current group names will cause "
+"the right-clicked login to be moved to the selected group."
+msgstr ""
+
+msgid ""
+"3) A group or login can be selected by clicking with the left mouse button. "
+"If the button is held down and the mouse is moved a short distance, a drag "
+"and drop operation will occur.  When this happens the cursor will change to "
+"a double vertical arrow and a floating window will appear showing the title "
+"of the item that is being dragged.  As the item is being dragged the active "
+"drop location will be highlighted in the tree and will correspond to the "
+"tree item that is underneath the cursor.  Drop the item by releasing the "
+"mouse button."
+msgstr ""
+
+msgid ""
+"Dropping a login or a group onto a login name will perform a move to the "
+"group location where the drop occurred.  Dropping a login or a group onto a "
+"group name will perform a move into the group where the drop occurred."
+msgstr ""
+
+msgid ""
+"At the moment, due to some small issues with the ttk::treeview widget that "
+"implements the tree, dragging plural items is limited to dragging plural "
+"logins or dragging single groups."
+msgstr ""
+
+msgid ""
+"4) Within the edit login dialog the entry for group name for the login is "
+"also a drop down select list containing all current group names.  To move a "
+"login to a new group while editing, either type a new group into the group "
+"entry, or drop down the select list with the mouse and choose an existing "
+"group name.  When edits to the login entry are complete any changes to the "
+"group of the login will be stored into the database."
+msgstr ""
+
+msgid ""
+"Groups can contain any number of logins. To add a new login, right-click on "
+"a group, and choose the ''Add Login'' option, or select ''Login'' -> ''Add "
+"Login'' from the pull down menu.  Adding a login via the pulldown menu when "
+"an existing login is selected will result in the new login defaulting to "
+"initially being added to the same group as the selected login.  To edit an "
+"existing login, right-click on a login, and select the ''Edit Login'' "
+"option. (Macintosh users, hold down the Control key, and click on a group "
+"name.)"
+msgstr ""
+
+msgid "The following information is managed for each login:"
+msgstr ""
+
+msgid "'''Group'''"
+msgstr ""
+
+msgid ""
+"The name of the group to which this login belongs. The names of hierarchical "
+"groups are concatenated, separated by a dot. A login can be moved to a "
+"different group by editing this field."
+msgstr ""
+
+msgid "'''Title'''"
+msgstr ""
+
+msgid ""
+"The login's title is shown in the main window, so that you can identify the "
+"service that this login information belongs to, e.g., ''E-Mail.''"
+msgstr ""
+
+msgid "'''URL (V3 format only.)'''"
+msgstr ""
+
+msgid ""
+"The service's URL, if any. In the tree view, you can right-click on a login "
+"and choose ''Copy URL to Clipboard'' in order to copy this data to the "
+"clipboard, for pasting it into your browser's address bar. This field is "
+"only available when using the ''V3'' database format; see the discussion of "
+"the [V3] format below for more information."
+msgstr ""
+
+msgid "'''Username'''"
+msgstr ""
+
+msgid ""
+"Your username for this service. In the tree view, you can right-click on a "
+"login and choose ''Copy Username To Clipboard'' in order to copy this data "
+"to the clipboard, for pasting it into the service's login prompt."
+msgstr ""
+
+msgid "'''Password'''"
+msgstr ""
+
+msgid ""
+"The password that is associated with this login. In the tree view, you can "
+"right-click on a login and choose ''Copy Password To Clipboard'' in order to "
+"paste it into the service's password prompt."
+msgstr ""
+
+msgid "'''Notes'''"
+msgstr ""
+
+msgid ""
+"You can use the notes field for arbitrary information that you wish to "
+"associate with the login. E.g., you could note questions and answers to a "
+"service's security questions (of the \"What is your mother's maiden name?\" "
+"kind). Also, you can use the field for the service's URL. If the notes "
+"include a string that starts with ''http'' or ''https'', or if they contain "
+"the token ''url:'' followed by a URL (put the URL in quotes, if it contains "
+"spaces), then you can right-click on an login and choose ''Copy URL To "
+"Clipboard'' in order to paste the URL into your Web browser."
+msgstr ""
+
+msgid ""
+"When editing a login, the password is not shown, for added protection from "
+"curious onlookers. You can click the ''Show Password'' button to toggle "
+"visibility of the password."
+msgstr ""
+
+msgid ""
+"Clicking on ''Generate Password'' generates a new pseudo-random password "
+"according to the current password policy (which is a per-database setting "
+"that can be set using the ''Password Policy'' option in the ''Security'' "
+"menu). If the ''Override Password Policy'' box is checked, you can edit the "
+"password policy to use for this one password."
+msgstr ""
+
+msgid ""
+"The password policy allows you to set the length of randomly generated "
+"passwords, and the characters to use. Check the ''use easy to read "
+"characters only'' option to avoid characters that look similar. This "
+"excludes the lower- and uppercase letters 'i', 'j', 'l' and 'o', the digits "
+"'0' and '1', and the exclamation mark, pipe symbol, and parentheses. Note: "
+"to generate random hexadecimal passwords, the ''use hexadecimal digits'' "
+"option should be checked exclusively, and the password length should be an "
+"even number."
+msgstr ""
+
+msgid ""
+"The default password policy for the current database can be set using the "
+"''Password Policy'' dialog from the ''Security'' menu."
+msgstr ""
+
+msgid ""
+"General, database default and export preferences can be configured using the "
+"''Preferences'' dialog from the ''File'' menu. Database preferences, which "
+"are specific to the current password database, can be configured using "
+"''Customize ...'' from the ''Security'' menu, when a database is open."
+msgstr ""
+
+msgid "'''Clear clipboard after <nn> seconds'''"
+msgstr ""
+
+msgid ""
+"If this value is set to a non-zero value, the system clipboard is cleared, "
+"the specified number of seconds after copying a user name, password or URL "
+"to the clipboard. This ensures that no password remains in the clipboard "
+"forever."
+msgstr ""
+
+msgid "'''Remember <nn> database names'''"
+msgstr ""
+
+msgid ""
+"Makes Password Gorilla only remember the given number of most recently used "
+"database file names. If set to zero, Password Gorilla will not remember "
+"database file names at all. The current list of file names in the most "
+"recently used list can be cleared with the button next to this option."
+msgstr ""
+
+msgid "'''When double clicking a login'''"
+msgstr ""
+
+msgid ""
+"Configures what to do when you double-click on a login. The options are to "
+"copy the login's password to the clipboard, to open the login for editing, "
+"or to do neither."
+msgstr ""
+
+msgid "'''Backup database on save'''"
+msgstr ""
+
+msgid ""
+"If enabled, then a backup file of the password database is made whenever the "
+"database is saved. The backup file has the same name as the database itself, "
+"but with the ''.bak'' extension."
+msgstr ""
+
+msgid "'''Remember sizes of dialog boxes'''"
+msgstr ""
+
+msgid ""
+"Password Gorilla allows you to resize its main window, and most of its "
+"dialogs, should you find the default sizes inconvenient. If this option is "
+"enabled, Password Gorilla will remember the size of dialog boxes across "
+"restarts."
+msgstr ""
+
+msgid "'''Use Gorilla auto-copy'''"
+msgstr ""
+
+msgid ""
+"If this option is selected then Password Gorilla will automatically copy the "
+"password of a login to the clipboard after a paste of the associated "
+"username has occurred.  This allows a website's login/password fields to be "
+"filled in one immediately after the other without returning to Password "
+"Gorilla in between."
+msgstr ""
+
+msgid ""
+"If this option is utilized in combination with the '''Also copy username to "
+"clipboard''' option of the [Browser] tab then it allows logging into a "
+"website with only one touch of Password Gorilla (for websites that follow "
+"the username plus password standard)."
+msgstr ""
+
+msgid ""
+"At the present time, this option is operational only for Linux or Unix X11 "
+"based machines.  The Windows and MacOS clipboard is implemented in a "
+"different manner such that Windows and MacOS do not inform Gorilla of the "
+"occurrence of a paste operation.  Without OS support to determine that a "
+"paste operation has occurred, Gorilla has no way to know when to "
+"subsequently copy a login's password to the clipboard."
+msgstr ""
+
+msgid ""
+"Additionally, this option interacts badly with clipboard management "
+"applications, e.g. xclipboard.  Clipboard management programs function by "
+"performing an automatic paste as soon as data is placed into the clipboard, "
+"which fools Password Gorilla into believing that a paste into a web-site "
+"login field has occurred.  The result of this bad interaction is that the "
+"Password Gorilla status line will flash \"Username copied...\" followed "
+"immediately by \"Password copied...\".  If this occurs, there are only two "
+"solutions:"
+msgstr ""
+
+msgid "1) Disable this option in Password Gorilla"
+msgstr ""
+
+msgid "2) Disable the clipboard manager program which is interfering"
+msgstr ""
+
+msgid ""
+"Database default preferences are applied to new databases, but do not affect "
+"existing databases. To change a setting for an existing database, go to "
+"''Customize'' in the ''Security'' menu. See the discussion of [Database "
+"Preferences] below."
+msgstr ""
+
+msgid ""
+"Export preferences apply to the exporting of a password database to a plain-"
+"text file."
+msgstr ""
+
+msgid "'''Include password field'''"
+msgstr ""
+
+msgid ""
+"If enabled, the password is included in the exported file. If disabled, "
+"\"********\" is substituted for the password."
+msgstr ""
+
+msgid "'''Include ''Notes'' field'''"
+msgstr ""
+
+msgid "If enabled, the ''Notes'' are included in the exported file."
+msgstr ""
+
+msgid "'''Field separator'''"
+msgstr ""
+
+msgid ""
+"Configures the character to separate fields. This character should not "
+"appear in any user name or password. Common separators are \":\" (colon) and "
+"\",\" (comma)."
+msgstr ""
+
+msgid "'''Show security warning'''"
+msgstr ""
+
+msgid ""
+"If enabled, reminds the user, before exporting the database, that the "
+"exported plain-text file is not encrypted or password protected."
+msgstr ""
+
+msgid ""
+"These database preferences can be configured using ''Customize'' from the "
+"''Security'' menu."
+msgstr ""
+
+msgid "'''Lock when idle after <nn> minutes'''"
+msgstr ""
+
+msgid ""
+"If this preference is set to a non-zero value, Password Gorilla will lock "
+"the database after a period of inactivity. In that case, a dialog box opens, "
+"prompting for the database's master password. The dialog also allows to exit "
+"Password Gorilla. Note that this allows a malicious user to exit the "
+"application, discarding changes. However, this is not a security issue: a "
+"malicious user, having access to your desktop, could just as well kill the "
+"application (e.g., from the console or the the Task Manager). A better "
+"choice is to lock your desktop while unattended."
+msgstr ""
+
+msgid "'''Auto-save database immediately when changed'''"
+msgstr ""
+
+msgid ""
+"If enabled, then the database will automatically be saved after each change."
+msgstr ""
+
+msgid "'''Use Password Safe 3 format'''"
+msgstr ""
+
+msgid ""
+"If this option is enabled (i.e., checked), the password database, when "
+"saved, will use the new ''Password Safe 3'' encryption format. The database "
+"will be compatible with Password Safe 3, but will not be compatible with "
+"versions of Password Safe prior to 3.0, or versions of Password Gorilla "
+"prior to 1.4. If this option is disabled (i.e., not checked), the old "
+"Password Safe 2 database format is used: the database will be compatible "
+"with Password Safe 2.0 or higher, and Password Gorilla 1.0 or higher."
+msgstr ""
+
+msgid ""
+"It is highly recommended to enable this option, and to upgrade existing "
+"databases to the Password Safe 3 format, which features enhanced security. "
+"See below, Information about the new Database Format, for more information."
+msgstr ""
+
+msgid "'''V2 Unicode support'''"
+msgstr ""
+
+msgid ""
+"Whether the database file uses Unicode. This is the default for the Password "
+"Safe 3 format; this option only applies if the ''Use Password Safe 3 "
+"format'' option is disabled (i.e., not checked). If this option is enabled, "
+"database files containing international characters can safely be exchanged "
+"across locales, e.g., when you want to use the same password database in "
+"both a Western European and Russian locale. The caveat is that, if you use "
+"both Password Gorilla and Password Safe, the latter will not read accented "
+"characters correctly. (The database will open, but non-ASCII characters will "
+"not show up correctly.) This option has no effect if your database uses only "
+"ASCII characters."
+msgstr ""
+
+msgid "'''V3 key stretching iterations'''"
+msgstr ""
+
+msgid ""
+"The Password Safe 3 format supports ''variable key stretching'', which is a "
+"means of protecting a database against brute-force attacks. Key stretching "
+"is a complex operation that must be performed when validating a master "
+"password for correctness. When an authorized user enters the correct "
+"password, this may take a second and is barely noticeable. But it slows down "
+"mass-testing password guesses by an automated program. The ''iterations'' "
+"parameter indicates the complexity of the key stretching: the higher this "
+"value, the longer it takes to open a database, and the longer it takes an "
+"attacker to test one password. It is recommended to leave the value at its "
+"default of 2048, which is a good compromise between promptly opening "
+"databases and hampering attackers."
+msgstr ""
+
+msgid ""
+"Note that this option can only be changed on a per-database basis and does "
+"not appear in the Database Default Preferences Menu. This prevents a "
+"malicious user from changing the preference in the registry and degrading "
+"the protection of future databases."
+msgstr ""
+
+msgid "          "
+msgstr ""
+
+msgid "'''Language'''"
+msgstr ""
+
+msgid ""
+"The menubutton Language offers you all the languages whose dictionary files "
+"*.msg are found in the subdirectory msgs. Your choice will be saved on "
+"exiting in the rc-file and the next time you start Gorilla it is showing the "
+"preferred language."
+msgstr ""
+
+msgid "'''Size'''"
+msgstr ""
+
+msgid "Choose the font size which shows the best results on your monitor."
+msgstr ""
+
+msgid "'''Show Gorilla Icon'''"
+msgstr ""
+
+msgid ""
+"If you like the gorilla icon then check the button. The next time it will "
+"greet you."
+msgstr ""
+
+msgid "'''Iconify upon auto-lock'''"
+msgstr ""
+
+msgid ""
+"If this option is selected then Password Gorilla will also iconify/minimize "
+"its windows when the lock after idle timer (see [Database Preferences]) "
+"expires."
+msgstr ""
+
+msgid "'''Hide login name in tree view'''"
+msgstr ""
+
+msgid ""
+"Selecting this option will prevent Password Gorilla from showing login names "
+"alongside titles for each login in the main tree view window.  Note that "
+"this is a global setting, either no login names are shown, or all login "
+"names are shown.  This setting only takes full effect after exiting and "
+"restarting Password Gorilla, or saving and reopening the current or another "
+"database."
+msgstr ""
+
+msgid ""
+"Password Gorilla can launch a browser directly to the URL stored within a "
+"login entry provided that the user preferences have been configured to "
+"indicate what browser to launch and how to launch the browser."
+msgstr ""
+
+msgid ""
+"Once configured as described below, to launch a browser directly to a URL, "
+"right click upon a login entry in the tree and select '''Open URL'''. "
+"Alternately, under the '''General''' tab in '''File''' -> '''Preferences''' "
+"if the selection '''Launch Browser directed to URL''' within '''When double "
+"clicking a login ...''' is selected then a double click upon a login will "
+"launch a browser to the URL stored in the login."
+msgstr ""
+
+msgid "'''Configuration of Launch Browser functionality'''"
+msgstr ""
+
+msgid ""
+"Under '''File''' -> '''Preferences''' is a tab labeled ''Browser''.  On this "
+"tab are two entry fields labeled ''Browser executable to launch'' and "
+"''Command line parameter (if any) to pass''.  At a minimum, at least the "
+"first field must be filled in to enable the ability to launch a browser "
+"directly to a URL stored in a login entry."
+msgstr ""
+
+msgid "'''Browser executable to launch'''"
+msgstr ""
+
+msgid ""
+"This field should be filled in with the name of the executable file to "
+"launch the browser.  I.e., for Firefox on Linux this would usually be "
+"'''firefox''' and for Firefox on Windows this would usually be '''firefox."
+"exe'''.  If the executable is present upon the OS executable search path, "
+"only the name of the executable is required.  If the executable is not "
+"present upon the search path, then the full path name to the executable "
+"should be entered into this field."
+msgstr ""
+
+msgid ""
+"To simplify the insertion of a full path name to the executable file, the "
+"'''Find Browser''' button will launch a file browser with which you may "
+"navigate to and select the proper executable.  Upon selecting the proper "
+"executable, the full path to that executable will be automatically added to "
+"the entry."
+msgstr ""
+
+msgid "'''Command line parameter (if any) to pass'''"
+msgstr ""
+
+msgid ""
+"This field is optional.  If left blank Password Gorilla will simply pass the "
+"URL value from the login entry directly to the program executable from the "
+"first entry."
+msgstr ""
+
+msgid ""
+"However, if special command line switches and/or parameters are necessary to "
+"launch the browser to a particular URL, then those switches and/or "
+"parameters must be entered into this field.  If this is the case, then the "
+"special character sequence '''%url%''' must be utilized at the point that "
+"the actual URL should be placed within the switches and/or parameters.  E.g. "
+"entering '''parameter(%url%)''' would result in the browser receiving "
+"'''parameter(http://www.example.com)'''.  What parameters may be required "
+"for various browsers is beyond the scope of Password Gorilla.  Please "
+"consult your browser documentation to determine if any special command line "
+"parameters are required to launch directly to a URL."
+msgstr ""
+
+msgid "'''Also copy username to clipboard'''"
+msgstr ""
+
+msgid ""
+"If this checkbox is selected, then as part of the launch browser sequence "
+"Password Gorilla will also copy the username from the selected password "
+"entry to the clipboard.  This will allow for an immediate paste of the "
+"username into the related website login form once the browser is open and "
+"has retrieved the website content.  Use the below '''Clipboard autoclear "
+"multiplier''' setting to control clearing of the clipboard when this option "
+"is utilized."
+msgstr ""
+
+msgid ""
+"If this option is utilized in combination with the '''Use Gorilla auto-"
+"copy''' option of the [General] tab then the '''Clipboard autoclear "
+"multiplier''' will only apply to the username.  The associated password will "
+"continue to be cleared from the clipboard after expiration of the '''Clear "
+"clipboard after <nn> seconds''' timer option from the [General] tab."
+msgstr ""
+
+msgid "'''Clipboard autoclear multiplier'''"
+msgstr ""
+
+msgid ""
+"This setting controls how Password Gorilla handles clearing of the clipboard "
+"contents if the '''Also copy username to clipboard''' option is selected.  "
+"The value set in the '''Clear clipboard after''' box on the '''General''' "
+"tab of the preferences is multiplied by the value set in this box.  As a "
+"result there are three possible choices of values:"
+msgstr ""
+
+msgid ""
+"0 (zero) Do not clear clipboard when opening a url, overriding the time set "
+"on the '''General''' tab;"
+msgstr ""
+
+msgid ""
+"1 (one) Clear clipboard after the length of time set on the '''General''' "
+"tab;"
+msgstr ""
+
+msgid ""
+"2 ... 20 (two to twenty) Clear clipboard after twice (up to twenty times) "
+"the length of time set on the '''General''' tab."
+msgstr ""
+
+msgid "'''Notes for Windows Users'''"
+msgstr ""
+
+msgid ""
+"On Windows, Internet Explorer is generally named 'iexplore.exe' and is often "
+"located in the C:\\Program Files\\Internet Explorer\\ directory (at least on "
+"Win XP SP3).  In order to launch IE, you will need to enter this full path "
+"(i.e. C:\\Program Files\\Internet Explorer\\iexplore.exe) in the '''Browser "
+"executable to launch''' field.  It may be easier to utilize the '''Find "
+"Browser''' button and then navigate to and select the iexplore.exe "
+"executable."
+msgstr ""
+
+msgid "'''Notes for Mac Users'''"
+msgstr ""
+
+msgid ""
+"To open the default Mac browser (Safari) you should enter the single word "
+"'''open''' in the '''Browser executable to launch''' entry.  If you utilize "
+"Firefox on the Mac, usually entering '''firefox''' is sufficient to launch "
+"Firefox from Password Gorilla."
+msgstr ""
+
+msgid "'''Notes for Unix/Linux Users'''"
+msgstr ""
+
+msgid ""
+"Usually, under most Unix/Linux distributions, the various browser executable "
+"files are located in standard executable search path directories.  In most "
+"instances you will simply have to enter the browser name only, i.e. "
+"'''firefox''' for the Firefox browser, in order to launch a browser from "
+"inside Password Gorilla.  If this does not work, then please enter a full "
+"path to your browser of choice, or utilize the '''Find Browser''' button to "
+"navigate to and select your chosen browser."
+msgstr ""
+
+msgid "'''Notes for all users'''"
+msgstr ""
+
+msgid ""
+"If the URL fields of your database records store full URL's, including the "
+"''http://'' prefix, there is nothing special that you should need to do "
+"unless you utilize a browser that requires extra command line parameters."
+msgstr ""
+
+msgid ""
+"However, if the URL fields of your database records store website names, i."
+"e. ''www.example.com'' instead of ''http://www.example.com'' then you may "
+"need to enter '''http://%url%''' in the '''Command line parameter''' entry "
+"in order to properly launch your browser to the correct location. "
+msgstr ""
+
+msgid "'''Menu shortcuts'''"
+msgstr ""
+
+msgid ""
+"The Meta key for Linux and Windows shortcuts is the ''Control'' key, whereas "
+"the Mac uses the ''Command'' key:"
+msgstr ""
+
+msgid "Meta-o\t\tOpen Database"
+msgstr ""
+
+msgid "Meta-s\t\tSave Database"
+msgstr ""
+
+msgid "Meta-x\t\tQuit Password Gorilla"
+msgstr ""
+
+msgid "Meta-u\t\tCopy Username to Clipboard"
+msgstr ""
+
+msgid "Meta-p\t\tCopy Password to Clipboard"
+msgstr ""
+
+msgid "Meta-u\t\tCopy Url to Clipboard"
+msgstr ""
+
+msgid "Meta-c\t\tClear Clipboard"
+msgstr ""
+
+msgid "Meta-f\t\tFind"
+msgstr ""
+
+msgid "Meta-g\t\tFind next"
+msgstr ""
+
+msgid "Meta-a\t\tAdd Login"
+msgstr ""
+
+msgid "Meta-e\t\tEdit Login"
+msgstr ""
+
+msgid "'''Editing shortcuts'''"
+msgstr ""
+
+msgid ""
+"For single line entries and the notes box (note, in the lists below, C- "
+"stands for Control, S- stands for Shift, and M- stands for Meta):"
+msgstr ""
+
+msgid "C-/ \t\tSelect all text"
+msgstr ""
+
+msgid "C-Left \t\tMove cursor left by one word"
+msgstr ""
+
+msgid "C-Right\t\tMove cursor right by one word"
+msgstr ""
+
+msgid "C-S-Left\t\tMove cursor left by one word and select the word"
+msgstr ""
+
+msgid "C-S-Right\t\tMove cursor right by one word and select the word"
+msgstr ""
+
+msgid "C-b\t\tMove cursor left"
+msgstr ""
+
+msgid "C-f \t\tMove cursor right"
+msgstr ""
+
+msgid "C-a\t\tMove cursor to start of text"
+msgstr ""
+
+msgid "C-e\t \tMove cursor to end of text"
+msgstr ""
+
+msgid "C-h\t\tSame action as Backspace"
+msgstr ""
+
+msgid "C-d\t\tDelete character to right of cursor"
+msgstr ""
+
+msgid "C-k\t\tDelete all characters to right of cursor"
+msgstr ""
+
+msgid "For the notes box only:"
+msgstr ""
+
+msgid "M-Backspace \tDelete word to left of cursor"
+msgstr ""
+
+msgid "M-Delete \t\tDelete word to left of cursor"
+msgstr ""
+
+msgid "M-d \t\tDelete word to right of cursor"
+msgstr ""
+
+msgid "M-w\t\tCopy selection to clipboard"
+msgstr ""
+
+msgid "C-w \t\tCuts selection to clipboard"
+msgstr ""
+
+msgid "C-y\t\tInserts clipboard at cursor position"
+msgstr ""
+
+msgid "'''\"V3\" Format Introduction'''"
+msgstr ""
+
+msgid ""
+"Password Gorilla 1.4 added support for a new encrypted format for password "
+"databases, as introduced by version 3 of Password Safe -- therefore also "
+"called the ''V3'' format. This new format is based on the years of "
+"experience with and analysis of the prior ''V2'' database format, and "
+"features enhanced security (see below, V2 Format Weakness for details). The "
+"new format offers:"
+msgstr ""
+
+msgid "Support for non-ASCII character sets by default."
+msgstr ""
+
+msgid "A stand-alone field for a URL."
+msgstr ""
+
+msgid "A checksum to detect tampering or truncation."
+msgstr ""
+
+msgid "Use of the improved Twofish encryption algorithm."
+msgstr ""
+
+msgid "Stronger protection against brute-force attacks on the master password."
+msgstr ""
+
+msgid ""
+"It is recommended to use the new format, and to upgrade existing password "
+"databases, unless you require compatibility with software that supports the "
+"old format only, such as Password Safe 2.x, or versions of Password Gorilla "
+"prior to 1.4."
+msgstr ""
+
+msgid "'''Switching between the V2 and V3 Formats'''"
+msgstr ""
+
+msgid ""
+"Password Gorilla defaults to the V3 format for newly created databases, but "
+"it does not automatically upgrade existing V2 databases. Upgrading, as well "
+"as downgrading, a database is accomplished by enabling the Use Password Safe "
+"3 format checkbox in the Database Preferences menu (see above)."
+msgstr ""
+
+msgid ""
+"Password Safe recommends to use the ''.psafe3'' extension for V3-format "
+"database files, and the ''.dat'' extension for V2-format files. (Password "
+"Gorilla allows password database files in either format to have any "
+"extension.)"
+msgstr ""
+
+msgid "'''V2 Format Weakness'''"
+msgstr ""
+
+msgid ""
+"In the interest of full disclosure, it should be noted that a potential "
+"weakness was discovered with the old Password Safe 2 (''V2'') file format. "
+"This issue affected the ''key stretching'' process that is intended to slow "
+"down a brute force attack against a database's master password (i.e., "
+"repeated attempts at guessing the password). The weakness in the file "
+"format's design allowed brute force attacks 1000 times faster than intended. "
+"The number sounds worse than it is: a good, long master password is one "
+"among billions of billions of combinations, and a factor of 1000 does not "
+"make a practical difference. However, the factor may have an impact on the "
+"security of password databases that use a short, more easily guessable "
+"master password. The Password Safe 3 format avoids this issue by depending "
+"on the result of the key stretching operation (which is computationally "
+"expensive) as an input to decryption -- therefore, the operation can not be "
+"bypassed."
+msgstr ""
+
+msgid ""
+"Password Gorilla has the ability to import data from CSV (Comma Separated "
+"Value) files.  Exporting of data from other applications into CSV format is "
+"beyond the scope of this document or Password Gorilla."
+msgstr ""
+
+msgid ""
+"The format of CSV files that Password Gorilla accepts is somewhat flexible. "
+"The format of the CSV data itself must adhere to the requirements of the "
+"TclLib csv module, which documents the format as:"
+msgstr ""
+
+msgid ""
+"1    Each  record  of a csv file (comma-separated values, as exported e.g. "
+"by Excel) is a set of ASCII values separated by \",\".  For other languages "
+"it may be \";\" however, although this is not important for this case as the "
+"functions provided here allow any separator character."
+msgstr ""
+
+msgid ""
+"2    If  and  only if a value contains itself the separator \",\", then it "
+"(the value) has to be put between \"\". If the value does not contain the "
+"separator character then quoting is optional."
+msgstr ""
+
+msgid ""
+"3    If  a  value  contains the character \", that character is represented "
+"by \"\"."
+msgstr ""
+
+msgid ""
+"4    The output string \"\" represents the value \". In other words, it is "
+"assumed that it was created through rule 3, and only this rule, i.e. that "
+"the value was not quoted."
+msgstr ""
+
+msgid ""
+"The CSV file itself is interpreted as a utf-8 encoded file, this allows for "
+"transparent handling of plain ASCII files as well as importation of Unicode "
+"extended characters simultaneously."
+msgstr ""
+
+msgid ""
+"There are twelve possible data values (columns) that may be present within "
+"the CSV file.  The file must contain at least one column.  Other than "
+"requiring at least one column, the file may contain any number of columns "
+"from one to twelve."
+msgstr ""
+
+msgid ""
+"The first CSV record in the file (which must be the first line of the file) "
+"defines how many data columns are expected to be present in the remainder of "
+"the file, and what internal data fields correspond to those columns."
+msgstr ""
+
+msgid ""
+"The twelve possible data columns are named: create-time group last-access "
+"last-modified last-pass-change lifetime notes password title url user uuid"
+msgstr ""
+
+msgid ""
+"These names, and only these names, must be used as the first record of the "
+"CSV file to define which data values are present.  I.e., for a CSV file that "
+"contained user names, passwords, and urls only, in that order, the first "
+"line of the CSV file would read:"
+msgstr ""
+
+msgid "user, password, url"
+msgstr ""
+
+msgid ""
+"Subsequent lines would contain username, password, and url formatted as per "
+"the rules above from the TclLib csv module."
+msgstr ""
+
+msgid ""
+"There are some restrictions on the formatting of some of the data fields, "
+"these restrictions are:"
+msgstr ""
+
+msgid "create-time, last-access, last-modified, last-pass-change, lifetime"
+msgstr ""
+
+msgid ""
+"These fields contain date and time values.  The format of a date and time "
+"value for import purposes is:"
+msgstr ""
+
+msgid "YYYY-MM-DD HH-MM-SS TZ"
+msgstr ""
+
+msgid ""
+"All values except TZ are numerical and contain a number of digits equal to "
+"the number of letters above.  YYYY stands for year, MM is month, DD is day, "
+"HH is hour (24 hour clock), MM is minute, SS is seconds.  TZ is the timezone "
+"within which the date and time should be interpreted.  TZ accepts many "
+"standard timezone names, however the simpliest option if you know your "
+"offset from UTC is to simply add +HHMM or -HHMM where HH is hours and MM is "
+"minutes (e.g., -0500 for five hours before UTC)."
+msgstr ""
+
+msgid "uuid"
+msgstr ""
+
+msgid ""
+"This field must be formatted like so: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx "
+"where each \"x\" is a hexadecimal character (0-9a-f)."
+msgstr ""
+
+msgid "group"
+msgstr ""
+
+msgid ""
+"This field must be formatted in the manner of group names in the Password "
+"Safe database format.  That is, group names separated by dots (periods). "
+"Escape embedded periods with a slash (\\) (e.g., \\. ).  Escape embedded "
+"slashes with a slash (e.g., \\\\)."
+msgstr ""
+
+msgid "notes"
+msgstr ""
+
+msgid ""
+"This field has only one special requirement.  Newline characters (Unix "
+"newline characters, ASCII line feed) ''must'' be encoded as \\n.  Other "
+"ASCII control characters can also be encoded in the same way, i.e., \\t for "
+"tab, etc., but are not required to be so encoded."
+msgstr ""
+
+msgid "Example"
+msgstr ""
+
+msgid ""
+"uuid,group,title,user,password,notes fdc2aff8-04e1-4766-4ef4-ddae08377ba6,"
+"Group 1.Sub Group 1,A Title,A User Name,A Password,A note about this entry "
+"63a1b066-148a-4bf6-40bc-a2b9afda00c6,Group 1.Sub Group 2,A Title,A User Name,"
+"A Password,A note about this entry f29b9ef7-9e62-41e1-7dfd-14ae13986059,"
+"Group 2,A Title,A User Name,A Password,A note with \\n an embedded newline "
+msgstr ""
+
+msgid ""
+"Just like re-using the same passwords over and over again, or keeping "
+"passwords written down on a sticker glued to the bottom of your desk, some "
+"risks are associated with the use of Password Gorilla. This section is not "
+"meant to scare you, but as an educated user, you have the right to know "
+"about potential risks, and to make informed decisions. Risks should not be "
+"ignored, but evaluated and addressed."
+msgstr ""
+
+msgid "There are different threat vectors that can be considered:"
+msgstr ""
+
+msgid "[The Software Itself]"
+msgstr ""
+
+msgid "[System Failure]"
+msgstr ""
+
+msgid "[Other Users on a Shared Computer]"
+msgstr ""
+
+msgid "[Your System Administrator]"
+msgstr ""
+
+msgid "[Viruses, Backdoors, etc.]"
+msgstr ""
+
+msgid "[Putting Risk In Perspective]"
+msgstr ""
+
+msgid ""
+"First of all, the software itself may be a risk. For all you know, the "
+"software's author could be a sociopath who tries to talk you into "
+"downloading and installing buggy software that secretly broadcasts your "
+"passwords. If you want, you can trust the author, third-party "
+"recommendations, you can inspect the source code for trap doors, or trust a "
+"third-party code inspection."
+msgstr ""
+
+msgid ""
+"Maybe the software is not bug-free. In an extreme scenario, a bug in "
+"Password Gorilla could destroy your password database. It is good advice to "
+"keep a backup copy of your password database in a safe place."
+msgstr ""
+
+msgid ""
+"Sometimes, computers have the annoying habit to crash at the most "
+"unfortunate time. Many users have lost data due to an unpredicted crash. "
+"This can be problematic, e.g., when you just added or modified a login, and "
+"did not get around to saving the updated password database. If a password "
+"was randomly generated, it may be lost."
+msgstr ""
+
+msgid ""
+"The easy workaround is to not confirm your password with the online service "
+"before saving the password database. I.e., when creating a new login, first "
+"add it in Password Gorilla, and immediately save the database (using "
+"''Save'' from the ''File'' menu). Only then go to your online service -- e."
+"g., the Web site that required registration, and complete its signup "
+"process. When modifying a login, e.g., changing the password, there is a "
+"chance that the computer might crash after saving the database, but before "
+"completing the service's password change process. In this case, the old "
+"password will still be available in the password database's backup file -- "
+"assuming that you have a backup copy, of course."
+msgstr ""
+
+msgid ""
+"Common sense will go a long way in protecting your password database from "
+"other users that you share a computer with. Never keep Password Gorilla "
+"running when you leave the desktop unlocked. Make sure that the database "
+"file is not readable by other users -- while the database format is "
+"considered secure, this prevents other users from copying the file, and "
+"making a brute-force attempt of guessing the master password offline."
+msgstr ""
+
+msgid ""
+"For Linux/Unix users, Password Gorilla creates and saves database files "
+"using your login's current file-creation mask (\"umask\") setting.  If you "
+"wish to have a specific particular set of access permissions applied to your "
+"password database files then adjust your \"umask\" setting before executing "
+"Password Gorilla.  See \"man umask\" and your shell's man page for details "
+"about the umask setting."
+msgstr ""
+
+msgid "If you follow these precautions, there is nothing to worry about here."
+msgstr ""
+
+msgid ""
+"If your computer is administered by somebody else than you, then you need to "
+"trust the administrator(s). An administrator can bypass the operating "
+"system's security measures, and inspect a running program's in-memory data. "
+"Password Gorilla obviously needs to have the decrypted contents of your "
+"password database in memory, so a malicious administrator could access "
+"Password Gorilla's memory, and gain access to your passwords. In an attempt "
+"to foil naive attackers, Password Gorilla takes some care by not storing "
+"data in clear text, but encrypted using a temporary key. However, because "
+"the key is also kept in memory by necessity, a motivated attacker could find "
+"both the encrypted password and its key."
+msgstr ""
+
+msgid ""
+"Of course, malicious administrators have a wide range of tools at their "
+"disposal that invade on your privacy, in order to gain access to your "
+"passwords. An administrator could replace the Password Gorilla software with "
+"a trojan version that looks and acts the same, but sends your passwords to "
+"the administrator's account. Even if you are not using Password Gorilla, the "
+"administrator could install a key logger, or monitor your internet "
+"connection, to find passwords as you type them."
+msgstr ""
+
+msgid ""
+"The added risk of using Password Gorilla is that a malicious administrator "
+"could compromise all passwords at once, instead of only intercepting the few "
+"passwords that you actually use and transmit in one session."
+msgstr ""
+
+msgid ""
+"If your computer is infected by spyware or viruses, then external malicious "
+"users may have control over your computer. Such users could use the same "
+"attacks as described for a system administrator above. It is a good idea to "
+"check for viruses and spyware on a regular basis. Password Gorilla should "
+"obviously not be used on a compromised computer."
+msgstr ""
+
+msgid ""
+"The above does not necessarily imply that Password Gorilla is too insecure "
+"to use. They are merely a set of risks that need to be considered and "
+"evaluated in order to make an informed decision, and to take some common "
+"sense precautions. The author believes that using Password Gorilla is a "
+"better idea than the alternative of writing down passwords, or of reusing "
+"passwords."
+msgstr ""
+
+msgid ""
+"As the example of the malicious system administrator shows, there is a wide "
+"range of attacks that are possible even if you were not using Password "
+"Gorilla."
+msgstr ""
+
+msgid ""
+"Saying that Password Gorilla should not be used on a computer that is "
+"infected with spyware, viruses, or backdoors, is good advice, but redundant, "
+"as the problem is not limited to Password Gorilla. A compromised computer "
+"should not be used for anything, especially not for private communication."
+msgstr ""
+
+msgid ""
+"Also, while technical attacks receive a lot of publicity, it should not be "
+"forgotten that social engineering attacks are usually more effective. In a "
+"study that I read about, a sizeable fraction of users revealed their "
+"passwords to strangers on the street, for a mere piece of chocolate. In one "
+"of the Hollywood movies that treat this subject better than others, War "
+"Games, the protagonist gains access not by pressing a magic button, or by "
+"bypassing security, but by spending countless hours trying to get into the "
+"designer's mind, in a social engineering attack to guess the designer's most "
+"likely choice of password -- another reason to prefer random passwords."
+msgstr ""
