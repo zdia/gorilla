@@ -75,6 +75,23 @@ if {[catch {package require Tcl 8.5}]} {
 
 # ----------------------------------------------------------------------
 
+proc if-platform? { test body } {
+
+	if { $::tcl_platform(platform) eq $test } {
+	  uplevel 1 $body
+	}
+
+	#ruff
+	# Tests the tcl_platform(platform) global against passed parameter
+	# test, and executes body if the test is true.
+	#
+	# test - value to compare against tcl_platform(platform) contents
+	# body - script to execute when the test passes
+
+} ; # end proc if-platform?
+
+# ----------------------------------------------------------------------
+
 proc load-package { args } {
 	# A helper proc to load packages.  This collects the details of "catching"
 	# and reporting errors upon package loading into one single proc.  It must
@@ -4310,6 +4327,15 @@ proc gorilla::Save {} {
 	update idletasks
 
 	set nativeName [file nativename $::gorilla::fileName]
+
+	if-platform? unix {
+		# note - failure to retreive permissions (i.e., db file on
+		# Samba share mounted on Linux machine) is not considered a
+		# fatal issue
+		if { [ catch { set unix_permissions [ file attributes $::gorilla::fileName -permissions ] } m1 m2 ] } {
+		  puts stderr "Warning: failure retreiving Unix permissions on file $::gorilla::fileName.\n$m1\n$m2"
+		}
+	}
 	
 	#
 	# Determine file version. If there is a header field of type 0,
@@ -4354,6 +4380,15 @@ proc gorilla::Save {} {
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 
 	UpdateMenu
+
+	# attempt to restore cached file permissions under unix
+	if-platform? unix {
+		# note - failure to set cached permissions on the new file
+		# is not considered a fatal issue
+		if { [ catch { file attributes $::gorilla::fileName -permissions $unix_permissions } m1 m2 ] } {
+		  puts stderr "Warning: failure applying cached Unix permissions to file $::gorilla::fileName.\n$m1\n$m2"
+		}
+	}
 
 	# The actual data are saved. Now take care of a backup file
 
