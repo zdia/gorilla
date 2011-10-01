@@ -441,7 +441,7 @@ proc gorilla::InitGui {} {
 		                    "[ mc Open ] ..."        {}   gorilla::Open        $menu_meta+O
 		                    "[ mc Merge ] ..."       open gorilla::Merge       ""
 		                    "[ mc Save ]"            save gorilla::Save        $menu_meta+S
-		                    "[ mc Save As ] ..."     open gorilla::SaveAs      ""
+		                    "[ mc "Save As" ] ..."   open gorilla::SaveAs      ""
 		                    separator                ""   ""                   ""
 		                    "[ mc Export ] ..."      open gorilla::Export      ""
 		                    "[ mc Import ] ..."      open gorilla::Import      ""
@@ -451,35 +451,35 @@ proc gorilla::InitGui {} {
 		                    "[ mc Exit ]"            mac  gorilla::Exit        $menu_meta+X
 		                   }
 
-		"[ mc Edit ]" edit {"[ mc Copy Username ]"   login  {gorilla::CopyToClipboard Username} $menu_meta+U
-		                    "[ mc Copy Password ]"   login  {gorilla::CopyToClipboard Password} $menu_meta+P
-		                    "[ mc Copy URL ]"        login  {gorilla::CopyToClipboard URL}      $menu_meta+W
-		                    separator                ""     ""                                  ""
-		                    "[ mc Clear Clipboard ]" ""     gorilla::ClearClipboard             $menu_meta+C
-		                    separator                ""     ""                                  ""
-		                    "[ mc Find ] ..."        open   gorilla::Find                       $menu_meta+F
-		                    "[ mc Find next ]"       open   gorilla::FindNext                   $menu_meta+G
+		"[ mc Edit ]" edit {"[ mc "Copy Username" ]"   login  {gorilla::CopyToClipboard Username} $menu_meta+U
+		                    "[ mc "Copy Password" ]"   login  {gorilla::CopyToClipboard Password} $menu_meta+P
+		                    "[ mc "Copy URL" ]"        login  {gorilla::CopyToClipboard URL}      $menu_meta+W
+		                    separator                  ""     ""                                  ""
+		                    "[ mc "Clear Clipboard" ]" ""     gorilla::ClearClipboard             $menu_meta+C
+		                    separator                  ""     ""                                  ""
+		                    "[ mc Find ] ..."          open   gorilla::Find                       $menu_meta+F
+		                    "[ mc "Find next" ]"       open   gorilla::FindNext                   $menu_meta+G
 		                   }
 		                
-		"[ mc Login ]" login {"[ mc Add Login ]"        open  gorilla::AddLogin    $menu_meta+A
-				      "[ mc Edit Login ]"       open  gorilla::EditLogin   $menu_meta+E
-				      "[ mc View Login ]"       open  gorilla::ViewLogin   $menu_meta+V
-				      "[ mc Delete Login ]"     login gorilla::DeleteLogin ""
-				      "[ mc Move Login ] ..."   login gorilla::MoveLogin   ""
-				      separator                 ""    ""                   ""
-				      "[ mc Add Group ] ..."    open  gorilla::AddGroup    ""
-				      "[ mc Add Subgroup ] ..." group gorilla::AddSubgroup ""
-				      "[ mc Rename Group ] ..." group gorilla::RenameGroup ""
-				      "[ mc Move Group ] ..."   group gorilla::MoveGroup   ""
-				      "[ mc Delete Group ]"     group gorilla::DeleteGroup ""
+		"[ mc Login ]" login {"[ mc "Add Login" ]"        open  gorilla::AddLogin    $menu_meta+A
+				      "[ mc "Edit Login" ]"       open  gorilla::EditLogin   $menu_meta+E
+				      "[ mc "View Login" ]"       open  gorilla::ViewLogin   $menu_meta+V
+				      "[ mc "Delete Login" ]"     login gorilla::DeleteLogin ""
+				      "[ mc "Move Login" ] ..."   login gorilla::MoveLogin   ""
+				      separator                   ""    ""                   ""
+				      "[ mc "Add Group" ] ..."    open  gorilla::AddGroup    ""
+				      "[ mc "Add Subgroup" ] ..." group gorilla::AddSubgroup ""
+				      "[ mc "Rename Group" ] ..." group gorilla::RenameGroup ""
+				      "[ mc "Move Group" ] ..."   group gorilla::MoveGroup   ""
+				      "[ mc "Delete Group" ]"     group gorilla::DeleteGroup ""
 				     }
 				
-		"[ mc Security ]" security {"[ mc Password Policy ] ..."        open gorilla::PasswordPolicy            ""
-				            "[ mc Customize ] ..."              open gorilla::DatabasePreferencesDialog ""
-				            separator                           ""   ""                                 ""
-				            "[ mc Change Master Password ] ..." open gorilla::ChangePassword            ""
-				            separator                           ""   ""                                 ""
-				            "[ mc Lock now ]"                   open gorilla::LockDatabase              ""
+		"[ mc Security ]" security {"[ mc "Password Policy" ] ..."        open gorilla::PasswordPolicy            ""
+				            "[ mc Customize ] ..."                open gorilla::DatabasePreferencesDialog ""
+				            separator                             ""   ""                                 ""
+				            "[ mc "Change Master Password" ] ..." open gorilla::ChangePassword            ""
+				            separator                             ""   ""                                 ""
+				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              ""
 				           }
 
 		"[ mc Help ]" help {"[ mc Help ] ..."    ""  gorilla::Help    ""
