@@ -3796,13 +3796,13 @@ proc gorilla::Merge {} {
 	set identicalReport [list]
 	set totalRecords [llength [$newdb getAllRecordNumbers]]
 
+	::gorilla::progress init -win . -message "Merging (%d %% done)"
+
 	foreach nrn [$newdb getAllRecordNumbers] {
 		incr totalLogins
 
-		set percent [expr {int(100.*$totalLogins/$totalRecords)}]
-		set ::gorilla::status "Merging ($percent% done) ..."
-		update idletasks
-
+		::gorilla::progress update-pbar . [expr {int(100.*$totalLogins/$totalRecords)}]
+		
 		set ngroup ""
 		set ntitle ""
 		set nuser ""
@@ -4058,6 +4058,8 @@ proc gorilla::Merge {} {
 
 		pwsafe::int::randomizeVar ngroup ntitle nuser
 	}
+
+	::gorilla::progress finished .
 
 	itcl::delete object $newdb
 	MarkDatabaseAsDirty

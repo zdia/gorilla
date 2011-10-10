@@ -60,7 +60,7 @@ namespace eval ::gorilla::progress {
 
 	namespace path { ::tcl::mathop ::tcl::mathfunc }
 
-	namespace export init update finished newmessage
+	namespace export init update-pbar finished newmessage
 
 } ; # end namespace eval ::gorilla::progress
 
@@ -265,6 +265,7 @@ proc ::gorilla::progress::update-pbar { tl value } {
 	}
 
 	variable values
+	set values($tl) $value
 
 	return GORILLA_OK
 
