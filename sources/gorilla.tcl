@@ -3846,6 +3846,8 @@ proc gorilla::Merge {} {
 	set totalRecords [llength [$newdb getAllRecordNumbers]]
 
 	foreach nrn [$newdb getAllRecordNumbers] {
+		unset -nocomplain rn node
+		
 		incr totalLogins
 
 		set percent [expr {int(100.*$totalLogins/$totalRecords)}]
@@ -4050,15 +4052,14 @@ proc gorilla::Merge {} {
 		#
 
 		if {!$found || !$identical} {
-			set oldrn $rn
+			set oldrn [ expr { [ info exists rn ] ? $rn : "" } ]
 			set rn [$::gorilla::db createRecord]
 
 			foreach field [$newdb getFieldsForRecord $nrn] {
-				$::gorilla::db setFieldValue $rn $field \
-				[$newdb getFieldValue $nrn $field]
+				$::gorilla::db setFieldValue $rn $field   [$newdb getFieldValue $nrn $field]
 			}
 
-			set oldnode $node
+			set oldnode [ expr { [ info exists node ] ? $node : "" } ]
 			set node [AddRecordToTree $rn]
 
 			if {$found && !$identical} {
