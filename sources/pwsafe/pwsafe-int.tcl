@@ -222,7 +222,8 @@ proc pwsafe::int::computeHRND {RND password} {
 # number of iterations that is stored in the file.
 #
 
-proc pwsafe::int::computeStretchedKey {salt password iterations} {
+proc pwsafe::int::computeStretchedKey {salt password iterations pvar_in} {
+	upvar $pvar_in pvar
 	set st [sha2::SHA256Init] ;# st = stretched key
 # puts [info commands ::sha2::*]
 # puts "salt [hex $salt]\npassword $password iterations $iterations"
@@ -231,10 +232,19 @@ proc pwsafe::int::computeStretchedKey {salt password iterations} {
     sha2::SHA256Update $st $salt
     set Xi [sha2::SHA256Final $st]
 # puts "Xi [hex $Xi]"
-    for {set i 0} {$i < $iterations} {incr i} {
-	set Xi [sha2::sha256 -bin $Xi]
-    }
-    return $Xi
+	set blocks [ expr { $iterations / 256 } ]
+	for {set j 0} {$j < $blocks} {incr j} {
+		for {set i 0} {$i < 256} {incr i} {
+			set Xi [sha2::sha256 -bin $Xi]
+		}
+		set pvar [ expr { 100 * $j * 256 / $iterations } ]
+	}
+	set remain [ expr {$iterations - ($j * 256) } ]
+	for {set i 0} {$i < $remain} {incr i} {
+		set Xi [sha2::sha256 -bin $Xi]
+	}
+	set pvar 100
+	return $Xi
 }
 
 proc pwsafe::int::calculateKeyStrechForDelay { seconds } {
@@ -272,7 +282,8 @@ proc pwsafe::int::keyStretchMsDelay { iter } {
 
 	set salt [ pwsafe::int::randomString 32 ]
 	set start [ clock milliseconds ]
-	pwsafe::int::computeStretchedKey $salt "The quick brown fox jumped over the lazy dog." $iter
+	set junk 0 ; # used as the "progress variable" for computeStretchedKey
+	pwsafe::int::computeStretchedKey $salt "The quick brown fox jumped over the lazy dog." $iter junk
 	return [ expr { [ clock milliseconds ] - $start } ]
 
 	#ruff

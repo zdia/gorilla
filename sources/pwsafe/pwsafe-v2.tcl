@@ -143,7 +143,7 @@ itcl::class pwsafe::v2::reader {
 
 		if {$filePos != -1 && $fileSize != -1 && \
 			$fileSize != 0 && $filePos <= $fileSize} {
-		    set percent [expr {100.0*double($filePos)/double($fileSize)}]
+		    set percent [expr {100+(100*$filePos/$fileSize)}]
 		} else {
 		    set percent -1
 		}

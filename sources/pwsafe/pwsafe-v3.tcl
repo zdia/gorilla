@@ -208,7 +208,7 @@ itcl::class pwsafe::v3::reader {
 
 	    if {$filePos != -1 && $fileSize != -1 && \
 		    $fileSize != 0 && $filePos <= $fileSize} {
-		set percent [expr {100.0*double($filePos)/double($fileSize)}]
+		set percent [expr {100+(100*$filePos/$fileSize)}]
 	    } else {
 		set percent -1
 	    }
@@ -388,7 +388,7 @@ itcl::class pwsafe::v3::reader {
 
 	$db configure -keyStretchingIterations $iter
 
-	set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter]
+	set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp]
 	set myhskey [sha2::sha256 -bin $myskey]
 	if {![string equal $hskey $myhskey]} {
 	    pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
@@ -648,7 +648,7 @@ itcl::class pwsafe::v3::writer {
 
 	foreach recordNumber $allRecords {
 	    incr countRecords
-	    set pcv [expr {100.0*double($countRecords)/double($numRecords)}]
+	    set pcv [expr {100+(100*$countRecords/$numRecords)}]
 
 	    foreach fieldType [$db getFieldsForRecord $recordNumber] {
 		set fieldValue [$db getFieldValue $recordNumber $fieldType]
@@ -777,7 +777,7 @@ itcl::class pwsafe::v3::writer {
 
 	set salt [pwsafe::int::randomString 32]
 	set iter [$db cget -keyStretchingIterations]
-	set skey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter]
+	set skey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp ]
 	set hskey [sha2::sha256 -bin $skey]
 
 	$sink write "PWS3"

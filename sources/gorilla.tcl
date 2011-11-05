@@ -226,6 +226,9 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 # installed items
 set auto_path [ list $::gorillaDir [ file join $::gorillaDir tcllib ] {*}$auto_path ]
 
+# Initialize the Tcl modules system to look into modules/ directory
+::tcl::tm::add [ file join $::gorillaDir modules ]
+
 #
 # Look for Itcl
 #
@@ -254,7 +257,9 @@ if {[catch {package require pwsafe} oops]} {
 	# the parameter 1 is setting gorilla.tcl's filelength to 0
 }
 
-load-package tooltip
+foreach package {tooltip PWGprogress} {
+	load-package $package
+}
 
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
@@ -1215,28 +1220,6 @@ proc gorilla::DestroyOpenDatabaseDialog {} {
 	set ::gorilla::guimutex 2
 }
 
-proc gorilla::OpenPercentTrace {name1 name2 op} {
-
-	if {![info exists ::gorilla::openPercentLastUpdate]} {
-		set ::gorilla::openPercentLastUpdate [clock clicks -milliseconds]
-		return
-	}
-	set now [clock clicks -milliseconds]
-	set td [expr {$now - $::gorilla::openPercentLastUpdate}]
-	# time difference
-	if {$td < 200} {
-		return
-	}
-
-	set ::gorilla::openPercentLastUpdate $now
-
-	if {$::gorilla::openPercent > 0} {
-		set info [format [mc "Opening ... %2.0f %%"] $::gorilla::openPercent]
-		$::gorilla::openPercentWidget configure -text $info
-		update idletasks
-	}
-}
-
 ;# proc gorilla::OpenDatabase {title defaultFile} {}
 	
 # proc gorilla::OpenDatabase {title {defaultFile ""}} {
@@ -1419,35 +1402,29 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 			set password [$aframe.pw.pw get]
 			
-			set ::gorilla::openPercent 0
-			set ::gorilla::openPercentWidget $aframe.info
-			trace add variable ::gorilla::openPercent [list "write"] \
-			::gorilla::OpenPercentTrace
-#set a [ clock milliseconds ]
-			if {[catch {set newdb [pwsafe::createFromFile $fileName $password \
-						 ::gorilla::openPercent]} oops]} {
-				pwsafe::int::randomizeVar password
-				trace remove variable ::gorilla::openPercent [list "write"] \
-					::gorilla::OpenPercentTrace
-				unset ::gorilla::openPercent
-		. configure -cursor $dotOldCursor
-		$top configure -cursor $myOldCursor
+			set pvar [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
 
-		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title [mc "Error Opening Database"] \
-			-message [mc "Can not open password database \"%s\": %s." $nativeName $oops]
-		$aframe.info configure -text $info
-		$aframe.pw.pw delete 0 end
-		focus $aframe.pw.pw
-		continue
-		}
+#set a [ clock milliseconds ]
+			if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
+						 $pvar ] } oops ] } {
+				pwsafe::int::randomizeVar password
+				::gorilla::progress finished $aframe.info
+				. configure -cursor $dotOldCursor
+				$top configure -cursor $myOldCursor
+
+				tk_messageBox -parent $top -type ok -icon error -default ok \
+					-title [mc "Error Opening Database"] \
+					-message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
+				$aframe.info configure -text $info
+				$aframe.pw.pw delete 0 end
+				focus $aframe.pw.pw
+				continue
+			}
 #set b [ clock milliseconds ]
 #puts stderr "elapsed open time: [ expr { $b - $a } ]ms"
 		# all seems well
-		trace remove variable ::gorilla::openPercent [list "write"] \
-	::gorilla::OpenPercentTrace
-		unset ::gorilla::openPercent
 
+			::gorilla::progress finished $aframe.info
 			. configure -cursor $dotOldCursor
 			$top configure -cursor $myOldCursor
 			pwsafe::int::randomizeVar password
@@ -3753,32 +3730,6 @@ proc gorilla::MarkDatabaseAsDirty {} {
 }
 
 # ----------------------------------------------------------------------
-# Save file
-# ----------------------------------------------------------------------
-#
-# what with name1 name2 op?
-
-proc gorilla::SavePercentTrace {name1 name2 op} {
-	if {![info exists ::gorilla::savePercentLastUpdate]} {
-		set ::gorilla::savePercentLastUpdate [clock clicks -milliseconds]
-		return
-	}
-
-	set now [clock clicks -milliseconds]
-	set td [expr {$now - $::gorilla::savePercentLastUpdate}]
-	if {$td < 100} {
-		return
-	}
-
-	set ::gorilla::savePercentLastUpdate $now
-
-	if {$::gorilla::savePercent > 0} {
-		set ::gorilla::status [format [mc "Saving ... %2.0f %%"] $::gorilla::savePercent]
-		update idletasks
-	}
-}
-
-# ----------------------------------------------------------------------
 # Merge file
 # ----------------------------------------------------------------------
 #
@@ -3845,15 +3796,15 @@ proc gorilla::Merge {} {
 	set identicalReport [list]
 	set totalRecords [llength [$newdb getAllRecordNumbers]]
 
+	::gorilla::progress init -win . -message "Merging (%d %% done)"
+
 	foreach nrn [$newdb getAllRecordNumbers] {
 		unset -nocomplain rn node
 		
 		incr totalLogins
 
-		set percent [expr {int(100.*$totalLogins/$totalRecords)}]
-		set ::gorilla::status "Merging ($percent% done) ..."
-		update idletasks
-
+		::gorilla::progress update-pbar . [expr {int(100.*$totalLogins/$totalRecords)}]
+		
 		set ngroup ""
 		set ntitle ""
 		set nuser ""
@@ -4109,6 +4060,8 @@ proc gorilla::Merge {} {
 		pwsafe::int::randomizeVar ngroup ntitle nuser
 	}
 
+	::gorilla::progress finished .
+
 	itcl::delete object $newdb
 	MarkDatabaseAsDirty
 
@@ -4352,28 +4305,32 @@ proc gorilla::Save {} {
 			set majorVersion 3
 		}
 	}
-	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
+	set pvar [ ::gorilla::progress init -win .status -message [ mc "Saving ... %d %%" ] -max 200 ]
 
 	# avoid gray area during save
 	update
 
-	if {[catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
-	::gorilla::savePercent} oops]} {
-		trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
-
+	if { [ catch { pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
+			$pvar } oops ] } {
+		::gorilla::progress finished .status
+		
 		. configure -cursor $myOldCursor
 		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
 			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
-		return GORILLA_SAVEERROR
+		return GORILLA_SAVEBACKUPERROR
 	}
 
-	# TODO: refactoring
-	trace remove variable ::gorilla::savePercent [list "write"] \
-		::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
+	::gorilla::progress finished .status
+	
+	# The actual data are saved. Now take care of a backup file
+
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
+
+	if { $message ne "GORILLA_OK" } {
+		. configure -cursor $myOldCursor
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
 
 	. configure -cursor $myOldCursor
 
@@ -4482,16 +4439,10 @@ proc gorilla::SaveAs {} {
 	. configure -cursor watch
 	update idletasks
 
-	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
+	set pvar [ ::gorilla::progress init -win .status -message [ mc "Saving ... %d %%" ] -max 200 ]
 
-	if {[ catch {	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
-							} oops]
-			} {
-		trace remove variable ::gorilla::savePercent [list "write"] \
-				::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
-	
+	if { [ catch { pwsafe::writeToFile $::gorilla::db $fileName $majorVersion $pvar } oops] } {
+		::gorilla::progress finished .status
 		. configure -cursor $myOldCursor
 		tk_messageBox -parent . -type ok -icon error -default ok \
 			-title [mc "Error Saving Database"] \
@@ -4500,11 +4451,20 @@ proc gorilla::SaveAs {} {
 		return 0
 	}
 
+	::gorilla::progress finished .status
+
+	# The actual data are saved. Now take care of a backup file
+
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
+
+	if { $message ne "GORILLA_OK" } {
+		. configure -cursor $myOldCursor
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
+
 	# clean up
 	
-	trace remove variable ::gorilla::savePercent [list "write"] \
-		::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
 	. configure -cursor $myOldCursor
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
