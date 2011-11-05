@@ -9,10 +9,11 @@
 #
 # Project-Id-Version: Gorila Password 1.*
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-09-26 11:10-0400
-# PO-Revision-Date: 2011-08-08 00:27+0200
+# POT-Creation-Date: 2011-11-03 11:45+0100
+# PO-Revision-Date: 2011-11-03 15:58+0100
 # Last-Translator: Marco Ciampa <ciampix@libero.it>
 # Language-Team: Italian <it@li.org>
+# Language: it
 # MIME-Version: 1.0
 # Content-Type: text/plain; charset=UTF-8
 # Content-Transfer-Encoding: 8bit
@@ -39,31 +40,45 @@ Messaggio d'errore: %s}
 {Welcome to the Password Gorilla.} {Benvenuti in Password Gorilla}
 File File
 New Nuovo
+Open Apri
+Merge Fondi
 Save Salva
+{Save As} {Salva come}
 Export Esporta
+Import Importa
 Preferences Preferenze
 Exit Esci
 Edit Modifica
-Clear Cancella
+{Copy Username} {Copia nome utente}
+{Copy Password} {Copia password}
+{Copy URL} {Copia URL}
+{Clear Clipboard} {Cancella gli appunti}
 Find Trova
+{Find next} {Trova il prossimo}
 Login Login
+{Add Login} {Nuovo login}
+{Edit Login} {Modifica login}
+{View Login} {Mostra il login}
+{Delete Login} {Cancella login}
+{Move Login} {Sposta login}
+{Add Group} {Aggiungi gruppo}
+{Add Subgroup} {Nuovo sottogruppo}
+{Rename Group} {Rinomina gruppo}
+{Move Group} {Sposta gruppo}
+{Delete Group} {Cancella gruppo}
 Security Sicurezza
-Password Password
+{Password Policy} {Criteri password}
+Customize Personalizza
+{Change Master Password} {Cambia la password principale}
+{Lock now} {Blocca ora}
 Help Aiuto
 License Licenza
 About Informazioni
-{Add Login} {Nuovo login}
-{Add Subgroup} {Nuovo sottogruppo}
-{Rename Group} {Rinomina gruppo}
-{Delete Group} {Cancella gruppo}
 {Open URL} {Apri URL}
 {Copy Username to Clipboard} {Copia nome utente negli appunti}
 {Copy Password to Clipboard} {Copia password negli appunti}
 {Copy URL to Clipboard} {Copia URL negli appunti}
-{Edit Login} {Modifica login}
-{View Login} {Mostra il login}
 {Move Login to:} {Sposta login a:}
-{Delete Login} {Cancella login}
 {Save changes?} {Salvare i cambiamenti?}
 {The current password database is modified. Do you want to save the current database before creating the new database?} {L'archivio corrente è stato modificato. Salvare l'archivio corrente prima di crearne uno nuovo?}
 {New Database: Choose Master Password} {Nuovo archivio: scegliere la password principale}
@@ -77,13 +92,16 @@ OK OK
 {Select a database, and enter its password. Click "New" to create a new database.} {Selezionare un archivio e inserire la password. Clic su "Nuovo" per creare un nuovo archivio password.}
 {Please be patient. Verifying password ...} {Verifica password. Attendere prego ...}
 {Error Opening Database} {Errore durante l'apertura dell'archivio}
+{Can not open password database "%s": %s.} {Impossibile aprire l'archivio database "%s": %s.}
 {Browse for a password database ...} {Seleziona un archivio password ...}
 {Open Password Database} {Apri archivio password}
 {Password database %s loaded.} {Archivio password %s caricato.}
 {Add/Edit/View Login} {Nuovo/modifica/mostra login}
+Group Gruppo
 Title Titolo
 URL URL
 Username {Nome utente}
+Password Password
 Cancel Annulla
 {Show Password} {Mostra password}
 {Generate Password} {Genera password}
@@ -97,10 +115,13 @@ Cancel Annulla
 {New login added.} {Nuovo login aggiunto.}
 {Login modified.} {Login modificato.}
 {Group entries may be renamed, not edited.} {Le voci di gruppo possono essere rinominate, non modificate.}
+{Move %s} {Sposta %s}
 {Destination Group with format <Group.Subgroup> :} {Gruppo di destinazione con formato <Gruppo.Sottogruppo> :}
 {Invalid Group Name} {Nome gruppo non valido}
 {The group name can not be empty.} {Il nome gruppo non può essere vuoto.}
 {The name of the parent group is invalid.} {Il nome del gruppo genitore non è valido.}
+{Moving of %s canceled.} {Spostamento di %s annullato.}
+{%s moved.} {%s spostato.}
 {Are you sure that you want to delete this login?} {Sicuri di voler cancellare questo login?}
 {Login deleted.} {Login cancellato.}
 {Add a new Group} {Aggiungi un nuovo sottogruppo}
@@ -114,6 +135,7 @@ Parent: Genitore:
 {Can not move a group to a subgroup of itself.} {Impossibile spostare un gruppo ad un proprio sottogruppo.}
 {Are you sure that you want to delete group and all its contents?} {Sicuri di voler cancellare il gruppo e tutto il suo contenuto?}
 {Group deleted.} {Gruppo cancellato.}
+Name Nome
 {Group name unchanged.} {Nome del gruppo non modificato.}
 {Group renamed.} {Gruppo rinominato.}
 {Export Security Warning} {Avvertimento di sicurezza all'esportazione}
@@ -138,21 +160,44 @@ i file dati CSV di importazione per Password Gorilla.}
 {The following data items are not recognized as import data items.
 Unable to continue.} {Gli elementi dati seguenti non sono stati riconosciuti come elementi dati di importazione.
 Impossibile continuare.}
+{Some records from the CSV file were not imported.
+Do you wish to save a log of skipped records?} {Alcuni record dal file CSV non sono stati importati.
+Salvare una registrazione dei record saltati?}
 {Some records skipped during import} {Alcuni record saltati durante l'importazione}
 {Enter a file into which to save the log} {Inserire un file nel quale salvare la registrazione}
 {record(s) successfully imported.} {record importati con successo.}
 {Saving ... %2.0f %%} {Salvataggio ... %2.0f %%}
 {Merge Password Database} {Fondi l'archivio password}
 Merging Fusione
+login login
+logins login
+conflict conflitto
+conflicts conflitti
+{Merged %s;
+%d %s, %d identical, %d added, %d %s.} {Fusi %s;
+%d %s, %d identici, %d aggiunti, %d %s.}
+{Resolve Conflicts} {Risolvi i conflitti}
 Close Chiudi
 {Warning: Can not save to} {Attenzione: impossibile salvare su}
 {because the file permissions are set for read-only access.} {dato che i permessi sul file sono impostati per la sola lettura.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Cambiare i permessi al file per consentire la lettura e scrittura e premere 'Riprova' o premere 'Annulla' e usare 'File'->'Salva come' per salvare in un file differente.}
 {Warning: Read-only password file} {Attenzione: file delle password in sola lettura}
+{Error Saving Backup of Database} {Errore durante il salvataggio della copia di sicurezza dell'archivio}
+{Failed to save password database as
+%s: %s} {Fallito il salvataggio dell'archivio password come
+%s: %s}
+{Password database saved with backup copy.} {Archivio password salvato con copia di sicurezza.}
 {Password database saved.} {Archivio password salvato.}
+{Nothing To Save} {Nulla da salvare}
+{No password database to save.} {Nessun archivio password da salvare.}
 {Save password database ...} {Salvataggio archivio password ...}
 {Error Saving Database} {Errore durante il salvataggio dell'archivio}
 {Failed to save password database as "%s": %s} {Fallito il salvataggio dell'archivio password come "%s": %s}
+{Password database saved with backup copy} {Archivio password salvato con copia di sicurezza}
+ERROR-SaveBackup ERRORE-SalvataggioBackup
+ERROR-SaveBackup-invalid-directory ERRORE-SalvataggioBackup-directory-non-valida
+ERROR-SaveBackup-unknown-file ERRORE-SalvataggioBackup-file-sconosciuto
+ERROR-SaveBackup-failed ERRORE-SalvataggioBackup-fallito
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {L'archivio delle password corrente è stato modificato. Salvare l'archivio? <Sì> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale.}
 {Clipboard cleared.} {Appunti cancellati.}
 {Database Locked} {Archivio bloccato}
@@ -178,6 +223,13 @@ Confirm: Conferma:
 {Use Password Safe 3 format} {Usa il formato password Safe 3}
 {V2 Unicode support} {Supporto Unicode V2}
 {V3 key stretching iterations} {Iterazioni V3 'key stretching'}
+SECURITY-db-calc-delay-time SICUREZZA-db-tempo-di-ritardo-calcolo
+SECURITY-db-%d-iter-%s-secs SICUREZZA-db-%d-iterazioni-%s-secondo
+SECURITY-db-calc SECUREZZA-db-calcolo
+SECURITY-db-calcing SECURITY-db-calcing
+SECURITY-db-auto-iter-calc SECURITY-db-auto-iter-calc
+SECURITY-db-delay-for SECURITY-db-delay-for
+SECURITY-db-seconds SECURITY-db-seconds
 General Generale
 {When double clicking a login ...} {Quando si fa doppio clic su un login ...}
 {Copy password to clipboard} {Copia password negli appunti}
@@ -187,6 +239,7 @@ General Generale
 {seconds (0=never)} {secondi (0=mai)}
 Remember Ricorda
 {database names} {Nomi archivi}
+Clear Cancella
 {Backup database on save} {Copia di sicurezza dell'archivio al salvataggio}
 {Remember sizes of dialog boxes} {Ricorda le dimensioni delle finestre di dialogo}
 {Use Gorilla auto-copy} {Usa l'auto-copia di Gorilla}
@@ -201,6 +254,9 @@ See the help system for details.} {Quest'opzione non funziona sulle
 piattaforme Windows(TM) o MacOS(TM).
 Consultare la guida per i dettagli.}
 Defaults {Valori predefiniti}
+{Time stamp backup} {Salvataggio marcatore temporale}
+{Backup path:} {Percorso copia di sicurezza:}
+{Choose a directory} {Scegliere una cartella}
 {Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Nota: queste impostazioni predefinite verranno applicate ai nuovi archivi. Per cambiare un'impostazione per un archivio esistente, selezionare "Personalizza" nel menu "Sicurezza".}
 {Include password field} {Includi il campo "Password"}
 {Include "Notes" field} {Includi il campo "Notes"}
@@ -243,6 +299,7 @@ Consultare la guida per i dettagli.}
 {Clipboard autoclear multiplier} {Moltiplicatore autocancellazione appunti}
 {History deleted. After a restart the list will be empty.} {Cronologia cancellata. Dopo il riavvio l'elenco sarà vuoto.}
 Error Errore
+{Error while saving RC-File} {Errore durante il salvataggio del file RC}
 {No Database} {Nessun archivio}
 {Please create a new database, or open an existing
 database first.} {Creare un nuovo archivio o aprirne prima 
@@ -254,6 +311,7 @@ uno esistente.}
 Therefore, the existing password remains in effect.} {L'impostazione della nuova password è stata annullata.
 Di conseguenza, la password esistente rimane in effetto.}
 {Master password changed.} {Password principale modificata.}
+{gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'} {gorilla::CopyToClipboard: il parametro %s non è 'Username', 'Password' o 'URL'}
 {Can not copy %s to clipboard: no %s defined.} {Impossibile copiare %s negli appunti: %s non è definito.}
 {Copied %s to clipboard.} {Copiato %s negli appunti.}
 {Password Gorilla} {Password Gorilla}
@@ -263,6 +321,8 @@ Contributors Contributi
 {German translation by %s} {Traduzione in tedesco di %s}
 {Russian translation by %s} {Traduzione in russo di %s}
 {Italian translation by %s} {Traduzione in italiano di %s}
+{French translation by %s} {Traduzione in francese di %s}
+{Spanish translation by %s} {Traduzione in spagnolo di %s}
 {About Password Gorilla} {Informazioni su Password Gorilla}
 {Password Gorilla License} {Licenza di Password Gorilla}
 {Find Text:} {Trova il testo:}
@@ -279,4 +339,42 @@ Notes Note
 {Oh well...} {Oh bene...}
 {Launched browser:} {Avviato browser:}
 {Generate gorilladoc.html} {Genera gorilladoc.html}
+{Conflict Merge Tool} {Strumento di fusione dei conflitti}
+{Conflict %d} {Conflitto %d}
+{Combine and Save} {Combina e salva}
+{Reset Values} {Reimposta i valori}
+{Ignore Conflict} {Ignora i conflitti}
+{No existing merge conflicts were found.} {Nessuno conflitto di fusione rilevato.}
+Current Attuale
+Merged Fuso
+{A selection is required for:} {È richiesta una selezione per:}
+Back Indietro
+Search Cerca
+Previous Precedente
+Next Successivo
+History Cronistoria
+Index Indice
+{unknown preference type: %s} {tipo di preferenza sconosciuto: %s}
+{premature end of preference} {fine prematura di una preferenza}
+{expected number for value, got %s} {valore numerico richiesto, ottenuto %s}
+{expected initial quote for string value} {previste virgolette iniziali per valore stringa}
+{premature end of string value} {fine prematura di un valore stringa}
+{no such preference: %s} {preferenza non esistente: %s}
+{group name can not be empty} {il nome gruppo non può essere vuoto}
+{record %d does not exist} {il record %d non esiste}
+{record %d does not have field %s} {il record %d non ha il campo %s}
+{no header field %s} {nessun campo intestazione %s}
+{invalid version %s} {versione non valida %s}
+{less than 8 bytes remaining for length field} {rimangono per il campo lunghezza meno di 8 bytes}
+oops oops
+{field length %d looks insane} {il campo lunghezza %d sembra irragionevole}
+{out of data} {dati esauriti}
+{V1 name field looks suspect} {nome campo V1 sospetto}
+{this object can not be reused} {questo oggetto non può essere riusato}
+{end of file while reading header} {fine del file mentre si stava leggendo l'intestazione}
+{wrong password} {password errata}
+{EOF while reading field} {EOF durante la lettura di un campo}
+{less than 16 bytes remaining for first block} {rimangono meno di 16 byte per il primo blocco}
+{file does not have PWS3 magic} {il file non possiede il marcatore magic PWS3}
+{Failed to scan key stretch iteration count from binary data.} {Fallita la ricerca del contatore iterazioni "key stretch" dai dati binari.}
 }
