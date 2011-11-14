@@ -1375,17 +1375,15 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 			if {$fileName == ""} {
 				tk_messageBox -parent $top -type ok -icon error -default ok \
-					-title "No File" \
-					-message "Please select a password database."
-				continue
+					-title [mc "No File"] \
+					-message [mc "Please select a password database."]
+        continue
 			}
 
 			if {![file readable $fileName]} {
 				tk_messageBox -parent $top -type ok -icon error -default ok \
-					-title "File Not Found" \
-					-message "The password database\
-					\"$nativeName\" does not exist or can not\
-					be read."
+					-title [mc "File Not Found"] \
+					-message [mc "The password database %s does not exist or can not be read." $nativeName]
 				continue
 			}
 
@@ -1565,12 +1563,12 @@ proc gorilla::Open {{defaultFile ""}} {
 	if {$::gorilla::dirty} {
 		set answer [tk_messageBox -parent . \
 			-type yesnocancel -icon warning -default yes \
-			-title "Save changes?" \
-			-message "The current password database is modified.\
+			-title [mc "Save changes?"] \
+			-message [mc "The current password database is modified.\
 			Do you want to save the database?\n\
 			\"Yes\" saves the database, and continues to the \"Open File\" dialog.\n\
 			\"No\" discards all changes, and continues to the \"Open File\" dialog.\n\
-			\"Cancel\" returns to the main menu."]
+			\"Cancel\" returns to the main menu."] ]
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
 				if { [::gorilla::Save] ne "GORILLA_OK" } {
@@ -2769,9 +2767,9 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	if {![info exists ::gorilla::db]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "No Database" \
-			-message "Please create a new database, or open an existing\
-			database first."
+			-title [mc "No Database"] \
+			-message [mc "Please create a new database, or open an existing\
+			database first."]
 		return
 	}
 
@@ -2846,8 +2844,8 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 		if {$group == ""} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The group name can not be empty."
+				-title [mc "Invalid Group Name"] \
+				-message [mc "The group name can not be empty."]
 			continue
 		}
 
@@ -2860,8 +2858,8 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The name of the parent group is invalid."
+				-title [mc "Invalid Group Name"] \
+				-message ["The name of the parent group is invalid."]
 			continue
 		}
 
@@ -3033,8 +3031,8 @@ proc gorilla::DeleteGroup {} {
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Delete Root" \
-			-message "The root node can not be deleted."
+			-title [mc "Can Not Delete Root"] \
+			-message [mc "The root node can not be deleted."]
 		return
 	}
 
@@ -3045,7 +3043,7 @@ proc gorilla::DeleteGroup {} {
 	if {[llength [$::gorilla::widgets(tree) children $node]] > 0} {
 		set answer [tk_messageBox -parent . \
 			-type yesno -icon question -default no \
-			-title "Delete Group" \
+			-title [mc "Delete Group"] \
 			-message [mc "Are you sure that you want to delete group and all its contents?"]]
 
 		if {$answer != "yes"} {
@@ -3102,8 +3100,8 @@ proc gorilla::RenameGroup {} {
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Rename Root" \
-			-message "The root node can not be renamed."
+			-title [mc "Can Not Rename Root"] \
+			-message [mc "The root node can not be renamed."]
 		return
 	}
 
@@ -3197,8 +3195,8 @@ proc gorilla::RenameGroup {} {
 		if {$newGroup == ""} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The group name can not be empty."
+				-title [mc "Invalid Group Name"] \
+				-message [mc "The group name can not be empty."]
 			continue
 		}
 
@@ -3207,9 +3205,9 @@ proc gorilla::RenameGroup {} {
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The name of the group's parent node\
-				is invalid."
+				-title [mc "Invalid Group Name"] \
+				-message [mc "The name of the group's parent node\
+				is invalid."]
 			continue
 		}
 
@@ -3268,9 +3266,9 @@ proc gorilla::RenameGroup {} {
 	if {$destiter != "RootNode" || $node == "RootNode"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Move Node" \
-			-message "Can not move a group to a subgroup\
-			of itself."
+			-title [mc "Can Not Move Node"] \
+			-message [mc "Can not move a group to a subgroup\
+			of itself."]
 		return
 	}
 
@@ -3796,7 +3794,7 @@ proc gorilla::Merge {} {
 	set identicalReport [list]
 	set totalRecords [llength [$newdb getAllRecordNumbers]]
 
-	::gorilla::progress init -win . -message "Merging (%d %% done)"
+	::gorilla::progress init -win . -message [mc "Merging (%d %% done)"]
 
 	foreach nrn [$newdb getAllRecordNumbers] {
 		unset -nocomplain rn node
@@ -4099,8 +4097,8 @@ proc gorilla::Merge {} {
 
 	set answer [tk_messageBox -parent . -type yesno \
 		-icon $icon -default $default \
-		-title "Merge Results" \
-		-message "$message\nDo you want to view a detailed report?"]
+		-title [mc "Merge Results"] \
+		-message "$message\n[ mc "Do you want to view a detailed report?"]"]
 
 	if {$answer != "yes"} {
 		return
@@ -5258,9 +5256,9 @@ proc gorilla::PasswordPolicy {} {
 	if {![info exists ::gorilla::db]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "No Database" \
-			-message "Please create a new database, or open an existing\
-			database first."
+			-title [mc "No Database"] \
+			-message [mc "Please create a new database, or open an existing\
+			database first."]
 		return
 	}
 
