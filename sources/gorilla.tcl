@@ -5591,35 +5591,35 @@ proc gorilla::DatabasePreferencesDialog {} {
 
 		# === keystretch delay timer
 
-		set delayf [ ttk::labelframe $top.delay -padding {10 5} -text [ mc SECURITY-db-calc-delay-time ] ]
+		set delayf [ ttk::labelframe $top.delay -padding {10 5} -text [ mc "Calculate delay time" ] ]
 		pack $delayf -anchor w -side top -fill x -expand true -padx {10 10} -pady {0 2m}
 		
-		ttk::label  $delayf.feedback -text [ mc SECURITY-db-%d-iter-%s-secs $::gorilla::dpd(keyStretchingIterations) "___" ]
-		ttk::button $delayf.compute  -text [ mc SECURITY-db-calc ] -command [ namespace code [ subst {
-			$delayf.compute configure -text [ mc SECURITY-db-calcing ]
-			update idletasks
-		  	$delayf.feedback configure -text \[ mc SECURITY-db-%d-iter-%s-secs \
-			                                 \[ $top.stretch.spin get ] \
-		                                         \[ expr { \[ pwsafe::int::keyStretchMsDelay \[ $top.stretch.spin get ] ] / 1000.0 } ] ]
-			$delayf.compute configure -text [ mc SECURITY-db-calc ]
-		  } ] ]
+    ttk::label  $delayf.feedback -text [ mc "Default: %s" $::gorilla::dpd(keyStretchingIterations) ]
+    ttk::button $delayf.compute  -text [ mc "Calculate" ] -command [ namespace code [ subst {
+      $delayf.compute configure -text [ mc "Calculating" ]
+      update idletasks
+      $delayf.feedback configure -text \[ mc "%s sec(s) for %d iterations" \
+                                       \[ expr { \[ pwsafe::int::keyStretchMsDelay \[ $top.stretch.spin get ] ] / 1000.0 } ] \
+                                       \[ $top.stretch.spin get ] ]
+      $delayf.compute configure -text [ mc "Calculate" ]
+      } ] ]
 		grid $delayf.feedback $delayf.compute -sticky news -padx {1m 1m} -pady {1m 1m}
 		
 		# === auto iter computation
 		
-		set aiterf [ ttk::labelframe $top.autoiter -padding {10 5} -text [ mc SECURITY-db-auto-iter-calc ] ]
+		set aiterf [ ttk::labelframe $top.autoiter -padding {10 5} -text [ mc "Calculate iterations" ] ]
 		pack $aiterf -anchor w -side top -fill x -expand true -padx {10 10}
 
-                ttk::label $aiterf.label1 -text [ mc SECURITY-db-delay-for ]		
-		spinbox $aiterf.spin -from 1 -to 600 -increment 1 -justify right -width 5 
-		ttk::label $aiterf.spinlabel2 -text [ mc SECURITY-db-seconds ]
-		ttk::button $aiterf.calculate -text [ mc SECURITY-db-calc ] \
-			-command [ namespace code [ subst { 
-				$aiterf.calculate configure -text [ mc SECURITY-db-calcing ]
-				update idletasks
-		    		$top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
-		    		$aiterf.calculate configure -text [ mc SECURITY-db-calc ]
-			} ] ]
+    # ttk::label $aiterf.label1 -text [ "mc SECURITY-db-delay-for" ]
+    spinbox $aiterf.spin -from 1 -to 600 -increment 1 -justify right -width 5 
+    ttk::label $aiterf.spinlabel2 -text [ mc "Delay time (secs)" ]
+    ttk::button $aiterf.calculate -text [ mc "Calculate" ] \
+      -command [ namespace code [ subst { 
+        $aiterf.calculate configure -text [ mc "Calculating" ]
+        update idletasks
+        $top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
+        $aiterf.calculate configure -text [ mc "Calculate" ]
+      } ] ]
 		grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
 
 		# ===
