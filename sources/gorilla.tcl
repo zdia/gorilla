@@ -5602,9 +5602,9 @@ proc gorilla::DatabasePreferencesDialog {} {
 		set aiterf [ ttk::labelframe $top.autoiter -padding {10 5} -text [ mc "Calculate iterations" ] ]
 		pack $aiterf -anchor w -side top -fill x -expand true -padx {10 10}
 
-    # ttk::label $aiterf.label1 -text [ "mc SECURITY-db-delay-for" ]
+    ttk::label $aiterf.label1 -text [ mc "Delay for" ]
     spinbox $aiterf.spin -from 1 -to 600 -increment 1 -justify right -width 5 
-    ttk::label $aiterf.spinlabel2 -text [ mc "Delay time (secs)" ]
+    ttk::label $aiterf.spinlabel2 -text [ mc "sec(s)" ]
     ttk::button $aiterf.calculate -text [ mc "Calculate" ] \
       -command [ namespace code [ subst { 
         $aiterf.calculate configure -text [ mc "Calculating" ]
@@ -5612,8 +5612,7 @@ proc gorilla::DatabasePreferencesDialog {} {
         $top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
         $aiterf.calculate configure -text [ mc "Calculate" ]
       } ] ]
-		grid $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
-		# grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
+		grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
 
 		# ===
 
