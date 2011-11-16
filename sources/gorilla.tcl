@@ -4376,8 +4376,6 @@ proc gorilla::SaveAs {} {
 	if {![info exists ::gorilla::db]} {
 		gorilla::ErrorPopup [ mc "Nothing To Save" ] \
 		[ mc "No password database to save." ]
-		# ERROR-Save
-		# ERROR-Save-no-db
 		return GORILLA_SAVEERROR
 	}
 
@@ -4517,8 +4515,7 @@ proc gorilla::SaveBackup { filename } {
 	# filename - name of current database containing full path
 	#
 
-	set errorType [ mc ERROR-SaveBackup ]
-	# "Error Saving Backup of Database"
+	set errorType [ mc "Error Saving Backup of Database" ]
 
 	# create a backup filename based upon timeStampBackup preference
 
@@ -4542,13 +4539,9 @@ proc gorilla::SaveBackup { filename } {
 
 		set backupPath $::gorilla::preference(backupPath)
 		if { ! [file isdirectory $backupPath] } {
-			return [list $errorType [mc ERROR-SaveBackup-invalid-directory] ]
-			# "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."
-			
+			return [list $errorType [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] ]
 		}	elseif { ! [file exists $filename] } {
-			return [list $errorType [mc ERROR-SaveBackup-unknown-file] ]
-			# "Unknown file. - \nPlease select a valid database filename."
-			
+			return [list $errorType [mc "Unknown file. - \nPlease select a valid database filename."] ]
 		}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
 				set backupFileName "[ file tail $filename ]~"
 		}
@@ -4560,8 +4553,7 @@ proc gorilla::SaveBackup { filename } {
 		file copy -force -- $filename $backupFile
 		} oops]} {
 		set backupNativeName [file nativename $backupFileName]
-		return $errorType [ mc ERROR-SaveBackup-failed $backupNativeName $oops ]
-			# "Failed to make backup copy of password\ndatabase as %s: \n%s"
+		return $errorType [ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]
 	}
 
 	return GORILLA_OK
@@ -5620,7 +5612,8 @@ proc gorilla::DatabasePreferencesDialog {} {
         $top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
         $aiterf.calculate configure -text [ mc "Calculate" ]
       } ] ]
-		grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
+		grid $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
+		# grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
 
 		# ===
 
@@ -6216,7 +6209,6 @@ proc gorilla::SavePreferencesToRCFile {} {
 
 	if {[catch {close $f}]} {
 		gorilla::ErrorPopup [mc "Error"] [mc "Error while saving RC-File"]
-		# [mc ERROR-Save-rcfile]
 		return 0
 	}
 	return 1
