@@ -120,7 +120,7 @@ proc ::Help::Help {{title ""}} {
 	set fin [open $fname r]
 	set data [read $fin] ; list
 	close $fin
-
+  
 	regsub -all -line {^-+$} $data \x01 data
 	regsub -all -line {^\#.*$\n} $data {} data
 	foreach section [split $data \x01] {
@@ -342,7 +342,7 @@ proc ::Help::DoDisplay { top } {
     focus $w.e
     $w.e select range 0 end
     bind $w.e <Return> "::Help::DoSearch $w"
-    button $w.b -text Search! -command "::Help::DoSearch $w"
+    button $w.b -text [mc "Search!"] -command "::Help::DoSearch $w"
     $w window create end -window $w.b
  }
  ##+##########################################################################
@@ -418,23 +418,23 @@ proc ::Help::DoDisplay { top } {
     $w delete 1.0 end
     $w insert end $title hdr "\n"
     set next 0                                  ;# Some pages have no next page
-		# A tricky way to set the arry because we have to include runtime
-		# msgcat string translation and procedure calls with string and list arguments
-		array set navigation "
-			[mc Back]    { ::Help::Back $w; return}
-			[mc History] { ::Help::Listpage $w [list $state(history)]}
-			[mc Next]    { ::Help::Next $w 1; return}
-			[mc Previous] { ::Help::Next $w -1; return}
-			[mc Index]   { ::Help::Listpage $w [list $state(all)] }
-			[mc Search]  { ::Help::Search $w}
-			default  { ::Help::ShowPage $w [list $title] ; set next 1}"
+    
+    array set navigation [ subst { 
+      "[mc Back]" { ::Help::Back $w; return}
+      "[mc History]" { ::Help::Listpage $w [list $state(history)]}
+      "[mc Next]"    { ::Help::Next $w 1; return}
+      "[mc Previous]" { ::Help::Next $w -1; return}
+      "[mc Index]"   { ::Help::Listpage $w [list $state(all)] }
+      "[mc Search]"  { ::Help::Search $w}
+      default  { ::Help::ShowPage $w [list $title] ; set next 1}
+    }]
 
-		if { [array get navigation $title] eq "" } {
-			eval $navigation(default)
-		} else {
-			eval $navigation($title)
-		}
-		
+    if { [array get navigation $title] eq "" } {
+      eval $navigation(default)
+    } else {
+      eval $navigation($title)
+    }
+    
     # Add bottom of the page links
     $w insert end \n------\n {}
     if {! $state(haveTOC) && [info exists alias(toc)]} {
@@ -497,7 +497,7 @@ proc ::Help::DoDisplay { top } {
             }
             set line $txt
         } elseif {[string match " *" $line]} {  ;# Line beginning w/ a space
-						set line [mc $line]
+            set line [mc "$line"]
             $w insert end $line\n fix
             unset -nocomplain number
 

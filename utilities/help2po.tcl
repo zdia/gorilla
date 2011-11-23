@@ -14,22 +14,23 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # adds the unknown messages to a .po file which can be edited and
 # converted with msgfmt and mcset2mcmset.tcl
 #
-# FIXME: No error checking! No backup!
+# The new help.pot is saved in a temporary directory
+#
+# To create a new language po-help-file copy the file help.pot in the directory
+# utilities/help2po to <your-locale>.po and edit it.
+#
+# Tested for PWGorilla version 1.5.3.6
+#
+# Author: Zbigniew Diaczyszyn
+# https://github.com/zdia/gorilla
+
+# FIXME: Add error checking!
 
 package require Tk
 package require msgcat
 
 namespace eval gorilla {}
 namespace import msgcat::*
-
-set output ""
-
-# To create an empty help.pot we activate the following "mlocale" line
-# with the language of the Adangme people in Ghana 
-mclocale ada
-# mclocale ?newLocale?
-
-mcload [file join [file dirname [info script]] help2po]
 
 # Some helper routines for the Gorilla viewhelp.tcl
 # ----------------------------------------------------------------------
@@ -54,11 +55,27 @@ proc ::msgcat::mcunknown {locale src_string} {
 
 # --------------------------- Main -------------------------------------
 
+# see if we are running from the utilities directory
+
+if { ! [regexp /gorilla/utilities [pwd] ] } {
+  puts "ERROR - this script must be run from the gorilla/utilities/ directory"
+  puts "It is being run from [pwd] at present"
+  puts "Unable to continue\n"
+  exit
+}
+
+# viewhelp.tcl needs ::gorillaDir
+set ::gorillaDir "[pwd]/../sources/"
+
 source ../sources/viewhelp.tcl
 
-set output [open help.pot w]
+set outdir [exec mktemp -d]
+set outfile help.pot
 
-::Help::ReadHelpFiles ../sources
+set output [open $outdir/$outfile w]
+
+# force mcunknown entries using the niche language ada
+::Help::ReadHelpFiles ../sources ada
 ::Help::Help
 # ::Help::Help Overview
 
@@ -69,7 +86,16 @@ foreach title $::Help::state(allTOC) {
 close $output
 
 # exclude the duplicates
-exec msguniq -o help.pot help.pot
+exec msguniq -o $outdir/$outfile $outdir/$outfile
+
+puts "\nNew help.pot file has been created in $outdir"
+
+# update the old po-files with the new help.pot
+set langlist [glob -d help2po *.po]
+foreach file $langlist {
+  puts "\nUpdating $file with latest help.pot created in $outdir:\n"
+  exec -ignorestderr msgmerge --update $file --backup=simple $outdir/help.pot 
+}
 
 exit
 

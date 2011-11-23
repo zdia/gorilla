@@ -28,7 +28,7 @@ alias: TOC
 	-- [Your System Administrator]
 	-- [Viruses, Backdoors, etc.]
 	-- [Putting Risk In Perspective]
-	        
+
 -------------------
 title: Using Password Gorilla
 alias: Overview
@@ -48,8 +48,19 @@ alias: Overview
  - [Keyboard Shortcuts]
  - [The "V3" Database Format]
  - [Data Import]
+ - [DB Merging]
+ -- [Performing a Merge]
+ -- [Resolving Merge Conflicts]
 
-This documentation is written using Keith Vetter's Hypertext Help System.
+- [Risks] 
+ - [The Software Itself]
+ - [System Failure]
+ - [Other Users on a Shared Computer]
+ - [Your System Administrator]
+ - [Viruses, Backdoors, etc.]
+ - [Putting Risk In Perspective]
+ 
+ This documentation is written using Keith Vetter's Hypertext Help System.
 For copyright and authorship see the About panel.
 
 -------------------
@@ -80,9 +91,9 @@ allows you to browse for a different password database file, and asks
 for the database's master password. Once a file is chosen, and the
 master password is entered correctly, the password database is opened,
 and its contents are shown.
-   
+
 To create a new, empty password database, click the ''New'' button on the ''Open Password Database'' dialog. You will be asked for an initial master password for the new password database.  Alternately a new database can be created by choosing the ''File'' menu and selecting ''New ...''.
-   
+
 -------------------
 title: Choosing a Master Password
 
@@ -478,7 +489,7 @@ the proper value but may need to be manually adjusted slightly to achieve
 exactly the selected seconds of delay.  Utilize the ''Calculate delay time''
 section to determine the amount of time consumed by the calculated iteration
 value.
-          
+
 -------------------
 title: Display
 
@@ -750,7 +761,7 @@ password. The Password Safe 3 format avoids this issue by depending on
 the result of the key stretching operation (which is computationally
 expensive) as an input to decryption -- therefore, the operation can
 not be bypassed.
-   
+
 -------------------
 title: The Software Itself
 
