@@ -2,10 +2,18 @@
 # Copyright (C) 2011 Free Software Foundation, Inc.
 # Marco Ciampa <ciampix@libero.it>, 2011.
 #
+# Definizioni adottate:
+#
+# backup = salvataggio di sicurezza
+# index = indice
+# table of content = sommario
+# timestamp = marcatura temporale
+# button = pulsante
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"PO-Revision-Date: 2011-06-13 15:51+0200\n"
+"PO-Revision-Date: 2011-11-23 23:00+0100\n"
 "Last-Translator: Marco Ciampa <ciampix@libero.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "Language: it\n"
@@ -29,10 +37,10 @@ msgid "History"
 msgstr "Cronologia"
 
 msgid "Index"
-msgstr ""
+msgstr "Indice"
 
 msgid "Table of Contents"
-msgstr "Indice"
+msgstr "Sommario"
 
 msgid "Using Password Gorilla"
 msgstr "Usare Password Gorilla"
@@ -41,7 +49,7 @@ msgid "Risks"
 msgstr "Rischi"
 
 msgid "Starting"
-msgstr "Iniziare"
+msgstr "Avvio"
 
 msgid "Choosing a Master Password"
 msgstr "Scegliere la password generale"
@@ -104,13 +112,13 @@ msgid "Data Import"
 msgstr "Importazione dati"
 
 msgid "DB Merging"
-msgstr ""
+msgstr "Fusione DB"
 
 msgid "Performing a Merge"
-msgstr ""
+msgstr "Esecuzione di una fusione"
 
 msgid "Resolving Merge Conflicts"
-msgstr ""
+msgstr "Risoluzione conflitti di fusione"
 
 msgid "Help"
 msgstr "Aiuto"
@@ -167,17 +175,16 @@ msgid "[Data Import]"
 msgstr "[Importazione dati]"
 
 msgid "[DB Merging]"
-msgstr ""
+msgstr "[Fusione DB]"
 
 msgid "[Performing a Merge]"
-msgstr ""
+msgstr "[Esecuzione di una fusione]"
 
 msgid "[Resolving Merge Conflicts]"
-msgstr ""
+msgstr "[Risoluzione conflitti di fusione"
 
-#, fuzzy
 msgid "- [Risks]"
-msgstr "Rischi"
+msgstr "- [Rischi]"
 
 msgid "[The Software Itself]"
 msgstr "[Il software in sè]"
@@ -197,13 +204,10 @@ msgstr "[Virus, Backdoor, ecc.]"
 msgid "[Putting Risk In Perspective]"
 msgstr "[Vedere il rischio in prospettiva]"
 
-#, fuzzy
 msgid ""
 " This documentation is written using Keith Vetter's Hypertext Help System. "
 "For copyright and authorship see the About panel."
-msgstr ""
-" Questa documentazione è stata scritta usando il sistema di aiuto "
-"ipertestuale di Keith Vetter."
+msgstr " Questa documentazione è stata scritta usando il sistema di aiuto ipertestuale di Keith Vetter. Per le note di copyright e di paternità dell'opera consultare la finestra delle Informazioni."
 
 msgid ""
 "Upon start-up, Password Gorilla shows the ''Open Password Database'' dialog. "
@@ -362,7 +366,6 @@ msgstr ""
 "nell'archivio. Selezionandone uno so provocherà lo spostamente della voce "
 "selezionata nel gruppo indicato."
 
-#, fuzzy
 msgid ""
 "3) A set of groups or logins can be selected by clicking with the left mouse "
 "button.  Use shift plus click or control plus click to select multiple "
@@ -373,15 +376,7 @@ msgid ""
 "the active drop location will be highlighted in the tree and will correspond "
 "to the tree item that is underneath the cursor.  Drop the item by releasing "
 "the mouse button with the cursor located above a line in the tree."
-msgstr ""
-"3) Un gruppo o un login può essere selezionato facendo clic con il tasto "
-"sinistro del mouse. Se il tasto viene premuto e trascinato via, si "
-"effettuerà una operazione di copia-incolla. In questo caso, il puntatore del "
-"mouse cambierà aspetto in una doppia freccia verticale e apparirà una "
-"finestra fluttuante indicante il titolo della voce trascinata. Durante il "
-"trascinamento la posizione di rilascio verrà evidenziata nell'albero e "
-"corrisponderà alla voce dell'albero sottostante il puntatore. Rilasciando il "
-"pulsante del mouse l'elemento verrà depositato nella posizione corrente."
+msgstr "3) Un insieme di gruppi o di login può essere selezionato facendo clic con il tasto sinistro del mouse. Usare il tasto delle maiuscole più il clic o control più clic per selezionare più voci assieme. Se il tasto viene premuto e trascinato via, si effettuerà una operazione di copia-incolla. In questo caso, il puntatore del mouse cambierà aspetto in una doppia freccia verticale e apparirà una finestra fluttuante indicante i titoli delle voci trascinate. Durante il trascinamento la posizione di rilascio verrà evidenziata nell'albero e corrisponderà alla voce dell'albero sottostante il puntatore. Rilasciando il pulsante del mouse gli elementi verranno depositati nella posizione corrente."
 
 msgid ""
 "Dropping a login or a group onto a login name will perform a move to the "
@@ -634,15 +629,11 @@ msgstr ""
 msgid "'''Backup database on save'''"
 msgstr "'''Copia di sicurezza dell'archivio al salvataggio'''"
 
-#, fuzzy
 msgid ""
 "If enabled, then a backup file of the password database is made whenever the "
 "database is saved. The backup file is located in the same directory and has "
 "the same name as the database itself, but with the ''.bak'' extension."
-msgstr ""
-"Se abilitata, viene creato un file di salvataggio dell'archivio password ad "
-"ogni salvataggio dell'archivio password. Il file di salvataggio avrà lo "
-"stesso nome dell'archivio ma con estensione ''.bak''."
+msgstr "Se abilitata, viene creato un file di salvataggio del vecchio archivio password ad ogni salvataggio dell'archivio password. Il file di salvataggio verrà salvato nella stessa posizione e avrà lo stesso nome dell'archivio corrente ma con estensione ''.bak''."
 
 msgid "'''Remember sizes of dialog boxes'''"
 msgstr "'''Ricorda le dimensioni delle finestre di dialogo'''"
@@ -847,16 +838,11 @@ msgstr ""
 "l'archivio sarà compatibile con Password Safe 2.0 o superiori, e Password "
 "Gorilla 1.0 o superiori."
 
-#, fuzzy
 msgid ""
 "It is highly recommended to enable this option, and to upgrade existing "
 "databases to the Password Safe 3 format, which features enhanced security. "
 "See [The \"V3\" Database Format] for more information."
-msgstr ""
-"È fortemente raccomandato abilitare questa opzione, e quindi aggiornare gli "
-"archivi esistenti al formato Password Safe 3, le cui caratteristiche ne "
-"migliorano la sicurezza. Consultare più avanti le informazioni sul nuovo "
-"formato archivio per approfondire l'argomento."
+msgstr "È fortemente raccomandato abilitare questa opzione, e quindi aggiornare gli archivi esistenti al formato Password Safe 3, le cui caratteristiche ne migliorano la sicurezza. Consultare [Il formato archivio \"V3\"] per approfondire l'argomento."
 
 msgid "'''V2 Unicode support'''"
 msgstr "'''Supporto unicode V2'''"
@@ -888,27 +874,25 @@ msgstr ""
 "ASCII."
 
 msgid "'''Timestamp Backup'''"
-msgstr ""
+msgstr "'''Marcatura temporale copia di sicurezza'''"
 
 msgid ""
 "If the option ''Auto-Save'' is enabled then the copy can be saved with a "
 "timestamp in the chosen backup directory. The timestamp format is: YYYY-mm-"
 "dd-hh-mm-ss"
-msgstr ""
+msgstr "Se l'opzione ''Auto-salva'' è abilitata allora la copia può essere salvata con una marcatura temporale nella directory di salvataggio prescelta. Il formato della marcatura temporale è: AAAA-mm-gg-oo-mm-ss"
 
-#, fuzzy
 msgid "'''Backup Path'''"
-msgstr "'''Copia di sicurezza dell'archivio al salvataggio'''"
+msgstr "'''Percorso della copia di sicurezza'''"
 
 msgid ""
 "If no backup path is entered then the backup copy has the suffix \".bak\" "
 "and is put into the same directory as the Password database itself."
-msgstr ""
+msgstr "Se non viene specificato alcun percorso per la copia di sicurezza allora quest'ultima avrà suffisso \".bak\" e verrà posta nella stessa directory dell'archivio password corrente."
 
 msgid "'''V3 key stretching iterations'''"
 msgstr "'''Iterazioni V3 \"key stretching\"'''"
 
-#, fuzzy
 msgid ""
 "The Password Safe 3 format supports ''variable key stretching'', which is a "
 "means of protecting a database against brute-force attacks (an attempt to "
@@ -920,21 +904,7 @@ msgid ""
 "''iterations'' parameter indicates the complexity of the key stretching: the "
 "higher this value, the longer it takes to open a database, and the longer it "
 "takes an attacker to test one password."
-msgstr ""
-"Il formato Password Safe 3 supporta il ''variable key stretching'', che è "
-"una caratteristica che serve a proteggere un archivio contro gli attacchi "
-"cosidetti a forza bruta. Il key stretching è un'operazione complessa che "
-"deve essere eseguita durante il controllo di valità della password "
-"principale. Quando gli utenti autorizzati inseriscono la password corretta, "
-"questa funzionalità può rallentare di qualche istante ed è difficilmente "
-"percepibile. Ma rallenta sensibilmente il controllo massiccio di password "
-"effettuato da parte di programmi automatizzati. Il parametro ''iterazioni'' "
-"indica il livello di complessità dell'algoritmo: più si alza il valore, più "
-"lungo sarà il tempo di apertura di un archivio, e più lenta sarà per un "
-"eventuale attaccante il tempo necessario per controllare una singola "
-"password. Si raccomanda di lasciare il dato al suo valore predefinito di "
-"2048, che è un buon compromesso tra l'apertura immediata dell'archivio e "
-"l'ostacolare l'attaccante."
+msgstr "Il formato Password Safe 3 supporta il \"variable key stretching\", che è una caratteristica che serve a proteggere un archivio contro gli attacchi cosidetti a \"forza bruta\" (ovverosia tentando di indovinare la password provando tutte le combinazioni di caratteri possibili). Il key stretching è un'operazione complessa che deve essere eseguita durante il controllo di validità della password principale. Quando gli utenti autorizzati inseriscono la password corretta, questa funzionalità può rallentare di qualche istante ed è a malapena percettibile. Ma ciò è sufficiente per rallentare sensibilmente il controllo in blocco di password effettuabile da parte di programmi automatici. Il parametro \"iterazioni\" indica il livello di complessità dell'algoritmo: più si alza il valore, più lungo sarà il tempo di apertura di un archivio, e più sarà elevato, per un eventuale attaccante, il tempo necessario per controllare una singola password."
 
 msgid ""
 "The correct choice for this value depends upon several factors, one of which "
@@ -963,7 +933,7 @@ msgstr ""
 "livello di protezione degli archivi futuri."
 
 msgid "'''Calculate delay time'''"
-msgstr ""
+msgstr "'''Tempo di ritardo di calcolo'''"
 
 msgid ""
 "Pressing the ''Calculate'' button in this section will cause Gorilla to "
@@ -974,7 +944,7 @@ msgid ""
 msgstr ""
 
 msgid "'''Automatic iteration calculation'''"
-msgstr ""
+msgstr "'''Calcolo automatico iterazioni'''"
 
 msgid ""
 "This section allows for automatic calculation of an iteration value that "
@@ -1278,25 +1248,25 @@ msgid ""
 msgstr ""
 
 msgid "1. Open Safari (/Applications)."
-msgstr ""
+msgstr "1. Aprire Safari (/Applicazioni)."
 
 msgid "2. Choose Preferences from the Safari menu."
-msgstr ""
+msgstr "2. Scegliere la voce Preferenze nel menu di Safari."
 
 msgid "3. Click the General button."
-msgstr ""
+msgstr "3. Fare clic su pulsante Generali."
 
 msgid "4. Choose a different browser from the Default Web Browser pop-up menu."
-msgstr ""
+msgstr "4. Scegliere un browser diverso dal menu a comparsa Browser Web predefinito."
 
 msgid ""
 "If you want to launch a Web browser independently from the Safari "
 "installation mechanism you have to add the path of the browser's executable, "
 "e.g."
-msgstr ""
+msgstr "Se si desidera avviare un Browser Web indipendente dal meccanismo di installazione di Safari è necessario aggiungere il percorso del file eseguibile del Browser, cioé"
 
 msgid "''/Applications/Firefox.app/Contents/MacOS/firefox''"
-msgstr ""
+msgstr "''/Applicazioni/Firefox.app/Contenuti/MacOS/firefox''"
 
 msgid "'''Notes for Unix/Linux Users'''"
 msgstr "'''Note per gli utenti Unix/Linux'''"
@@ -1785,7 +1755,7 @@ msgid ""
 "laptop machine.  As you go about your daily routine, you can make changes to "
 "either file, and then periodically merge the two different databases "
 "together to produce an identical database on both machines.  "
-msgstr ""
+msgstr "Password Gorilla è anche in grado di fondere diversi archivi PWsafe assieme in un unico archivio. Questa caratteristica è molto utile se si mantiene lo stesso file di password su più computer, per esempio un portatile ed un computer fisso.  Lavorando quotidianamente, è possibile che si effettuino cambiamenti su ambedue i file, e che si renda necessario periodicamente fondere i due archivi differenti assieme per produrre uno stesso archivio valido per tutte e due le macchine."
 
 msgid ""
 "Merging always happens in the context of the currently open database.  Step "
@@ -1810,7 +1780,7 @@ msgid ""
 "ask if you wish to view a detailed report.  The detailed report will list "
 "each entry that is conflicting, each entry which was added, and the entries "
 "that were identical between both files."
-msgstr ""
+msgstr "Una volta che la fusione viene completata, Password Gorilla segnalerà il numero di voci fuse assieme, il numero delle voci identiche (sovrapponendole), il numero di nuove voci aggiunte, e il numero di voci in conflitto.  La finestra di stato che riporta tali valori chiederà perciò se si desidera visualizzare un rapporto dettagliato. Questo elencherà tutte le voci in conflitto, tutte quelle aggiunte, e tutte quelle trovate identiche in entrabi i file."
 
 msgid ""
 "If any merged password entries were conflicting (meaning they were the same "
@@ -2147,24 +2117,3 @@ msgstr ""
 "ingegneria sociale, partendo dai particolari famigliari dell'utente (date di "
 "nascita o di morte, nomi dei figli, ecc.) -- un'altra buona ragione per "
 "preferire le password casuali."
-
-#~ msgid ""
-#~ "At the moment, due to some small issues with the ttk::treeview widget "
-#~ "that implements the tree, dragging plural items is limited to dragging "
-#~ "plural logins or dragging single groups."
-#~ msgstr ""
-#~ "Al momento, a causa di alcuni piccoli problemi del widget ttk::treeview "
-#~ "che implementa l'albero, il trascinamento di più voci è limitato ai soli "
-#~ "login mentre i gruppi possono essere spostati solo singolarmente."
-
-#~ msgid ""
-#~ "To open the default Mac browser (Safari) you should enter the single word "
-#~ "'''open''' in the '''Browser executable to launch''' entry.  If you "
-#~ "utilize Firefox on the Mac, usually entering '''firefox''' is sufficient "
-#~ "to launch Firefox from Password Gorilla."
-#~ msgstr ""
-#~ "Per aprire il browser predefinito del Mac (Safari) basta inserire la "
-#~ "singola parola '''open''' nella casella '''Comando con cui eseguire il "
-#~ "browser'''. Se invece si preferisce usare Firefox, sul Mac è sufficiente "
-#~ "inserire la parola '''firefox''' per indicare a Password Gorilla di "
-#~ "eseguire quest'ultimo."
