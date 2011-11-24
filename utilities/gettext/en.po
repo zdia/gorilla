@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 14:45+0100\n"
+"POT-Creation-Date: 2011-11-24 11:49+0100\n"
 "PO-Revision-Date: 2011-06-15 09:10+0100\n"
 "Last-Translator: zdia <z.dia@gmx.de>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -431,6 +431,21 @@ msgstr "Username"
 #: ../../sources/gorilla.tcl:1923 ../../sources/gorilla.tcl:6886
 msgid "Password"
 msgstr "Password"
+
+#: ../../sources/gorilla.tcl:1945 ../../sources/gorilla.tcl:6888
+#: ../../sources/gorilla.tcl:7614
+msgid "Notes"
+msgstr "Notes"
+
+#: ../../sources/gorilla.tcl:1952
+#, fuzzy
+msgid "Last Password Change"
+msgstr "Master password changed."
+
+#: ../../sources/gorilla.tcl:1952
+#, fuzzy
+msgid "Last Modified"
+msgstr "Login modified."
 
 #: ../../sources/gorilla.tcl:1967 ../../sources/gorilla.tcl:2570
 #: ../../sources/gorilla.tcl:2798 ../../sources/gorilla.tcl:3153
@@ -1352,10 +1367,6 @@ msgstr "Find Options ..."
 msgid "Any field"
 msgstr "Any field"
 
-#: ../../sources/gorilla.tcl:6888 ../../sources/gorilla.tcl:7614
-msgid "Notes"
-msgstr "Notes"
-
 #: ../../sources/gorilla.tcl:6892
 msgid "Case sensitive find"
 msgstr "Case sensitive find"
@@ -1673,14 +1684,6 @@ msgstr ""
 
 #~ msgid "About ..."
 #~ msgstr "About ..."
-
-#, fuzzy
-#~ msgid "Last Modified"
-#~ msgstr "Login modified."
-
-#, fuzzy
-#~ msgid "Last Password Change"
-#~ msgstr "Master password changed."
 
 #~ msgid "Password database saved with backup copy %s."
 #~ msgstr "Password database saved with backup copy %s."

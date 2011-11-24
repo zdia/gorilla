@@ -1942,14 +1942,14 @@ namespace eval ::gorilla::LoginDialog {
 		grid rowconfigure $textframe $widget(notes) -weight 1
 		grid columnconfigure $textframe $widget(notes) -weight 1
 
-		grid [ make-label $top Notes: ] \
+		grid [ make-label $top [mc Notes] ] \
 		     $textframe \
 		     -sticky news -pady 5
 
 		grid rowconfigure    $top $textframe -weight 1
 		grid columnconfigure $top $textframe -weight 1
 
-		set lastChangeList [list last-pass-change "Last Password Change" last-modified "Last Modified" ]
+		set lastChangeList [list last-pass-change [mc "Last Password Change"] last-modified [mc "Last Modified"] ]
 		
 		foreach {child label} $lastChangeList {
 			grid [ make-label $top $label ] \

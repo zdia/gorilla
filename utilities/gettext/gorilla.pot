@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 14:45+0100\n"
+"POT-Creation-Date: 2011-11-24 11:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -362,6 +362,19 @@ msgstr ""
 
 #: ../../sources/gorilla.tcl:1923 ../../sources/gorilla.tcl:6886
 msgid "Password"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:1945 ../../sources/gorilla.tcl:6888
+#: ../../sources/gorilla.tcl:7614
+msgid "Notes"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:1952
+msgid "Last Password Change"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:1952
+msgid "Last Modified"
 msgstr ""
 
 #: ../../sources/gorilla.tcl:1967 ../../sources/gorilla.tcl:2570
@@ -1221,10 +1234,6 @@ msgstr ""
 
 #: ../../sources/gorilla.tcl:6880
 msgid "Any field"
-msgstr ""
-
-#: ../../sources/gorilla.tcl:6888 ../../sources/gorilla.tcl:7614
-msgid "Notes"
 msgstr ""
 
 #: ../../sources/gorilla.tcl:6892

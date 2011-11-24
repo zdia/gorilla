@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gorilla 1.5.3.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 14:45+0100\n"
+"POT-Creation-Date: 2011-11-24 11:49+0100\n"
 "PO-Revision-Date: 2011-09-07 15:59-0500\n"
 "Last-Translator: Benoit Mercier <benoit.mercibe@gmail.com>\n"
 "Language-Team: French\n"
@@ -436,6 +436,21 @@ msgstr "Nom d'utilisateur"
 #: ../../sources/gorilla.tcl:1923 ../../sources/gorilla.tcl:6886
 msgid "Password"
 msgstr "Mot de passe"
+
+#: ../../sources/gorilla.tcl:1945 ../../sources/gorilla.tcl:6888
+#: ../../sources/gorilla.tcl:7614
+msgid "Notes"
+msgstr "Notes"
+
+#: ../../sources/gorilla.tcl:1952
+#, fuzzy
+msgid "Last Password Change"
+msgstr "Mot de passe maître modifié."
+
+#: ../../sources/gorilla.tcl:1952
+#, fuzzy
+msgid "Last Modified"
+msgstr "Connexion modifiée."
 
 #: ../../sources/gorilla.tcl:1967 ../../sources/gorilla.tcl:2570
 #: ../../sources/gorilla.tcl:2798 ../../sources/gorilla.tcl:3153
@@ -1381,10 +1396,6 @@ msgstr "Options de recherche..."
 #: ../../sources/gorilla.tcl:6880
 msgid "Any field"
 msgstr "N'importe quel champ"
-
-#: ../../sources/gorilla.tcl:6888 ../../sources/gorilla.tcl:7614
-msgid "Notes"
-msgstr "Notes"
 
 #: ../../sources/gorilla.tcl:6892
 msgid "Case sensitive find"

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gorilla 1.5.3.5\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-23 14:45+0100\n"
+"POT-Creation-Date: 2011-11-24 11:49+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -379,6 +379,21 @@ msgstr "Логин"
 #: ../../sources/gorilla.tcl:1923 ../../sources/gorilla.tcl:6886
 msgid "Password"
 msgstr "Пароль"
+
+#: ../../sources/gorilla.tcl:1945 ../../sources/gorilla.tcl:6888
+#: ../../sources/gorilla.tcl:7614
+msgid "Notes"
+msgstr "Заметки"
+
+#: ../../sources/gorilla.tcl:1952
+#, fuzzy
+msgid "Last Password Change"
+msgstr "Мастер-пароль сменён."
+
+#: ../../sources/gorilla.tcl:1952
+#, fuzzy
+msgid "Last Modified"
+msgstr "Логин изменён."
 
 #: ../../sources/gorilla.tcl:1967 ../../sources/gorilla.tcl:2570
 #: ../../sources/gorilla.tcl:2798 ../../sources/gorilla.tcl:3153
@@ -1284,10 +1299,6 @@ msgstr "Опции поиска ..."
 msgid "Any field"
 msgstr "Любое поле"
 
-#: ../../sources/gorilla.tcl:6888 ../../sources/gorilla.tcl:7614
-msgid "Notes"
-msgstr "Заметки"
-
 #: ../../sources/gorilla.tcl:6892
 msgid "Case sensitive find"
 msgstr "Учитывать регистр"
@@ -1561,14 +1572,6 @@ msgstr ""
 
 #~ msgid "About ..."
 #~ msgstr "О программе ..."
-
-#, fuzzy
-#~ msgid "Last Modified"
-#~ msgstr "Логин изменён."
-
-#, fuzzy
-#~ msgid "Last Password Change"
-#~ msgstr "Мастер-пароль сменён."
 
 #, fuzzy
 #~ msgid "Password database saved with backup copy %s."
