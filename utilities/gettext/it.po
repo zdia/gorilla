@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Gorila Password 1.*\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-11-24 11:49+0100\n"
-"PO-Revision-Date: 2011-11-03 15:58+0100\n"
+"PO-Revision-Date: 2011-11-24 19:49+0100\n"
 "Last-Translator: Marco Ciampa <ciampix@libero.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "Language: it\n"
@@ -300,49 +300,45 @@ msgstr ""
 "un nuovo archivio password."
 
 #: ../../sources/gorilla.tcl:1378
-#, fuzzy
 msgid "No File"
-msgstr "File"
+msgstr "Nessun file"
 
 #: ../../sources/gorilla.tcl:1379
-#, fuzzy
 msgid "Please select a password database."
-msgstr "Seleziona un archivio password ..."
+msgstr "Seleziona un archivio password."
 
 #: ../../sources/gorilla.tcl:1385
-#, fuzzy
 msgid "File Not Found"
-msgstr "Testo non trovato."
+msgstr "File non trovato"
 
 #: ../../sources/gorilla.tcl:1386
 #, tcl-format
 msgid "The password database %s does not exist or can not be read."
-msgstr ""
+msgstr "L'archivio password %s non esiste o non è leggibile."
 
 #: ../../sources/gorilla.tcl:1390
 msgid "Please be patient. Verifying password ..."
 msgstr "Verifica password. Attendere prego ..."
 
 #: ../../sources/gorilla.tcl:1403
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Opening ... %d %%"
-msgstr "Apertura ... %2.0f %%"
+msgstr "Apertura di ... %d %%"
 
 #: ../../sources/gorilla.tcl:1414
 msgid "Error Opening Database"
 msgstr "Errore durante l'apertura dell'archivio"
 
 #: ../../sources/gorilla.tcl:1415
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Can not open password database \"%s\": %s"
-msgstr "Impossibile aprire l'archivio database \"%s\": %s."
+msgstr "Impossibile aprire l'archivio database \"%s\": %s"
 
 #: ../../sources/gorilla.tcl:1446
 msgid "Browse for a password database ..."
 msgstr "Seleziona un archivio password ..."
 
 #: ../../sources/gorilla.tcl:1567
-#, fuzzy
 msgid ""
 "The current password database is modified. Do you want to save the "
 "database?\n"
@@ -350,9 +346,10 @@ msgid ""
 " \"No\" discards all changes, and continues to the \"Open File\" dialog.\n"
 " \"Cancel\" returns to the main menu."
 msgstr ""
-"L'archivio delle password corrente è stato modificato. Salvare l'archivio? "
-"<Sì> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. "
-"<Annulla> ritorna al menu principale."
+"L'archivio delle password corrente è stato modificato. Salvare l'archivio?\n"
+" \"Sì\" salva l'archivio e torna alla finestra di dialogo \"Apri file\".\n"
+" \"No\" abbandona tutte le modifiche e torna alla finestra di dialogo \"Apri file\".\n"
+" \"Annulla\" ritorna al menu principale."
 
 #: ../../sources/gorilla.tcl:1595
 msgid "Open Password Database"
@@ -393,14 +390,12 @@ msgid "Notes"
 msgstr "Note"
 
 #: ../../sources/gorilla.tcl:1952
-#, fuzzy
 msgid "Last Password Change"
-msgstr "Password principale modificata."
+msgstr "Ultimo cambiamento password"
 
 #: ../../sources/gorilla.tcl:1952
-#, fuzzy
 msgid "Last Modified"
-msgstr "Login modificato."
+msgstr "Ultimo modificato"
 
 #: ../../sources/gorilla.tcl:1967 ../../sources/gorilla.tcl:2570
 #: ../../sources/gorilla.tcl:2798 ../../sources/gorilla.tcl:3153
@@ -509,11 +504,8 @@ msgid "No Database"
 msgstr "Nessun archivio"
 
 #: ../../sources/gorilla.tcl:2771 ../../sources/gorilla.tcl:5252
-#, fuzzy
 msgid "Please create a new database, or open an existing database first."
-msgstr ""
-"Creare un nuovo archivio o aprirne prima \n"
-"uno esistente."
+msgstr "Creare un nuovo archivio o prima aprirne uno esistente."
 
 #: ../../sources/gorilla.tcl:2781
 msgid "Add a new Group"
@@ -552,14 +544,12 @@ msgid "Can not move a group to a subgroup of itself."
 msgstr "Impossibile spostare un gruppo ad un proprio sottogruppo."
 
 #: ../../sources/gorilla.tcl:3034
-#, fuzzy
 msgid "Can Not Delete Root"
-msgstr "Impossibile spostare il nodo"
+msgstr "Impossibile cancellare la radice"
 
 #: ../../sources/gorilla.tcl:3035
-#, fuzzy
 msgid "The root node can not be deleted."
-msgstr "Il nodo radice non può essere spostato."
+msgstr "Il nodo radice non può essere cancellato."
 
 #: ../../sources/gorilla.tcl:3047
 msgid "Are you sure that you want to delete group and all its contents?"
@@ -570,23 +560,20 @@ msgid "Group deleted."
 msgstr "Gruppo cancellato."
 
 #: ../../sources/gorilla.tcl:3103
-#, fuzzy
 msgid "Can Not Rename Root"
-msgstr "Impossibile spostare il nodo"
+msgstr "Impossibile rinominare la radice"
 
 #: ../../sources/gorilla.tcl:3104
-#, fuzzy
 msgid "The root node can not be renamed."
-msgstr "Il nodo radice non può essere spostato."
+msgstr "Il nodo radice non può essere rinominato."
 
 #: ../../sources/gorilla.tcl:3141
 msgid "Name"
 msgstr "Nome"
 
 #: ../../sources/gorilla.tcl:3209
-#, fuzzy
 msgid "The name of the group's parent node is invalid."
-msgstr "Il nome del gruppo genitore non è valido."
+msgstr "Il nome del nodo del gruppo genitore non è valido."
 
 #: ../../sources/gorilla.tcl:3237
 msgid "Group name unchanged."
@@ -712,7 +699,7 @@ msgstr "Fusione"
 #: ../../sources/gorilla.tcl:3797
 #, tcl-format
 msgid "Merging (%d %% done)"
-msgstr ""
+msgstr "Fusione (eseguito %d %%)"
 
 #: ../../sources/gorilla.tcl:4071
 msgid "login"
@@ -741,15 +728,15 @@ msgstr ""
 
 #: ../../sources/gorilla.tcl:4100
 msgid "Merge Results"
-msgstr ""
+msgstr "Risultati della fusione"
 
 #: ../../sources/gorilla.tcl:4101
 msgid "Do you want to view a detailed report?"
-msgstr ""
+msgstr "Si desidera visualizzare il rapporto dettagliato?"
 
 #: ../../sources/gorilla.tcl:4129
 msgid "Resolve Conflicts"
-msgstr "Risolvi i conflitti"
+msgstr "Risolvere i conflitti"
 
 #: ../../sources/gorilla.tcl:4148 ../../sources/gorilla.tcl:6733
 #: ../../sources/gorilla.tcl:6807 ../../sources/gorilla.tcl:6905
@@ -779,9 +766,9 @@ msgid "Warning: Read-only password file"
 msgstr "Attenzione: file delle password in sola lettura"
 
 #: ../../sources/gorilla.tcl:4306 ../../sources/gorilla.tcl:4438
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Saving ... %d %%"
-msgstr "Salvataggio ... %2.0f %%"
+msgstr "Salvataggio di ... %d %%"
 
 #: ../../sources/gorilla.tcl:4316 ../../sources/gorilla.tcl:4518
 msgid "Error Saving Backup of Database"
@@ -836,21 +823,28 @@ msgid ""
 "Please define a valid backup directory\n"
 "in the Preferences menu."
 msgstr ""
+"Nessuna directory valida - \n"
+"Specificare una directory di salvataggio di sicurezza \n"
+"valida nel menu delle preferenze."
 
 #: ../../sources/gorilla.tcl:4544
-#, fuzzy
 msgid ""
 "Unknown file. - \n"
 "Please select a valid database filename."
-msgstr "Seleziona un archivio password ..."
+msgstr ""
+"File sconosciuto. - \n"
+"Selezionare un nome di file archivio valido."
 
 #: ../../sources/gorilla.tcl:4556
-#, fuzzy, tcl-format
+#, tcl-format
 msgid ""
 "Failed to make backup copy of password\n"
 "database as %s: \n"
 "%s"
-msgstr "Fallito il salvataggio dell'archivio password come \"%s\": %s"
+msgstr ""
+"Fallito il salvataggio della copia di sicurezza\n"
+"dell'archivio password come \"%s\": \n"
+"%s"
 
 #: ../../sources/gorilla.tcl:4745
 msgid ""
@@ -961,33 +955,33 @@ msgstr "Iterazioni V3 'key stretching'"
 
 #: ../../sources/gorilla.tcl:5586
 msgid "Calculate delay time"
-msgstr ""
+msgstr "Tempo di ritardo calcolo"
 
 #: ../../sources/gorilla.tcl:5589
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Default: %s"
-msgstr "Valori predefiniti"
+msgstr "Predefinito: %s"
 
 #: ../../sources/gorilla.tcl:5590 ../../sources/gorilla.tcl:5596
 #: ../../sources/gorilla.tcl:5608 ../../sources/gorilla.tcl:5613
 msgid "Calculate"
-msgstr ""
+msgstr "Calcola"
 
 #: ../../sources/gorilla.tcl:5591 ../../sources/gorilla.tcl:5610
 msgid "Calculating"
-msgstr ""
+msgstr "Calcolo"
 
 #: ../../sources/gorilla.tcl:5602
 msgid "Calculate iterations"
-msgstr ""
+msgstr "Calcola le iterazioni"
 
 #: ../../sources/gorilla.tcl:5605
 msgid "Delay for"
-msgstr ""
+msgstr "Ritardo di"
 
 #: ../../sources/gorilla.tcl:5607
 msgid "sec(s)"
-msgstr ""
+msgstr "sec."
 
 #: ../../sources/gorilla.tcl:5731
 msgid "General"
@@ -1437,9 +1431,8 @@ msgid "Index"
 msgstr "Indice"
 
 #: ../../sources/viewhelp.tcl:345
-#, fuzzy
 msgid "Search!"
-msgstr "Cerca"
+msgstr "Cerca!"
 
 #: ../../sources/pwsafe/pwsafe-db.tcl:278
 #, tcl-format
@@ -1558,36 +1551,3 @@ msgstr ""
 #, tcl-format
 msgid "invalid version %s"
 msgstr "versione non valida %s"
-
-#~ msgid "ERROR-SaveBackup"
-#~ msgstr "ERRORE-SalvataggioBackup"
-
-#~ msgid "ERROR-SaveBackup-invalid-directory"
-#~ msgstr "ERRORE-SalvataggioBackup-directory-non-valida"
-
-#~ msgid "ERROR-SaveBackup-unknown-file"
-#~ msgstr "ERRORE-SalvataggioBackup-file-sconosciuto"
-
-#~ msgid "ERROR-SaveBackup-failed"
-#~ msgstr "ERRORE-SalvataggioBackup-fallito"
-
-#~ msgid "SECURITY-db-calc-delay-time"
-#~ msgstr "SICUREZZA-db-tempo-di-ritardo-calcolo"
-
-#~ msgid "SECURITY-db-%d-iter-%s-secs"
-#~ msgstr "SICUREZZA-db-%d-iterazioni-%s-secondo"
-
-#~ msgid "SECURITY-db-calc"
-#~ msgstr "SECUREZZA-db-calcolo"
-
-#~ msgid "SECURITY-db-calcing"
-#~ msgstr "SECURITY-db-calcing"
-
-#~ msgid "SECURITY-db-auto-iter-calc"
-#~ msgstr "SECURITY-db-auto-iter-calc"
-
-#~ msgid "SECURITY-db-delay-for"
-#~ msgstr "SECURITY-db-delay-for"
-
-#~ msgid "SECURITY-db-seconds"
-#~ msgstr "SECURITY-db-seconds"

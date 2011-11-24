@@ -9,8 +9,8 @@
 #
 # Project-Id-Version: Gorila Password 1.*
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-03 11:45+0100
-# PO-Revision-Date: 2011-11-03 15:58+0100
+# POT-Creation-Date: 2011-11-24 11:49+0100
+# PO-Revision-Date: 2011-11-24 19:49+0100
 # Last-Translator: Marco Ciampa <ciampix@libero.it>
 # Language-Team: Italian <it@li.org>
 # Language: it
@@ -85,15 +85,26 @@ About Informazioni
 {Password Gorilla - <New Database>} {Password Gorilla - <Nuovo archivio>}
 {<New Database>} {<Nuovo archivio>}
 {Add logins using <Add Login> in the <Login> menu.} {Aggiungi un nuovo login tramite il menu <Login>.}
-{Opening ... %2.0f %%} {Apertura ... %2.0f %%}
 Database: Archivio:
 Password: Password:
 OK OK
 {Select a database, and enter its password. Click "New" to create a new database.} {Selezionare un archivio e inserire la password. Clic su "Nuovo" per creare un nuovo archivio password.}
+{No File} {Nessun file}
+{Please select a password database.} {Seleziona un archivio password.}
+{File Not Found} {File non trovato}
+{The password database %s does not exist or can not be read.} {L'archivio password %s non esiste o non è leggibile.}
 {Please be patient. Verifying password ...} {Verifica password. Attendere prego ...}
+{Opening ... %d %%} {Apertura di ... %d %%}
 {Error Opening Database} {Errore durante l'apertura dell'archivio}
-{Can not open password database "%s": %s.} {Impossibile aprire l'archivio database "%s": %s.}
+{Can not open password database "%s": %s} {Impossibile aprire l'archivio database "%s": %s}
 {Browse for a password database ...} {Seleziona un archivio password ...}
+{The current password database is modified. Do you want to save the database?
+ "Yes" saves the database, and continues to the "Open File" dialog.
+ "No" discards all changes, and continues to the "Open File" dialog.
+ "Cancel" returns to the main menu.} {L'archivio delle password corrente è stato modificato. Salvare l'archivio?
+ "Sì" salva l'archivio e torna alla finestra di dialogo "Apri file".
+ "No" abbandona tutte le modifiche e torna alla finestra di dialogo "Apri file".
+ "Annulla" ritorna al menu principale.}
 {Open Password Database} {Apri archivio password}
 {Password database %s loaded.} {Archivio password %s caricato.}
 {Add/Edit/View Login} {Nuovo/modifica/mostra login}
@@ -102,6 +113,9 @@ Title Titolo
 URL URL
 Username {Nome utente}
 Password Password
+Notes Note
+{Last Password Change} {Ultimo cambiamento password}
+{Last Modified} {Ultimo modificato}
 Cancel Annulla
 {Show Password} {Mostra password}
 {Generate Password} {Genera password}
@@ -124,6 +138,8 @@ Cancel Annulla
 {%s moved.} {%s spostato.}
 {Are you sure that you want to delete this login?} {Sicuri di voler cancellare questo login?}
 {Login deleted.} {Login cancellato.}
+{No Database} {Nessun archivio}
+{Please create a new database, or open an existing database first.} {Creare un nuovo archivio o prima aprirne uno esistente.}
 {Add a new Group} {Aggiungi un nuovo sottogruppo}
 Parent: Genitore:
 {New Group Name:} {Nome del nuovo gruppo:}
@@ -133,9 +149,14 @@ Parent: Genitore:
 {The root node can not be moved.} {Il nodo radice non può essere spostato.}
 {Can Not Move Node} {Impossibile spostare il nodo}
 {Can not move a group to a subgroup of itself.} {Impossibile spostare un gruppo ad un proprio sottogruppo.}
+{Can Not Delete Root} {Impossibile cancellare la radice}
+{The root node can not be deleted.} {Il nodo radice non può essere cancellato.}
 {Are you sure that you want to delete group and all its contents?} {Sicuri di voler cancellare il gruppo e tutto il suo contenuto?}
 {Group deleted.} {Gruppo cancellato.}
+{Can Not Rename Root} {Impossibile rinominare la radice}
+{The root node can not be renamed.} {Il nodo radice non può essere rinominato.}
 Name Nome
+{The name of the group's parent node is invalid.} {Il nome del nodo del gruppo genitore non è valido.}
 {Group name unchanged.} {Nome del gruppo non modificato.}
 {Group renamed.} {Gruppo rinominato.}
 {Export Security Warning} {Avvertimento di sicurezza all'esportazione}
@@ -166,9 +187,9 @@ Salvare una registrazione dei record saltati?}
 {Some records skipped during import} {Alcuni record saltati durante l'importazione}
 {Enter a file into which to save the log} {Inserire un file nel quale salvare la registrazione}
 {record(s) successfully imported.} {record importati con successo.}
-{Saving ... %2.0f %%} {Salvataggio ... %2.0f %%}
 {Merge Password Database} {Fondi l'archivio password}
 Merging Fusione
+{Merging (%d %% done)} {Fusione (eseguito %d %%)}
 login login
 logins login
 conflict conflitto
@@ -176,12 +197,15 @@ conflicts conflitti
 {Merged %s;
 %d %s, %d identical, %d added, %d %s.} {Fusi %s;
 %d %s, %d identici, %d aggiunti, %d %s.}
-{Resolve Conflicts} {Risolvi i conflitti}
+{Merge Results} {Risultati della fusione}
+{Do you want to view a detailed report?} {Si desidera visualizzare il rapporto dettagliato?}
+{Resolve Conflicts} {Risolvere i conflitti}
 Close Chiudi
 {Warning: Can not save to} {Attenzione: impossibile salvare su}
 {because the file permissions are set for read-only access.} {dato che i permessi sul file sono impostati per la sola lettura.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Cambiare i permessi al file per consentire la lettura e scrittura e premere 'Riprova' o premere 'Annulla' e usare 'File'->'Salva come' per salvare in un file differente.}
 {Warning: Read-only password file} {Attenzione: file delle password in sola lettura}
+{Saving ... %d %%} {Salvataggio di ... %d %%}
 {Error Saving Backup of Database} {Errore durante il salvataggio della copia di sicurezza dell'archivio}
 {Failed to save password database as
 %s: %s} {Fallito il salvataggio dell'archivio password come
@@ -194,10 +218,19 @@ Close Chiudi
 {Error Saving Database} {Errore durante il salvataggio dell'archivio}
 {Failed to save password database as "%s": %s} {Fallito il salvataggio dell'archivio password come "%s": %s}
 {Password database saved with backup copy} {Archivio password salvato con copia di sicurezza}
-ERROR-SaveBackup ERRORE-SalvataggioBackup
-ERROR-SaveBackup-invalid-directory ERRORE-SalvataggioBackup-directory-non-valida
-ERROR-SaveBackup-unknown-file ERRORE-SalvataggioBackup-file-sconosciuto
-ERROR-SaveBackup-failed ERRORE-SalvataggioBackup-fallito
+{No valid directory. - 
+Please define a valid backup directory
+in the Preferences menu.} {Nessuna directory valida - 
+Specificare una directory di salvataggio di sicurezza 
+valida nel menu delle preferenze.}
+{Unknown file. - 
+Please select a valid database filename.} {File sconosciuto. - 
+Selezionare un nome di file archivio valido.}
+{Failed to make backup copy of password
+database as %s: 
+%s} {Fallito il salvataggio della copia di sicurezza
+dell'archivio password come "%s": 
+%s}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {L'archivio delle password corrente è stato modificato. Salvare l'archivio? <Sì> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale.}
 {Clipboard cleared.} {Appunti cancellati.}
 {Database Locked} {Archivio bloccato}
@@ -223,13 +256,13 @@ Confirm: Conferma:
 {Use Password Safe 3 format} {Usa il formato password Safe 3}
 {V2 Unicode support} {Supporto Unicode V2}
 {V3 key stretching iterations} {Iterazioni V3 'key stretching'}
-SECURITY-db-calc-delay-time SICUREZZA-db-tempo-di-ritardo-calcolo
-SECURITY-db-%d-iter-%s-secs SICUREZZA-db-%d-iterazioni-%s-secondo
-SECURITY-db-calc SECUREZZA-db-calcolo
-SECURITY-db-calcing SECURITY-db-calcing
-SECURITY-db-auto-iter-calc SECURITY-db-auto-iter-calc
-SECURITY-db-delay-for SECURITY-db-delay-for
-SECURITY-db-seconds SECURITY-db-seconds
+{Calculate delay time} {Tempo di ritardo calcolo}
+{Default: %s} {Predefinito: %s}
+Calculate Calcola
+Calculating Calcolo
+{Calculate iterations} {Calcola le iterazioni}
+{Delay for} {Ritardo di}
+sec(s) sec.
 General Generale
 {When double clicking a login ...} {Quando si fa doppio clic su un login ...}
 {Copy password to clipboard} {Copia password negli appunti}
@@ -300,7 +333,6 @@ Consultare la guida per i dettagli.}
 {History deleted. After a restart the list will be empty.} {Cronologia cancellata. Dopo il riavvio l'elenco sarà vuoto.}
 Error Errore
 {Error while saving RC-File} {Errore durante il salvataggio del file RC}
-{No Database} {Nessun archivio}
 {Please create a new database, or open an existing
 database first.} {Creare un nuovo archivio o aprirne prima 
 uno esistente.}
@@ -328,7 +360,6 @@ Contributors Contributi
 {Find Text:} {Trova il testo:}
 {Find Options ...} {Opzioni di ricerca}
 {Any field} {Qualsiasi campo}
-Notes Note
 {Case sensitive find} {Ricerca con confronto maiuscole/minuscole}
 {Text not found.} {Testo non trovato.}
 {Please select a login entry first.} {Selezionare prima una voce di login.}
@@ -354,6 +385,7 @@ Previous Precedente
 Next Successivo
 History Cronistoria
 Index Indice
+Search! Cerca!
 {unknown preference type: %s} {tipo di preferenza sconosciuto: %s}
 {premature end of preference} {fine prematura di una preferenza}
 {expected number for value, got %s} {valore numerico richiesto, ottenuto %s}
@@ -364,7 +396,6 @@ Index Indice
 {record %d does not exist} {il record %d non esiste}
 {record %d does not have field %s} {il record %d non ha il campo %s}
 {no header field %s} {nessun campo intestazione %s}
-{invalid version %s} {versione non valida %s}
 {less than 8 bytes remaining for length field} {rimangono per il campo lunghezza meno di 8 bytes}
 oops oops
 {field length %d looks insane} {il campo lunghezza %d sembra irragionevole}
@@ -377,4 +408,5 @@ oops oops
 {less than 16 bytes remaining for first block} {rimangono meno di 16 byte per il primo blocco}
 {file does not have PWS3 magic} {il file non possiede il marcatore magic PWS3}
 {Failed to scan key stretch iteration count from binary data.} {Fallita la ricerca del contatore iterazioni "key stretch" dai dati binari.}
+{invalid version %s} {versione non valida %s}
 }
