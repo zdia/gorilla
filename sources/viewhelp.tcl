@@ -226,7 +226,7 @@ proc ::Help::DoDisplay { top } {
     grid rowconfigure $TOC 0 -weight 1
     grid columnconfigure $TOC 0 -weight 1
  
-    $W(tree) heading #0 -text "Table of Contents"
+     $W(tree) heading #0 -text [mc "Table of Contents"]
     $W(tree) tag configure link -foreground blue
     $W(tree) tag configure linkSelected -foreground white
     # NB. binding to buttonpress sometimes "misses" clicks
