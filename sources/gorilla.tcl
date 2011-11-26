@@ -6727,10 +6727,14 @@ proc gorilla::About {} {
 		lappend ctr [ ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib6 -text "\u2022 [ mc "Spanish translation by %s" "Juan Roldan Ruiz" ]" {*}$stdopts ]
+
+		set I [ expr { [ info exists ::sha2::accel(critcl) ] && $::sha2::accel(critcl) ? "C" : "Tcl" } ]
+		ttk::label $w.exten -text [ mc "Using %s sha256 extension." $I ] {*}$stdopts
 		
 		ttk::frame $w.buttons
 		ttk::button $w.buttons.license -text [mc License] -command gorilla::License
 		ttk::button $w.buttons.close -text [mc "Close"] -command gorilla::DestroyAboutDialog
+		pack $w.buttons.license $w.buttons.close -side left -padx 30
 					
 		pack $w.image -side top
 		pack $w.title -side top -pady 5
@@ -6738,14 +6742,12 @@ proc gorilla::About {} {
 		pack $w.copyright -side top -pady 5 -fill x
 		pack $w.url -side top -pady 5 
 		pack {*}$ctr -side top -pady 0 -fill x
-		pack $w.buttons.license $w.buttons.close \
-			-side left -padx 30
+		pack $w.exten -side top -pady {2m 0} -fill x
 		pack $w.buttons -side bottom -pady 10
 		pack $w
 		
 		wm title $top [mc "About Password Gorilla"]
 
-		
 		bind $top <Return> "gorilla::DestroyAboutDialog"
 	
 		set ::gorilla::toplevel($top) $top
