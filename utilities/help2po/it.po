@@ -13,7 +13,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Gorilla password pre-1.5.3.6 \n"
-"PO-Revision-Date: 2011-11-27 17:10+0100\n"
+"PO-Revision-Date: 2011-11-27 17:47+0100\n"
 "Last-Translator: Marco Ciampa <ciampix@libero.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "Language: it\n"
@@ -52,10 +52,10 @@ msgid "Starting"
 msgstr "Avvio"
 
 msgid "Choosing a Master Password"
-msgstr "Scegliere la password generale"
+msgstr "Scelta di una password generale"
 
 msgid "Organization Into Groups"
-msgstr "Organizzare in gruppi"
+msgstr "Organizzazione in gruppi"
 
 msgid "Moving Groups and/or Logins"
 msgstr "Spostare gruppi e/o login"
@@ -136,7 +136,7 @@ msgid "[Choosing a Master Password]"
 msgstr "[Scelta di una password generale]"
 
 msgid "[Organization Into Groups]"
-msgstr "[Organizzare in gruppi]"
+msgstr "[Organizzazione in gruppi]"
 
 msgid "[Moving Groups and/or Logins]"
 msgstr "[Spostamento di gruppi e/o login]"

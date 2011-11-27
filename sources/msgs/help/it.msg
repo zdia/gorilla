@@ -8,7 +8,7 @@
 #
 #
 # Project-Id-Version: Gorilla password pre-1.5.3.6 
-# PO-Revision-Date: 2011-11-27 17:10+0100
+# PO-Revision-Date: 2011-11-27 17:47+0100
 # Last-Translator: Marco Ciampa <ciampix@libero.it>
 # Language-Team: Italian <it@li.org>
 # Language: it
@@ -27,8 +27,8 @@ Index Indice
 {Using Password Gorilla} {Usare Password Gorilla}
 Risks Rischi
 Starting Avvio
-{Choosing a Master Password} {Scegliere la password generale}
-{Organization Into Groups} {Organizzare in gruppi}
+{Choosing a Master Password} {Scelta di una password generale}
+{Organization Into Groups} {Organizzazione in gruppi}
 {Moving Groups and/or Logins} {Spostare gruppi e/o login}
 Logins Login
 Preferences Preferenze
@@ -55,7 +55,7 @@ Close Chiudi
 {This help page is missing.} {Questa pagina della guida è mancante.}
 {[Starting]} {[Avvio]}
 {[Choosing a Master Password]} {[Scelta di una password generale]}
-{[Organization Into Groups]} {[Organizzare in gruppi]}
+{[Organization Into Groups]} {[Organizzazione in gruppi]}
 {[Moving Groups and/or Logins]} {[Spostamento di gruppi e/o login]}
 {[Logins]} {[Login]}
 {[Preferences]} {[Preferenze]}
