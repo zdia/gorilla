@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gorila Password 1.*\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-24 11:49+0100\n"
-"PO-Revision-Date: 2011-11-24 19:49+0100\n"
+"POT-Creation-Date: 2011-11-27 17:21+0100\n"
+"PO-Revision-Date: 2011-11-27 17:23+0100\n"
 "Last-Translator: Marco Ciampa <ciampix@libero.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "Language: it\n"
@@ -71,7 +71,7 @@ msgstr ""
 "\n"
 "Messaggio d'errore: %s"
 
-#: ../../sources/gorilla.tcl:375 ../../sources/gorilla.tcl:8767
+#: ../../sources/gorilla.tcl:375 ../../sources/gorilla.tcl:8769
 msgid "Welcome to the Password Gorilla."
 msgstr "Benvenuti in Password Gorilla"
 
@@ -136,7 +136,7 @@ msgstr "Copia URL"
 msgid "Clear Clipboard"
 msgstr "Cancella gli appunti"
 
-#: ../../sources/gorilla.tcl:465 ../../sources/gorilla.tcl:6903
+#: ../../sources/gorilla.tcl:465 ../../sources/gorilla.tcl:6905
 msgid "Find"
 msgstr "Trova"
 
@@ -159,7 +159,7 @@ msgid "Edit Login"
 msgstr "Modifica login"
 
 #: ../../sources/gorilla.tcl:471 ../../sources/gorilla.tcl:997
-#: ../../sources/gorilla.tcl:7593
+#: ../../sources/gorilla.tcl:7595
 msgid "View Login"
 msgstr "Mostra il login"
 
@@ -218,7 +218,7 @@ msgstr "Blocca ora"
 msgid "Help"
 msgstr "Aiuto"
 
-#: ../../sources/gorilla.tcl:491 ../../sources/gorilla.tcl:6732
+#: ../../sources/gorilla.tcl:491 ../../sources/gorilla.tcl:6735
 msgid "License"
 msgstr "Licenza"
 
@@ -348,7 +348,8 @@ msgid ""
 msgstr ""
 "L'archivio delle password corrente è stato modificato. Salvare l'archivio?\n"
 " \"Sì\" salva l'archivio e torna alla finestra di dialogo \"Apri file\".\n"
-" \"No\" abbandona tutte le modifiche e torna alla finestra di dialogo \"Apri file\".\n"
+" \"No\" abbandona tutte le modifiche e torna alla finestra di dialogo \"Apri "
+"file\".\n"
 " \"Annulla\" ritorna al menu principale."
 
 #: ../../sources/gorilla.tcl:1595
@@ -368,24 +369,24 @@ msgstr "Nuovo/modifica/mostra login"
 msgid "Group"
 msgstr "Gruppo"
 
-#: ../../sources/gorilla.tcl:1920 ../../sources/gorilla.tcl:6882
+#: ../../sources/gorilla.tcl:1920 ../../sources/gorilla.tcl:6884
 msgid "Title"
 msgstr "Titolo"
 
-#: ../../sources/gorilla.tcl:1921 ../../sources/gorilla.tcl:6890
+#: ../../sources/gorilla.tcl:1921 ../../sources/gorilla.tcl:6892
 msgid "URL"
 msgstr "URL"
 
-#: ../../sources/gorilla.tcl:1922 ../../sources/gorilla.tcl:6884
+#: ../../sources/gorilla.tcl:1922 ../../sources/gorilla.tcl:6886
 msgid "Username"
 msgstr "Nome utente"
 
-#: ../../sources/gorilla.tcl:1923 ../../sources/gorilla.tcl:6886
+#: ../../sources/gorilla.tcl:1923 ../../sources/gorilla.tcl:6888
 msgid "Password"
 msgstr "Password"
 
-#: ../../sources/gorilla.tcl:1945 ../../sources/gorilla.tcl:6888
-#: ../../sources/gorilla.tcl:7614
+#: ../../sources/gorilla.tcl:1945 ../../sources/gorilla.tcl:6890
+#: ../../sources/gorilla.tcl:7616
 msgid "Notes"
 msgstr "Note"
 
@@ -406,8 +407,8 @@ msgid "Cancel"
 msgstr "Annulla"
 
 #: ../../sources/gorilla.tcl:1973 ../../sources/gorilla.tcl:2206
-#: ../../sources/gorilla.tcl:7649 ../../sources/gorilla.tcl:7669
-#: ../../sources/gorilla.tcl:7674
+#: ../../sources/gorilla.tcl:7651 ../../sources/gorilla.tcl:7671
+#: ../../sources/gorilla.tcl:7676
 msgid "Show Password"
 msgstr "Mostra password"
 
@@ -424,7 +425,7 @@ msgstr "Passa sopra ai criteri delle password"
 msgid "Password Length"
 msgstr "Lunghezza password"
 
-#: ../../sources/gorilla.tcl:2199 ../../sources/gorilla.tcl:7671
+#: ../../sources/gorilla.tcl:2199 ../../sources/gorilla.tcl:7673
 msgid "Hide Password"
 msgstr "Nascondi la password"
 
@@ -738,9 +739,9 @@ msgstr "Si desidera visualizzare il rapporto dettagliato?"
 msgid "Resolve Conflicts"
 msgstr "Risolvere i conflitti"
 
-#: ../../sources/gorilla.tcl:4148 ../../sources/gorilla.tcl:6733
-#: ../../sources/gorilla.tcl:6807 ../../sources/gorilla.tcl:6905
-#: ../../sources/gorilla.tcl:7648 ../../sources/viewhelp.tcl:189
+#: ../../sources/gorilla.tcl:4148 ../../sources/gorilla.tcl:6736
+#: ../../sources/gorilla.tcl:6809 ../../sources/gorilla.tcl:6907
+#: ../../sources/gorilla.tcl:7650 ../../sources/viewhelp.tcl:189
 msgid "Close"
 msgstr "Chiudi"
 
@@ -1195,7 +1196,7 @@ msgstr "Moltiplicatore autocancellazione appunti"
 msgid "History deleted. After a restart the list will be empty."
 msgstr "Cronologia cancellata. Dopo il riavvio l'elenco sarà vuoto."
 
-#: ../../sources/gorilla.tcl:6210 ../../sources/gorilla.tcl:7765
+#: ../../sources/gorilla.tcl:6210 ../../sources/gorilla.tcl:7767
 msgid "Error"
 msgstr "Errore"
 
@@ -1300,103 +1301,108 @@ msgstr "Traduzione in francese di %s"
 msgid "Spanish translation by %s"
 msgstr "Traduzione in spagnolo di %s"
 
-#: ../../sources/gorilla.tcl:6746
+#: ../../sources/gorilla.tcl:6732
+#, tcl-format
+msgid "Using %s sha256 extension."
+msgstr "In uso l'estensione %s di sha256."
+
+#: ../../sources/gorilla.tcl:6749
 msgid "About Password Gorilla"
 msgstr "Informazioni su Password Gorilla"
 
-#: ../../sources/gorilla.tcl:6775
+#: ../../sources/gorilla.tcl:6777
 msgid "Password Gorilla License"
 msgstr "Licenza di Password Gorilla"
 
-#: ../../sources/gorilla.tcl:6873
+#: ../../sources/gorilla.tcl:6875
 msgid "Find Text:"
 msgstr "Trova il testo:"
 
-#: ../../sources/gorilla.tcl:6878
+#: ../../sources/gorilla.tcl:6880
 msgid "Find Options ..."
 msgstr "Opzioni di ricerca"
 
-#: ../../sources/gorilla.tcl:6880
+#: ../../sources/gorilla.tcl:6882
 msgid "Any field"
 msgstr "Qualsiasi campo"
 
-#: ../../sources/gorilla.tcl:6892
+#: ../../sources/gorilla.tcl:6894
 msgid "Case sensitive find"
 msgstr "Ricerca con confronto maiuscole/minuscole"
 
-#: ../../sources/gorilla.tcl:7092
+#: ../../sources/gorilla.tcl:7094
 msgid "Text not found."
 msgstr "Testo non trovato."
 
-#: ../../sources/gorilla.tcl:7559
+#: ../../sources/gorilla.tcl:7561
 msgid "Please select a login entry first."
 msgstr "Selezionare prima una voce di login."
 
-#: ../../sources/gorilla.tcl:7751
+#: ../../sources/gorilla.tcl:7753
 msgid "The selected login does not contain a URL value."
 msgstr "Il login selezionato non contiene un valore URL."
 
-#: ../../sources/gorilla.tcl:7753
+#: ../../sources/gorilla.tcl:7755
 msgid "Browser launching is not configured. See help."
 msgstr ""
 "Il comando con cui eseguire il browser non è stato configurato. Controllare "
 "la guida."
 
-#: ../../sources/gorilla.tcl:7760
+#: ../../sources/gorilla.tcl:7762
 msgid "Browser parameter lacks '%url%' string. See help."
 msgstr ""
 "Il parametro del browser manca della stringa '%url%'. Controllare la guida."
 
-#: ../../sources/gorilla.tcl:7765
+#: ../../sources/gorilla.tcl:7767
 msgid "Error launching browser, the OS error message is:"
 msgstr "Errore all'esecuzione del browser, il messaggio di errore è:"
 
-#: ../../sources/gorilla.tcl:7765
+#: ../../sources/gorilla.tcl:7767
 msgid "Oh well..."
 msgstr "Oh bene..."
 
-#: ../../sources/gorilla.tcl:7767
+#: ../../sources/gorilla.tcl:7769
 msgid "Launched browser:"
 msgstr "Avviato browser:"
 
-#: ../../sources/gorilla.tcl:7972
+#: ../../sources/gorilla.tcl:7974
 msgid "Generate gorilladoc.html"
 msgstr "Genera gorilladoc.html"
 
-#: ../../sources/gorilla.tcl:8238
+#: ../../sources/gorilla.tcl:8240
 msgid "Conflict Merge Tool"
 msgstr "Strumento di fusione dei conflitti"
 
-#: ../../sources/gorilla.tcl:8275
+#: ../../sources/gorilla.tcl:8277
 #, tcl-format
 msgid "Conflict %d"
 msgstr "Conflitto %d"
 
-#: ../../sources/gorilla.tcl:8284
+#: ../../sources/gorilla.tcl:8286
 msgid "Combine and Save"
 msgstr "Combina e salva"
 
-#: ../../sources/gorilla.tcl:8285
+#: ../../sources/gorilla.tcl:8287
 msgid "Reset Values"
 msgstr "Reimposta i valori"
 
-#: ../../sources/gorilla.tcl:8286
+#: ../../sources/gorilla.tcl:8288
 msgid "Ignore Conflict"
 msgstr "Ignora i conflitti"
 
-#: ../../sources/gorilla.tcl:8339
+#: ../../sources/gorilla.tcl:8341
 msgid "No existing merge conflicts were found."
 msgstr "Nessuno conflitto di fusione rilevato."
 
-#: ../../sources/gorilla.tcl:8410
+#: ../../sources/gorilla.tcl:8412
 msgid "Current"
 msgstr "Attuale"
 
-#: ../../sources/gorilla.tcl:8411
+#: ../../sources/gorilla.tcl:8413
 msgid "Merged"
 msgstr "Fuso"
 
-#: ../../sources/gorilla.tcl:8535
+#: ../../sources/gorilla.tcl:8537
 msgid "A selection is required for:"
 msgstr "È richiesta una selezione per:"
 
@@ -1429,6 +1435,10 @@ msgstr "Cronistoria"
 #: ../../sources/viewhelp.tcl:443
 msgid "Index"
 msgstr "Indice"
+
+#: ../../sources/viewhelp.tcl:229
+msgid "Table of Contents"
+msgstr "Sommario"
 
 #: ../../sources/viewhelp.tcl:345
 msgid "Search!"
@@ -1488,6 +1498,11 @@ msgstr "il record %d non ha il campo %s"
 msgid "no header field %s"
 msgstr "nessun campo intestazione %s"
 
+#: ../../sources/pwsafe/pwsafe.tcl:170 ../../sources/pwsafe/pwsafe.tcl:216
+#, tcl-format
+msgid "invalid version %s"
+msgstr "versione non valida %s"
+
 #: ../../sources/pwsafe/pwsafe-v2.tcl:52
 msgid "less than 8 bytes remaining for length field"
 msgstr "rimangono per il campo lunghezza meno di 8 bytes"
@@ -1546,8 +1561,3 @@ msgstr "il file non possiede il marcatore magic PWS3"
 msgid "Failed to scan key stretch iteration count from binary data."
 msgstr ""
 "Fallita la ricerca del contatore iterazioni \"key stretch\" dai dati binari."
-
-#: ../../sources/pwsafe/pwsafe.tcl:170 ../../sources/pwsafe/pwsafe.tcl:216
-#, tcl-format
-msgid "invalid version %s"
-msgstr "versione non valida %s"

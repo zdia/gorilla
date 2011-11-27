@@ -9,10 +9,11 @@
 #
 # Project-Id-Version: PACKAGE VERSION
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-09-26 11:10-0400
+# POT-Creation-Date: 2011-11-24 11:49+0100
 # PO-Revision-Date: 2011-06-15 09:10+0100
 # Last-Translator: zdia <z.dia@gmx.de>
 # Language-Team: LANGUAGE <LL@li.org>
+# Language: 
 # MIME-Version: 1.0
 # Content-Type: text/plain; charset=UTF-8
 # Content-Transfer-Encoding: 8bit
@@ -44,33 +45,34 @@ Export Export
 Preferences Preferences
 Exit Exit
 Edit Edit
-Clear Clear
+{Copy Username} {Copy Username}
+{Copy Password} {Copy Password}
+{Clear Clipboard} {Clear Clipboard}
 Find Find
+{Find next} {Find next}
 Login Login
-Security Security
-Password Password
-Help Help
-License License
-About About
 {Add Login} {Add Login}
+{Edit Login} {Edit Login}
+{View Login} {View Login}
+{Delete Login} {Delete Login}
 {Add Subgroup} {Add Subgroup}
 {Rename Group} {Rename Group}
 {Delete Group} {Delete Group}
+Security Security
+Help Help
+License License
+About About
 {Open URL} {Open URL}
 {Copy Username to Clipboard} {Copy Username to Clipboard}
 {Copy Password to Clipboard} {Copy Password to Clipboard}
 {Copy URL to Clipboard} {Copy URL to Clipboard}
-{Edit Login} {Edit Login}
-{View Login} {View Login}
 {Move Login to:} {Move Login to:}
-{Delete Login} {Delete Login}
 {Save changes?} {Save changes?}
 {The current password database is modified. Do you want to save the current database before creating the new database?} {The current password database is modified. Do you want to save the current database before creating the new database?}
 {New Database: Choose Master Password} {New Database: Choose Master Password}
 {Password Gorilla - <New Database>} {Password Gorilla - <New Database>}
 {<New Database>} {<New Database>}
 {Add logins using <Add Login> in the <Login> menu.} {Add logins using <Add Login> in the <Login> menu.}
-{Opening ... %2.0f %%} {Opening ... %2.0f %%}
 Database: Database:
 Password: Password:
 OK OK
@@ -84,6 +86,8 @@ OK OK
 Title Title
 URL URL
 Username Username
+Password Password
+Notes Notes
 Cancel Cancel
 {Show Password} {Show Password}
 {Generate Password} {Generate Password}
@@ -103,6 +107,7 @@ Cancel Cancel
 {The name of the parent group is invalid.} {The name of the parent group is invalid.}
 {Are you sure that you want to delete this login?} {Are you sure that you want to delete this login?}
 {Login deleted.} {Login deleted.}
+{No Database} {No Database}
 {Add a new Group} {Add a new Group}
 Parent: Parent:
 {New Group Name:} {New Group Name:}
@@ -144,7 +149,6 @@ Do you wish to save a log of skipped records?}
 {Some records skipped during import} {Some records skipped during import}
 {Enter a file into which to save the log} {Enter a file into which to save the log}
 {record(s) successfully imported.} {record(s) successfully imported.}
-{Saving ... %2.0f %%} {Saving ... %2.0f %%}
 {Merge Password Database} {Merge Password Database}
 Merging Merging
 Close Close
@@ -163,15 +167,6 @@ Close Close
 {Error Saving Database} {Error Saving Database}
 {Failed to save password database as "%s": %s} {Failed to save password database as "%s": %s}
 {Password database saved with backup copy} {Password database saved with backup copy}
-ERROR-SaveBackup {Error Saving Backup of Database}
-ERROR-SaveBackup-invalid-directory {No valid directory. - 
-Please define a valid backup directory
-in the Preferences menu.}
-ERROR-SaveBackup-unknown-file {Unknown file. - 
-Please select a valid database filename.}
-ERROR-SaveBackup-failed {Failed to make backup copy of password
-database as %s: 
-%s}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.}
 {Clipboard cleared.} {Clipboard cleared.}
 {Database Locked} {Database Locked}
@@ -196,14 +191,6 @@ Confirm: Confirm:
 {Use Password Safe 3 format} {Use Password Safe 3 format}
 {V2 Unicode support} {V2 Unicode support}
 {V3 key stretching iterations} {V3 key stretching iterations}
-SECURITY-db-calc-delay-time {Calculate delay time}
-SECURITY-db-%d-iter-%s-secs {%d iterations produces 
-%s seconds of delay}
-SECURITY-db-calc Calculate
-SECURITY-db-calcing Working
-SECURITY-db-auto-iter-calc {Automatic iteration calculation}
-SECURITY-db-delay-for {Delay for}
-SECURITY-db-seconds seconds
 General General
 {When double clicking a login ...} {When double clicking a login ...}
 {Copy password to clipboard} {Copy password to clipboard}
@@ -213,6 +200,7 @@ General General
 {seconds (0=never)} {seconds (0=never)}
 Remember Remember
 {database names} {database names}
+Clear Clear
 {Backup database on save} {Backup database on save}
 {Remember sizes of dialog boxes} {Remember sizes of dialog boxes}
 {Use Gorilla auto-copy} {Use Gorilla auto-copy}
@@ -274,7 +262,6 @@ See Help for details.}
 {History deleted. After a restart the list will be empty.} {History deleted. After a restart the list will be empty.}
 Error Error
 {Error while saving RC-File} {Error while saving RC-File}
-{No Database} {No Database}
 {Please create a new database, or open an existing
 database first.} {Please create a new database, or open an existing
 database first.}
@@ -299,7 +286,6 @@ Contributors Contributors
 {Find Text:} {Find Text:}
 {Find Options ...} {Find Options ...}
 {Any field} {Any field}
-Notes Notes
 {Case sensitive find} {Case sensitive find}
 {Text not found.} {Text not found.}
 {Please select a login entry first.} {Please select a login entry first.}

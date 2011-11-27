@@ -9,10 +9,11 @@
 #
 # Project-Id-Version: Gorilla 1.5.3.5
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-09-26 11:10-0400
+# POT-Creation-Date: 2011-11-24 11:49+0100
 # PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE
 # Last-Translator: FULL NAME <EMAIL@ADDRESS>
 # Language-Team: LANGUAGE <LL@li.org>
+# Language: 
 # MIME-Version: 1.0
 # Content-Type: text/plain; charset=UTF-8
 # Content-Transfer-Encoding: 8bit
@@ -26,33 +27,34 @@ Export Экспорт
 Preferences Предпочтения
 Exit Выход
 Edit Правка
-Clear Очистить
+{Copy Username} {Копировать логин}
+{Copy Password} {Копировать пароль}
+{Clear Clipboard} {Очистить буфер обмена}
 Find Найти
+{Find next} {Следующее вхождение}
 Login Логин
-Security Безопасность
-Password Пароль
-Help Помощь
-License Лицензия
-About {О программе}
 {Add Login} {Добавить логин}
+{Edit Login} {Редактировать логин}
+{View Login} {Просмотреть логин}
+{Delete Login} {Удалить логин}
 {Add Subgroup} {Добавить подгруппу}
 {Rename Group} {Переименовать группу}
 {Delete Group} {Удалить группу}
+Security Безопасность
+Help Помощь
+License Лицензия
+About {О программе}
 {Open URL} {Открыть URL}
 {Copy Username to Clipboard} {Копировать логин в буфер обмена}
 {Copy Password to Clipboard} {Копировать пароль в буфер обмена}
 {Copy URL to Clipboard} {Копировать URL в буфер обмена}
-{Edit Login} {Редактировать логин}
-{View Login} {Просмотреть логин}
 {Move Login to:} {Move Login to:}
-{Delete Login} {Удалить логин}
 {Save changes?} {Сохранить изменения?}
 {The current password database is modified. Do you want to save the current database before creating the new database?} {The current password database is modified. Do you want to save the current database before creating the new database?}
 {New Database: Choose Master Password} {Новая БД: выберите мастер-пароль}
 {Password Gorilla - <New Database>} {Password Gorilla - <Новая БД>}
 {<New Database>} {<Новая БД>}
 {Add logins using <Add Login> in the <Login> menu.} {Добавьте логины используя <Добавить логин> в меню <Логин>.}
-{Opening ... %2.0f %%} {Opening ... %2.0f %%}
 Database: БД:
 Password: Пароль:
 {Select a database, and enter its password. Click "New" to create a new database.} {Выберите БД и введите её пароль. Нажмите "Новая" для создания новой БД.}
@@ -64,6 +66,8 @@ Password: Пароль:
 {Add/Edit/View Login} {Добавить/Редактировать/Просмотреть логин}
 Title Заголовок
 Username Логин
+Password Пароль
+Notes Заметки
 Cancel Отмена
 {Show Password} Показать
 {Generate Password} Сгенерировать
@@ -82,6 +86,7 @@ Cancel Отмена
 {The name of the parent group is invalid.} {The name of the parent group is invalid.}
 {Are you sure that you want to delete this login?} {Уверены что хотите удалить этот логин?}
 {Login deleted.} {Логин удалён.}
+{No Database} {No Database}
 {Add a new Group} {Добавить группу}
 Parent: Родитель:
 {New Group Name:} {Новое имя группы:}
@@ -96,7 +101,6 @@ Parent: Родитель:
 {Export password database as text ...} {Экспортировать БД как текст ...}
 {Exporting ...} {Экспорт ...}
 {Database exported.} {БД экспортирована.}
-{Saving ... %2.0f %%} {Saving ... %2.0f %%}
 {Merge Password Database} {Объединить БД}
 Merging Объединение
 Close Закрыть
@@ -143,6 +147,7 @@ General Общие
 {seconds (0=never)} {секунд (0=никогда)}
 Remember Запомнить
 {database names} {последних БД}
+Clear Очистить
 {Backup database on save} {Создать резервную копию БД при сохранении}
 {Remember sizes of dialog boxes} {Запоминать размеры окон}
 {Use Gorilla auto-copy} {Использовать автоматическое копирование}
@@ -170,7 +175,6 @@ Browser Браузер
 {Clipboard autoclear multiplier} {Clipboard autoclear multiplier}
 {History deleted. After a restart the list will be empty.} {История стёрта.}
 Error Ошибка
-{No Database} {No Database}
 {Current Master Password:} {Текущий мастер-пароль:}
 {New Master Password:} {Новый мастер-пароль:}
 {Password Not Changed} {Password Not Changed}
@@ -188,7 +192,6 @@ Contributors Контрибьюторы
 {Find Text:} Найти:
 {Find Options ...} {Опции поиска ...}
 {Any field} {Любое поле}
-Notes Заметки
 {Case sensitive find} {Учитывать регистр}
 {Text not found.} {Текст не найден.}
 {Please select a login entry first.} {Please select a login entry first.}

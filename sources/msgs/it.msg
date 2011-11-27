@@ -9,8 +9,8 @@
 #
 # Project-Id-Version: Gorila Password 1.*
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-24 11:49+0100
-# PO-Revision-Date: 2011-11-24 19:49+0100
+# POT-Creation-Date: 2011-11-27 17:21+0100
+# PO-Revision-Date: 2011-11-27 17:23+0100
 # Last-Translator: Marco Ciampa <ciampix@libero.it>
 # Language-Team: Italian <it@li.org>
 # Language: it
@@ -355,6 +355,7 @@ Contributors Contributi
 {Italian translation by %s} {Traduzione in italiano di %s}
 {French translation by %s} {Traduzione in francese di %s}
 {Spanish translation by %s} {Traduzione in spagnolo di %s}
+{Using %s sha256 extension.} {In uso l'estensione %s di sha256.}
 {About Password Gorilla} {Informazioni su Password Gorilla}
 {Password Gorilla License} {Licenza di Password Gorilla}
 {Find Text:} {Trova il testo:}
@@ -385,6 +386,7 @@ Previous Precedente
 Next Successivo
 History Cronistoria
 Index Indice
+{Table of Contents} Sommario
 Search! Cerca!
 {unknown preference type: %s} {tipo di preferenza sconosciuto: %s}
 {premature end of preference} {fine prematura di una preferenza}
@@ -396,6 +398,7 @@ Search! Cerca!
 {record %d does not exist} {il record %d non esiste}
 {record %d does not have field %s} {il record %d non ha il campo %s}
 {no header field %s} {nessun campo intestazione %s}
+{invalid version %s} {versione non valida %s}
 {less than 8 bytes remaining for length field} {rimangono per il campo lunghezza meno di 8 bytes}
 oops oops
 {field length %d looks insane} {il campo lunghezza %d sembra irragionevole}
@@ -408,5 +411,4 @@ oops oops
 {less than 16 bytes remaining for first block} {rimangono meno di 16 byte per il primo blocco}
 {file does not have PWS3 magic} {il file non possiede il marcatore magic PWS3}
 {Failed to scan key stretch iteration count from binary data.} {Fallita la ricerca del contatore iterazioni "key stretch" dai dati binari.}
-{invalid version %s} {versione non valida %s}
 }
