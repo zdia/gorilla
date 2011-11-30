@@ -48,9 +48,12 @@ namespace eval ::gorilla::test {
     -cleanup { set ::gorilla::preference(keepBackupFile) $oldflag } \
     -result GORILLA_OK
 
+  # we are at the moment in folder /unit-tests/backup
 	test backup-1.2 {Timestamp check} \
-    -body { return [ file exists [file join $backupDir "testdb$timestamp.psafe3" ] ] } \
-    -cleanup { set timestamp "" } \
+    -body { return [ file exists "../testdb$timestamp.psafe3" ] } \
+    -cleanup {
+      file delete "../testdb$timestamp.psafe3"
+      set timestamp "" } \
     -result 1
 
 # The following errors are caught in procedure gorilla::SaveBackup:
