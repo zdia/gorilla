@@ -9,8 +9,8 @@
 #
 # Project-Id-Version: Gorila Password 1.*
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-27 17:21+0100
-# PO-Revision-Date: 2011-11-27 17:23+0100
+# POT-Creation-Date: 2011-12-01 18:18+0100
+# PO-Revision-Date: 2011-12-01 18:20+0100
 # Last-Translator: Marco Ciampa <ciampix@libero.it>
 # Language-Team: Italian <it@li.org>
 # Language: it
@@ -89,6 +89,7 @@ Database: Archivio:
 Password: Password:
 OK OK
 {Select a database, and enter its password. Click "New" to create a new database.} {Selezionare un archivio e inserire la password. Clic su "Nuovo" per creare un nuovo archivio password.}
+{Select a database, and enter its password.} {Selezionare un archivio e inserire la password.}
 {No File} {Nessun file}
 {Please select a password database.} {Seleziona un archivio password.}
 {File Not Found} {File non trovato}
@@ -190,6 +191,11 @@ Salvare una registrazione dei record saltati?}
 {Merge Password Database} {Fondi l'archivio password}
 Merging Fusione
 {Merging (%d %% done)} {Fusione (eseguito %d %%)}
+{Conflict for login %s} {Conflitto per il login %s}
+{(in group %s)} {(nel gruppo %s)}
+%s %s
+{Added login %s} {Nuovo login %s}
+{Identical login %s} {Login identico %s}
 login login
 logins login
 conflict conflitto
@@ -201,6 +207,7 @@ conflicts conflitti
 {Do you want to view a detailed report?} {Si desidera visualizzare il rapporto dettagliato?}
 {Resolve Conflicts} {Risolvere i conflitti}
 Close Chiudi
+Conflicts Conflitti
 {Warning: Can not save to} {Attenzione: impossibile salvare su}
 {because the file permissions are set for read-only access.} {dato che i permessi sul file sono impostati per la sola lettura.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Cambiare i permessi al file per consentire la lettura e scrittura e premere 'Riprova' o premere 'Annulla' e usare 'File'->'Salva come' per salvare in un file differente.}

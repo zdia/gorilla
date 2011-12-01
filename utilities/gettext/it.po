@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Gorila Password 1.*\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-11-27 17:21+0100\n"
-"PO-Revision-Date: 2011-11-27 17:23+0100\n"
+"POT-Creation-Date: 2011-12-01 18:18+0100\n"
+"PO-Revision-Date: 2011-12-01 18:20+0100\n"
 "Last-Translator: Marco Ciampa <ciampix@libero.it>\n"
 "Language-Team: Italian <it@li.org>\n"
 "Language: it\n"
@@ -298,6 +298,10 @@ msgid ""
 msgstr ""
 "Selezionare un archivio e inserire la password. Clic su \"Nuovo\" per creare "
 "un nuovo archivio password."
+
+#: ../../sources/gorilla.tcl:1311
+msgid "Select a database, and enter its password."
+msgstr "Selezionare un archivio e inserire la password."
 
 #: ../../sources/gorilla.tcl:1378
 msgid "No File"
@@ -702,6 +706,32 @@ msgstr "Fusione"
 msgid "Merging (%d %% done)"
 msgstr "Fusione (eseguito %d %%)"
 
+#: ../../sources/gorilla.tcl:4021
+#, tcl-format
+msgid "Conflict for login %s"
+msgstr "Conflitto per il login %s"
+
+#: ../../sources/gorilla.tcl:4023 ../../sources/gorilla.tcl:4043
+#: ../../sources/gorilla.tcl:4052
+#, tcl-format
+msgid "(in group %s)"
+msgstr "(nel gruppo %s)"
+
+#: ../../sources/gorilla.tcl:4025
+#, tcl-format
+msgid "%s"
+msgstr "%s"
+
+#: ../../sources/gorilla.tcl:4041
+#, tcl-format
+msgid "Added login %s"
+msgstr "Nuovo login %s"
+
+#: ../../sources/gorilla.tcl:4050
+#, tcl-format
+msgid "Identical login %s"
+msgstr "Login identico %s"
+
 #: ../../sources/gorilla.tcl:4071
 msgid "login"
 msgstr "login"
@@ -744,6 +774,10 @@ msgstr "Risolvere i conflitti"
 #: ../../sources/gorilla.tcl:7650 ../../sources/viewhelp.tcl:189
 msgid "Close"
 msgstr "Chiudi"
+
+#: ../../sources/gorilla.tcl:4180
+msgid "Conflicts"
+msgstr "Conflitti"
 
 #: ../../sources/gorilla.tcl:4266
 msgid "Warning: Can not save to"
