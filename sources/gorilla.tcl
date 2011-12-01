@@ -1308,7 +1308,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		set info [mc "Select a database, and enter its password. Click \"New\" to create a new database."]
 		$aframe.buts.b3 configure -state normal
 	} else {
-		set info "Select a database, and enter its password."
+		set info [mc "Select a database, and enter its password."]
 		$aframe.buts.b3 configure -state disabled
 	}
 
@@ -4018,11 +4018,11 @@ proc gorilla::Merge {} {
 
 				lappend conflictNodes $node
 
-				set report "Conflict for login $ntitle"
+				set report [mc "Conflict for login %s" $ntitle]
 				if {$ngroup != ""} {
-					append report " (in group $ngroup)"
+					append report " [mc "(in group %s)" $ngroup]"
 				}
-				append report ": " $reason "."
+				append report ": " [mc %s $reason] "."
 				lappend conflictReport [ list $report $rn $oldrn $node $oldnode ]
 
 				#
@@ -4038,18 +4038,18 @@ proc gorilla::Merge {} {
 
 			} else {
 				lappend addedNodes $node
-				set report "Added login $ntitle"
+				set report [mc "Added login %s" $ntitle]
 				if {$ngroup != ""} {
-					append report " (in Group $ngroup)"
+					append report " [mc "(in group %s)" $ngroup]"
 				}
 				append report "."
 				lappend addedReport [ list $report $rn ]
 			}
 		} else {
 			incr identicalLogins
-			set report "Identical login $ntitle"
+			set report [mc "Identical login %s" $ntitle]
 			if {$ngroup != ""} {
-				append report " (in Group $ngroup)"
+				append report " [mc "(in group %s)" $ngroup]"
 			}
 			append report "."
 			lappend identicalReport $report
@@ -4108,7 +4108,7 @@ proc gorilla::Merge {} {
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
-		wm title $top "Merge Report for $nativeName"
+		wm title $top [mc "Merge Report for $nativeName"]
 
 		set text [text $top.text -relief sunken -width 100 -wrap word \
 		-yscrollcommand "$top.vsb set"]
@@ -4177,7 +4177,7 @@ proc gorilla::Merge {} {
 
 	$text insert end [string repeat "-" 70]
 	$text insert end "\n"
-	$text insert end "Conflicts\n"
+	$text insert end "[mc "Conflicts"]\n"
 	$text insert end [string repeat "-" 70]
 	$text insert end "\n"
 	$text insert end "\n"
