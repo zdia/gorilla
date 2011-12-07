@@ -5,15 +5,12 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 # ----------------------------------------------------------------------
 # Password Gorilla, a password database manager
+# ----------------------------------------------------------------------
+#
 # Copyright (c) 2005-2009 Frank Pilhofer
-# Copyright (c) 2010 Zbigniew Diaczyszyn
+# Copyright (c) 2010-2011 Richard Ellis and Zbigniew Diaczyszyn
 #
-# modified for use with wish8.5, ttk-Widgets and with German localisation
-# modified GUI to work without bwidget
-# z_dot_dia_at_gmx_dot_de
-#
-# tested with ActiveTcl 8.5.7, 8.5.8
-# Mac Version compiled from official sources at Sourceforge
+# Version 1.5.3.6 tested with ActiveState's Tcl/Tk 8.5.11
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -30,12 +27,12 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # Franklin Street, Suite 500 Boston, MA 02110-1335
 # ----------------------------------------------------------------------
 #
-# pushed to http:/github.com/zdia/gorilla
+# For further information and contact see https:/github.com/zdia/gorilla
 #
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.5 $}
+set ::gorillaVersion {$Revision: 1.5.3.6 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
