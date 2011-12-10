@@ -5974,7 +5974,7 @@ proc gorilla::PreferencesDialog {} {
 
 		# $top.nb compute_size
 		# $top.nb raise gpf
-		pack $top.nb -side top -fill both -expand yes -pady 10
+		pack $top.nb -side top -fill both -expand yes -ipady 10
 
 		#
 		# Bottom
@@ -5983,13 +5983,13 @@ proc gorilla::PreferencesDialog {} {
 		# Separator $top.sep -orient horizontal
 		# pack $top.sep -side top -fill x -pady 7
 
-		frame $top.buts
+		ttk::frame $top.buts
 		set but1 [ttk::button $top.buts.b1 -width 15 -text [ mc "OK" ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
 		pack $but1 $but2 -side left -pady 10 -padx 20
-		pack $top.buts -side top -pady 10 -fill both
+		pack $top.buts -side top -ipady 10 -fill both
 
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyPreferencesDialog
