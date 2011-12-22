@@ -4448,6 +4448,7 @@ proc gorilla::SaveAs {} {
 
 	# The actual data are saved. Now take care of a backup file
 
+  set ::gorilla::fileName $fileName
 	set message [ gorilla::SaveBackup $::gorilla::fileName ]
 
 	if { $message ne "GORILLA_OK" } {
@@ -4461,7 +4462,7 @@ proc gorilla::SaveAs {} {
 	. configure -cursor $myOldCursor
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
-	set ::gorilla::fileName $fileName
+	
 	wm title . "Password Gorilla - $nativeName"
 	$::gorilla::widgets(tree) item "RootNode" -text $nativeName
 	
