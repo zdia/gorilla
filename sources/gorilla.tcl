@@ -5858,6 +5858,7 @@ proc gorilla::PreferencesDialog {} {
 		#
 		
 		set languages [gorilla::getAvailableLanguages]
+    
 		# format: {en English de Deutsch ...}
 		# Fehlerabfrage für falschen prefTemp(lang) Eintrag in der gorillarc
 		if {[lsearch $languages $::gorilla::prefTemp(lang)] == -1} {
@@ -5879,7 +5880,7 @@ proc gorilla::PreferencesDialog {} {
 			$m add radio -label $name -variable ::gorilla::prefTemp(lang) -value $lang \
 				-command "set ::gorilla::fullLangName $name"
 		}
-		
+
 		pack $display.lang.label $display.lang.mb -side left
 		pack $display.lang -anchor w
 		
@@ -7153,15 +7154,15 @@ proc gorilla::FindNext {} {
 
 proc gorilla::getAvailableLanguages {  } {
 	set files [glob -tail -path "$::gorillaDir/msgs/" *.msg]
-	set msgList "en"
+	set msgList [list ]    ;# en.msg exists
 	
 	foreach file $files {
 		lappend msgList [lindex [split $file "."] 0]
 	}
 	
 	# FIXME: This dictionary of possible languages has to be expanded
-	set langFullName [list en English de Deutsch fr Français es Español ru Russian it Italiano]
-	
+	set langFullName [list en English de Deutsch fr Fran\u00e7ais es Espa\u00f1ol ru Russian it Italiano]
+
 	# create langList from *.msg pool
 	set langList {}
 	foreach lang $msgList {

@@ -206,7 +206,7 @@ namespace eval ::platform {
 	    set plat tru64
 	}
     }
-puts "extension folder: ${plat}-${cpu}"
+    # puts "extension folder: ${plat}-${cpu}"
     return "${plat}-${cpu}"
 
     }
