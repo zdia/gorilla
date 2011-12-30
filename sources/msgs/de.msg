@@ -9,7 +9,7 @@
 #
 # Project-Id-Version: 
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-24 11:49+0100
+# POT-Creation-Date: 2011-11-27 17:31+0100
 # PO-Revision-Date: 
 # Last-Translator: Zbigniew Diaczyszyn <z.dia@gmx.de>
 # Language-Team: 
@@ -388,6 +388,7 @@ Search! Suchen!
 {record %d does not exist} {Datensatz %d existiert nicht}
 {record %d does not have field %s} {Datensatz %d kennt kein Feld %s}
 {no header field %s} {Kein header field %s}
+{invalid version %s} {Ungültige Version %s}
 {less than 8 bytes remaining for length field} {weniger als 8 Bytes bleiben für das length Feld}
 oops Hoppla
 {field length %d looks insane} {field length %d looks insane}
@@ -400,5 +401,4 @@ oops Hoppla
 {less than 16 bytes remaining for first block} {less than 16 bytes remaining for first block}
 {file does not have PWS3 magic} {Die Datei hat kein PWS3 Schlüsselwort}
 {Failed to scan key stretch iteration count from binary data.} {Failed to scan key stretch iteration count from binary data.}
-{invalid version %s} {Ungültige Version %s}
 }

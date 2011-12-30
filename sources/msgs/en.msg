@@ -9,7 +9,7 @@
 #
 # Project-Id-Version: PACKAGE VERSION
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-24 11:49+0100
+# POT-Creation-Date: 2011-11-27 17:31+0100
 # PO-Revision-Date: 2011-06-15 09:10+0100
 # Last-Translator: zdia <z.dia@gmx.de>
 # Language-Team: LANGUAGE <LL@li.org>

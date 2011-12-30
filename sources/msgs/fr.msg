@@ -9,7 +9,7 @@
 #
 # Project-Id-Version: Gorilla 1.5.3.5
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-23 14:45+0100
+# POT-Creation-Date: 2011-11-27 17:31+0100
 # PO-Revision-Date: 2011-11-24 12:28-0500
 # Last-Translator: Benoit Mercier <benoit.mercibe@gmail.com>
 # Language-Team: French
@@ -91,6 +91,7 @@ Title Titre
 URL URL
 Username {Nom d'utilisateur}
 Password {Mot de passe}
+Notes Notes
 Cancel Annuler
 {Show Password} {Afficher le mot de passe}
 {Generate Password} {Générer un mot de passe}
@@ -307,7 +308,6 @@ Contributors Contributeurs
 {Find Text:} {Recherche du texte:}
 {Find Options ...} {Options de recherche...}
 {Any field} {N'importe quel champ}
-Notes Notes
 {Case sensitive find} {Recherche sensible à la casse}
 {Text not found.} {Texte non trouvé.}
 {Please select a login entry first.} {Veuillez d'abord sélectionner une connexion.}
@@ -341,6 +341,7 @@ Search! Chercher!
 {record %d does not exist} {l'enregistrement %d n'existe pas}
 {record %d does not have field %s} {l'enregistrement %d ne contient pas le champ %s}
 {no header field %s} {il manque le champ titre %s}
+{invalid version %s} {version invalide: %s}
 {less than 8 bytes remaining for length field} {il reste moins de 8 bytes pour la longueur du champ}
 oops oops
 {field length %d looks insane} {la taille %d paraît étrange pour un champ}
@@ -351,5 +352,4 @@ oops oops
 {less than 16 bytes remaining for first block} {il reste moins de 16 bytes pour le premier bloc}
 {file does not have PWS3 magic} {le fichier ne dispose pas du « PWS3 magic »}
 {Failed to scan key stretch iteration count from binary data.} {Échec lors de la vérification du compteur d'étirement de clé depuis les données binaires}
-{invalid version %s} {version invalide: %s}
 }

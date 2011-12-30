@@ -9,7 +9,7 @@
 #
 # Project-Id-Version: 
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-24 11:49+0100
+# POT-Creation-Date: 2011-11-27 17:31+0100
 # PO-Revision-Date: 2011-09-07 18:54+0100
 # Last-Translator: Juan Roldan Ruiz <juan@shoden.es>
 # Language-Team:  <LL@li.org>

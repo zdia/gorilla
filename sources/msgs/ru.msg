@@ -7,28 +7,53 @@
 # rebuild-msg-files script.
 #
 #
-# Project-Id-Version: Gorilla 1.5.3.5
+# Project-Id-Version: Gorilla 1.5.3.6
 # Report-Msgid-Bugs-To: 
 # POT-Creation-Date: 2011-11-24 11:49+0100
-# PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE
-# Last-Translator: FULL NAME <EMAIL@ADDRESS>
-# Language-Team: LANGUAGE <LL@li.org>
-# Language: 
+# PO-Revision-Date: 2011-11-25 22:22+0800
+# Last-Translator: Evgenii Terechkov <evg@Aaltlinux.org>
+# Language-Team: Russian <ru@li.org>
+# Language: Russian
 # MIME-Version: 1.0
 # Content-Type: text/plain; charset=UTF-8
 # Content-Transfer-Encoding: 8bit
 
 mcmset ru {
+{Need %s} {Требуется %s}
+{The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
+
+Error message: %s} {Требуется пакет "%s". Это похоже на проблему установки, т.к. пакет
+входит в дистрибутив программы.
+
+Сообщение об ошибке: %s}
+{Need [Incr Tcl]} {Требуется [Incr Tcl]}
+{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
+
+Error Message: %s} {Требуется надстройка [incr Tcl] на Tcl. Пожалуйста, установите пакет [incr Tcl].
+
+Сообщение об ошибке: %s}
+{Need PWSafe} {Требуется PWSafe}
+{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
+
+Error Message: %s} {Требуется пакет "pwsafe". Это похоже на проблему установки, т.к. пакет
+входит в дистрибутив программы.
+
+Сообщение об ошибке: %s<}
 {Welcome to the Password Gorilla.} {Добро пожаловать в Password Gorilla}
 File Файл
 New Новая
+Open Открыть
+Merge Объединить
 Save Сохранить
+{Save As} {Сохранить как}
 Export Экспорт
+Import Import
 Preferences Предпочтения
 Exit Выход
 Edit Правка
 {Copy Username} {Копировать логин}
 {Copy Password} {Копировать пароль}
+{Copy URL} {Копировать URL}
 {Clear Clipboard} {Очистить буфер обмена}
 Find Найти
 {Find next} {Следующее вхождение}
@@ -37,10 +62,17 @@ Login Логин
 {Edit Login} {Редактировать логин}
 {View Login} {Просмотреть логин}
 {Delete Login} {Удалить логин}
+{Move Login} {Переместить логин в::}
+{Add Group} {Добавить группу}
 {Add Subgroup} {Добавить подгруппу}
 {Rename Group} {Переименовать группу}
+{Move Group} {Перенести группу}
 {Delete Group} {Удалить группу}
 Security Безопасность
+{Password Policy} {Политика паролей}
+Customize Настроить
+{Change Master Password} {Сменить мастер-пароль}
+{Lock now} {Заблокировать сейчас}
 Help Помощь
 License Лицензия
 About {О программе}
@@ -57,17 +89,33 @@ About {О программе}
 {Add logins using <Add Login> in the <Login> menu.} {Добавьте логины используя <Добавить логин> в меню <Логин>.}
 Database: БД:
 Password: Пароль:
+OK ОК
 {Select a database, and enter its password. Click "New" to create a new database.} {Выберите БД и введите её пароль. Нажмите "Новая" для создания новой БД.}
+{No File} {Нет файла}
+{Please select a password database.} {Пожалуйста, выберите БД паролей.}
+{File Not Found} {Файл не найден.}
+{The password database %s does not exist or can not be read.} {БД паролей %s не существует или не может быть прочитана.}
 {Please be patient. Verifying password ...} {Будьте терпеливы. Проверка пароля ...}
+{Opening ... %d %%} {Opening ... %d %%}
 {Error Opening Database} {Error Opening Database}
+{Can not open password database "%s": %s} {Невозможно открыть БД паролей "%s": %s}
 {Browse for a password database ...} {Browse for a password database ...}
+{The current password database is modified. Do you want to save the database?
+ "Yes" saves the database, and continues to the "Open File" dialog.
+ "No" discards all changes, and continues to the "Open File" dialog.
+ "Cancel" returns to the main menu.} {БД изменена. Хотите сохранить изменения?
+"Yes" - сохранить БД и выйти, "No" - выйти без сохранения, "Cancel" - вернуться в программу.}
 {Open Password Database} {Открыть БД паролей}
 {Password database %s loaded.} {БД паролей %s загружена.}
 {Add/Edit/View Login} {Добавить/Редактировать/Просмотреть логин}
+Group Группа
 Title Заголовок
+URL URL
 Username Логин
 Password Пароль
 Notes Заметки
+{Last Password Change} {Последняя смена пароля}
+{Last Modified} {Последнее изменение.}
 Cancel Отмена
 {Show Password} Показать
 {Generate Password} Сгенерировать
@@ -76,42 +124,110 @@ Cancel Отмена
 {Hide Password} Скрыть
 {Password policy settings invalid.} {Некорректные настройки политики паролей.}
 <unknown> <неизвестно>
+{This login must have a title, url or username.} {У логина должно быть название, имя или ссылка.}
 {This login's group name is not valid.} {Имя группы некорректно.}
 {New login added.} {Добавлен новый логин.}
 {Login modified.} {Логин изменён.}
 {Group entries may be renamed, not edited.} {Group entries may be renamed, not edited.}
+{Move %s} {Переместить %s}
 {Destination Group with format <Group.Subgroup> :} {Группа назначения в формате <Группа.Подгруппа> :}
 {Invalid Group Name} {Invalid Group Name}
 {The group name can not be empty.} {The group name can not be empty.}
 {The name of the parent group is invalid.} {The name of the parent group is invalid.}
+{Moving of %s canceled.} {Перемещение %s отменено.}
+{%s moved.} {%s перемещен(а).}
 {Are you sure that you want to delete this login?} {Уверены что хотите удалить этот логин?}
 {Login deleted.} {Логин удалён.}
 {No Database} {No Database}
+{Please create a new database, or open an existing database first.} {Пожалуйста, сперва создайте новую БД или отройте существующую.}
 {Add a new Group} {Добавить группу}
 Parent: Родитель:
 {New Group Name:} {Новое имя группы:}
 {Addition of group canceled.} {Добавление группы отменено.}
 {New group added.} {Добавлена новая группа.}
+{Root Node Can Not Be Moved} {Нельзя переместить корневой узел}
+{The root node can not be moved.} {Нельзя переместить корневой узел.}
+{Can Not Move Node} {Невозможно переместить узел}
+{Can not move a group to a subgroup of itself.} {Нельзя переместить группу в свою же собственную подгруппу.}
+{Can Not Delete Root} {Нельзя удалить корневой узел}
+{The root node can not be deleted.} {Нельзя удалить корневой узел.}
 {Are you sure that you want to delete group and all its contents?} {Вы уверены что хотете удалить группу и всё её содержимое?}
 {Group deleted.} {Группа удалена.}
+{Can Not Rename Root} {Нельзя переименовать корневой узел}
+{The root node can not be renamed.} {Нельзя переименовать корневой узел.}
+Name Имя
+{The name of the group's parent node is invalid.} {Имя родительского узла некорректно.}
 {Group name unchanged.} {Имя группы изменено.}
 {Group renamed.} {Группа переименована.}
 {Export Security Warning} {Предупреждение безопасности при экспорте}
 {You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your	user names and passwords. Make sure to store the file in a secure location. Do you want to continue?}
 {Export password database as text ...} {Экспортировать БД как текст ...}
+{Error Exporting Database} {Ошибка экспорта БД}
+{Failed to export password database to} {Не удалось экспортировать БД в}
 {Exporting ...} {Экспорт ...}
 {Database exported.} {БД экспортирована.}
+{Import CSV datafile} {Импортировать CSV}
+{Error opening import CSV file} {Ошибка открытия CSV-файла}
+{Could not access file } {Недоступен файл }
+{Error parsing CSV file} {Ошибка разбора CSV}
+{Error parsing first line of CSV file, unable to continue.} {Фатальная ошибка разбора CSV}
+{Error, nothing to import.} {Ошибка, нечего импортировать.}
+{No valid import data was found.  Please see
+the help for details on how to format import
+CSV data files for Password Gorilla.} {Не найдено подходящих данных для импорта. См. справку для уточнения
+формата файла для импорта.}
+{Error, undefined data columns} {Ошибка, колонки данных не определены}
+{The following data items are not recognized as import data items.
+Unable to continue.} {Следующие элементы не распознаны как данные для импорта.
+Невозможно продолжить.}
+{Some records from the CSV file were not imported.
+Do you wish to save a log of skipped records?} {Некоторые записи из CSV  не были импортированы.
+Сохранить список пропущенных записей?}
+{Some records skipped during import} {Некоторые записи пропущены при импорте}
+{Enter a file into which to save the log} {Укажите файл для записи лога}
+{record(s) successfully imported.} {запись(ей) успешно импортированы.}
 {Merge Password Database} {Объединить БД}
 Merging Объединение
+{Merging (%d %% done)} {Объединение (выполнено %d %%)}
+login логин
+logins логины
+conflict конфликт
+conflicts конфликты
+{Merged %s;
+%d %s, %d identical, %d added, %d %s.} {Объединены %s;
+%d %s, %d идентичны, %d добавлено, %d %s.}
+{Merge Results} {Результаты объединения}
+{Do you want to view a detailed report?} {Хотите посмотреть детальный отчёт?}
+{Resolve Conflicts} {Разрешить конфликты}
 Close Закрыть
 {Warning: Can not save to} {Предупреждение: не могу сохранить в}
 {because the file permissions are set for read-only access.} {т.к. есть права лишь на чтение файла.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Пожалуйста, смените права доступа на чтение-запись и нажмите 'Повтор' или нажмите 'Отмена' и сохраните БД в другой файл.}
 {Warning: Read-only password file} {Предупреждение: БД в режиме только для чтения}
+{Saving ... %d %%} {Сохранение ... %d %%}
+{Error Saving Backup of Database} {Ошибка сохранения резервной копии БД}
+{Failed to save password database as
+%s: %s} {Не удалось сохранить БД как
+"%s": %s}
+{Password database saved with backup copy.} {БД сохранена с резервной копией.}
 {Password database saved.} {БД сохранена.}
+{Nothing To Save} {Нечего сохранять}
+{No password database to save.} {Нечего сохранять.}
 {Save password database ...} {Save password database ...}
 {Error Saving Database} {Error Saving Database}
 {Failed to save password database as "%s": %s} {Failed to save password database as "%s": %s}
+{Password database saved with backup copy} {БД сохранена с резервной копией}
+{No valid directory. - 
+Please define a valid backup directory
+in the Preferences menu.} {Некорректная директория. - 
+Пожалуйста, укажите директория для резервных копии в настройках.}
+{Unknown file. - 
+Please select a valid database filename.} {Неизвестный файл. -
+Пожалуйста, выберите корректный файл БД.}
+{Failed to make backup copy of password
+database as %s: 
+%s} {Не удалось создать резервную копию БД %s:
+"%s"}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {БД изменена. Хотите сохранить изменения?
 "Yes" - сохранить БД и выйти, "No" - выйти без сохранения, "Cancel" - вернуться в программу.}
 {Clipboard cleared.} {Буфер обмена очищен.}
@@ -130,7 +246,7 @@ Confirm: Подтверждение:
 {Use digits} {Использовать цифры}
 {Use hexadecimal digits} {Использовать шестнадцатиричные цифры}
 {Use symbols (%, $, @, #, etc.)} {Использовать символы (%, $, @, #, ...)}
-{Use easy to read characters only (e.g. no "0" or "O")} {Использовать лёгкие для чтения символы (без "0" и "O" и тп.)}
+{Use easy to read characters only (e.g. no "0" or "O")} {Использовать лёгкие для чтения символы (без "0" и "O" и т.п.)}
 {Database Preferences} {Настройки БД}
 {Lock when idle after} {Блокировка при бездействии}
 {minutes (0=never)} {минут (0=никогда)}
@@ -138,6 +254,13 @@ Confirm: Подтверждение:
 {Use Password Safe 3 format} {Использовать формат Password Safe 3}
 {V2 Unicode support} {Поддержка Unicode в V2}
 {V3 key stretching iterations} {Количество итераций для V3}
+{Calculate delay time} {Вычислить время задержки}
+{Default: %s} {Умолчания: %s}
+Calculate Вычислить
+Calculating Вычисление
+{Calculate iterations} Итерации
+{Delay for} Задержка
+sec(s) сек
 General Общие
 {When double clicking a login ...} {При двойном щелчке по логину ...}
 {Copy password to clipboard} {Копировать пароль}
@@ -151,7 +274,17 @@ Clear Очистить
 {Backup database on save} {Создать резервную копию БД при сохранении}
 {Remember sizes of dialog boxes} {Запоминать размеры окон}
 {Use Gorilla auto-copy} {Использовать автоматическое копирование}
+{Automatically copy password associated
+with login to clipboard after pasting
+of user-name.} {Автоматически копировать в буфер обмена пароль после вставки имени
+пользователя.}
+{This option does not function on
+Windows(TM) or MacOS(TM) platforms.
+See the help system for details.} {Эта возможность недоступна на Windows и MacOS. См. справку.}
 Defaults Умолчания
+{Time stamp backup} {Временная метка}
+{Backup path:} {Директория для резервных копий}
+{Choose a directory} {Выберите директорию}
 {Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Эти настройки будут применены к новым БД. Для изменения настроек текущей БД, выберите пункт "Настройки БД" в меню "Безопасность"}
 {Include password field} {Включать пароль}
 {Include "Notes" field} {Включать заметки}
@@ -172,9 +305,27 @@ Browser Браузер
 {Find Browser} {Найти браузер}
 {If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details.} {If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details.}
 {Also copy username to clipboard} {Скопировать имя пользователя в буфер обмена}
+{When selected the username
+from the login entry will also
+be copied to the clipboard
+when opening a browser.} {Копировать имя пользователя в буффер обмена после запуска браузера.}
+{Determines how Password
+Gorilla handles clearing the
+clipboard.
+
+Range zero to twenty.
+
+See Help for details.} {Как очищать буффер обмена.
+
+Диапазон от нуля до 12-ти.
+
+См. справку.}
 {Clipboard autoclear multiplier} {Clipboard autoclear multiplier}
 {History deleted. After a restart the list will be empty.} {История стёрта.}
 Error Ошибка
+{Error while saving RC-File} {Ошибка сохранения RC-файла}
+{Please create a new database, or open an existing
+database first.} {Пожалуйста, сперва создайте новую БД или отройте существующую.}
 {Current Master Password:} {Текущий мастер-пароль:}
 {New Master Password:} {Новый мастер-пароль:}
 {Password Not Changed} {Password Not Changed}
@@ -182,11 +333,18 @@ Error Ошибка
 Therefore, the existing password remains in effect.} {You canceled the setting of a new password.
 Therefore, the existing password remains in effect.}
 {Master password changed.} {Мастер-пароль сменён.}
+{gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'} {gorilla::CopyToClipboard: параметр %s не один из 'Username', 'Password', 'URL'}
+{Can not copy %s to clipboard: no %s defined.} {Не могу скопировать %s в буфер обмена: %s не определён.}
+{Copied %s to clipboard.} {%s скопирован(на) в буфер обмена.}
+{Password Gorilla} {Password Gorilla}
+{Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database} {Горилла защитит ваши пароли и поможет управлять ими посредством БД, совместимой с pwsafe 3.2}
 Contributors Контрибьюторы
 {Gorilla artwork contributed by %s} {Gorilla artwork contributed by %s}
 {German translation by %s} {German translation by %s}
 {Russian translation by %s} {Russian translation by %s}
 {Italian translation by %s} {Italian translation by %s}
+{French translation by %s} {Французский перевод: %s}
+{Spanish translation by %s} {Испанский перевод: %s}
 {About Password Gorilla} {О Password Gorilla}
 {Password Gorilla License} {Лицензия на Password Gorilla}
 {Find Text:} Найти:
@@ -202,4 +360,43 @@ Contributors Контрибьюторы
 {Oh well...} Ох...
 {Launched browser:} {Запущенный браузер:}
 {Generate gorilladoc.html} {Создать gorilladoc.html}
+{Conflict Merge Tool} {Инструмент разрешения конфликтов}
+{Conflict %d} {Конфликт %d}
+{Combine and Save} {Скомбинировать и сохранить}
+{Reset Values} {Сбросить значения}
+{Ignore Conflict} {Игнорировать конфликт}
+{No existing merge conflicts were found.} {Конфликты объединения не найдены.}
+Current Текущий
+Merged Объединено
+{A selection is required for:} {Выделение требуется для:}
+Back Назад
+Search Поиск
+Previous Предыдущий
+Next Следующий
+History История
+Index Индекс
+Search! Искать!
+{unknown preference type: %s} {неизвестный тип настройки: %s}
+{premature end of preference} {Неожиданное завершение настроек}
+{expected number for value, got %s} {ожидалась цифра, а получено %s}
+{expected initial quote for string value} {ожидалась открывающая кавычка для строкового значения}
+{premature end of string value} {неожиданное завершение строкового значения}
+{no such preference: %s} {нет такой настройки: %s}
+{group name can not be empty} {имя группы не может быть пустым}
+{record %d does not exist} {запись %d не существует}
+{record %d does not have field %s} {запись %d не имеет поля %s}
+{no header field %s} {нет поля заголовка %s}
+{less than 8 bytes remaining for length field} {под длинну поля осталось менее 8-ми байт}
+oops упс
+{field length %d looks insane} {длинна поля %d выглядит дико}
+{out of data} {нет данных}
+{V1 name field looks suspect} {поле V1 выглядит подозрительно}
+{this object can not be reused} {этот объект не может быть использован повторно}
+{end of file while reading header} {во время чтения заголовка файл окончился}
+{wrong password} {неверный пароль}
+{EOF while reading field} {во время чтения поля файл окончился}
+{less than 16 bytes remaining for first block} {для первого блока осталось менее 16-ми байт}
+{file does not have PWS3 magic} {файл не похож на PWS3}
+{Failed to scan key stretch iteration count from binary data.} {Не удалось прочитать количество итерации из бинарных данных.}
+{invalid version %s} {неверная версия %s}
 }
