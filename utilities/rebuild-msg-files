@@ -27,12 +27,12 @@
 
 # see if we are running from the utilities directory
 
-if [[ $PWD != ${PWD%%/gorilla/utilities} ]] ; then
+if [[ $PWD != ${PWD%%/utilities} ]] ; then
   POPATH=gettext
   HELPPATH=help2po
 else
   echo
-  echo "ERROR - this script must be run from the gorilla/utilities directory"
+  echo "ERROR - this script must be run from the [gorilla-local-dir]/utilities directory"
   echo "It is being run from $PWD at present"
   echo "Unable to continue"
   echo
