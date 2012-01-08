@@ -158,7 +158,7 @@ Merging Uniendo
 Close Cerrar
 {Warning: Can not save to} {Aviso: No se pudo guardar en}
 {because the file permissions are set for read-only access.} {porque el acceso al fichero es de sólo lectura.}
-{Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Por favor cambie los permisos del fichero a lectura-escritura}
+{Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Por favor cambie los permisos del fichero a lectura-escritura y pulse 'Reintentar' o 'Cancelar' y use 'Archivo'->'Guardar Como' para guardar en un fichero diferente.}
 {Warning: Read-only password file} {Aviso: El fichero de contraseñas no tiene permiso de escritura}
 {Password database saved.} {Base de datos guardada.}
 {Save password database ...} {Guardar base de datos ...}

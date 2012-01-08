@@ -809,7 +809,7 @@ msgstr "porque el acceso al fichero es de sólo lectura."
 msgid ""
 "Please change the file permissions to read-write and hit 'Retry' or hit "
 "'Cancel' and use 'File'->'Save As' to save into a different file."
-msgstr "Por favor cambie los permisos del fichero a lectura-escritura"
+msgstr "Por favor cambie los permisos del fichero a lectura-escritura y pulse 'Reintentar' o 'Cancelar' y use 'Archivo'->'Guardar Como' para guardar en un fichero diferente."
 
 #: ../../sources/gorilla.tcl:4269
 msgid "Warning: Read-only password file"
