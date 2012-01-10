@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Note - this script requests bash because I use Bash and therefore it
+# contains some Bashisms.  Your mileage may vary running it under another
+# shell.
+
+# Part of Password Gorilla
+
+# Copyright 2011 - Richard L Ellis
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the Free
+# Software Foundation; either version 2 of the License, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Suite 500, Boston, MA 02110-1335, USA.
+#
+# A copy of the GNU General Public License may be found in the Password
+# Gorilla sources/ directory, named LICENSE.txt.
+
+# see if we are running from the gettext directory or sources directory
+
+if [[ $PWD != ${PWD%%/gorilla/utilities/gettext} ]] ; then
+  SRCPATH=../../sources
+  GETTXT=.
+elif [[ $PWD != ${PWD%%/gorilla/sources} ]] ; then
+  SRCPATH=.
+  GETTXT=../utilities/gettext
+else
+  echo
+  echo "ERROR - this script must be run from either the gorilla/utilities/gettext/ or gorilla/sources/ directories"
+  echo "It is being run from $PWD at present"
+  echo "Unable to continue"
+  echo
+  exit 1
+fi
+
+# create everything in a new temp directory
+
+OUTDIR=$( mktemp -d )
+
+xgettext -kmc -o $OUTDIR/gorilla.pot -L Tcl $SRCPATH/gorilla.tcl $SRCPATH/viewhelp.tcl $SRCPATH/pwsafe/*.tcl
+
+for PO in $GETTXT/??.po ; do
+  cp -v $PO $OUTDIR
+  msgmerge --update $OUTDIR/$(basename $PO) --backup=simple $OUTDIR/gorilla.pot
+done
+
+# done
+
+echo
+echo New pot/po template files created in $OUTDIR
+echo

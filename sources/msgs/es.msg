@@ -1,243 +1,294 @@
-set ::msgcat::header "Project-Id-Version: \nReport-Msgid-Bugs-To: \nPOT-Creation-Date: 2011-05-22 12:19+0200\nPO-Revision-Date: 2011-09-07 18:54+0100\nLast-Translator: Juan Roldan Ruiz <juan@shoden.es>\nLanguage-Team:  <LL@li.org>\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\n"
-::msgcat::mcset es "File" "Archivo"
-::msgcat::mcset es "New ..." "Nueva ..."
-::msgcat::mcset es "Open ..." "Abrir ..."
-::msgcat::mcset es "Merge ..." "Unir ..."
-::msgcat::mcset es "Save" "Guardar"
-::msgcat::mcset es "Save As ..." "Guardar como ..."
-::msgcat::mcset es "Export ..." "Exportar ..."
-::msgcat::mcset es "Import ..." "Importar ..."
-::msgcat::mcset es "Preferences ..." "Preferencias ..."
-::msgcat::mcset es "Exit" "Salir"
-::msgcat::mcset es "Edit" "Editar"
-::msgcat::mcset es "Copy Username" "Copiar usuario"
-::msgcat::mcset es "Copy Password" "Copiar contrase\u00f1a"
-::msgcat::mcset es "Copy URL" "Copiar URL"
-::msgcat::mcset es "Clear Clipboard" "Borrar portapapeles"
-::msgcat::mcset es "Find ..." "Buscar ..."
-::msgcat::mcset es "Find next" "Buscar siguiente"
-::msgcat::mcset es "Login" "Cuenta"
-::msgcat::mcset es "Add Login" "A\u00f1adir cuenta"
-::msgcat::mcset es "Edit Login" "Editar cuenta"
-::msgcat::mcset es "View Login" "Ver cuenta"
-::msgcat::mcset es "Delete Login" "Eliminar cuenta"
-::msgcat::mcset es "Move Login ..." "Mover cuenta ..."
-::msgcat::mcset es "Add Group ..." "A\u00f1adir grupo ..."
-::msgcat::mcset es "Add Subgroup ..." "A\u00f1adir subgrupo ..."
-::msgcat::mcset es "Rename Group ..." "Renombrar grupo ..."
-::msgcat::mcset es "Move Group ..." "Mover grupo ..."
-::msgcat::mcset es "Delete Group" "Eliminar grupo ..."
-::msgcat::mcset es "Security" "Seguridad"
-::msgcat::mcset es "Password Policy ..." "Pol\u00edtica de contrase\u00f1a ..."
-::msgcat::mcset es "Customize ..." "Personalizar ..."
-::msgcat::mcset es "Change Master Password ..." "Cambiar contrase\u00f1a maestra ..."
-::msgcat::mcset es "Lock now" "Bloquear ahora"
-::msgcat::mcset es "Help" "Ayuda"
-::msgcat::mcset es "Help ..." "Ayuda ..."
-::msgcat::mcset es "License ..." "Licencia ..."
-::msgcat::mcset es "About ..." "Acerca de ..."
-::msgcat::mcset es "Need %s" "Necesita %s"
-::msgcat::mcset es "The Password Gorilla requires the \"%s\" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.\n\nError message: %s" "Password Gorilla necesita el paquete \"%s\". Parece que hay un error de instalaci\u00f3n, como si este fichero debiera ser parte de Password Gorilla.\n\nMensaje de error: %s"
-::msgcat::mcset es "Need \[Incr Tcl\]" "Necesita \[Incr Tcl\]"
-::msgcat::mcset es "The Password Gorilla requires the \[incr Tcl\] add-on to Tcl. Please install the \[incr Tcl\] package.\n\nError Message: %s" "Password Gorilla necesita el extra \[incr Tcl\] para Tcl. Por favor instale el paquete \[incr Tcl\].\n\nMensaje de error: %s"
-::msgcat::mcset es "Need PWSafe" "Necesita PWSafe"
-::msgcat::mcset es "The Password Gorilla requires the \"pwsafe\" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.\n\nError Message: %s" "Password Gorilla necesita el paquete \"pwsafe\". Parece que hay un error de instalaci\u00f3n, como si el paquete pwsafe debiera ser parte de Password Gorilla.\n\nMensaje de error: %s"
-::msgcat::mcset es "Welcome to the Password Gorilla." "Bienvenido a Password Gorilla."
-::msgcat::mcset es "About" "Acerca de"
-::msgcat::mcset es "Add Subgroup" "A\u00f1adir subgrupo"
-::msgcat::mcset es "Rename Group" "Renombrar grupo"
-::msgcat::mcset es "Open URL" "Abrir URL"
-::msgcat::mcset es "Copy Username to Clipboard" "Copiar usuario al portapapeles"
-::msgcat::mcset es "Copy Password to Clipboard" "Copiar contrase\u00f1a al portapapeles"
-::msgcat::mcset es "Copy URL to Clipboard" "Copiar URL al portapapeles"
-::msgcat::mcset es "Move Login to:" "Mover cuenta a:"
-::msgcat::mcset es "Save changes?" "\u00bfGuardar cambios?"
-::msgcat::mcset es "The current password database is modified. Do you want to save the current database before creating the new database?" "La base de datos actual ha sido modificada. \u00bfDesea guardar la base de datos actual antes de crear una nueva?"
-::msgcat::mcset es "New Database: Choose Master Password" "Nueva base de datos: Elija la contrase\u00f1a maestra"
-::msgcat::mcset es "Password Gorilla - <New Database>" "Password Gorilla - <Nueva base de datos>"
-::msgcat::mcset es "<New Database>" "<Nueva base de datos>"
-::msgcat::mcset es "Add logins using <Add Login> in the <Login> menu." "A\u00f1adir cuentas usando <A\u00f1adir cuenta> del men\u00fa <Cuenta>"
-::msgcat::mcset es "Opening ... %2.0f %%" "Abriendo ... %2.0f %%"
-::msgcat::mcset es "Database:" "Base de datos:"
-::msgcat::mcset es "Password:" "Contrase\u00f1a:"
-::msgcat::mcset es "OK" "Aceptar"
-::msgcat::mcset es "New" "Nueva"
-::msgcat::mcset es "Select a database, and enter its password. Click \"New\" to create a new database." "Seleccione una base de datos e introduzca su contrase\u00f1a.\nPulse \"Nueva\" para crear una base de datos nueva."
-::msgcat::mcset es "Please be patient. Verifying password ..." "Por favor tenga paciencia. Comprobando su contrase\u00f1a ..."
-::msgcat::mcset es "Error Opening Database" "Error al abrir la base de datos"
-::msgcat::mcset es "Can not open password database \"%s\": %s" "No se pudo abrir la base de datos \"%s\": %s"
-::msgcat::mcset es "Browse for a password database ..." "Seleccionar una base de datos ..."
-::msgcat::mcset es "Open Password Database" "Abrir una base de datos"
-::msgcat::mcset es "Password database %s loaded." "La base de datos %s ha sido cargada."
-::msgcat::mcset es "Add/Edit/View Login" "A\u00f1adir/Editar/Ver cuenta"
-::msgcat::mcset es "Cancel" "Cancelar"
-::msgcat::mcset es "Show Password" "Mostrar contrase\u00f1a"
-::msgcat::mcset es "Generate Password" "Generar contrase\u00f1a"
-::msgcat::mcset es "Override Password Policy" "Reescribir pol\u00edtica de contrase\u00f1a"
-::msgcat::mcset es "Password Length" "Longitud de contrase\u00f1a"
-::msgcat::mcset es "Hide Password" "Ocultar contrase\u00f1a"
-::msgcat::mcset es "Password policy settings invalid." "Configuraci\u00f3n incorrecta de la pol\u00edtica de contrase\u00f1a"
-::msgcat::mcset es "<unknown>" "<desconocido>"
-::msgcat::mcset es "This login must have a title, url or username." "La cuenta debe tener t\u00edtulo, url y usuario."
-::msgcat::mcset es "This login's group name is not valid." "El nombre de grupo es incorrecto."
-::msgcat::mcset es "New login added." "La nueva cuenta ha sido a\u00f1adida."
-::msgcat::mcset es "Login modified." "Cuenta modificada."
-::msgcat::mcset es "Group entries may be renamed, not edited." "Las entradas de los grupos pueden ser renombradas, no editadas."
-::msgcat::mcset es "Destination Group with format <Group.Subgroup> :" "Grupo de destino con formato <Grupo.Subgrupo> :"
-::msgcat::mcset es "Invalid Group Name" "Nombre de grupo incorrecto"
-::msgcat::mcset es "The group name can not be empty." "El nombre de grupo no puede estar vac\u00edo"
-::msgcat::mcset es "The name of the parent group is invalid." "El nombre del grupo es incorrecto."
-::msgcat::mcset es "Are you sure that you want to delete this login?" "\u00bfSeguro que desea eliminar esta cuenta?"
-::msgcat::mcset es "Login deleted." "Cuenta eliminada."
-::msgcat::mcset es "Add a new Group" "A\u00f1adir un grupo nuevo"
-::msgcat::mcset es "Parent:" "Padre:"
-::msgcat::mcset es "New Group Name:" "Nombre del grupo nuevo:"
-::msgcat::mcset es "Addition of group canceled." "Creaci\u00f3n del grupo cancelada."
-::msgcat::mcset es "New group added." "Nuevo grupo a\u00f1adido."
-::msgcat::mcset es "Root Node Can Not Be Moved" "El nodo ra\u00edz no puede ser movido"
-::msgcat::mcset es "The root node can not be moved." "El nodo ra\u00edz no puede ser movido."
-::msgcat::mcset es "Can Not Move Node" "No se puede mover el nodo"
-::msgcat::mcset es "Can not move a group to a subgroup of itself." "No se puede mover un grupo a un subgrupo suyo."
-::msgcat::mcset es "Are you sure that you want to delete group and all its contents?" "\u00bfSeguro que desea eliminar el grupo y todo su contenido?"
-::msgcat::mcset es "Group deleted." "Grupo eliminado."
-::msgcat::mcset es "Group name unchanged." "Nombre de grupo no modificado."
-::msgcat::mcset es "Group renamed." "Grupo renombrado."
-::msgcat::mcset es "Export Security Warning" "Aviso de seguridad de exportaci\u00f3n"
-::msgcat::mcset es "You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?" "Est\u00e1 a punto de exportar la base de datos a un fichero de texto plano. Este fichero no estar\u00e1 encriptado ni protegido con contrase\u00f1a. Cualquier persona con acceso al fichero podr\u00e1 leerlo y conocer sus usuarios y contrase\u00f1as. Aseg\u00farese de guardar este fichero en un lugar seguro. \u00bfDesea continuar?"
-::msgcat::mcset es "Export password database as text ..." "Exportar base de datos como texto ..."
-::msgcat::mcset es "Error Exporting Database" "Error al exportar la base de datos"
-::msgcat::mcset es "Failed to export password database to" "Error al exportar la base de datos a"
-::msgcat::mcset es "Exporting ..." "Exportando ..."
-::msgcat::mcset es "Database exported." "Base de datos exportada."
-::msgcat::mcset es "Import CSV datafile" "Importar fichero de datos CSV"
-::msgcat::mcset es "Error opening import CSV file" "Error al importar fichero CSV"
-::msgcat::mcset es "Could not access file " "No se pudo acceder al fichero"
-::msgcat::mcset es "Error parsing CSV file" "Error al analizar el fichero CSV"
-::msgcat::mcset es "Error parsing first line of CSV file, unable to continue." "Error al analizar la primera l\u00ednea del fichero CSV, no se pudo continuar."
-::msgcat::mcset es "Error, nothing to import." "Error, nada que importar."
-::msgcat::mcset es "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." "No se han encontrado datos v\u00e1lidos. Por favor,\nconsulte la ayuda para saber c\u00f3mo dar formato\na los ficheros CSV para Password Gorilla."
-::msgcat::mcset es "Error, undefined data columns" "Error, columnas de datos no definidas"
-::msgcat::mcset es "The following data items are not recognized as import data items.\nUnable to continue." "Los siguientes elementos no se pudieron importar.\nNo se pudo continuar."
-::msgcat::mcset es "Some records from the CSV file were not imported.\nDo you wish to save a log of skipped records?" "Algunos registros del fichero CSV no se importaron.\n\u00bfDesea guardar un log con los registros omitidos?"
-::msgcat::mcset es "Some records skipped during import" "Algunos registros omitidos durante la importaci\u00f3n"
-::msgcat::mcset es "Enter a file into which to save the log" "Introduzca un fichero donde guardar el log"
-::msgcat::mcset es "record(s) successfully imported." "registro(s) importado(s) correctamente."
-::msgcat::mcset es "Saving ... %2.0f %%" "Guardando ... %2.0f %%"
-::msgcat::mcset es "Merge Password Database" "Unir base de datos"
-::msgcat::mcset es "Merging" "Uniendo"
-::msgcat::mcset es "Close" "Cerrar"
-::msgcat::mcset es "Warning: Can not save to" "Aviso: No se pudo guardar en"
-::msgcat::mcset es "because the file permissions are set for read-only access." "porque el acceso al fichero es de s\u00f3lo lectura."
-::msgcat::mcset es "Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file." "Por favor cambie los permisos del fichero a lectura-escritura"
-::msgcat::mcset es "Warning: Read-only password file" "Aviso: El fichero de contrase\u00f1as no tiene permiso de escritura"
-::msgcat::mcset es "Password database saved." "Base de datos guardada."
-::msgcat::mcset es "Save password database ..." "Guardar base de datos ..."
-::msgcat::mcset es "Error Saving Database" "Error al guardar la base de datos"
-::msgcat::mcset es "Failed to make backup copy of password database as \"%s\": %s" "Fallo al crear la copia de seguridad de la base de datos en \"%s\": %s"
-::msgcat::mcset es "Failed to save password database as \"%s\": %s" "Fallo al guardar la base de datos en \"%s\": %s"
-::msgcat::mcset es "Password database saved as %s" "Base de datos guardada en %s"
-::msgcat::mcset es "The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu." "La base de datos actual ha sido modificada. \u00bfDesea guardar la base de datos? <S\u00ed> guarda la base de datos y sale. <No> descarta todos los cambios y sale. <Cancelar> vuelve al men\u00fa principal."
-::msgcat::mcset es "Clipboard cleared." "Portapapeles limpiado."
-::msgcat::mcset es "Database Locked" "Base de datos bloqueada"
-::msgcat::mcset es "Enter the Master Password." "Introduzca la contrase\u00f1a maestra."
-::msgcat::mcset es "error: %s" "error: %s"
-::msgcat::mcset es "Wrong Password" "Contrase\u00f1a incorrecta"
-::msgcat::mcset es "That password is not correct." "La contrase\u00f1a no es correcta."
-::msgcat::mcset es "Welcome back." "Bienvenido de nuevo."
-::msgcat::mcset es "Confirm:" "Confirmar:"
-::msgcat::mcset es "Passwords Do Not Match" "Las contrase\u00f1as no coinciden"
-::msgcat::mcset es "The confirmed password does not match." "La contrase\u00f1a confirmada no coincide."
-::msgcat::mcset es "Password policy changed." "Pol\u00edtica de contrase\u00f1a modificada."
-::msgcat::mcset es "Use lowercase letters" "Usar letras en min\u00fasculas"
-::msgcat::mcset es "Use UPPERCASE letters" "Usar letras en MAY\u00daSCULAS"
-::msgcat::mcset es "Use digits" "Usar d\u00edgitos"
-::msgcat::mcset es "Use hexadecimal digits" "Usar d\u00edgitos hexadecimales"
-::msgcat::mcset es "Use symbols (%, \$, @, #, etc.)" "Usar s\u00edmbolos (%, \$, @, #, etc.)"
-::msgcat::mcset es "Use easy to read characters only (e.g. no \"0\" or \"O\")" "Usar solo caracteres de f\u00e1cil lectura (ej. ni \"0\" ni \"O\")"
-::msgcat::mcset es "Database Preferences" "Preferencias de la base de datos"
-::msgcat::mcset es "Lock when idle after" "Bloquear tras ausentarse durante"
-::msgcat::mcset es "minutes (0=never)" "minutos (0=nunca)"
-::msgcat::mcset es "Auto-save database immediately when changed" "Auto-guardar base de datos inmediatamente al ser modificada"
-::msgcat::mcset es "Use Password Safe 3 format" "Usar formato Password Safe 3"
-::msgcat::mcset es "V2 Unicode support" "Soporte para V2 Unicode"
-::msgcat::mcset es "V3 key stretching iterations" "Iteraciones de extensi\u00f3n de clave V3"
-::msgcat::mcset es "Preferences" "Preferencias"
-::msgcat::mcset es "General" "General"
-::msgcat::mcset es "When double clicking a login ..." "Al hacer doble clic sobre una cuenta ..."
-::msgcat::mcset es "Copy password to clipboard" "Copiar contrase\u00f1a al portapapeles"
-::msgcat::mcset es "Launch Browser directed to URL" "Abrir URL en el navegador"
-::msgcat::mcset es "Do nothing" "No hacer nada"
-::msgcat::mcset es "Clear clipboard after" "Limpiar portapapeles despu\u00e9s de"
-::msgcat::mcset es "seconds (0=never)" "segundos (0=nunca)"
-::msgcat::mcset es "Remember" "Recordar"
-::msgcat::mcset es "database names" "Nombres de la base de datos"
-::msgcat::mcset es "Clear" "Limpiar"
-::msgcat::mcset es "Backup database on save" "Respaldar base de datos al guardar"
-::msgcat::mcset es "Remember sizes of dialog boxes" "Recordar los tama\u00f1os de las ventanas de di\u00e1logos"
-::msgcat::mcset es "Use Gorilla auto-copy" "Usar auto-copiar de Gorilla"
-::msgcat::mcset es "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." "Copiar autom\u00e1ticamente la contrase\u00f1a\nasociada a la cuenta despu\u00e9s de pegar\nel nombre de usuario."
-::msgcat::mcset es "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." "Esta opci\u00f3n no funciona en\nsistemas Windows(TM) o MacOS(TM).\nConsulte la ayuda para m\u00e1s detalles."
-::msgcat::mcset es "Defaults" "Por defecto"
-::msgcat::mcset es "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu." "Nota: estos valores por defecto se aplicar\u00e1n a las nuevas bases de datos. Para cambiar la configuraci\u00f3n de una base datos existente, vaya a \"Personalizar\" en el men\u00fa \"Seguridad\"."
-::msgcat::mcset es "Export" "Exportar"
-::msgcat::mcset es "Include password field" "Incluir el campo contrase\u00f1a"
-::msgcat::mcset es "Include \"Notes\" field" "Incluir el campo \"Notas\""
-::msgcat::mcset es "Field separator" "Separador de campos"
-::msgcat::mcset es "Show security warning" "Mostrar avisos de seguridad"
-::msgcat::mcset es "Display" "Apariencia"
-::msgcat::mcset es "Language:" "Idioma:"
-::msgcat::mcset es "Size" "Tama\u00f1o:"
-::msgcat::mcset es "Show Gorilla Icon" "Mostrar el icono de Gorilla"
-::msgcat::mcset es "Iconify upon auto-lock" "Iconificar tras el auto-bloqueo"
-::msgcat::mcset es "Hide login name in tree view" "Ocultar el nombre de usuario en la vista de \u00e1rbol"
-::msgcat::mcset es "This option takes effect after exiting\nand restarting of Password Gorilla" "Esta opci\u00f3n ser\u00e1 efectiva despu\u00e9s\nde reiniciar Password Gorilla"
-::msgcat::mcset es "Browser" "Navegador"
-::msgcat::mcset es "Browser executable to launch (required):" "Ejecutable del navegador (obligatorio):"
-::msgcat::mcset es "Command line parameter (if any) to pass (optional):" "Par\u00e1metro de l\u00ednea de comandos (opcional):"
-::msgcat::mcset es "Find Browser" "Buscar navegador"
-::msgcat::mcset es "If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details." "Si se ha introducido un par\u00e1metro de l\u00ednea de comandos, debe contener la secuencia de caracteres: %url%. Esta secuencia ser\u00e1 reemplazada por la URL actual mientras se lance la orden. Consultar la ayuda para m\u00e1s detalles."
-::msgcat::mcset es "Also copy username to clipboard" "Copiar tambi\u00e9n el usuario al portapapeles"
-::msgcat::mcset es "When selected the username\nfrom the login entry will also\nbe copied to the clipboard\nwhen opening a browser." "Cuando se seleccione el usuario\ndesde el formulario de la cuenta\ntambi\u00e9n se copiar\u00e1 al portapapeles\nal abrir el navegador."
-::msgcat::mcset es "Determines how Password\nGorilla handles clearing the\nclipboard.\n\nRange zero to twenty.\n\nSee Help for details." "Establece c\u00f3mo Password\nGorilla realiza la limpieza\ndel portapapeles.\n\nRango: de cero a veinte.\n\nConsultar la ayuda para\nm\u00e1s detalles."
-::msgcat::mcset es "Clipboard autoclear multiplier" "Multiplicador para la limpieza del portapapeles"
-::msgcat::mcset es "History deleted. After a restart the list will be empty." "Historial eliminado. Esta lista se vaciar\u00e1 tras reiniciar."
-::msgcat::mcset es "No Database" "Ninguna base de datos"
-::msgcat::mcset es "Please create a new database, or open an existing\ndatabase first." "Por favor, crear una nueva base de datos o abrir\nuna base de datos existente."
-::msgcat::mcset es "Current Master Password:" "Contrase\u00f1a maestra actual:"
-::msgcat::mcset es "New Master Password:" "Nueva contrase\u00f1a maestra:"
-::msgcat::mcset es "Password Not Changed" "Contrase\u00f1a no modificada"
-::msgcat::mcset es "You canceled the setting of a new password.\nTherefore, the existing password remains in effect." "Ha cancelado la creaci\u00f3n de una nueva contrase\u00f1a.\nPor lo que la contrase\u00f1a existente sigue siendo v\u00e1lida."
-::msgcat::mcset es "Master password changed." "Contrase\u00f1a maestra modificada."
-::msgcat::mcset es "Can not copy %s to clipboard: no %s defined." "No se puede copiar %s al portapapeles: %s sin definir."
-::msgcat::mcset es "Copied %s to clipboard." "%s copiado al portapapeles."
-::msgcat::mcset es "Password Gorilla" "Password Gorilla"
-::msgcat::mcset es "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" "Gorilla proteger\u00e1 sus contrase\u00f1as y le ayudar\u00e1 a gestionarlas en una base datos compatible con pwsafe 3.2"
-::msgcat::mcset es "Contributors" "Contribuidores"
-::msgcat::mcset es "Gorilla artwork contributed by %s" "Material gr\u00e1fico de Gorilla por %s"
-::msgcat::mcset es "German translation by %s" "Traducci\u00f3n al alem\u00e1n por %s"
-::msgcat::mcset es "Russian translation by %s" "Traducci\u00f3n al ruso por %s"
-::msgcat::mcset es "Italian translation by %s" "Traducci\u00f3n al italiano por %s"
-::msgcat::mcset es "License" "Licencia"
-::msgcat::mcset es "About Password Gorilla" "Acerca de Password Gorilla"
-::msgcat::mcset es "Password Gorilla License" "Licencia de Password Gorilla"
-::msgcat::mcset es "Find Text:" "Buscar texto:"
-::msgcat::mcset es "Find Options ..." "Opciones de b\u00fasqueda ..."
-::msgcat::mcset es "Any field" "Cualquier campo"
-::msgcat::mcset es "Title" "T\u00edtulo"
-::msgcat::mcset es "Username" "Usuario"
-::msgcat::mcset es "Password" "Contrase\u00f1a"
-::msgcat::mcset es "Notes" "Notas"
-::msgcat::mcset es "URL" "URL"
-::msgcat::mcset es "Case sensitive find" "Distinguir may\u00fasculas"
-::msgcat::mcset es "Find" "Buscar"
-::msgcat::mcset es "Text not found." "Texto no encontrado."
-::msgcat::mcset es "Please select a login entry first." "Por favor seleccione una cuenta primero."
-::msgcat::mcset es "The selected login does not contain a URL value." "La cuenta seleccionada no contiene ninguna URL."
-::msgcat::mcset es "Browser launching is not configured. See help." "El navegador no est\u00e1 configurado. Consulte la ayuda."
-::msgcat::mcset es "Browser parameter lacks '%url%' string. See help." "Al par\u00e1metro del navegador le falta la cadena '%url%'. Consulte la ayuda."
-::msgcat::mcset es "Error" "Error"
-::msgcat::mcset es "Error launching browser, the OS error message is:" "Error al ejecutar el navegador, el sistema lanz\u00f3 el error:"
-::msgcat::mcset es "Oh well..." "Oh bueno..."
-::msgcat::mcset es "Launched browser:" "Navegador lanzado:"
-::msgcat::mcset es "Generate gorilladoc.html" "Generar gorilladoc.html"
-::msgcat::mcset es "Can not drag the selected items (see documentation)" "No se pudieron arrastrar los elementos seleccionados (ver documentaci\u00f3n)"
+#
+# DO NOT EDIT THIS FILE
+#
+# It is automatically generated by utilities/rebuild-msg-files using the
+# *.po files as templates from utilities/gettext and /utilities/help2po
+# directories.  Modify those files instead and then re-run the
+# rebuild-msg-files script.
+#
+#
+# Project-Id-Version: 
+# Report-Msgid-Bugs-To: 
+# POT-Creation-Date: 2011-11-27 17:31+0100
+# PO-Revision-Date: 2011-09-07 18:54+0100
+# Last-Translator: Juan Roldan Ruiz <juan@shoden.es>
+# Language-Team:  <LL@li.org>
+# Language: 
+# MIME-Version: 1.0
+# Content-Type: text/plain; charset=UTF-8
+# Content-Transfer-Encoding: 8bit
+
+mcmset es {
+{Need %s} {Necesita %s}
+{The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
+
+Error message: %s} {Password Gorilla necesita el paquete "%s". Parece que hay un error de instalación, como si este fichero debiera ser parte de Password Gorilla.
+
+Mensaje de error: %s}
+{Need [Incr Tcl]} {Necesita [Incr Tcl]}
+{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
+
+Error Message: %s} {Password Gorilla necesita el extra [incr Tcl] para Tcl. Por favor instale el paquete [incr Tcl].
+
+Mensaje de error: %s}
+{Need PWSafe} {Necesita PWSafe}
+{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
+
+Error Message: %s} {Password Gorilla necesita el paquete "pwsafe". Parece que hay un error de instalación, como si el paquete pwsafe debiera ser parte de Password Gorilla.
+
+Mensaje de error: %s}
+{Welcome to the Password Gorilla.} {Bienvenido a Password Gorilla.}
+File Archivo
+New Nueva
+Save Guardar
+Export Exportar
+Preferences Preferencias
+Exit Salir
+Edit Editar
+{Copy Username} {Copiar usuario}
+{Copy Password} {Copiar contraseña}
+{Copy URL} {Copiar URL}
+{Clear Clipboard} {Borrar portapapeles}
+Find Buscar
+{Find next} {Buscar siguiente}
+Login Cuenta
+{Add Login} {Añadir cuenta}
+{Edit Login} {Editar cuenta}
+{View Login} {Ver cuenta}
+{Delete Login} {Eliminar cuenta}
+{Add Subgroup} {Añadir subgrupo}
+{Rename Group} {Renombrar grupo}
+{Delete Group} {Eliminar grupo ...}
+Security Seguridad
+{Lock now} {Bloquear ahora}
+Help Ayuda
+License Licencia
+About {Acerca de}
+{Open URL} {Abrir URL}
+{Copy Username to Clipboard} {Copiar usuario al portapapeles}
+{Copy Password to Clipboard} {Copiar contraseña al portapapeles}
+{Copy URL to Clipboard} {Copiar URL al portapapeles}
+{Move Login to:} {Mover cuenta a:}
+{Save changes?} {¿Guardar cambios?}
+{The current password database is modified. Do you want to save the current database before creating the new database?} {La base de datos actual ha sido modificada. ¿Desea guardar la base de datos actual antes de crear una nueva?}
+{New Database: Choose Master Password} {Nueva base de datos: Elija la contraseña maestra}
+{Password Gorilla - <New Database>} {Password Gorilla - <Nueva base de datos>}
+{<New Database>} {<Nueva base de datos>}
+{Add logins using <Add Login> in the <Login> menu.} {Añadir cuentas usando <Añadir cuenta> del menú <Cuenta>}
+Database: {Base de datos:}
+Password: Contraseña:
+OK Aceptar
+{Select a database, and enter its password. Click "New" to create a new database.} {Seleccione una base de datos e introduzca su contraseña.
+Pulse "Nueva" para crear una base de datos nueva.}
+{Please be patient. Verifying password ...} {Por favor tenga paciencia. Comprobando su contraseña ...}
+{Error Opening Database} {Error al abrir la base de datos}
+{Can not open password database "%s": %s} {No se pudo abrir la base de datos "%s": %s}
+{Browse for a password database ...} {Seleccionar una base de datos ...}
+{Open Password Database} {Abrir una base de datos}
+{Password database %s loaded.} {La base de datos %s ha sido cargada.}
+{Add/Edit/View Login} {Añadir/Editar/Ver cuenta}
+Title Título
+URL URL
+Username Usuario
+Password Contraseña
+Notes Notas
+Cancel Cancelar
+{Show Password} {Mostrar contraseña}
+{Generate Password} {Generar contraseña}
+{Override Password Policy} {Reescribir política de contraseña}
+{Password Length} {Longitud de contraseña}
+{Hide Password} {Ocultar contraseña}
+{Password policy settings invalid.} {Configuración incorrecta de la política de contraseña}
+<unknown> <desconocido>
+{This login must have a title, url or username.} {La cuenta debe tener título, url y usuario.}
+{This login's group name is not valid.} {El nombre de grupo es incorrecto.}
+{New login added.} {La nueva cuenta ha sido añadida.}
+{Login modified.} {Cuenta modificada.}
+{Group entries may be renamed, not edited.} {Las entradas de los grupos pueden ser renombradas, no editadas.}
+{Destination Group with format <Group.Subgroup> :} {Grupo de destino con formato <Grupo.Subgrupo> :}
+{Invalid Group Name} {Nombre de grupo incorrecto}
+{The group name can not be empty.} {El nombre de grupo no puede estar vacío}
+{The name of the parent group is invalid.} {El nombre del grupo es incorrecto.}
+{Are you sure that you want to delete this login?} {¿Seguro que desea eliminar esta cuenta?}
+{Login deleted.} {Cuenta eliminada.}
+{No Database} {Ninguna base de datos}
+{Add a new Group} {Añadir un grupo nuevo}
+Parent: Padre:
+{New Group Name:} {Nombre del grupo nuevo:}
+{Addition of group canceled.} {Creación del grupo cancelada.}
+{New group added.} {Nuevo grupo añadido.}
+{Root Node Can Not Be Moved} {El nodo raíz no puede ser movido}
+{The root node can not be moved.} {El nodo raíz no puede ser movido.}
+{Can Not Move Node} {No se puede mover el nodo}
+{Can not move a group to a subgroup of itself.} {No se puede mover un grupo a un subgrupo suyo.}
+{Are you sure that you want to delete group and all its contents?} {¿Seguro que desea eliminar el grupo y todo su contenido?}
+{Group deleted.} {Grupo eliminado.}
+{Group name unchanged.} {Nombre de grupo no modificado.}
+{Group renamed.} {Grupo renombrado.}
+{Export Security Warning} {Aviso de seguridad de exportación}
+{You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {Está a punto de exportar la base de datos a un fichero de texto plano. Este fichero no estará encriptado ni protegido con contraseña. Cualquier persona con acceso al fichero podrá leerlo y conocer sus usuarios y contraseñas. Asegúrese de guardar este fichero en un lugar seguro. ¿Desea continuar?}
+{Export password database as text ...} {Exportar base de datos como texto ...}
+{Error Exporting Database} {Error al exportar la base de datos}
+{Failed to export password database to} {Error al exportar la base de datos a}
+{Exporting ...} {Exportando ...}
+{Database exported.} {Base de datos exportada.}
+{Import CSV datafile} {Importar fichero de datos CSV}
+{Error opening import CSV file} {Error al importar fichero CSV}
+{Could not access file } {No se pudo acceder al fichero}
+{Error parsing CSV file} {Error al analizar el fichero CSV}
+{Error parsing first line of CSV file, unable to continue.} {Error al analizar la primera línea del fichero CSV, no se pudo continuar.}
+{Error, nothing to import.} {Error, nada que importar.}
+{No valid import data was found.  Please see
+the help for details on how to format import
+CSV data files for Password Gorilla.} {No se han encontrado datos válidos. Por favor,
+consulte la ayuda para saber cómo dar formato
+a los ficheros CSV para Password Gorilla.}
+{Error, undefined data columns} {Error, columnas de datos no definidas}
+{The following data items are not recognized as import data items.
+Unable to continue.} {Los siguientes elementos no se pudieron importar.
+No se pudo continuar.}
+{Some records from the CSV file were not imported.
+Do you wish to save a log of skipped records?} {Algunos registros del fichero CSV no se importaron.
+¿Desea guardar un log con los registros omitidos?}
+{Some records skipped during import} {Algunos registros omitidos durante la importación}
+{Enter a file into which to save the log} {Introduzca un fichero donde guardar el log}
+{record(s) successfully imported.} {registro(s) importado(s) correctamente.}
+{Merge Password Database} {Unir base de datos}
+Merging Uniendo
+Close Cerrar
+{Warning: Can not save to} {Aviso: No se pudo guardar en}
+{because the file permissions are set for read-only access.} {porque el acceso al fichero es de sólo lectura.}
+{Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Por favor cambie los permisos del fichero a lectura-escritura y pulse 'Reintentar' o 'Cancelar' y use 'Archivo'->'Guardar Como' para guardar en un fichero diferente.}
+{Warning: Read-only password file} {Aviso: El fichero de contraseñas no tiene permiso de escritura}
+{Password database saved.} {Base de datos guardada.}
+{Save password database ...} {Guardar base de datos ...}
+{Error Saving Database} {Error al guardar la base de datos}
+{Failed to save password database as "%s": %s} {Fallo al guardar la base de datos en "%s": %s}
+{The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {La base de datos actual ha sido modificada. ¿Desea guardar la base de datos? <Sí> guarda la base de datos y sale. <No> descarta todos los cambios y sale. <Cancelar> vuelve al menú principal.}
+{Clipboard cleared.} {Portapapeles limpiado.}
+{Database Locked} {Base de datos bloqueada}
+{Enter the Master Password.} {Introduzca la contraseña maestra.}
+{error: %s} {error: %s}
+{Wrong Password} {Contraseña incorrecta}
+{That password is not correct.} {La contraseña no es correcta.}
+{Welcome back.} {Bienvenido de nuevo.}
+Confirm: Confirmar:
+{Passwords Do Not Match} {Las contraseñas no coinciden}
+{The confirmed password does not match.} {La contraseña confirmada no coincide.}
+{Password policy changed.} {Política de contraseña modificada.}
+{Use lowercase letters} {Usar letras en minúsculas}
+{Use UPPERCASE letters} {Usar letras en MAYÚSCULAS}
+{Use digits} {Usar dígitos}
+{Use hexadecimal digits} {Usar dígitos hexadecimales}
+{Use symbols (%, $, @, #, etc.)} {Usar símbolos (%, $, @, #, etc.)}
+{Use easy to read characters only (e.g. no "0" or "O")} {Usar solo caracteres de fácil lectura (ej. ni "0" ni "O")}
+{Database Preferences} {Preferencias de la base de datos}
+{Lock when idle after} {Bloquear tras ausentarse durante}
+{minutes (0=never)} {minutos (0=nunca)}
+{Auto-save database immediately when changed} {Auto-guardar base de datos inmediatamente al ser modificada}
+{Use Password Safe 3 format} {Usar formato Password Safe 3}
+{V2 Unicode support} {Soporte para V2 Unicode}
+{V3 key stretching iterations} {Iteraciones de extensión de clave V3}
+General General
+{When double clicking a login ...} {Al hacer doble clic sobre una cuenta ...}
+{Copy password to clipboard} {Copiar contraseña al portapapeles}
+{Launch Browser directed to URL} {Abrir URL en el navegador}
+{Do nothing} {No hacer nada}
+{Clear clipboard after} {Limpiar portapapeles después de}
+{seconds (0=never)} {segundos (0=nunca)}
+Remember Recordar
+{database names} {Nombres de la base de datos}
+Clear Limpiar
+{Backup database on save} {Respaldar base de datos al guardar}
+{Remember sizes of dialog boxes} {Recordar los tamaños de las ventanas de diálogos}
+{Use Gorilla auto-copy} {Usar auto-copiar de Gorilla}
+{Automatically copy password associated
+with login to clipboard after pasting
+of user-name.} {Copiar automáticamente la contraseña
+asociada a la cuenta después de pegar
+el nombre de usuario.}
+{This option does not function on
+Windows(TM) or MacOS(TM) platforms.
+See the help system for details.} {Esta opción no funciona en
+sistemas Windows(TM) o MacOS(TM).
+Consulte la ayuda para más detalles.}
+Defaults {Por defecto}
+{Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Nota: estos valores por defecto se aplicarán a las nuevas bases de datos. Para cambiar la configuración de una base datos existente, vaya a "Personalizar" en el menú "Seguridad".}
+{Include password field} {Incluir el campo contraseña}
+{Include "Notes" field} {Incluir el campo "Notas"}
+{Field separator} {Separador de campos}
+{Show security warning} {Mostrar avisos de seguridad}
+Display Apariencia
+Language: Idioma:
+Size Tamaño:
+{Show Gorilla Icon} {Mostrar el icono de Gorilla}
+{Iconify upon auto-lock} {Iconificar tras el auto-bloqueo}
+{Hide login name in tree view} {Ocultar el nombre de usuario en la vista de árbol}
+{This option takes effect after exiting
+and restarting of Password Gorilla} {Esta opción será efectiva después
+de reiniciar Password Gorilla}
+Browser Navegador
+{Browser executable to launch (required):} {Ejecutable del navegador (obligatorio):}
+{Command line parameter (if any) to pass (optional):} {Parámetro de línea de comandos (opcional):}
+{Find Browser} {Buscar navegador}
+{If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details.} {Si se ha introducido un parámetro de línea de comandos, debe contener la secuencia de caracteres: %url%. Esta secuencia será reemplazada por la URL actual mientras se lance la orden. Consultar la ayuda para más detalles.}
+{Also copy username to clipboard} {Copiar también el usuario al portapapeles}
+{When selected the username
+from the login entry will also
+be copied to the clipboard
+when opening a browser.} {Cuando se seleccione el usuario
+desde el formulario de la cuenta
+también se copiará al portapapeles
+al abrir el navegador.}
+{Determines how Password
+Gorilla handles clearing the
+clipboard.
+
+Range zero to twenty.
+
+See Help for details.} {Establece cómo Password
+Gorilla realiza la limpieza
+del portapapeles.
+
+Rango: de cero a veinte.
+
+Consultar la ayuda para
+más detalles.}
+{Clipboard autoclear multiplier} {Multiplicador para la limpieza del portapapeles}
+{History deleted. After a restart the list will be empty.} {Historial eliminado. Esta lista se vaciará tras reiniciar.}
+Error Error
+{Please create a new database, or open an existing
+database first.} {Por favor, crear una nueva base de datos o abrir
+una base de datos existente.}
+{Current Master Password:} {Contraseña maestra actual:}
+{New Master Password:} {Nueva contraseña maestra:}
+{Password Not Changed} {Contraseña no modificada}
+{You canceled the setting of a new password.
+Therefore, the existing password remains in effect.} {Ha cancelado la creación de una nueva contraseña.
+Por lo que la contraseña existente sigue siendo válida.}
+{Master password changed.} {Contraseña maestra modificada.}
+{Can not copy %s to clipboard: no %s defined.} {No se puede copiar %s al portapapeles: %s sin definir.}
+{Copied %s to clipboard.} {%s copiado al portapapeles.}
+{Password Gorilla} {Password Gorilla}
+{Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database} {Gorilla protegerá sus contraseñas y le ayudará a gestionarlas en una base datos compatible con pwsafe 3.2}
+Contributors Contribuidores
+{Gorilla artwork contributed by %s} {Material gráfico de Gorilla por %s}
+{German translation by %s} {Traducción al alemán por %s}
+{Russian translation by %s} {Traducción al ruso por %s}
+{Italian translation by %s} {Traducción al italiano por %s}
+{About Password Gorilla} {Acerca de Password Gorilla}
+{Password Gorilla License} {Licencia de Password Gorilla}
+{Find Text:} {Buscar texto:}
+{Find Options ...} {Opciones de búsqueda ...}
+{Any field} {Cualquier campo}
+{Case sensitive find} {Distinguir mayúsculas}
+{Text not found.} {Texto no encontrado.}
+{Please select a login entry first.} {Por favor seleccione una cuenta primero.}
+{The selected login does not contain a URL value.} {La cuenta seleccionada no contiene ninguna URL.}
+{Browser launching is not configured. See help.} {El navegador no está configurado. Consulte la ayuda.}
+{Browser parameter lacks '%url%' string. See help.} {Al parámetro del navegador le falta la cadena '%url%'. Consulte la ayuda.}
+{Error launching browser, the OS error message is:} {Error al ejecutar el navegador, el sistema lanzó el error:}
+{Oh well...} {Oh bueno...}
+{Launched browser:} {Navegador lanzado:}
+{Generate gorilladoc.html} {Generar gorilladoc.html}
+}

@@ -17,6 +17,9 @@ alias: TOC
 	-- [Keyboard Shortcuts]
 	-- [The "V3" Database Format]
 	-- [Data Import]
+	-- [DB Merging]
+	--- [Performing a Merge]
+	--- [Resolving Merge Conflicts]
 
 - [Risks] 
 	-- [The Software Itself]
@@ -25,7 +28,7 @@ alias: TOC
 	-- [Your System Administrator]
 	-- [Viruses, Backdoors, etc.]
 	-- [Putting Risk In Perspective]
-	        
+
 -------------------
 title: Using Password Gorilla
 alias: Overview
@@ -45,8 +48,19 @@ alias: Overview
  - [Keyboard Shortcuts]
  - [The "V3" Database Format]
  - [Data Import]
+ - [DB Merging]
+ -- [Performing a Merge]
+ -- [Resolving Merge Conflicts]
 
-This documentation is written using Keith Vetter's Hypertext Help System.
+- [Risks] 
+ - [The Software Itself]
+ - [System Failure]
+ - [Other Users on a Shared Computer]
+ - [Your System Administrator]
+ - [Viruses, Backdoors, etc.]
+ - [Putting Risk In Perspective]
+ 
+ This documentation is written using Keith Vetter's Hypertext Help System.
 For copyright and authorship see the About panel.
 
 -------------------
@@ -77,9 +91,9 @@ allows you to browse for a different password database file, and asks
 for the database's master password. Once a file is chosen, and the
 master password is entered correctly, the password database is opened,
 and its contents are shown.
-   
+
 To create a new, empty password database, click the ''New'' button on the ''Open Password Database'' dialog. You will be asked for an initial master password for the new password database.  Alternately a new database can be created by choosing the ''File'' menu and selecting ''New ...''.
-   
+
 -------------------
 title: Choosing a Master Password
 
@@ -146,22 +160,19 @@ this item will cause a second menu to appear listing all current groups in
 the database.  Selecting one of the current group names will cause the
 right-clicked login to be moved to the selected group. 
 
-3) A group or login can be selected by clicking with the left mouse button. 
-If the button is held down and the mouse is moved a short distance, a drag
-and drop operation will occur.  When this happens the cursor will change to
-a double vertical arrow and a floating window will appear showing the title
-of the item that is being dragged.  As the item is being dragged the active
-drop location will be highlighted in the tree and will correspond to the
-tree item that is underneath the cursor.  Drop the item by releasing the
-mouse button.
+3) A set of groups or logins can be selected by clicking with the left mouse
+button.  Use shift plus click or control plus click to select multiple
+items.  If the button is held down and the mouse is moved a short distance,
+a drag and drop operation will begin.  When this happens the cursor will
+change to a double vertical arrow and a floating window will appear showing
+the title of the item(s) being dragged.  As the item(s) are being dragged
+the active drop location will be highlighted in the tree and will correspond
+to the tree item that is underneath the cursor.  Drop the item by releasing
+the mouse button with the cursor located above a line in the tree.
 
 Dropping a login or a group onto a login name will perform a move to the
 group location where the drop occurred.  Dropping a login or a group onto a
 group name will perform a move into the group where the drop occurred.
-
-At the moment, due to some small issues with the ttk::treeview widget that
-implements the tree, dragging plural items is limited to dragging plural
-logins or dragging single groups.  
 
 4) Within the edit login dialog the entry for group name for the login is
 also a drop down select list containing all current group names.  To move a
@@ -286,8 +297,8 @@ editing, or to do neither.
 '''Backup database on save'''
 
  | If enabled, then a backup file of the password database is made whenever
-the database is saved. The backup file has the same name as the database
-itself, but with the ''.bak'' extension.
+the database is saved. The backup file is located in the same directory and
+has the same name as the database itself, but with the ''.bak'' extension.
 
 '''Remember sizes of dialog boxes'''
 
@@ -396,7 +407,7 @@ with Password Safe 2.0 or higher, and Password Gorilla 1.0 or higher.
 
  | It is highly recommended to enable this option, and to upgrade existing
 databases to the Password Safe 3 format, which features enhanced security.
-See below, Information about the new Database Format, for more information.
+See [The "V3" Database Format] for more information.
 
 '''V2 Unicode support'''
 
@@ -411,25 +422,74 @@ characters correctly. (The database will open, but non-ASCII characters will
 not show up correctly.) This option has no effect if your database uses only
 ASCII characters.
 
+'''Timestamp Backup'''
+
+ | If the option ''Auto-Save'' is enabled then the copy can be saved with
+a timestamp in the chosen backup directory. The timestamp format is: YYYY-mm-dd-hh-mm-ss
+
+'''Backup Path'''
+
+ | If no backup path is entered then the backup copy has the suffix ".bak" and is
+put into the same directory as the Password database itself.
+
 '''V3 key stretching iterations'''
 
  | The Password Safe 3 format supports ''variable key stretching'', which is a
-means of protecting a database against brute-force attacks. Key stretching
-is a complex operation that must be performed when validating a master
-password for correctness. When an authorized user enters the correct
-password, this may take a second and is barely noticeable. But it slows down
-mass-testing password guesses by an automated program. The ''iterations''
+means of protecting a database against brute-force attacks (an attempt to find
+the password by trying all possible password character combinations). Key
+stretching is a complex operation that must be performed when validating a
+master password for correctness.  When an authorized user enters the correct
+password, this may take a second and is barely noticeable.  But it slows down
+mass-testing password guesses by an automated program.  The ''iterations''
 parameter indicates the complexity of the key stretching: the higher this
 value, the longer it takes to open a database, and the longer it takes an
-attacker to test one password. It is recommended to leave the value at its
-default of 2048, which is a good compromise between promptly opening
-databases and hampering attackers.
+attacker to test one password.
+
+ | The correct choice for this value depends upon several factors, one of
+which is the expected computational performance that an attacker may utilize
+against any given password database file.  It should be chosen such that an
+attacker can only test a few password possibilities per second instead of
+testing millions or billions of possibilities per second.  A rule of thumb
+is to pick a value such that it takes Gorilla about 1-2 seconds during the
+"Please be patient. Verifying password ..." phase of opening a database. 
+The value can range from a low of 2,048 to a high of 2,147,483,647.  Use
+care in searching for a reasonable value, setting too large a value
+initially will create a password safe file which can take a very long time
+to open later.
 
  | Note that this option can only be changed on a per-database basis and
 does not appear in the Database Default Preferences Menu. This prevents a
 malicious user from changing the preference in the registry and degrading
 the protection of future databases.
-          
+
+'''Calculate delay time'''
+
+ | Pressing the ''Calculate'' button in this section will cause Gorilla to
+display how long it took to perform PasswordSafe V3 format keystretching
+using the number of iterations in the ''V3 key stretching iterations'' box. 
+If this option has not been previously utilized, underscores ("___") will be
+present where the time value is to appear.
+
+'''Automatic iteration calculation'''
+
+ | This section allows for automatic calculation of an iteration value
+that produces approximately the number of seconds delay present in the
+''Delay for X seconds'' area.  The range for seconds is from 1 to 600 (ten
+minutes).  Simply enter or use the up/down arrows to select a desired number
+of seconds of delay, and press the adjacent ''Calculate'' button.  Gorilla
+will compute a value and automatically fill in the ''V3 key stretching
+iterations'' box with the new value.
+
+ | Note that the computation of the value occurs by measuring the time delay
+for a small iteration count and then scaling that count by the requested
+length of time.  As a result the actual computed value will depend upon
+several factors out of Gorilla's control, including the CPU load level when
+the calculate button is depressed.  The computed value should be close to
+the proper value but may need to be manually adjusted slightly to achieve
+exactly the selected seconds of delay.  Utilize the ''Calculate delay time''
+section to determine the amount of time consumed by the calculated iteration
+value.
+
 -------------------
 title: Display
 
@@ -565,10 +625,20 @@ executable.
 
 '''Notes for Mac Users'''
 
- | To open the default Mac browser (Safari) you should enter the single word
-'''open''' in the '''Browser executable to launch''' entry.  If you utilize
-Firefox on the Mac, usually entering '''firefox''' is sufficient to launch
-Firefox from Password Gorilla.
+ | The value ''open'' is preset per default for the '''Browser executable to launch''' entry.
+If the url entry of the login record contains a value like ''http://www.google.com''
+then the default browser will launch with this site. To choose a default Web browser other
+than Safari you
+
+ | 1. Open Safari (/Applications).
+ | 2. Choose Preferences from the Safari menu.
+ | 3. Click the General button.
+ | 4. Choose a different browser from the Default Web Browser pop-up menu.
+
+ | If you want to launch a Web browser independently from the Safari installation
+mechanism you have to add the path of the browser's executable, e.g.
+
+ | ''/Applications/Firefox.app/Contents/MacOS/firefox''
 
 '''Notes for Unix/Linux Users'''
 
@@ -691,7 +761,7 @@ password. The Password Safe 3 format avoids this issue by depending on
 the result of the key stretching operation (which is computationally
 expensive) as an input to decryption -- therefore, the operation can
 not be bypassed.
-   
+
 -------------------
 title: The Software Itself
 
@@ -916,6 +986,111 @@ uuid,group,title,user,password,notes
 fdc2aff8-04e1-4766-4ef4-ddae08377ba6,Group 1.Sub Group 1,A Title,A User Name,A Password,A note about this entry 
 63a1b066-148a-4bf6-40bc-a2b9afda00c6,Group 1.Sub Group 2,A Title,A User Name,A Password,A note about this entry 
 f29b9ef7-9e62-41e1-7dfd-14ae13986059,Group 2,A Title,A User Name,A Password,A note with \n an embedded newline 
+
+-------------------
+title: DB Merging
+
+Password Gorilla also has the ability to merge separate PWsafe databases
+together into a single database.  This feature is most useful if you
+maintain the same password file on multiple computers, say a desktop and
+laptop machine.  As you go about your daily routine, you can make changes to
+either file, and then periodically merge the two different databases together to
+produce an identical database on both machines.  
+
+-------------------
+title: Performing a Merge
+
+Merging always happens in the context of the currently open database.  Step
+one is to open the PWsafe database file into which you wish to merge another
+database (the "master database").  Once you have open the database you wish
+to merge into, then choose "File" -> "Merge ..." and select and open the
+PWsafe database you wish to merge into the currently open database (the
+"merge database").  Once you supply the correct master password for the
+merge database, Password Gorilla will perform a merge.  Password records
+that are identical between both databases will be unchanged, and only one
+record will remain after the merge is complete.  Password records that only
+exist in the merge database will become new records in the master database. 
+Password records that overlap between both databases will produce "conflict"
+records in the master database.
+
+Once the merge is complete, Password Gorilla will alert you to the number of
+total password entries merged, the number of identical entries
+(overlapping), the number of newly added entries, and the number of
+conflicting entries.  The status window which reports these values will then
+ask if you wish to view a detailed report.  The detailed report will list
+each entry that is conflicting, each entry which was added, and the entries
+that were identical between both files.
+
+-------------------
+title: Resolving Merge Conflicts
+
+If any merged password entries were conflicting (meaning they were the same
+record, with small differences) then there are two ways to access the
+conflict resolution dialog.  The first method is to push the "Resolve
+Conflicts" button at the bottom of the detailed merge report window.  The
+second method is to use the "File" -> "Resolve Conflicts ..." menu entry. 
+Both methods will cause the entry conflict resolution dialog to appear.
+
+The conflict resolution dialog is a tabbed window, each tab containing one
+pair of conflicting password entries from a merge operation.  The contents
+of each tab list the group, title, url, username, password, and notes fields
+from both conflicting entries adjacent to each other so you may see what
+differs and decide how you wish to handle the differences in the data.  Each
+individual entry is proceeded by a radio button, the radio button is used to
+select which one of the two entries you wish to keep in a merged record. 
+I.e., for the title value, there are two entries, if the radio button for
+the first title entry is checked, then when you combine and save the whole
+password entry the first title entry value will be utilized as the value to
+be inserted into the password database.
+
+Entries that are identical default to already having the first radio button
+checked.  Entries that differ do not have any radio button checked, and are
+also highlighted in a light green background color.
+
+All fields may be edited, but only the field adjacent to the checked radio
+button will be inserted into the password database.
+
+The password field initially defaults to a display of stars "*" for the
+password for security reasons.  Clicking the right mouse button within the
+password entries will toggle between display of stars and display of the
+actual password contents.
+
+To resolve conflicts, you should view each tab, select the radio buttons for
+the fields you wish to keep, make any additional edits you desire to the
+fields you wish to keep, and press the "Combine and Save" button when you
+have made all your selections.  The "Combine and Save" button will only
+become enabled once you have made a radio button selection in all
+conflicting fields (green background).
+
+If you wish to reset your edits, then press the "Reset Values" button.  That
+will undo all edits you have made to all fields and return the values to
+their initial condition.
+
+If you do not wish to resolve an individual conflict at this time, press the
+"Ignore Conflict" button.  You can return to the conflict resolution dialog
+at a later time to finish resolving the conflicts.  However, once you exit
+Password Gorilla the list of conflicting records will be lost, so please
+resolve all conflicts before exiting.  No password data will be lost
+however, as if you do not resolve a conflict but do save the database, you
+will simply have a pair of records in your database that you can manually
+resolve at a later time.
+
+Both the "Combine and Save" and "Ignore Conflict" buttons will remove the
+current tab when pressed.  Once there is only a single tab remaining then
+both buttons will also remove the conflict merge window from your screen. 
+If you ignored any conflicts, you can return to the conflict merge window by
+using the "File" -> "Resolve Conflicts ..." menu entry.
+
+Note, the merge system and conflict dialog are not infallible.  It is
+generally best to resolve all conflicts before performing a additional merge
+with another password safe database.  No harm occurs if this suggestion is
+not followed, but duplicate or nearly duplicate entries may result if plural
+merges are performed without resolving conflicts between each merge.  The
+duplicate or nearly duplicate entries will simply need to be manually
+resolved.
+
+
+
 
 
 

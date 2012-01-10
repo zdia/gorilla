@@ -222,7 +222,8 @@ proc pwsafe::int::computeHRND {RND password} {
 # number of iterations that is stored in the file.
 #
 
-proc pwsafe::int::computeStretchedKey {salt password iterations} {
+proc pwsafe::int::computeStretchedKey {salt password iterations pvar_in} {
+	upvar $pvar_in pvar
 	set st [sha2::SHA256Init] ;# st = stretched key
 # puts [info commands ::sha2::*]
 # puts "salt [hex $salt]\npassword $password iterations $iterations"
@@ -231,11 +232,70 @@ proc pwsafe::int::computeStretchedKey {salt password iterations} {
     sha2::SHA256Update $st $salt
     set Xi [sha2::SHA256Final $st]
 # puts "Xi [hex $Xi]"
-    for {set i 0} {$i < $iterations} {incr i} {
-	set Xi [sha2::sha256 -bin $Xi]
-    }
-    return $Xi
+	set blocks [ expr { $iterations / 256 } ]
+	for {set j 0} {$j < $blocks} {incr j} {
+		for {set i 0} {$i < 256} {incr i} {
+			set Xi [sha2::sha256 -bin $Xi]
+		}
+		set pvar [ expr { 100 * $j * 256 / $iterations } ]
+	}
+	set remain [ expr {$iterations - ($j * 256) } ]
+	for {set i 0} {$i < $remain} {incr i} {
+		set Xi [sha2::sha256 -bin $Xi]
+	}
+	set pvar 100
+	return $Xi
 }
+
+proc pwsafe::int::calculateKeyStrechForDelay { seconds } {
+
+	set iter 1024
+	set elapsed 0
+
+	# quickly locate an iteration amount that produces some measurable
+	# time delay - as the iteration count increases by powers of 2 this
+	# should reasonably quickly locate a useful value on very fast CPU's
+
+	while { $elapsed < 256 } {
+		set iter [ expr { $iter * 2 } ]
+		set elapsed [ pwsafe::int::keyStretchMsDelay $iter ]
+	}
+
+	# compute and return a final iteration amount based upon the located value
+	# above and the requested time delay factor
+  
+	return [ expr { int( ceil( $iter * ( $seconds * 1000.0 / $elapsed ) ) ) } ]
+
+	#ruff
+	#
+	# Computes a V3 keystretch iteration value that produces a time
+	# delay of "seconds".  Note that the returned value will be
+	# dependent upon whether the sha256 C extension is in use or not.
+	#
+	# seconds - the number of seconds that the V3 keystrech function should execute
+	#
+	# returns an iteration count value
+
+} ; # end proc pwsafe::int::calculateKeyStrechForDelay
+
+proc pwsafe::int::keyStretchMsDelay { iter } {
+
+	set salt [ pwsafe::int::randomString 32 ]
+	set start [ clock milliseconds ]
+	set junk 0 ; # used as the "progress variable" for computeStretchedKey
+	pwsafe::int::computeStretchedKey $salt "The quick brown fox jumped over the lazy dog." $iter junk
+	return [ expr { [ clock milliseconds ] - $start } ]
+
+	#ruff
+	#
+	# Computes the time in milliseconds to perform a V3 keystretch using
+	# iter iterations
+	#
+	# iter - the number of iterations for the V3 keystretch algorithm
+	#
+	# returns a time value in milliseconds
+
+} ; # end pwsafe::int::keyStretchMsDelay
 
 #
 # Generate a string of pseudo-random data

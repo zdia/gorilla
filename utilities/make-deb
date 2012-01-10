@@ -13,9 +13,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation 51
+# Franklin Street, Suite 500 Boston, MA 02110-1335
 #
 # See LICENCE.txt in ../sources/ for the full licence text.
 #
@@ -30,6 +30,11 @@
 # The .deb file created by this script has been tested on Ubuntu 11.04
 # running in VirtualBox.  It installs prerequisites and a working Password
 # Gorilla.
+
+if [[ $UID -ne 0 ]]; then
+    echo "$0 must be run as root"
+    exit 1
+fi
 
 YOUR_NAME="Enter your name here"
 YOUR_EMAIL="Enter your email here"
@@ -182,7 +187,11 @@ chmod a+x $DEST/usr/share/password-gorilla/gorilla.tcl
 # cleanup editor backup files - modify as needed for other editors
 # also generate md5sums file
 pushd $DEST > /dev/null
-  find -type f -name \*~ -print0 | xargs -0 rm
+  # disable error exit to make it work
+  set +e
+  find -type f -name \*~ -print0 &2>/dev/null| xargs -0 rm 2>/dev/null
+  # and re-enable it ...
+  set -e
   find usr -type f -print0 | xargs -0 md5sum > DEBIAN/md5sums
 popd > /dev/null
 
@@ -195,5 +204,9 @@ subst $DATA/control $CONTROL/control
 cp $DATA/postinst $DATA/postrm $CONTROL/
 
 dpkg-deb --build $DEST
+
+# remove working files (comment for debug)
+
+rm -Rf $DEST
 
 echo normal exit

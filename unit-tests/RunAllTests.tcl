@@ -4,12 +4,11 @@
 # Password Gorilla
 #
 # Use:
-# bash: 	tkcon gorilla.tcl --tcltest
-# tkcon: 	cd ../unit-tests
-# 				source RunAllTests.tcl
+# tkcon: 	tkcon gorilla.tcl --tcltest
+# bash: 	gorilla --tcltest
 # 
-# Versions tested:
-# 1.5.3.5 pre-release
+# Last version tested:
+# 1.5.3.6 pre-release
 # ----------------------------------------------------------------------
 
 package require tcltest 2.2
@@ -17,10 +16,10 @@ package require tcltest 2.2
 # default search path is the actual working directory
 tcltest::workingDirectory [file dirname [file normalize [info script]]]
 tcltest::singleProcess 1	;# caller environment will be used
-tcltest::verbose { start pass }
+tcltest::verbose { pass }
 
 # set testFolderList [list csv-import csv-export merge lock-database]
-set testFolderList [list csv-import csv-export ]
+set testFolderList [ list csv-import csv-export lock-database backup ]
 
 foreach testFolder $testFolderList {
 	cd [file join [tcltest::workingDirectory] $testFolder]

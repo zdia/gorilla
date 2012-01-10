@@ -1,0 +1,7 @@
+How to translate Gorilla and the Help documentation?
+
+In the folder "utilities/gettext", respectively "utilities/help2po" 
+you will find the template file "help.pot". You can edit this file
+and save it according to your target language as <lang>.po
+
+

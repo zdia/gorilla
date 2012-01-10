@@ -5,15 +5,12 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 # ----------------------------------------------------------------------
 # Password Gorilla, a password database manager
+# ----------------------------------------------------------------------
+#
 # Copyright (c) 2005-2009 Frank Pilhofer
-# Copyright (c) 2010 Zbigniew Diaczyszyn
+# Copyright (c) 2010-2011 Richard Ellis and Zbigniew Diaczyszyn
 #
-# modified for use with wish8.5, ttk-Widgets and with German localisation
-# modified GUI to work without bwidget
-# z_dot_dia_at_gmx_dot_de
-#
-# tested with ActiveTcl 8.5.7, 8.5.8
-# Mac Version compiled from official sources at Sourceforge
+# Version 1.5.3.6 tested with ActiveState's Tcl/Tk 8.5.11
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -25,17 +22,17 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation 51
+# Franklin Street, Suite 500 Boston, MA 02110-1335
 # ----------------------------------------------------------------------
 #
-# pushed to http:/github.com/zdia/gorilla
+# For further information and contact see https:/github.com/zdia/gorilla
 #
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.5 $}
+set ::gorillaVersion {$Revision: 1.5.3.6 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -75,6 +72,23 @@ if {[catch {package require Tcl 8.5}]} {
 
 # ----------------------------------------------------------------------
 
+proc if-platform? { test body } {
+
+	if { $::tcl_platform(platform) eq $test } {
+	  uplevel 1 $body
+	}
+
+	#ruff
+	# Tests the tcl_platform(platform) global against passed parameter
+	# test, and executes body if the test is true.
+	#
+	# test - value to compare against tcl_platform(platform) contents
+	# body - script to execute when the test passes
+
+} ; # end proc if-platform?
+
+# ----------------------------------------------------------------------
+
 proc load-package { args } {
 	# A helper proc to load packages.  This collects the details of "catching"
 	# and reporting errors upon package loading into one single proc.  It must
@@ -102,12 +116,12 @@ tcl_platform: [ array get ::tcl_platform ]
 info library: [ info library ]
 gorillaDir: $::gorillaDir
 gorillaDir contents:
-	[ join [ glob -directory $::gorillaDir * ] "\n\t" ]
+	[ join [ glob -directory $::gorillaDir -nocomplain * ] "\n\t" ]
 auto_path dir contents:
 [ set result ""
   foreach dir $::auto_path {
     append result "$dir\n"
-    append result "[ join [ glob -directory $dir -- * ] "\n\t" ]\n"
+    append result "[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
   } 
   return $result ]
 -end--------------------------------------------------------------------
@@ -157,10 +171,11 @@ load-package msgcat
 
 namespace import msgcat::*
 
-# mcload [file join $::gorillaDir msgs]
-# mcload has to be called after having set 'mclocale' which will happen
-# during initialization of Gorilla's preferences
-#
+mcload [file join $::gorillaDir msgs]
+# The message files will be loaded according to the system's actual
+# language. During initialization of Gorilla's preferences the command
+# 'mclocale' will set the language accoring to Gorilla's resource file.
+# 
 # Look out! If you use a file ROOT.msg in the msgs folder it will be used 
 # without regard to the Unix LOCALE configuration
 
@@ -208,6 +223,9 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 # installed items
 set auto_path [ list $::gorillaDir [ file join $::gorillaDir tcllib ] {*}$auto_path ]
 
+# Initialize the Tcl modules system to look into modules/ directory
+::tcl::tm::add [ file join $::gorillaDir modules ]
+
 #
 # Look for Itcl
 #
@@ -236,7 +254,9 @@ if {[catch {package require pwsafe} oops]} {
 	# the parameter 1 is setting gorilla.tcl's filelength to 0
 }
 
-load-package tooltip
+foreach package {tooltip PWGprogress} {
+	load-package $package
+}
 
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
@@ -288,11 +308,12 @@ proc gorilla::Init {} {
 	# two element list.  Each two element list is preference default and
 	# anonymous validation proc in that order.  The validation proc
 	# returns true for valid, false for invalid.
-	
+
 	set ::gorilla::preference(all-preferences) {
 
 		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
+		backupPath             { {}      { {value} { file exists $value } }                                                   }
 		browser-exe            { {}      { {value} { return true } }                                                          }
 		browser-param          { {}      { {value} { return true } }                                                          }
 		caseSensitiveFind      { 0       { {value} { string is boolean $value } }                                             }
@@ -324,6 +345,7 @@ proc gorilla::Init {} {
 		lru                    { {}      { {value} { file exists $value } }                                                   }
 		rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
 		saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
+		timeStampBackup        { 0       { {value} { string is boolean $value } }                                             }
 		unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 
 	} ; # end set ::gorilla::preferences(all-preferences)
@@ -332,6 +354,9 @@ proc gorilla::Init {} {
 	dict for {pref value} $::gorilla::preference(all-preferences) {
 		set ::gorilla::preference($pref) [ lindex $value 0 ] 
 	}
+		
+	# make the ::tcl::mathop operators and functions visible
+	namespace path {::tcl::mathop ::tcl::mathfunc}
 		
 } ; # end proc gorilla::Init
 
@@ -391,6 +416,9 @@ proc gorilla::InitGui {} {
 	# Struktur im menu_desc(ription):
 	# label	widgetname {item tag command shortcut}
 
+	# the "tag" value is used to group menu entries for parallel
+	# enablement/disablement via the setmenustate proc
+
 	set meta Control
 	set menu_meta Ctrl
 		
@@ -403,64 +431,76 @@ proc gorilla::InitGui {} {
 		# set menu_meta ""
 	}
 
-	set ::gorilla::menu_desc {
-		File	file	{"New ..." {} gorilla::New "" ""
-								"Open ..." {} gorilla::Open $menu_meta O
-								"Merge ..." open gorilla::Merge "" ""
-								"Save" save gorilla::Save $menu_meta S
-								"Save As ..." open gorilla::SaveAs "" ""
-								separator "" "" "" ""
-								"Export ..." open gorilla::Export "" ""
-								"Import ..." open gorilla::Import "" ""
-								separator mac "" "" ""
-								"Preferences ..." mac gorilla::Preferences "" ""
-								separator mac "" "" ""
-								Exit mac gorilla::Exit $menu_meta X
-								}	
-		Edit	edit	{"Copy Username" login {gorilla::CopyToClipboard Username} $menu_meta U
-								"Copy Password" login {gorilla::CopyToClipboard Password} $menu_meta P
-								"Copy URL" login {gorilla::CopyToClipboard URL} $menu_meta W
-								separator "" "" "" ""
-								"Clear Clipboard" "" gorilla::ClearClipboard $menu_meta C
-								separator "" "" "" ""
-								"Find ..." open gorilla::Find $menu_meta F
-								"Find next" open gorilla::FindNext $menu_meta G
-								}
-		Login	login	{ "Add Login" open gorilla::AddLogin $menu_meta A
-								"Edit Login" open gorilla::EditLogin $menu_meta E
-								"View Login" open gorilla::ViewLogin $menu_meta V
-								"Delete Login" login gorilla::DeleteLogin "" ""
-								"Move Login ..." login gorilla::MoveLogin "" ""
-								separator "" "" "" ""
-								"Add Group ..." open gorilla::AddGroup "" ""
-								"Add Subgroup ..." group gorilla::AddSubgroup "" ""
-								"Rename Group ..." group gorilla::RenameGroup "" ""
-								"Move Group ..." group gorilla::MoveGroup "" ""
-								"Delete Group" group gorilla::DeleteGroup "" ""
-								}
-		Security	security { "Password Policy ..." open gorilla::PasswordPolicy "" ""
-								"Customize ..." open gorilla::DatabasePreferencesDialog "" ""
-								separator "" "" "" ""
-								"Change Master Password ..." open gorilla::ChangePassword "" ""
-								separator "" "" "" ""
-								"Lock now" open gorilla::LockDatabase "" ""
-								}
-		Help	help	{ "Help ..." "" gorilla::Help "" ""
-								"License ..." "" gorilla::License "" ""
-								separator mac "" "" ""
-								"About ..." mac tkAboutDialog "" ""
-								}
-	} ;# end ::gorilla::menu_desc
+	# Note - the string below, because it is passed through subst, needs
+	# to be formatted as a proper string representation of a list.  That
+	# is why all of the [mc] calls are surrounded by quotes.  This
+	# assures that the result of the [mc] call (unless the result
+	# contains a ") will be a proper single element of the string rep.
+	# of a list.
+	
+	set ::gorilla::menu_desc [ subst {
+		"[ mc File ]" file {"[ mc New ] ..."         {}   gorilla::New         ""
+		                    "[ mc Open ] ..."        {}   gorilla::Open        $menu_meta+O
+		                    "[ mc Merge ] ..."       open gorilla::Merge       ""
+		                    "[ mc Save ]"            save gorilla::Save        $menu_meta+S
+		                    "[ mc "Save As" ] ..."   open gorilla::SaveAs      ""
+		                    separator                ""   ""                   ""
+		                    "[ mc Export ] ..."      open gorilla::Export      ""
+		                    "[ mc Import ] ..."      open gorilla::Import      ""
+		                    separator                mac  ""                   ""
+		                    "[ mc Preferences ] ..." mac  gorilla::Preferences ""
+		                    separator                mac  ""                   ""
+		                    "[ mc Exit ]"            mac  gorilla::Exit        $menu_meta+X
+		                   }
+
+		"[ mc Edit ]" edit {"[ mc "Copy Username" ]"   login  {gorilla::CopyToClipboard Username} $menu_meta+U
+		                    "[ mc "Copy Password" ]"   login  {gorilla::CopyToClipboard Password} $menu_meta+P
+		                    "[ mc "Copy URL" ]"        login  {gorilla::CopyToClipboard URL}      $menu_meta+W
+		                    separator                  ""     ""                                  ""
+		                    "[ mc "Clear Clipboard" ]" ""     gorilla::ClearClipboard             $menu_meta+C
+		                    separator                  ""     ""                                  ""
+		                    "[ mc Find ] ..."          open   gorilla::Find                       $menu_meta+F
+		                    "[ mc "Find next" ]"       open   gorilla::FindNext                   $menu_meta+G
+		                   }
+		                
+		"[ mc Login ]" login {"[ mc "Add Login" ]"        open  gorilla::AddLogin    $menu_meta+A
+				      "[ mc "Edit Login" ]"       open  gorilla::EditLogin   $menu_meta+E
+				      "[ mc "View Login" ]"       open  gorilla::ViewLogin   $menu_meta+V
+				      "[ mc "Delete Login" ]"     login gorilla::DeleteLogin ""
+				      "[ mc "Move Login" ] ..."   login gorilla::MoveLogin   ""
+				      separator                   ""    ""                   ""
+				      "[ mc "Add Group" ] ..."    open  gorilla::AddGroup    ""
+				      "[ mc "Add Subgroup" ] ..." group gorilla::AddSubgroup ""
+				      "[ mc "Rename Group" ] ..." group gorilla::RenameGroup ""
+				      "[ mc "Move Group" ] ..."   group gorilla::MoveGroup   ""
+				      "[ mc "Delete Group" ]"     group gorilla::DeleteGroup ""
+				     }
+				
+		"[ mc Security ]" security {"[ mc "Password Policy" ] ..."        open gorilla::PasswordPolicy            ""
+				            "[ mc Customize ] ..."                open gorilla::DatabasePreferencesDialog ""
+				            separator                             ""   ""                                 ""
+				            "[ mc "Change Master Password" ] ..." open gorilla::ChangePassword            ""
+				            separator                             ""   ""                                 ""
+				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              ""
+				           }
+
+		"[ mc Help ]" help {"[ mc Help ] ..."    ""  gorilla::Help    ""
+				    "[ mc License ] ..." ""  gorilla::License ""
+				    separator            mac ""               ""
+				    "[ mc About ] ..."   mac tkAboutDialog    ""
+				   }
+
+	} ] ;# end ::gorilla::menu_desc
 
 	foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 		
-		.mbar add cascade -label [mc $menu_name] -menu .mbar.$menu_widget
+		.mbar add cascade -label $menu_name -menu .mbar.$menu_widget
 	
 		menu .mbar.$menu_widget
 		
 		set taglist ""
 		
-		foreach {menu_item menu_tag menu_command meta_key shortcut} $menu_itemlist {
+		foreach {menu_item menu_tag menu_command shortcut} $menu_itemlist {
 	
 			# erstelle für jedes widget eine Tag-Liste
 			lappend taglist $menu_tag
@@ -470,9 +510,7 @@ proc gorilla::InitGui {} {
 			if {$menu_item eq "separator"} {
 				.mbar.$menu_widget add separator
 			} else {
-			  eval set meta_key $meta_key
-				set shortcut [join "$meta_key $shortcut" +]
-				.mbar.$menu_widget add command -label [mc $menu_item] \
+				.mbar.$menu_widget add command -label $menu_item \
 					-command $menu_command -accelerator $shortcut
 			} 	
 			set ::gorilla::tag_list($menu_widget) $taglist
@@ -623,28 +661,107 @@ proc gorilla::InitGui {} {
 #
 
 proc gorilla::InitPRNG {{seed ""}} {
+
+	# Initialize the ISAAC PRNG seed.  Takes one parameter.
+
 	#
 	# Try to compose a not very predictable seed
 	#
 
 	append seed "20041201"
-	append seed [clock seconds] [clock clicks] [pid]
-	append seed [winfo id .] [winfo geometry .] [winfo pointerxy .]
-	set hashseed [pwsafe::int::sha1isz $seed]
+	append seed [ clock seconds ] [ clock clicks ] [ pid ]
+	append seed [ winfo id . ] [ winfo geometry . ] [ winfo pointerxy . ]
+	set hashseed [ ::sha2::sha256 -bin $seed ]
+
+	# Determine if a /dev/urandom device exists, if so attempt to obtain 992
+	# bytes more random data to produce an even better seed.  Wrap everything
+	# in a catch so that if something goes wrong, PWGorilla will continue on
+	# as if nothing had happened - lack of a better seed value is not a reason
+	# to abort.  This will also cover instances where [file] thinks urandom
+	# exists and is readable, but open throws an error for some reason.
+	
+	if { [ file exists /dev/urandom ] && [ file readable /dev/urandom ] } {
+		catch {
+			set rfd [ open /dev/urandom {RDONLY BINARY} ]
+			append hashseed [ read $rfd 992 ]
+			close $rfd
+		}
+	}
+	
+	# Help the randomness for our friends on Windows or anywhere else that
+	# /dev/urandom does not exist or is unreadable - this recommendation comes
+	# from the IASSC webpage (http://burtleburtle.net/bob/rand/isaacafa.html)
+	# where it states:
+	#
+	#   As ISAAC is intended to be a secure cipher, if you want to reseed it,
+	#   one way is to use some other cipher to seed some initial version of
+	#   ISAAC, then use ISAAC's output as a seed for other instances of ISAAC
+	#   whenever they need to be reseeded.
+	#
+	# As it happens, PWGorilla calls this seed function twice.  Once when
+	# first starting, then a second time after entry of the unlock password. 
+	# The second call includes some additional entropy derived from timing the
+	# time between keystrokes during password entry.  Leverage that second
+	# call to add ISAAC feedback entropy when /dev/urandom has not been
+	# available to pad out to 1024 bytes of seed material.
+	
+	if {    $::gorilla::isPRNGInitialized 
+	     && ( [ string length $hashseed ] < 1024 ) } {
+		while { [ string length $hashseed ] < 1024 } {
+		  append hashseed [ binary format i [ ::isaac::int32 ] ]
+		}
+	}
 
 	#
 	# Init PRNG
 	#
-
+	#puts "seeding with [ string length $hashseed ] bytes" ; # debugging
 	isaac::srand $hashseed
 	set ::gorilla::isPRNGInitialized 1
-}
+	
+	# The original version of this proc utilized the pwsafe v2 modified sha1
+	# hash to scramble the incoming seed value.  In the time since PWGorilla
+	# was first written, there have been some cryptanalysis results that have
+	# weakened the sha1 hash function.  So this seems like a good time to move
+	# up to a better hash.  In this case sha256.
+	
+	#ruff
+	# seed - a value to use as the seed for the PRNG.  The input value will
+	# have some more tidbits of system details appended to hopefully increase
+	# the possible entropy and will then be hashed by sha256 to obtain 32
+	# bytes of binary seed data.
+	#
+	# If /dev/urandom is available, it will be used to obtain 992 more bytes
+	# of higher quality random data to fill out the full 256 by 32bit seed
+	# size of the ISAAC PRNG.  If /dev/urandom is not available, ISAAC itself
+	# will be used to pad out 992 additional bytes of seed data during a
+	# second call to this proc by the password unlock code.
+	#
+	# Note as well that the choice of /dev/urandom for additional PRNG seed
+	# randomness is purposeful.  The /dev/random device is defined as blocking
+	# if there is insufficient entropy in the kernel random pool to generate
+	# random output data.  Blocking on /dev/random will make all of PWGorilla
+	# appear to hang, potentially for a quite lengthy and completely
+	# indeterminate amount of time given that 992 bytes of data are being
+	# read.
+	#
+	# 992 bytes of very good quality random data from /dev/urandom is an order
+	# of magnitude or more (likely much more) better random seed source than
+	# what PWGorilla was historically utilizing (16 bytes of modified sha1
+	# output).  As such the fact that /dev/urandom is not defined as
+	# cryptographic quality is mitigated somewhat by obtaining such a large
+	# amount of data, of a much higher quality than previously, that the net
+	# effect is that PWGorilla's random number generation has increased in
+	# quality significantly on any system having a working /dev/urandom
+	# device.  All without appearing to hang for a lengthy period of time.
+
+} ; # end proc gorilla::InitPRNG
 
 proc setmenustate {widget tag_pattern state} {
 	if {$tag_pattern eq "all"} {
 		foreach {menu_name menu_widget menu_itemlist} $::gorilla::menu_desc {
 			set index 0
-			foreach {title a b c d } $menu_itemlist {
+			foreach {title a b c } $menu_itemlist {
 				if { $title ne "separator" } {
 					$widget.$menu_widget entryconfigure $index -state $state
 				}
@@ -997,11 +1114,11 @@ proc gorilla::New {} {
 		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					return
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					return
 				}
 			}
@@ -1100,28 +1217,6 @@ proc gorilla::DestroyOpenDatabaseDialog {} {
 	set ::gorilla::guimutex 2
 }
 
-proc gorilla::OpenPercentTrace {name1 name2 op} {
-
-	if {![info exists ::gorilla::openPercentLastUpdate]} {
-		set ::gorilla::openPercentLastUpdate [clock clicks -milliseconds]
-		return
-	}
-	set now [clock clicks -milliseconds]
-	set td [expr {$now - $::gorilla::openPercentLastUpdate}]
-	# time difference
-	if {$td < 200} {
-		return
-	}
-
-	set ::gorilla::openPercentLastUpdate $now
-
-	if {$::gorilla::openPercent > 0} {
-		set info [format [mc "Opening ... %2.0f %%"] $::gorilla::openPercent]
-		$::gorilla::openPercentWidget configure -text $info
-		update idletasks
-	}
-}
-
 ;# proc gorilla::OpenDatabase {title defaultFile} {}
 	
 # proc gorilla::OpenDatabase {title {defaultFile ""}} {
@@ -1210,7 +1305,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		set info [mc "Select a database, and enter its password. Click \"New\" to create a new database."]
 		$aframe.buts.b3 configure -state normal
 	} else {
-		set info "Select a database, and enter its password."
+		set info [mc "Select a database, and enter its password."]
 		$aframe.buts.b3 configure -state disabled
 	}
 
@@ -1277,17 +1372,15 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 			if {$fileName == ""} {
 				tk_messageBox -parent $top -type ok -icon error -default ok \
-					-title "No File" \
-					-message "Please select a password database."
-				continue
+					-title [mc "No File"] \
+					-message [mc "Please select a password database."]
+        continue
 			}
 
 			if {![file readable $fileName]} {
 				tk_messageBox -parent $top -type ok -icon error -default ok \
-					-title "File Not Found" \
-					-message "The password database\
-					\"$nativeName\" does not exist or can not\
-					be read."
+					-title [mc "File Not Found"] \
+					-message [mc "The password database %s does not exist or can not be read." $nativeName]
 				continue
 			}
 
@@ -1304,35 +1397,29 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 			set password [$aframe.pw.pw get]
 			
-			set ::gorilla::openPercent 0
-			set ::gorilla::openPercentWidget $aframe.info
-			trace add variable ::gorilla::openPercent [list "write"] \
-			::gorilla::OpenPercentTrace
-#set a [ clock milliseconds ]
-			if {[catch {set newdb [pwsafe::createFromFile $fileName $password \
-						 ::gorilla::openPercent]} oops]} {
-				pwsafe::int::randomizeVar password
-				trace remove variable ::gorilla::openPercent [list "write"] \
-					::gorilla::OpenPercentTrace
-				unset ::gorilla::openPercent
-		. configure -cursor $dotOldCursor
-		$top configure -cursor $myOldCursor
+			set pvar [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
 
-		tk_messageBox -parent $top -type ok -icon error -default ok \
-			-title [mc "Error Opening Database"] \
-			-message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
-		$aframe.info configure -text $info
-		$aframe.pw.pw delete 0 end
-		focus $aframe.pw.pw
-		continue
-		}
+#set a [ clock milliseconds ]
+			if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
+						 $pvar ] } oops ] } {
+				pwsafe::int::randomizeVar password
+				::gorilla::progress finished $aframe.info
+				. configure -cursor $dotOldCursor
+				$top configure -cursor $myOldCursor
+
+				tk_messageBox -parent $top -type ok -icon error -default ok \
+					-title [mc "Error Opening Database"] \
+					-message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
+				$aframe.info configure -text $info
+				$aframe.pw.pw delete 0 end
+				focus $aframe.pw.pw
+				continue
+			}
 #set b [ clock milliseconds ]
 #puts stderr "elapsed open time: [ expr { $b - $a } ]ms"
 		# all seems well
-		trace remove variable ::gorilla::openPercent [list "write"] \
-	::gorilla::OpenPercentTrace
-		unset ::gorilla::openPercent
 
+			::gorilla::progress finished $aframe.info
 			. configure -cursor $dotOldCursor
 			$top configure -cursor $myOldCursor
 			pwsafe::int::randomizeVar password
@@ -1473,19 +1560,19 @@ proc gorilla::Open {{defaultFile ""}} {
 	if {$::gorilla::dirty} {
 		set answer [tk_messageBox -parent . \
 			-type yesnocancel -icon warning -default yes \
-			-title "Save changes?" \
-			-message "The current password database is modified.\
+			-title [mc "Save changes?"] \
+			-message [mc "The current password database is modified.\
 			Do you want to save the database?\n\
 			\"Yes\" saves the database, and continues to the \"Open File\" dialog.\n\
 			\"No\" discards all changes, and continues to the \"Open File\" dialog.\n\
-			\"Cancel\" returns to the main menu."]
+			\"Cancel\" returns to the main menu."] ]
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					return
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					return
 				}
 			}
@@ -1804,7 +1891,7 @@ namespace eval ::gorilla::LoginDialog {
 		# Returns the generated label name.
 	
 		variable seq
-		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure [ mc "${text}:" ] ] -style Wrapping.TLabel ]
+		return [ ttk::label $top.l-[ incr seq ] -text [ wrap-measure "${text}:" ] -style Wrapping.TLabel ]
 	} ; # end 
 
 # -----------------------------------------------------------------------------
@@ -1826,11 +1913,11 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
-		foreach {child label w} { group    Group    combobox
-		                          title    Title    entry
-		                          url      URL      entry
-		                          user     Username entry
-		                          password Password entry  } {
+		foreach {child label w} [ list group    [ mc Group    ] combobox \
+		                               title    [ mc Title    ] entry    \
+		                               url      [ mc URL      ] entry    \
+		                               user     [ mc Username ] entry    \
+		                               password [ mc Password ] entry  ] {
 			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
@@ -1852,14 +1939,14 @@ namespace eval ::gorilla::LoginDialog {
 		grid rowconfigure $textframe $widget(notes) -weight 1
 		grid columnconfigure $textframe $widget(notes) -weight 1
 
-		grid [ make-label $top Notes: ] \
+		grid [ make-label $top [mc Notes] ] \
 		     $textframe \
 		     -sticky news -pady 5
 
 		grid rowconfigure    $top $textframe -weight 1
 		grid columnconfigure $top $textframe -weight 1
 
-		set lastChangeList [list last-pass-change "Last Password Change" last-modified "Last Modified" ]
+		set lastChangeList [list last-pass-change [mc "Last Password Change"] last-modified [mc "Last Modified"] ]
 		
 		foreach {child label} $lastChangeList {
 			grid [ make-label $top $label ] \
@@ -2233,43 +2320,41 @@ namespace eval ::gorilla::LoginDialog {
 					}                              
 				}
 
-				foreach element $varlist {
+				foreach element [ list {*}$varlist notes ] {
 
-					set value [ set $element ]
-
-					if { $value != "" } {
-						if { ! [ string equal $value [ dbget $element $rn ] ] } {
-							set modified 1
-							if { $element eq "password" } {
-								dbset last-pass-change $rn $now
-							}
-						}
-						dbset $element $rn $value
+					if { $element ne "notes" } {
+						set new_value [ set $element ]
 					} else {
-						dbunset $element $rn
-						set modified 1
+						set new_value [ string trimright [ -m:notes- get 0.0 end ] ]
 					}
 
-					::pwsafe::int::randomizeVar $element 
+					set old_value [ dbget $element $rn ]
+					
+					if { $new_value ne $old_value } {
+						set modified 1
+						if { $new_value eq "" } {
+							dbunset $element $rn
+						} else {
+
+							dbset $element $rn $new_value
+
+							if { $element eq "password" } {
+								dbset last-pass-change $rn $now
+							} ; # end if element eq password
+
+						} ; # end if new_value eq ""
+
+					} ; # end if new_value ne old_value
+
+					# note - "$element" is correct below.  For all but "notes", the
+					# element variable contains a variable name, it is that inner
+					# variable name that should be cleansed
+					if { $element ne "notes" } {
+						::pwsafe::int::randomizeVar $element new_value old_value
+					}
 
 				} ; # end foreach element
 				
-				# handle notes separately - trimming
-				# trailing whitespace and newlines
-				
-				set value [ string trimright [ -m:notes- get 0.0 end ] ]
-				if { $value != "" } {
-					if { ! [ string equal $value [ dbget notes $rn ] ] } {
-						set modified 1
-					}
-					dbset notes $rn $value
-				} else {
-					dbunset notes $rn
-					set modified 1
-				}
-
-				::pwsafe::int::randomizeVar value
-
 				if { $modified } {
 					dbset last-modified $rn $now
 				}
@@ -2443,11 +2528,11 @@ proc gorilla::EditLogin {} {
 #
 
 proc gorilla::MoveLogin {} {
-	gorilla::MoveDialog Login
+	gorilla::MoveDialog [mc Login]
 }
 
 proc gorilla::MoveGroup {} {
-	gorilla::MoveDialog Group
+	gorilla::MoveDialog [mc Group]
 }
 
 proc gorilla::MoveDialog {type} {
@@ -2460,9 +2545,9 @@ proc gorilla::MoveDialog {type} {
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
-		wm title $top [mc "Move $type"]
+		wm title $top [mc "Move %s" "$type"]
 
-		ttk::labelframe $top.source -text [mc $type] -padding [list 10 10]
+		ttk::labelframe $top.source -text $type -padding [list 10 10]
 		ttk::entry $top.source.e -width 40 -textvariable ::gorilla::MoveDialogSource
 		ttk::labelframe $top.dest \
 		-text [mc "Destination Group with format <Group.Subgroup> :"] \
@@ -2570,7 +2655,7 @@ proc gorilla::MoveDialog {type} {
 	wm withdraw $top
 
 	if {$::gorilla::guimutex != 1} {
-		set ::gorilla::status [mc "Moving of $type canceled."]
+		set ::gorilla::status [mc "Moving of %s canceled." $type]
 		return
 	}
 
@@ -2578,7 +2663,7 @@ proc gorilla::MoveDialog {type} {
 	
 	$::gorilla::widgets(tree) item $destNode -open 1
 	$::gorilla::widgets(tree) item "RootNode" -open 1
-	set ::gorilla::status [mc "$type moved."]
+	set ::gorilla::status [mc "%s moved." $type]
 	MarkDatabaseAsDirty
 }
 
@@ -2656,7 +2741,7 @@ proc gorilla::AddSubgroup {} {
 			if {[string equal $parent "RootNode"]} {
 				gorilla::AddSubgroupToGroup ""
 			} else {
-				set pdata [$::gorilla::widgets(tree) item $node -values]
+				set pdata [ $::gorilla::widgets(tree) item $parent -values ]
 				gorilla::AddSubgroupToGroup [lindex $pdata 1]
 			}
 		}
@@ -2679,9 +2764,9 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 	if {![info exists ::gorilla::db]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "No Database" \
-			-message "Please create a new database, or open an existing\
-			database first."
+			-title [mc "No Database"] \
+			-message [mc "Please create a new database, or open an existing\
+			database first."]
 		return
 	}
 
@@ -2756,8 +2841,8 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 		if {$group == ""} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The group name can not be empty."
+				-title [mc "Invalid Group Name"] \
+				-message [mc "The group name can not be empty."]
 			continue
 		}
 
@@ -2770,8 +2855,8 @@ proc gorilla::AddSubgroupToGroup {parentName} {
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The name of the parent group is invalid."
+				-title [mc "Invalid Group Name"] \
+				-message ["The name of the parent group is invalid."]
 			continue
 		}
 
@@ -2943,8 +3028,8 @@ proc gorilla::DeleteGroup {} {
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Delete Root" \
-			-message "The root node can not be deleted."
+			-title [mc "Can Not Delete Root"] \
+			-message [mc "The root node can not be deleted."]
 		return
 	}
 
@@ -2955,7 +3040,7 @@ proc gorilla::DeleteGroup {} {
 	if {[llength [$::gorilla::widgets(tree) children $node]] > 0} {
 		set answer [tk_messageBox -parent . \
 			-type yesno -icon question -default no \
-			-title "Delete Group" \
+			-title [mc "Delete Group"] \
 			-message [mc "Are you sure that you want to delete group and all its contents?"]]
 
 		if {$answer != "yes"} {
@@ -3012,8 +3097,8 @@ proc gorilla::RenameGroup {} {
 	if {$type == "Root"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Rename Root" \
-			-message "The root node can not be renamed."
+			-title [mc "Can Not Rename Root"] \
+			-message [mc "The root node can not be renamed."]
 		return
 	}
 
@@ -3050,7 +3135,7 @@ proc gorilla::RenameGroup {} {
 		pack $top.parent.e -side left -expand yes -fill x -pady 5 -padx 10
 		pack $top.parent -side top -expand yes -fill x -pady 5 -padx 10
 
-		ttk::labelframe $top.group -text "Name"
+		ttk::labelframe $top.group -text [ mc Name ]
 		ttk::entry $top.group.e -width 40 -textvariable ::gorilla::renameGroupName
 		pack $top.group.e -side top -expand yes -fill x -pady 5 -padx 10
 		pack $top.group -side top -expand yes -fill x -pady 5 -padx 10
@@ -3107,8 +3192,8 @@ proc gorilla::RenameGroup {} {
 		if {$newGroup == ""} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The group name can not be empty."
+				-title [mc "Invalid Group Name"] \
+				-message [mc "The group name can not be empty."]
 			continue
 		}
 
@@ -3117,9 +3202,9 @@ proc gorilla::RenameGroup {} {
 		}]} {
 			tk_messageBox -parent $top \
 				-type ok -icon error -default ok \
-				-title "Invalid Group Name" \
-				-message "The name of the group's parent node\
-				is invalid."
+				-title [mc "Invalid Group Name"] \
+				-message [mc "The name of the group's parent node\
+				is invalid."]
 			continue
 		}
 
@@ -3178,9 +3263,9 @@ proc gorilla::RenameGroup {} {
 	if {$destiter != "RootNode" || $node == "RootNode"} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "Can Not Move Node" \
-			-message "Can not move a group to a subgroup\
-			of itself."
+			-title [mc "Can Not Move Node"] \
+			-message [mc "Can not move a group to a subgroup\
+			of itself."]
 		return
 	}
 
@@ -3372,7 +3457,7 @@ proc gorilla::Import { {input_file ""} } {
 	}
 
 	if { [ catch { set infd [ open $input_file {RDONLY} ] } oops ] } {
-		error-popup [ mc "Error opening import CSV file" ] \
+		ErrorPopup [ mc "Error opening import CSV file" ] \
 					"[ mc "Could not access file " ] ${input_file}:\n$oops"
 		return GORILLA_OPENERROR
 	}
@@ -3381,7 +3466,7 @@ proc gorilla::Import { {input_file ""} } {
 
 	load-package csv
 	# if { [ catch { package require csv } oops ] } {
-		# error-popup [ mc "Error loading CSV parsing package." ] \
+		# ErrorPopup [ mc "Error loading CSV parsing package." ] \
 		           # "[ mc "Could not access the tcllib CSV parsing package." ]\n[ mc "This should not have happened." ]\n[ mc "Unable to continue." ]"
 		# return
 	# }
@@ -3395,7 +3480,7 @@ proc gorilla::Import { {input_file ""} } {
 				url user uuid }
 
 	if { [ catch { set columns_present [ ::csv::split [ gets $infd ] ] } oops ] } {
-		error-popup [ mc "Error parsing CSV file" ] \
+		ErrorPopup [ mc "Error parsing CSV file" ] \
 		           "[ mc "Error parsing first line of CSV file, unable to continue." ]\n$oops"
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
@@ -3407,7 +3492,7 @@ proc gorilla::Import { {input_file ""} } {
    
 	# Must have at least one data column present
 	if { [ llength $columns_present ] == 0 } {
-		error-popup [ mc "Error, nothing to import." ] \
+		ErrorPopup [ mc "Error, nothing to import." ] \
 		            [ mc "No valid import data was found.  Please see\nthe help for details on how to format import\nCSV data files for Password Gorilla." ]
 		catch { close $infd }
 	  	. configure -cursor $myOldCursor
@@ -3427,7 +3512,7 @@ proc gorilla::Import { {input_file ""} } {
 	}
    
 	if { [ info exists error_columns ] } {
-		error-popup [ mc "Error, undefined data columns" ] \
+		ErrorPopup [ mc "Error, undefined data columns" ] \
 			"[ mc "The following data items are not recognized as import data items.\nUnable to continue." ]\n[ join $error_columns " " ]" 
 		catch { close $infd }
 			. configure -cursor $myOldCursor
@@ -3586,7 +3671,7 @@ proc gorilla::Import { {input_file ""} } {
 
 } ; # end proc gorilla::Import
 
-proc gorilla::error-popup {title message} {
+proc gorilla::ErrorPopup {title message} {
 
 	# a small helper proc to encapsulate all the details of opening a
 	# tk_messageBox with a title and message
@@ -3597,7 +3682,7 @@ proc gorilla::error-popup {title message} {
 		-title $title \
 		-message $message 
 
-} ; # end proc gorilla::error-popup
+} ; # end proc gorilla::ErrorPopup
 
 proc gorilla::setup-default-dirname { } {
 
@@ -3640,32 +3725,6 @@ proc gorilla::MarkDatabaseAsDirty {} {
 }
 
 # ----------------------------------------------------------------------
-# Save file
-# ----------------------------------------------------------------------
-#
-# what with name1 name2 op?
-
-proc gorilla::SavePercentTrace {name1 name2 op} {
-	if {![info exists ::gorilla::savePercentLastUpdate]} {
-		set ::gorilla::savePercentLastUpdate [clock clicks -milliseconds]
-		return
-	}
-
-	set now [clock clicks -milliseconds]
-	set td [expr {$now - $::gorilla::savePercentLastUpdate}]
-	if {$td < 100} {
-		return
-	}
-
-	set ::gorilla::savePercentLastUpdate $now
-
-	if {$::gorilla::savePercent > 0} {
-		set ::gorilla::status [format [mc "Saving ... %2.0f %%"] $::gorilla::savePercent]
-		update idletasks
-	}
-}
-
-# ----------------------------------------------------------------------
 # Merge file
 # ----------------------------------------------------------------------
 #
@@ -3687,6 +3746,7 @@ variable gorilla::fieldNames [ list "" \
 
 proc gorilla::DestroyMergeReport {} {
 	ArrangeIdleTimeout
+	trace remove variable ::gorilla::merge_conflict_data {*}[ lindex [ trace info variable ::gorilla::merge_conflict_data ] 0 ]
 	set top .mergeReport
 	catch {destroy $top}
 	unset ::gorilla::toplevel($top)
@@ -3731,13 +3791,15 @@ proc gorilla::Merge {} {
 	set identicalReport [list]
 	set totalRecords [llength [$newdb getAllRecordNumbers]]
 
+	::gorilla::progress init -win . -message [mc "Merging (%d %% done)"]
+
 	foreach nrn [$newdb getAllRecordNumbers] {
+		unset -nocomplain rn node
+		
 		incr totalLogins
 
-		set percent [expr {int(100.*$totalLogins/$totalRecords)}]
-		set ::gorilla::status "Merging ($percent% done) ..."
-		update idletasks
-
+		::gorilla::progress update-pbar . [expr {int(100.*$totalLogins/$totalRecords)}]
+		
 		set ngroup ""
 		set ntitle ""
 		set nuser ""
@@ -3936,14 +3998,14 @@ proc gorilla::Merge {} {
 		#
 
 		if {!$found || !$identical} {
-			set oldrn $rn
+			set oldrn [ expr { [ info exists rn ] ? $rn : "" } ]
 			set rn [$::gorilla::db createRecord]
 
 			foreach field [$newdb getFieldsForRecord $nrn] {
-				$::gorilla::db setFieldValue $rn $field \
-				[$newdb getFieldValue $nrn $field]
+				$::gorilla::db setFieldValue $rn $field   [$newdb getFieldValue $nrn $field]
 			}
 
+			set oldnode [ expr { [ info exists node ] ? $node : "" } ]
 			set node [AddRecordToTree $rn]
 
 			if {$found && !$identical} {
@@ -3953,12 +4015,12 @@ proc gorilla::Merge {} {
 
 				lappend conflictNodes $node
 
-				set report "Conflict for login $ntitle"
+				set report [mc "Conflict for login %s" $ntitle]
 				if {$ngroup != ""} {
-					append report " (in group $ngroup)"
+					append report " [mc "(in group %s)" $ngroup]"
 				}
-				append report ": " $reason "."
-				lappend conflictReport [ list $report $rn $oldrn ]
+				append report ": " [mc %s $reason] "."
+				lappend conflictReport [ list $report $rn $oldrn $node $oldnode ]
 
 				#
 				# Make sure that this node is visible
@@ -3973,18 +4035,18 @@ proc gorilla::Merge {} {
 
 			} else {
 				lappend addedNodes $node
-				set report "Added login $ntitle"
+				set report [mc "Added login %s" $ntitle]
 				if {$ngroup != ""} {
-					append report " (in Group $ngroup)"
+					append report " [mc "(in group %s)" $ngroup]"
 				}
 				append report "."
 				lappend addedReport [ list $report $rn ]
 			}
 		} else {
 			incr identicalLogins
-			set report "Identical login $ntitle"
+			set report [mc "Identical login %s" $ntitle]
 			if {$ngroup != ""} {
-				append report " (in Group $ngroup)"
+				append report " [mc "(in group %s)" $ngroup]"
 			}
 			append report "."
 			lappend identicalReport $report
@@ -3993,30 +4055,20 @@ proc gorilla::Merge {} {
 		pwsafe::int::randomizeVar ngroup ntitle nuser
 	}
 
+	::gorilla::progress finished .
+
 	itcl::delete object $newdb
 	MarkDatabaseAsDirty
 
 	set numAddedLogins [llength $addedNodes]
 	set numConflicts [llength $conflictNodes]
 
-	set message "Merged "
-	append message $nativeName "; " $totalLogins " "
-
-	if {$totalLogins == 1} {
-		append message "login, "
-	} else {
-		append message "logins, "
-	}
-
-	append message $identicalLogins " identical, "
-	append message $numAddedLogins " added, "
-	append message $numConflicts " "
-
-	if {$numConflicts == 1} {
-		append message "conflict."
-	} else {
-		append message "conflicts."
-	}
+	set message [ mc "Merged %s;\n%d %s, %d identical, %d added, %d %s." \
+		$nativeName $totalLogins \
+		[ expr { $totalLogins == 1 ? [ mc "login" ] : [ mc "logins" ] } ] \
+		$identicalLogins $numAddedLogins $numConflicts \
+		[ expr { $numConflicts == 1 ? [ mc "conflict" ] : [ mc "conflicts" ] } ] \
+	]
 
 	set ::gorilla::status $message
 
@@ -4028,11 +4080,22 @@ proc gorilla::Merge {} {
 		set icon "info"
 	}
 
+	# Build a list suitable for passing to ::gorilla::conflict-dialog and
+	# save it to the global "conflicts" variable.  This is so that
+	# someone can resolve conflicts "later" if they just want to get on
+	# with merging right now.  Also append to anything that might be
+	# already present, allowing multiple sequential merges to then all
+	# be conflict resolved from a single dialog.
+
+	foreach {item} $conflictReport {
+		lappend ::gorilla::merge_conflict_data [ lindex $item 2 ] [ lindex $item 1 ] [ lindex $item 4 ] [ lindex $item 3 ]
+	}
+	UpdateMenu
+
 	set answer [tk_messageBox -parent . -type yesno \
 		-icon $icon -default $default \
-		-title "Merge Results" \
-		-message "$message Do you want to view a\
-		detailed report?"]
+		-title [mc "Merge Results"] \
+		-message "$message\n[ mc "Do you want to view a detailed report?"]"]
 
 	if {$answer != "yes"} {
 		return
@@ -4042,7 +4105,7 @@ proc gorilla::Merge {} {
 
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
-		wm title $top "Merge Report for $nativeName"
+		wm title $top [mc "Merge Report for $nativeName"]
 
 		set text [text $top.text -relief sunken -width 100 -wrap word \
 		-yscrollcommand "$top.vsb set"]
@@ -4059,10 +4122,30 @@ proc gorilla::Merge {} {
 		grid columnconfigure $top.dummy 0 -weight 1
 		grid rowconfigure $top.dummy 0 -weight 1
 		
-		set botframe [ttk::frame $top.botframe]
-		set botbut [ttk::button $botframe.but -width 10 -text [mc "Close"] \
+		set botframe [ ttk::frame  $top.botframe ]
+		set resolve_b  [ ttk::button $botframe.resolve -text [ mc "Resolve Conflicts" ] -state disabled \
+			-command [ list catch {::gorilla::conflict-dialog $::gorilla::merge_conflict_data} ] ]
+
+		trace add variable ::gorilla::merge_conflict_data write [ list apply [ list args [ string map [ list %rcb $resolve_b ] {
+			if { ( ! [ info exists ::gorilla::merge_conflict_data ] ) ||
+			     ( [ llength $::gorilla::merge_conflict_data ] == 0 ) } {
+				%rcb configure -state disabled
+				# also turn off File->Resolve Conflicts menu entry
+				::gorilla::UpdateMenu
+			} else {
+				%rcb configure -state normal
+			}
+			} ] ] ]
+
+		if { [ info exists ::gorilla::merge_conflict_data ] && 
+		     [ llength $::gorilla::merge_conflict_data ] > 0 } {
+			$resolve_b configure -state normal
+		}
+
+		set close_b [ttk::button $botframe.but2 -text [mc "Close"] \
 			-command "gorilla::DestroyMergeReport"]
-		pack $botbut
+		grid $resolve_b $close_b
+		grid columnconfigure $botframe all -weight 1
 		pack $botframe -side top -fill x -pady 10
 		
 		bind $top <Prior> "$text yview scroll -1 pages; break"
@@ -4091,7 +4174,7 @@ proc gorilla::Merge {} {
 
 	$text insert end [string repeat "-" 70]
 	$text insert end "\n"
-	$text insert end "Conflicts\n"
+	$text insert end "[mc "Conflicts"]\n"
 	$text insert end [string repeat "-" 70]
 	$text insert end "\n"
 	$text insert end "\n"
@@ -4160,8 +4243,8 @@ proc gorilla::Merge {} {
 	update idletasks
 	wm deiconify $top
 	raise $top
-	focus $botframe.but
-}
+#	focus $botframe.but
+} ; # end ::gorilla::Merge
 
 
 proc gorilla::Save {} {
@@ -4192,27 +4275,17 @@ proc gorilla::Save {} {
 	. configure -cursor watch
 	update idletasks
 
-	#
-	# Create backup file, if desired
-	#
+	set nativeName [file nativename $::gorilla::fileName]
 
-	if {$::gorilla::preference(keepBackupFile)} {
-		set backupFileName [file rootname $::gorilla::fileName]
-		append backupFileName ".bak"
-		if {[catch {
-			file copy -force -- $::gorilla::fileName $backupFileName
-			} oops]} {
-			. configure -cursor $myOldCursor
-			set backupNativeName [file nativename $backupFileName]
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title "Error Saving Database" \
-				-message "Failed to make backup copy of password \
-				database as $backupNativeName: $oops"
-			return 0
+	if-platform? unix {
+		# note - failure to retreive permissions (i.e., db file on
+		# Samba share mounted on Linux machine) is not considered a
+		# fatal issue
+		if { [ catch { set unix_permissions [ file attributes $::gorilla::fileName -permissions ] } m1 m2 ] } {
+		  puts stderr "Warning: failure retreiving Unix permissions on file $::gorilla::fileName.\n$m1\n$m2"
 		}
 	}
-
-	set nativeName [file nativename $::gorilla::fileName]
+	
 	#
 	# Determine file version. If there is a header field of type 0,
 	# it should indicate the version. Otherwise, default to version 2.
@@ -4227,38 +4300,65 @@ proc gorilla::Save {} {
 			set majorVersion 3
 		}
 	}
-	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] ::gorilla::SavePercentTrace
+	set pvar [ ::gorilla::progress init -win .status -message [ mc "Saving ... %d %%" ] -max 200 ]
 
-	# verhindert einen grauen Fleck bei Speichervorgang
+	# avoid gray area during save
 	update
 
-	if {[catch {pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
-	::gorilla::savePercent} oops]} {
-		trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
-
+	if { [ catch { pwsafe::writeToFile $::gorilla::db $nativeName $majorVersion \
+			$pvar } oops ] } {
+		::gorilla::progress finished .status
+		
 		. configure -cursor $myOldCursor
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Error Saving Database" \
-			-message "Failed to save password database as\
-			$nativeName: $oops"
-		return 0
+		gorilla::ErrorPopup [ mc "Error Saving Backup of Database"] \
+			[mc "Failed to save password database as\n%s: %s" $nativeName $oops ]
+		return GORILLA_SAVEBACKUPERROR
 	}
 
-	trace remove variable ::gorilla::savePercent [list "write"] \
-		::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
+	::gorilla::progress finished .status
+	
+	# The actual data are saved. Now take care of a backup file
+
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
+
+	if { $message ne "GORILLA_OK" } {
+		. configure -cursor $myOldCursor
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
 
 	. configure -cursor $myOldCursor
-	# set ::gorilla::status [mc "Password database saved as $nativeName"] 
-	set ::gorilla::status [mc "Password database saved."] 
+
 	set ::gorilla::dirty 0
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 
 	UpdateMenu
-	return 1
+
+	# attempt to restore cached file permissions under unix
+	if-platform? unix {
+		# note - failure to set cached permissions on the new file
+		# is not considered a fatal issue
+		if { [ catch { file attributes $::gorilla::fileName -permissions $unix_permissions } m1 m2 ] } {
+		  puts stderr "Warning: failure applying cached Unix permissions to file $::gorilla::fileName.\n$m1\n$m2"
+		}
+	}
+
+	# The actual data are saved. Now take care of a backup file
+
+	if {$::gorilla::preference(keepBackupFile)} {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { [lindex $message 0] ne "GORILLA_OK" } {
+			# gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+			set ::gorilla::status [mc "Password database saved but backup copy failed: [lindex $message 1]." ]
+			return GORILLA_SAVEBACKUPERROR
+		} else {
+			set ::gorilla::status [mc "Password database saved with backup copy." ]
+			return GORILLA_OK
+		}
+	}
+	set ::gorilla::status [mc "Password database saved."] 
+	
+	return GORILLA_OK
 }
 
 #
@@ -4271,10 +4371,9 @@ proc gorilla::SaveAs {} {
 	ArrangeIdleTimeout
 
 	if {![info exists ::gorilla::db]} {
-		tk_messageBox -parent . -type ok -icon error -default ok \
-			-title "Nothing To Save" \
-			-message "No password database to save."
-		return 1
+		gorilla::ErrorPopup [ mc "Nothing To Save" ] \
+		[ mc "No password database to save." ]
+		return GORILLA_SAVEERROR
 	}
 
 	#
@@ -4325,9 +4424,7 @@ proc gorilla::SaveAs {} {
 		return 0
 	}
 
-	# Dateiname auf Default Extension testen 
-	# not necessary
-	# -defaultextension funktioniert nur auf Windowssystemen und Mac
+	# -defaultextension seems not to work on Linux
 	# set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
 	set nativeName [file nativename $fileName]
 	
@@ -4335,62 +4432,47 @@ proc gorilla::SaveAs {} {
 	. configure -cursor watch
 	update idletasks
 
-	#
-	# Create backup file, if desired
-	#
+	set pvar [ ::gorilla::progress init -win .status -message [ mc "Saving ... %d %%" ] -max 200 ]
 
-	if {$::gorilla::preference(keepBackupFile) && \
-		[file exists $fileName]} {
-		set backupFileName [file rootname $fileName]
-		append backupFileName ".bak"
-		set ::gorilla::status $backupFileName
-		if {[catch {
-			file copy -force -- $fileName $backupFileName
-		   } oops]} {
-			. configure -cursor $myOldCursor
-			set backupNativeName [file nativename $backupFileName]
-			tk_messageBox -parent . -type ok -icon error -default ok \
-				-title [mc "Error Saving Database"] \
-				-message [mc "Failed to make backup copy of password database as \"%s\": %s" \
-				$backupNativeName $oops]
-			return 0
-		}
+	if { [ catch { pwsafe::writeToFile $::gorilla::db $fileName $majorVersion $pvar } oops] } {
+		::gorilla::progress finished .status
+		. configure -cursor $myOldCursor
+		tk_messageBox -parent . -type ok -icon error -default ok \
+			-title [mc "Error Saving Database"] \
+			-message [mc "Failed to save password database as \"%s\": %s" \
+			$nativeName $oops]
+		return 0
 	}
 
-	set ::gorilla::savePercent 0
-	trace add variable ::gorilla::savePercent [list "write"] \
-	::gorilla::SavePercentTrace
+	::gorilla::progress finished .status
 
-		if {[catch {
-	pwsafe::writeToFile $::gorilla::db $fileName $majorVersion ::gorilla::savePercent
-		} oops]} {
-	trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-	unset ::gorilla::savePercent
+	# The actual data are saved. Now take care of a backup file
 
-	. configure -cursor $myOldCursor
-	tk_messageBox -parent . -type ok -icon error -default ok \
-		-title [mc "Error Saving Database"] \
-		-message [mc "Failed to save password database as \"%s\": %s" \
-		$nativeName $oops]
-	return 0
-		}
+  set ::gorilla::fileName $fileName
+	set message [ gorilla::SaveBackup $::gorilla::fileName ]
 
-		trace remove variable ::gorilla::savePercent [list "write"] \
-			::gorilla::SavePercentTrace
-		unset ::gorilla::savePercent
-
+	if { $message ne "GORILLA_OK" } {
 		. configure -cursor $myOldCursor
-		set ::gorilla::dirty 0
-		$::gorilla::widgets(tree) item "RootNode" -tags black
-		set ::gorilla::fileName $fileName
-		wm title . "Password Gorilla - $nativeName"
-		$::gorilla::widgets(tree) item "RootNode" -text $nativeName
-		set ::gorilla::status [mc "Password database saved as %s" $nativeName]
+		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		return GORILLA_SAVEBACKUPERROR
+	}
 
-	#
+	# clean up
+	
+	. configure -cursor $myOldCursor
+	set ::gorilla::dirty 0
+	$::gorilla::widgets(tree) item "RootNode" -tags black
+	
+	wm title . "Password Gorilla - $nativeName"
+	$::gorilla::widgets(tree) item "RootNode" -text $nativeName
+	
+	if {$::gorilla::preference(keepBackupFile)} {
+		set ::gorilla::status [mc "Password database saved with backup copy" ] 
+	} else {
+		set ::gorilla::status [mc "Password database saved."] 
+	}
+	
 	# Add file to LRU preference
-	#
 
 	set found [lsearch -exact $::gorilla::preference(lru) $nativeName]
 	if {$found == -1} {
@@ -4399,10 +4481,81 @@ proc gorilla::SaveAs {} {
 		set tmp [lreplace $::gorilla::preference(lru) $found $found]
 		set ::gorilla::preference(lru) [linsert $tmp 0 $nativeName]
 	}
+	
 	UpdateMenu
-	$::gorilla::widgets(tree) item "RootNode" -tags black
-	return 1
+
+	# The actual data are saved. Now take care of a backup file
+
+	if {$::gorilla::preference(keepBackupFile)} {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { [lindex $message 0] ne "GORILLA_OK" } {
+			# gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+			set ::gorilla::status [mc "Password database saved but backup copy failed: [lindex $message 1]." ]
+			return GORILLA_SAVEBACKUPERROR
+		} else {
+			set ::gorilla::status [mc "Password database saved with backup copy." ]
+			return GORILLA_OK
+		}
+	}
+	set ::gorilla::status [mc "Password database saved."] 
+	
+	return GORILLA_OK
 }
+
+proc gorilla::SaveBackup { filename } {
+	# tries to backup the actual database observing the keepBackupFile flag.
+	# If the backup fails an errorType and a errorMessage string filtered
+	# by msgcat are returned.
+	#
+	# If the timestamp flag is set the backup file gets a timestamp appendix
+	# according to the local settings
+	#
+	# filename - name of current database containing full path
+	#
+
+	set errorType [ mc "Error Saving Backup of Database" ]
+
+	# create a backup filename based upon timeStampBackup preference
+
+	if { ! $::gorilla::preference(timeStampBackup) } {
+		set backupFileName "[file rootname [file tail $filename] ].bak"
+	} else {
+		# Note: The following characters are reserved in Windows and
+		# cannot be used in a file name: < > : " / \ | ? *
+		set backupFileName [ file rootname [file tail $filename] ]
+		append backupFileName "[clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S" ]"
+		append backupFileName [file extension $filename]
+	}
+
+        # determine where to save the backup based upon preference setting
+        
+	if { $::gorilla::preference(backupPath) eq "" } {
+		# place backup file into same directory as current password db file
+		set backupPath [ file dirname $filename ]
+	} else {
+		# place backup file into users preference directory
+
+		set backupPath $::gorilla::preference(backupPath)
+		if { ! [file isdirectory $backupPath] } {
+			return [list $errorType [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] ]
+		}	elseif { ! [file exists $filename] } {
+			return [list $errorType [mc "Unknown file. - \nPlease select a valid database filename."] ]
+		}	elseif { [ info exists ::gorilla::isLocked ] && $::gorilla::isLocked } {
+				set backupFileName "[ file tail $filename ]~"
+		}
+	} ; # end if backupPath preference
+	
+	set backupFile [ file join $backupPath $backupFileName ]
+
+	if {[catch {
+		file copy -force -- $filename $backupFile
+		} oops]} {
+		set backupNativeName [file nativename $backupFileName]
+		return $errorType [ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]
+	}
+
+	return GORILLA_OK
+} ;# end of proc gorilla::SaveBackup
 
 # ----------------------------------------------------------------------
 # Rebuild Tree
@@ -4549,6 +4702,14 @@ proc gorilla::UpdateMenu {} {
 	} else {
 		setmenustate $::gorilla::widgets(main) open disabled
 	}
+	
+	if { [ info exists ::gorilla::merge_conflict_data ] &&
+		 ( [ llength $::gorilla::merge_conflict_data ] > 0 ) } {
+		setmenustate $::gorilla::widgets(main) conflict normal
+	} else {
+		setmenustate $::gorilla::widgets(main) conflict disabled
+	}
+	
 }
 
 proc gorilla::Exit {} {
@@ -4583,11 +4744,11 @@ proc gorilla::Exit {} {
 		
 		if {$answer == "yes"} {
 			if {[info exists ::gorilla::fileName]} {
-				if {![::gorilla::Save]} {
+				if { [::gorilla::Save] ne "GORILLA_OK" } {
 					set ::gorilla::exiting 0
 				}
 			} else {
-				if {![::gorilla::SaveAs]} {
+				if { [::gorilla::SaveAs] ne "GORILLA_OK" } {
 					set ::gorilla::exiting 0
 				}
 			}
@@ -4744,7 +4905,15 @@ proc gorilla::LockDatabase {} {
 		setmenustate $::gorilla::widgets(main) all disabled
 		rename ::tk::mac::ShowPreferences ""
 	}
-	
+
+	# FIXME: perhaps it's better to backup the db in any case?
+	if { $::gorilla::preference(keepBackupFile) } {
+		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+		if { $message ne "GORILLA_OK" } {
+			gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		}
+	} ;# endif $::gorilla::preference(keepBackupFile)
+
 	set top .lockedDialog
 	if {![info exists ::gorilla::toplevel($top)]} {
 		
@@ -4837,35 +5006,37 @@ proc gorilla::LockDatabase {} {
 	if { $::gorilla::preference(iconifyOnAutolock) } {
 		wm iconify $top
 	}
-		
-	while {42} {
-		set ::gorilla::lockedMutex 0
-		vwait ::gorilla::lockedMutex
 
-		if {$::gorilla::lockedMutex == 1} {
-			if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
-				break
+	if { ! $::DEBUG(TEST) } {		
+		while {42} {
+			set ::gorilla::lockedMutex 0
+			vwait ::gorilla::lockedMutex
+	
+			if {$::gorilla::lockedMutex == 1} {
+				if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
+					break
+				}
+	
+				tk_messageBox -parent $top \
+					-type ok -icon error -default ok \
+					-title [ mc "Wrong Password" ] \
+					-message [ mc "That password is not correct." ]
+	
+				 # clear the PW entry upon invalid PW
+				 $aframe.mitte.pw.pw delete 0 end
+						 
+			} elseif {$::gorilla::lockedMutex == 2} {
+				#
+				# This may return, if the database was modified, and the user
+				# answers "Cancel" to the question whether to save the database
+				# or not.
+				#
+	
+				gorilla::Exit
 			}
-
-			tk_messageBox -parent $top \
-				-type ok -icon error -default ok \
-				-title [ mc "Wrong Password" ] \
-				-message [ mc "That password is not correct." ]
-
-			 # clear the PW entry upon invalid PW
-			 $aframe.mitte.pw.pw delete 0 end
-		       
-		} elseif {$::gorilla::lockedMutex == 2} {
-			#
-			# This may return, if the database was modified, and the user
-			# answers "Cancel" to the question whether to save the database
-			# or not.
-			#
-
-			gorilla::Exit
 		}
 	}
-
+	
 	# restore all closed window statuses and positions
 	foreach tl [array names withdrawn] {
 		wm state    $tl [ lindex $withdrawn($tl) 0 ]
@@ -4891,6 +5062,7 @@ proc gorilla::LockDatabase {} {
 	wm deiconify .
 	raise .
 	ArrangeIdleTimeout
+	return GORILLA_OK
 }
 
 
@@ -5074,9 +5246,9 @@ proc gorilla::PasswordPolicy {} {
 	if {![info exists ::gorilla::db]} {
 		tk_messageBox -parent . \
 			-type ok -icon error -default ok \
-			-title "No Database" \
-			-message "Please create a new database, or open an existing\
-			database first."
+			-title [mc "No Database"] \
+			-message [mc "Please create a new database, or open an existing\
+			database first."]
 		return
 	}
 
@@ -5341,6 +5513,7 @@ proc gorilla::DestroyDatabasePreferencesDialog {} {
 }
 
 proc gorilla::DatabasePreferencesDialog {} {
+
 	ArrangeIdleTimeout
 
 	set top .dbPrefsDialog
@@ -5396,13 +5569,50 @@ proc gorilla::DatabasePreferencesDialog {} {
 			-variable ::gorilla::dpd(IsUTF8)
 		pack $top.uni -anchor w -side top -pady 3 -padx 10
 
+		# === keystretch spinbox
+
 		ttk::frame $top.stretch -padding [list 10 5]
-		spinbox $top.stretch.spin -from 2048 -to 65535 -increment 256 \
-			-justify right -width 8 \
+		spinbox $top.stretch.spin -from 2048 -to 2147483647 -increment 256 \
+			-justify right -width 12 \
 			-textvariable ::gorilla::dpd(keyStretchingIterations)
 		ttk::label $top.stretch.label -text [mc "V3 key stretching iterations"]
 		pack $top.stretch.spin $top.stretch.label -side left -padx 3
 		pack $top.stretch -anchor w -side top
+
+		# === keystretch delay timer
+
+		set delayf [ ttk::labelframe $top.delay -padding {10 5} -text [ mc "Calculate delay time" ] ]
+		pack $delayf -anchor w -side top -fill x -expand true -padx {10 10} -pady {0 2m}
+		
+		ttk::label  $delayf.feedback -text [ mc "Default: %s" $::gorilla::dpd(keyStretchingIterations) ]
+		ttk::button $delayf.compute  -text [ mc "Calculate" ] -command [ namespace code [ subst {
+		  $delayf.compute configure -text [ mc "Calculating" ]
+		  update idletasks
+		  $delayf.feedback configure -text \[ mc "%s sec(s) for %d iterations" \
+                                   \[ expr { \[ pwsafe::int::keyStretchMsDelay \[ $top.stretch.spin get ] ] / 1000.0 } ] \
+                                   \[ $top.stretch.spin get ] ]
+		  $delayf.compute configure -text [ mc "Calculate" ]
+		  } ] ]
+		grid $delayf.feedback $delayf.compute -sticky news -padx {1m 1m} -pady {1m 1m}
+		
+		# === auto iter computation
+
+		set aiterf [ ttk::labelframe $top.autoiter -padding {10 5} -text [ mc "Calculate iterations" ] ]
+		pack $aiterf -anchor w -side top -fill x -expand true -padx {10 10}
+
+		ttk::label $aiterf.label1 -text [ mc "Delay for" ]
+		spinbox $aiterf.spin -from 1 -to 600 -increment 1 -justify right -width 5 
+		ttk::label $aiterf.spinlabel2 -text [ mc "sec(s)" ]
+		ttk::button $aiterf.calculate -text [ mc "Calculate" ] \
+		  -command [ namespace code [ subst { 
+		    $aiterf.calculate configure -text [ mc "Calculating" ]
+		    update idletasks
+		    $top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
+		    $aiterf.calculate configure -text [ mc "Calculate" ]
+		  } ] ]
+		grid $aiterf.label1 $aiterf.spin $aiterf.spinlabel2 $aiterf.calculate -padx {1m 1m} -pady {1m 1m}
+
+		# ===
 
 		ttk::separator $top.sep -orient horizontal
 		pack $top.sep -side top -fill x -pady 10
@@ -5479,7 +5689,8 @@ proc gorilla::DatabasePreferencesDialog {} {
 	}
 
 	ArrangeIdleTimeout
-}
+
+} ; # end proc gorilla::DatabasePreferencesDialog
 
 # ----------------------------------------------------------------------
 # Preferences Dialog
@@ -5571,7 +5782,7 @@ proc gorilla::PreferencesDialog {} {
 
 
 		#
-		# Second NoteBook tab: database defaults
+		# Second NoteBook tab: (d)efault (p)re(f)erences
 		#
 
 		set dpf $top.nb.dpf
@@ -5593,8 +5804,22 @@ proc gorilla::PreferencesDialog {} {
 			-onvalue 3 -offvalue 2
 		ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
 			-variable ::gorilla::prefTemp(unicodeSupport)
+		ttk::checkbutton $dpf.ts -text [mc "Time stamp backup"] \
+			-variable ::gorilla::prefTemp(timeStampBackup)
 
-		pack $dpf.si $dpf.ver $dpf.uni -side top -anchor w -pady 3 -padx 10
+		ttk::frame $dpf.bakpath
+# puts $::gorilla::prefTemp(backupPath)
+		ttk::entry $dpf.bakpath.e -textvariable ::gorilla::prefTemp(backupPath)
+		ttk::label $dpf.bakpath.l -text [mc "Backup path:"]
+		ttk::button $dpf.bakpath.b -image $::gorilla::images(browse) \
+			-command { eval set ::gorilla::prefTemp(backupPath) \
+				[tk_chooseDirectory -initialdir $::gorilla::prefTemp(backupPath) \
+				-title [mc "Choose a directory"] ] }
+		pack $dpf.bakpath.l -side left
+		pack $dpf.bakpath.e -side left -padx 3 -expand 1 -fill x
+		pack $dpf.bakpath.b -side left -padx 3
+
+		pack $dpf.si $dpf.ver $dpf.uni $dpf.ts $dpf.bakpath -side top -anchor w -pady 3 -padx 10 -fill x
 
 		ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
 			-text [mc "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."]
@@ -5633,6 +5858,7 @@ proc gorilla::PreferencesDialog {} {
 		#
 		
 		set languages [gorilla::getAvailableLanguages]
+    
 		# format: {en English de Deutsch ...}
 		# Fehlerabfrage für falschen prefTemp(lang) Eintrag in der gorillarc
 		if {[lsearch $languages $::gorilla::prefTemp(lang)] == -1} {
@@ -5654,7 +5880,7 @@ proc gorilla::PreferencesDialog {} {
 			$m add radio -label $name -variable ::gorilla::prefTemp(lang) -value $lang \
 				-command "set ::gorilla::fullLangName $name"
 		}
-		
+
 		pack $display.lang.label $display.lang.mb -side left
 		pack $display.lang -anchor w
 		
@@ -5750,7 +5976,7 @@ proc gorilla::PreferencesDialog {} {
 
 		# $top.nb compute_size
 		# $top.nb raise gpf
-		pack $top.nb -side top -fill both -expand yes -pady 10
+		pack $top.nb -side top -fill both -expand yes -ipady 10
 
 		#
 		# Bottom
@@ -5759,13 +5985,13 @@ proc gorilla::PreferencesDialog {} {
 		# Separator $top.sep -orient horizontal
 		# pack $top.sep -side top -fill x -pady 7
 
-		frame $top.buts
+		ttk::frame $top.buts
 		set but1 [ttk::button $top.buts.b1 -width 15 -text [ mc "OK" ] \
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
 		pack $but1 $but2 -side left -pady 10 -padx 20
-		pack $top.buts -side top -pady 10 -fill both
+		pack $top.buts -side top -ipady 10 -fill both
 
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyPreferencesDialog
@@ -5980,7 +6206,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 	}
 
 	if {[catch {close $f}]} {
-		gorilla::msg "Error while saving RC-File"
+		gorilla::ErrorPopup [mc "Error"] [mc "Error while saving RC-File"]
 		return 0
 	}
 	return 1
@@ -6162,15 +6388,22 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 				}
 				
 			}
-
 		} ; # end switch pref
 
 	} ; # end while ! eof f
 
+	# MacOS launches default browser with "open http://url"
+	if {[tk windowingsystem] == "aqua" && $::gorilla::preference(browser-exe) eq "" }	{
+			set ::gorilla::preference(browser-exe) "open"
+	}
+
 	# initialize locale and fonts from the preference values
 
 	mclocale $::gorilla::preference(lang)
-	mcload [file join $::gorillaDir msgs]
+
+	# Load msgcat data into the global namespace so that it is visible
+	# from both the ::gorilla and ::pwsafe namespaces.
+	namespace eval :: { mcload [file join $::gorillaDir msgs] }
 	
 	set value $::gorilla::preference(fontsize) 
 	font configure TkDefaultFont -size $value
@@ -6299,7 +6532,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 		Username { set ::gorilla::activeSelection 1 }
 		Password { set ::gorilla::activeSelection 2 }
 		URL      { set ::gorilla::activeSelection 3 }
-		default  { error "gorilla::CopyToClipboard: parameter 'what' not one of 'Username', 'Password', 'URL'" }
+		default  { error [mc "gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'" [mc $what]] }
 	}
 
 	ArrangeIdleTimeout
@@ -6307,7 +6540,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
 	set item [ gorilla::GetSelected$what ]
 
 	if {$item == ""} {
-		set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] ]
+		set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] [ mc $what ] ]
 	} else {
 		switch -exact -- [ tk windowingsystem ] {
 			aqua    -
@@ -6486,32 +6719,34 @@ proc gorilla::About {} {
 			-font {sans 10}
 
 		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
-		ttk::label $w.contributors -text [ mc "Contributors" ] {*}$stdopts -font {sans 10}
-		ttk::label $w.contrib1 -text "\u2022 [ mc "Gorilla artwork contributed by %s" "Andrew J. Sniezek." ]" {*}$stdopts
-		ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts
-		ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts
-		ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts
+		lappend ctr [ ttk::label $w.contributors -text [ mc "Contributors" ] {*}$stdopts -font {sans 10} ]
+		lappend ctr [ ttk::label $w.contrib1 -text "\u2022 [ mc "Gorilla artwork contributed by %s" "Andrew J. Sniezek." ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib6 -text "\u2022 [ mc "Spanish translation by %s" "Juan Roldan Ruiz" ]" {*}$stdopts ]
+
+		set I [ expr { [ info exists ::sha2::accel(critcl) ] && $::sha2::accel(critcl) ? "C" : "Tcl" } ]
+		ttk::label $w.exten -text [ mc "Using %s sha256 extension." $I ] {*}$stdopts
 		
 		ttk::frame $w.buttons
 		ttk::button $w.buttons.license -text [mc License] -command gorilla::License
 		ttk::button $w.buttons.close -text [mc "Close"] -command gorilla::DestroyAboutDialog
+		pack $w.buttons.license $w.buttons.close -side left -padx 30
 					
 		pack $w.image -side top
 		pack $w.title -side top -pady 5
 		pack $w.description -side top
 		pack $w.copyright -side top -pady 5 -fill x
 		pack $w.url -side top -pady 5 
-		foreach item [ list $w.contributors $w.contrib1 $w.contrib2 $w.contrib3 $w.contrib4 ] { 
-			pack $item -side top -pady 0 -fill x
-		} 
-		pack $w.buttons.license $w.buttons.close \
-			-side left -padx 30
+		pack {*}$ctr -side top -pady 0 -fill x
+		pack $w.exten -side top -pady {2m 0} -fill x
 		pack $w.buttons -side bottom -pady 10
 		pack $w
 		
 		wm title $top [mc "About Password Gorilla"]
 
-		
 		bind $top <Return> "gorilla::DestroyAboutDialog"
 	
 		set ::gorilla::toplevel($top) $top
@@ -6532,7 +6767,7 @@ proc gorilla::Help {} {
 
 	# ReadHelpFiles is looking in the given directory 
 	# for a file named help.txt
-	::Help::ReadHelpFiles $::gorillaDir
+	::Help::ReadHelpFiles $::gorillaDir $::gorilla::preference(lang)
 	::Help::Help Overview
 }
 
@@ -6919,15 +7154,15 @@ proc gorilla::FindNext {} {
 
 proc gorilla::getAvailableLanguages {  } {
 	set files [glob -tail -path "$::gorillaDir/msgs/" *.msg]
-	set msgList "en"
+	set msgList [list ]    ;# en.msg exists
 	
 	foreach file $files {
 		lappend msgList [lindex [split $file "."] 0]
 	}
 	
 	# FIXME: This dictionary of possible languages has to be expanded
-	set langFullName [list en English de Deutsch fr Français es Espagnol ru Russian it Italiano]
-	
+	set langFullName [list en English de Deutsch fr Fran\u00e7ais es Espa\u00f1ol ru Russian it Italiano]
+
 	# create langList from *.msg pool
 	set langList {}
 	foreach lang $msgList {
@@ -7574,7 +7809,7 @@ namespace eval ::gorilla::dbget {
         # get-record vs get-date-record) generate them in a loop instead of
         # enumerating them.
 
-	foreach {procname recnum} [ list  uuid 1  group 2  title 3  user 4 \
+	foreach {procname recnum} [ list  uuid 1  group 2  title 3  user 4 username 4 \
 					notes 5  password 6  url 13 ] {
 
 		proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
@@ -7592,7 +7827,7 @@ namespace eval ::gorilla::dbget {
 
 	} ; # end foreach procname,recnum
 
-	namespace export uuid group title user notes password url create-time last-pass-change last-access lifetime last-modified
+	namespace export uuid group title user username notes password url create-time last-pass-change last-access lifetime last-modified
 
 	# get-record -> a helper proc for the ensemble that hides in one place all
 	# the complexity of checking for a records/fields existance and returning
@@ -7653,7 +7888,7 @@ namespace eval ::gorilla::dbset {
         # note - field #11 is marked as reserved in the pwsafe v3
         # documentation
         
-	foreach {procname fieldnum} [ list  uuid 1  group 2  title 3  user 4 \
+	foreach {procname fieldnum} [ list  uuid 1  group 2  title 3  user 4 username 4 \
 					notes 5  password 6  create-time 7 \
 					last-pass-change 8   last-access 9 \
         				lifetime 10          last-modified 12 \
@@ -7675,7 +7910,7 @@ namespace eval ::gorilla::dbset {
 
 	} ; # end foreach procname,fieldnum
 
-	namespace export uuid group title user notes password url create-time last-pass-change last-access lifetime last-modified
+	namespace export uuid group title user username notes password url create-time last-pass-change last-access lifetime last-modified
 
   	namespace ensemble create
 
@@ -7753,10 +7988,13 @@ namespace eval ::gorilla::dnd {
 	namespace ensemble create
 
 	variable dragging      0        ; # flag to indicate if user is dragging items
-	variable selectedItems [ list ]	; # list of items (tree node names) that are being dragged
-	variable clickPx       -Inf     ; # mouse cursor x position for click that started drag
-	variable clickPy       -Inf     ; # mouse cursor y position for click that started drag
-	variable invalidDrag   0        ; # flag to indicate if the selected item list is a valid set of items for a drag
+
+	variable selectedItems [ list ]	; # list of items (tree node names) that
+	                                  # need to be "moved" to perform the move
+	                                  # action
+
+	variable clickPx       -Inf     ; # mouse cursor x position at start of drag
+	variable clickPy       -Inf     ; # mouse cursor y position at start of drag
 
 	# ----------------------------------------------------------------------
 
@@ -7778,13 +8016,13 @@ namespace eval ::gorilla::dnd {
 		ttk::label $tree.dnd
 
 		#ruff
-		# Attaches event bindings to the widget passed as the sole
-		# parameter for handling drag and drop operations.  Also
-		# creates a single label widget as a child of the parameter
-		# which will be utilized as a drag indicator.
+		# Attaches event bindings to the widget passed as the sole parameter for
+		# handling drag and drop operations.  Also creates a single label widget
+		# as a child of the parameter which will be utilized as a drag
+		# indicator.
 		#
-		# tree - the widget name to attach the event bindings.  The
-		#        created label will be a child of this widget
+		# tree - the widget name to attach the event bindings.  The created
+		#        label will be a child of this widget
 		
 	} ; # end ::gorilla::dnd::init
 
@@ -7793,50 +8031,53 @@ namespace eval ::gorilla::dnd {
 	proc ::gorilla::dnd::select { tree } {
 		variable dragging
 		variable selectedItems
-		variable invalidDrag 0
 		
 		if { ! $dragging } {
-			# numG and numL are utilized to exclude attempting
-			# to drag and drop groups and logins or plural
-			# groups
-			set numG [ set numL 0 ]
+			set tempitems [ $tree selection ]
+			
+			# keep only items that are 1) visible 2) not a child of an item
+			# already in the list
+			
+			set selectedItems [ list ]
+			set labeltexts    [ list ]
+			foreach item $tempitems {
 
-			set selectedItems [ $tree selection ]
+				# bbox is documented as returning empty list for a not visible item
+				if { [ llength [ $tree bbox $item ] ] == 0 } {
+					continue
+				}
 
-			set temp [ list ]
-			foreach item $selectedItems {
-				# name of the item
-				lappend temp [ $tree item $item -text ]
+				# at this point the item is visible, so add its label to the
+				# labeltexts list
 
-				# type (Login,Group) of the item
-				switch -exact -- [ lindex [ $tree item $item -values ] 0 ] {
-				  	Group { incr numG } 
-				  	Login { incr numL }
-				} ; # end switch
+				lappend labeltexts [ $tree item $item -text ]
+				
+				# skip if parent item already in selection list
+				if { [ $tree parent $item ] in $tempitems } {
+					continue
+				}
 
- 			} ; # end foreach item
+				# otherwise remember the item as a move candidate
+				lappend selectedItems $item
 
- 			# put the selected item names into the label widget
- 			# that is the drag feedback indicator
-			$tree.dnd configure -text [ join $temp "\n" ]
+			} ; # end foreach item in tempitems
 
-			if { ( ( $numG > 0 ) && ( $numL > 0 ) )
-			    || ( $numG > 1 ) } {
-				# can not drag both groups and logins
-				# can not drag plural groups
-				set invalidDrag 1
-			}
-		}
+ 			# put the selected item names into the label widget that is the drag
+ 			# feedback indicator
+
+			$tree.dnd configure -text [ join $labeltexts "\n" ]
+
+		} ; # end if not dragging
 
 		#ruff
-		# Called by event loop when treeview selection changes
+		# Called by event loop when treeview selection changes 
+		#
 		# tree - the name of the treeview widget
 		#
-		# If a drag is happening then retreives the list of selected
-		# treeview rows and stores them in a namespace varaible in
-		# prepraration for a drag operation occurring.  Also inserts
-		# the names of the rows in the drag label as feedback to a
-		# user for what items are being dragged.
+		# If a drag is happening then retreives the list of selected treeview
+		# rows and stores them in a namespace varaible in prepraration for a
+		# drag operation occurring.  Also inserts the names of the rows in the
+		# drag label as feedback to a user for what items are being dragged.
 		#
 		# If a drag is not happening then do nothing.
 
@@ -7848,21 +8089,17 @@ namespace eval ::gorilla::dnd {
 		variable clickPx     -Inf
 		variable clickPy     -Inf
 		
-		# can not drag empty area of tree, nor root node of tree -
-		# the -Inf is the magic which makes this work.  Any x,y
-		# position subtracted from -Inf is still -Inf, and -Inf is
-		# always smaller than zero, so as long as Px,Py are -Inf, a
-		# drag will never initiate
-
+		# can not drag empty area of tree, nor root node of tree - leave set to
+		# -Inf in those cases
+		
 		if { ( [ $tree identify row $x $y ] ni {"" RootNode} ) } {
 			set clickPx $x
 			set clickPy $y
 		} ; # end if selrow ni ""/RootNode
 
 		#ruff
-		# Callled by mouse button press event to record the x,y
-		# position of the mouse cursor in preparation for a possible
-		# drag occurring.
+		# Called by mouse button press event to record the x,y position of the
+		# mouse cursor in preparation for a possible drag occurring.
 		#
 		# tree - the tree widget 
 		# x - x mouse cursor position
@@ -7876,16 +8113,14 @@ namespace eval ::gorilla::dnd {
 		variable dragging
 		variable clickPx
 		variable clickPy
-		variable invalidDrag
 
-		if { $invalidDrag } { 
-			::gorilla::Feedback [ mc "Can not drag the selected items (see documentation)" ]
-			set dragging 0
-			return
-		}
+		# the -Inf default for clickP[xy] is the magic which makes this code
+		# below work.  Any x,y position subtracted from -Inf is still -Inf, and
+		# -Inf is always smaller than zero, so as long as Px,Py are -Inf, a drag
+		# will never initiate
 
-		# a small hysteresis of 5 pixels of motion before we decide
-		# that a drag is occurring
+		# a small hysteresis of 5 pixels of motion before we decide that a drag
+		# is occurring
 		if { ( ! $dragging )
 		  && ( 
 		          ( [ expr { abs( $clickPx - $x ) } ] > 5 )
@@ -7895,9 +8130,9 @@ namespace eval ::gorilla::dnd {
 		}
 
 		if { $dragging } {
-			# I do not understand why, but configuring -cursor
-			# on the tree did not work, yet configuring it on .
-			# did work properly.
+
+			# I do not understand why, but configuring -cursor on the tree did not
+			# work, yet configuring it on .  did work properly.
 			. configure -cursor double_arrow
 
 			set selrow [ $tree identify row $x $y ]
@@ -7907,18 +8142,17 @@ namespace eval ::gorilla::dnd {
 				$tree see $selrow
 			}
 
-			# use place to position the drag indicator - the +5
-			# pixels positions it just to the right of the
-			# cursor bitmap so it does not overlap with the
-			# cursor
+			# use place to position the drag indicator - the +5 pixels positions
+			# it just to the right of the cursor bitmap so it does not overlap
+			# with the cursor
 
 			place $tree.dnd -x [ expr { $x + 5 } ] -y $y -anchor w
 
 		} ; # end if dragging
 
 		#ruff
-		# Called by mouse motion event to both decide when to
-		# initiate a drag and to animate the drag as it occurs
+		# Called by mouse motion event to both decide when to initiate a drag
+		# and to animate the drag as it occurs
 		#
 		# tree - the tree widget
 		# x - new mouse x position
@@ -7934,24 +8168,28 @@ namespace eval ::gorilla::dnd {
 
 		if { $dragging } {
 			# clean up
-			. configure -cursor {}
 			set dragging 0
 			place forget $tree.dnd
 
 			set dropIdx [ $tree identify row $x $y ]
+
 			# can not drop into empty section of tree
 			if { $dropIdx ne "" } {
+				. configure -cursor watch
+				update idletasks
 				foreach item $selectedItems {
 					::gorilla::MoveTreeNode $item $dropIdx
 				}
 			}
 
+			. configure -cursor {}
+
 		} ; # end if dragging
 		
 		#ruff
-		# Called by mouse button release event.  If a drag was
-		# occurring then handle actually performing the "move" of
-		# the selected items to the destination location in the tree.
+		# Called by mouse button release event.  If a drag was occurring then
+		# handle actually performing the "move" of the selected items to the
+		# destination location in the tree.
 		#
 		# tree - the tree widget
 		# x - mouse x position of release event
@@ -7960,6 +8198,424 @@ namespace eval ::gorilla::dnd {
 	} ; # end proc ::gorilla::dnd::release
 
 } ; # end namespace eval ::gorilla::dnd
+
+proc ::gorilla::conflict-dialog { conflict_list } {
+
+	# Creates a toplevel dialog for use in handling merge conflicts in a
+	# straightforward manner
+	#
+	# conflict_list - a list of database record ID numbers that are in
+	# conflict, each pair of ID numbers is one conflict, first number is the
+	# current DB entry, second number is the new merged DB entry
+
+	::gorilla::ArrangeIdleTimeout
+
+	if { ( [ llength $conflict_list ] % 4 ) != 0 } {
+		error "conflict_list must have a multiple of four elements"
+	}
+
+	if { [ llength $conflict_list ] == 0 } {
+		return
+	}
+
+	# find a unique toplevel name - this linear search is technically
+	# inefficient, but unless someone has thousands of these windows open, the
+	# actual inefficiency is miniscule.  And if someone has thousands of these
+	# windows open, they likely have a much larger window management nightmare
+	# on their hands anyway.
+
+	# this code always builds a new toplevel window, and destroys the toplevel
+	# when it completes.  
+  
+	set seq -1
+	set top .conflict-dialog[ incr seq ]
+	while { [ winfo exists $top ] } {
+	  set top .conflict-dialog[ incr seq ]
+	}
+
+	# build toplevel and the outer tabset 
+	toplevel $top 
+	wm withdraw $top
+	wm title $top [ mc "Conflict Merge Tool" ]
+	# put the toplevel into the "hide these windows upon lock" array
+	set ::gorilla::toplevel($top) $top
+
+	# and set things up so if the user closes the window, the entry in the
+	# "hide" array is removed
+	wm protocol $top WM_DELETE_WINDOW [ list apply [ list {} "unset -nocomplain ::gorilla::toplevel($top) \n destroy $top" ] ]
+
+	set tabs [ ttk::notebook ${top}.tabs ]
+	pack $top.tabs -side top -expand true -fill both
+
+	ttk::style configure conflict.TLabelframe.Label -background lightgreen
+	ttk::style configure conflict.TLabelframe       -background lightgreen 
+	ttk::style configure conflict.TRadiobutton      -background lightgreen  
+
+	# now fill the tabset with one tab per conflict pair
+
+	set seq 0
+	foreach { current_dbidx merged_dbidx current_tree_node merged_tree_node } $conflict_list {
+
+		# if either of current or merged dbidx values no longer exist in the db,
+		# then remove them from the global conflict list and do nothing more
+		# with them
+		if { ( ! [ $::gorilla::db existsRecord $current_dbidx ] ) ||
+		     ( ! [ $::gorilla::db existsRecord $merged_dbidx  ] ) } {
+			::gorilla::remove-from-conflict-list $current_dbidx $merged_dbidx $current_tree_node $merged_tree_node
+			UpdateMenu
+		  continue
+		}
+
+		set container [ ttk::frame ${tabs}.tab[ incr seq ] ]
+		set ns ::merger::$container
+		namespace eval $ns { }
+
+		# remove the namespace when the container is deleted
+		trace add command $container delete [ list ::apply [ list args  [ list namespace delete $ns ] ] ]
+		
+		$tabs insert end $container -sticky news -text [ mc "Conflict %d" $seq ] -padding { 2m 2m 2m 0m }
+
+		# build out the actual "difference" view widgets within the container frame		
+
+		set merge_widgets [ ::gorilla::build-merge-widgets $container $ns $current_dbidx $merged_dbidx ]
+
+		# now build a button frame to hold the control buttons for this tab
+		set bf [ ::ttk::frame ${container}.buttonf ]
+
+		grid [ ::ttk::button $bf.save   -text [ mc "Combine and Save" ] -state disabled ] \
+		     [ ::ttk::button $bf.reset  -text [ mc "Reset Values"     ] ] \
+		     [ ::ttk::button $bf.ignore -text [ mc "Ignore Conflict"  ] ] -sticky news -padx {5m 5m}
+		grid columnconfigure $bf all -weight 1
+
+		$bf.save   configure -command [ list ${ns}::save-data-to-db $current_dbidx $merged_dbidx $current_tree_node $merged_tree_node $container $tabs ]
+		$bf.reset  configure -command [ list ${ns}::reset-widgets ]		
+		$bf.ignore configure -command [ list ::gorilla::merge-destroy $container $tabs ]
+		
+		set feedback [ ::ttk::label $container.feedback -text "" -relief sunken -padding {1m 1m 1m 1m} ]
+
+		pack $feedback $bf -side bottom -pady {0m 2m} -fill x
+
+		# Build a custom proc to handle setting the feedback message plus
+		# managing an after event to clear the message after twenty seconds
+		#
+		# Everything wrapped in "catch" because a user might close the window,
+		# thereby destroying it, before the after has fired.
+
+		proc ${ns}::feedback {message} [ string map [ list %feedback $feedback %ns $ns ] {
+			catch { %feedback configure -text $message }
+			catch { after cancel [ set %ns::feedback_after_id ] }
+			set %ns::feedback_after_id [ after 20000 {catch {%feedback configure -text ""}} ]
+		} ]
+
+		# Build a custom proc to handle changing the state of the save button from disabled to normal
+		# $merge_widgets format {rb1 en1 rb2 en2 item var}
+		# first extract the radio button shared variable names from the list, and setup a write trace to fire save-button-mgr
+		set rbvars [ list ]
+		foreach {rb1 en1 rb2 en2 item var} $merge_widgets {
+		  lappend rbvars $var
+		}
+		
+		proc ${ns}::save-button-mgr {args} [ string map [ list %rbvars $rbvars %savebutton $bf.save ] {
+			foreach rbvar {%rbvars} {
+				if { [ set $rbvar ] eq "" } {
+					# performing the disablment here prevents a "flashing" of the save button
+					# after it has been enabled once
+					%savebutton configure -state disabled
+					return
+				}
+			}
+			%savebutton configure -state normal
+		} ]
+
+	} ; # end foreach current_dbidx, merged_dbidx in conflict_list
+	
+	# make sure at least one tab was created, otherwise it means that there
+	# was nothing to show
+	if { [ llength [ $tabs tabs ] ] == 0 } {
+		destroy $top
+		# nothing to show means that there should be nothing in the conflict data list as well
+		set ::gorilla::merge_conflict_data [ list ]
+		unset ::gorilla::toplevel($top)
+		UpdateMenu
+		set ::gorilla::status [ mc "No existing merge conflicts were found." ]
+		return
+	}
+
+	# prevent the window from shrinking spontaneously when the taller tabs are
+	# closed
+	after 2000 [ subst -nocommands {catch {wm minsize $top [ winfo width $top ] [ winfo height $top ]} } ]
+
+	wm deiconify $top
+  
+} ; # end proc ::gorilla::conflict-dialog
+
+# ----------------------------------------------------------------------
+
+proc text+vsb {path args} {
+
+	# Creates a text plus vertical scrollbar combo widget.
+	#
+	# path - the path name to create.  This will also be the name that is used
+	# to access the embedded text widget
+	# args - additional arguments, passed directly to the embedded text widget
+	#
+	# returns the input $path name
+		
+	ttk::frame $path
+	set text [ text ${path}.text {*}$args ]
+	set vsb  [ ttk::scrollbar ${path}.vsb -orient vertical -command [ list $text yview ] ]
+	$text configure -yscrollcommand [ list $vsb set ]
+
+	grid $text $vsb -sticky news
+	grid columnconfigure $path 0 -weight 1
+	grid rowconfigure    $path 0 -weight 1
+
+	# Now map the frame name to access the internal text widget instead of the
+	# frame.  But first hide the frame name so it does not get destroyed as
+	# part of the remapping
+
+	rename $path $path.text.frame
+	interp alias {} $path {} $text
+	
+	return $path
+} ; # end proc text+vsb
+
+# ----------------------------------------------------------------------
+
+proc ::gorilla::build-merge-widgets { container ns current_dbidx merged_dbidx } {
+
+	# Builds the actual contents of each conflict tab in the tabset
+	#
+	# container - the outer "frame" into which to build the widgets
+	# ns - the namespace assigned to this conflict pair
+	# current_dbidx - the gorillaDB index value of the existing db entry
+	# merged_dbidx - the gorilalDB index value of the entry that was
+	# merged into this db and conflicted with an existing entry
+
+	set seq -1
+	
+	foreach {item widget} {group    ::ttk::entry 
+	                       title    ::ttk::entry 
+	                       url      ::ttk::entry
+	                       username ::ttk::entry
+	                       password ::ttk::entry
+	                       notes    text+vsb } {
+	
+		set labelframe [ ::ttk::labelframe ${container}.${item} -text [ mc [ string totitle $item ] ] ]
+
+		# make sure the radiobutton -variable exists
+		set ${ns}::rb$item ""
+
+		set en1 [ $widget ${labelframe}.en1 -width 60 ]
+		set en2 [ $widget ${labelframe}.en2 -width 60 ]
+		set rb1 [ ::ttk::radiobutton ${labelframe}.rb1 -text [ mc Current ] -variable ${ns}::rb$item -value [ list $en1 get ] ]
+		set rb2 [ ::ttk::radiobutton ${labelframe}.rb2 -text [ mc Merged  ] -variable ${ns}::rb$item -value [ list $en2 get ] ]
+
+		# The after idle calls below are necessary because the variable attached
+		# to the radio button is not set set until after this button release
+		# binding has fired.  The save-button-mgr proc queries the variable
+		# values to adjust the save button state.  An after idle firing will
+		# allow the variable to be set by the radio button bindings before
+		# save-button-mgr queries the same variable.
+
+		bind $rb1 <ButtonRelease-1> +[ list after idle ${ns}::save-button-mgr ]
+		bind $rb2 <ButtonRelease-1> +[ list after idle ${ns}::save-button-mgr ]
+			  
+		grid $rb1 $en1 -sticky news 
+		grid $rb2 $en2 -sticky news
+		grid configure $rb1 -padx {2m 0m} -pady {0m 2m}
+		grid configure $rb2 -padx {2m 0m} -pady {0m 2m}
+		grid configure $en1 -padx {0m 2m} -pady {0m 2m}
+		grid configure $en2 -padx {0m 2m} -pady {0m 2m}
+
+		grid columnconfigure $labelframe 1 -weight 1
+			
+		pack $labelframe -side top -pady {0m 2m} -fill x
+
+		# save entry/text names, the db item number, and radio button variable
+		# name for use later in filling the widgets with data from the db and managing the save button
+
+		lappend entries $rb1 $en1 $rb2 $en2 $item ${ns}::rb$item
+			  
+		# special extras for text widgets and password entry
+
+		switch $item {
+			notes {
+
+				$rb1 configure -value [ list $en1 get 0.0 end-1c ]
+				$rb2 configure -value [ list $en2 get 0.0 end-1c ]
+
+				# the max/min below constrains the height of the text widgets to be
+				# somewhere between 5 lines and 10 lines depending on the amount of
+				# data in the database notes field
+				set height [ max 5 \
+					   [ llength [ split [ ::gorilla::dbget $item $current_dbidx ] "\n" ] ] \
+					   [ llength [ split [ ::gorilla::dbget $item $merged_dbidx  ] "\n" ] ] \
+				]
+				$en1 configure -height [ min 10 $height ]
+				$en2 configure -height [ min 10 $height ]
+
+			# end notes arm
+			}
+
+			password {
+				$en1 configure -show *
+				$en2 configure -show *
+				foreach widget [ list $en1 $en2 ] {
+					bind $widget <Button-3> +[ list ::apply { {args} {
+						foreach win $args {
+							$win configure -show [ expr { [ $win cget -show ] eq "*" ? {} : "*" } ]
+						}
+					} } $en1 $en2 ]
+				} ; # end foreach widget
+
+			# end password arm
+			}
+
+		} ; # end switch item
+
+	} ; # end foreach item,widget
+
+	# finally, now that we know all the widget names, build a reset proc that
+	# knows how to set the widgets and texts to the current data in the
+	# database and a save proc that knows how to extract data from the entries
+	# and save to the database
+
+	proc ${ns}::reset-widgets {} [ string map [ list %entries $entries \
+							 %current_dbidx $current_dbidx \
+							 %merged_dbidx $merged_dbidx ] {
+
+		::gorilla::ArrangeIdleTimeout
+		foreach {rb1 en1 rb2 en2 item var} {%entries} {
+
+			if { $item ne "notes" } {
+				$en1 delete 0 end
+				$en2 delete 0 end
+			} else {
+				$en1 delete 0.0 end
+				$en2 delete 0.0 end
+			}
+
+			$en1 insert end [ ::gorilla::dbget $item %current_dbidx ]
+			$en2 insert end [ ::gorilla::dbget $item %merged_dbidx  ]
+
+			if { [ ::gorilla::dbget $item %current_dbidx ] eq [ ::gorilla::dbget $item %merged_dbidx ] } {
+				$rb1 invoke
+				$rb2 configure -style {}
+				[ winfo parent $rb1 ] configure -style {}
+			} else {
+				$rb1 configure -style conflict.TRadiobutton
+				$rb2 configure -style conflict.TRadiobutton
+				[ winfo parent $rb1 ] configure -style conflict.TLabelframe
+			}
+
+		}
+	} ]
+
+	# and immediately call the reset proc to initially fill the widgets
+
+	${ns}::reset-widgets
+
+	# also build a proc to save the selected entries to the gorilla db,
+	# delete the duplicate conflicting db entry, and close out this
+	# tabset
+
+	proc ${ns}::save-data-to-db { current_dbidx merged_dbidx current_tree_node merged_tree_node container tabs} [ string map [ list %ns $ns ] {
+
+		::gorilla::ArrangeIdleTimeout
+
+		# verify that all radio buttons are checked
+		set missing [ list ]
+		foreach item {group title url username password notes} {
+			if { ( ! [ info exists %ns::rb$item ] ) || ( [ set %ns::rb$item ] eq "" ) } {
+				lappend missing [ mc [ string totitle $item ] ]
+			} ; # end if var does not exist or is empty
+		} ; # end foreach item
+
+		if { [ llength $missing ] > 0 } {
+			%ns::feedback "[ mc "A selection is required for:" ] [ join $missing ", " ]"
+			return
+		} ; # end if llength missing > 0
+
+		foreach item {group title url username password notes} {
+			::gorilla::dbset $item $current_dbidx [ {*}[ set %ns::rb$item ] ] 
+		}
+		
+		$::gorilla::db deleteRecord $merged_dbidx
+
+		# if multiple conflicts occur, then a user may have deleted the tree
+		# node in another conflict resolution tab or session - prevent user
+		# visible errors in that case
+		catch { $::gorilla::widgets(tree) delete $current_tree_node }
+		catch { $::gorilla::widgets(tree) delete $merged_tree_node  }
+
+		::gorilla::AddRecordToTree $current_dbidx
+
+		::gorilla::merge-destroy $container $tabs
+		
+		::gorilla::remove-from-conflict-list $current_dbidx $merged_dbidx $current_tree_node $merged_tree_node
+
+	} ] ; # end proc {ns}::save-data-to-db
+
+	# return the widget names to our caller so it can make use of them
+	# to adjust the state of the "save" button
+
+	return $entries
+  
+} ; # end proc ::gorilla::build-merge-widgets
+
+# ----------------------------------------------------------------------
+
+proc ::gorilla::merge-destroy { container tabset } { 
+
+	# Called to destroy a merge widget set.  Also checks to see if the
+	# tabset of the toplevel window becomes empty due to the destruction of
+	# the last contained merge widget set and if so also destroys the toplevel
+	#
+	# container - the container to destroy
+	# tabs - the tabset to check for emptiness
+	# toplevel - the toplevel to destroy if the tabset becomes empty
+
+	::gorilla::ArrangeIdleTimeout
+
+	set top [ winfo toplevel $container ]
+
+	destroy $container
+
+	if { [ llength [ $tabset tabs ] ] == 0 } {
+		destroy $top
+		# remove the toplevel name from the "windows to hide upon lock" array
+		unset ::gorilla::toplevel($top)
+		# disable the "merge conflict" menu entry
+		UpdateMenu
+	}
+
+} ; # end proc ::gorilla::merge-destroy
+
+# ----------------------------------------------------------------------
+
+proc ::gorilla::remove-from-conflict-list { current_dbidx merged_dbidx current_tree_node merged_tree_node } {
+
+		# remove this entry from the global merge conflict data list
+
+		# An O(N) complexity removal for now - thankfully this list will be no
+		# longer than the number of password entries, and so the O(N) complexity
+		# factor should not be a huge loss.
+
+		set temp [ list ]
+		
+		foreach {a b c d} $::gorilla::merge_conflict_data {
+		  if { ( $a ne $current_dbidx     ) &&
+		       ( $b ne $merged_dbidx      ) &&
+		       ( $c ne $current_tree_node ) &&
+		       ( $d ne $merged_tree_node  ) } {
+				lappend temp $a $b $c $d
+			}
+		}
+
+		set ::gorilla::merge_conflict_data  $temp
+
+} ; # end proc ::gorilla::remove-from-conflict-list
 
 #
 # ----------------------------------------------------------------------
@@ -8111,7 +8767,7 @@ update
 
 set ::gorilla::status [mc "Welcome to the Password Gorilla."]
 
-if { $DEBUG(TCLTEST) } {
+if { $::DEBUG(TCLTEST) } {
 	set argv ""
 	source [file join $::gorillaDir .. unit-tests RunAllTests.tcl]
 }
