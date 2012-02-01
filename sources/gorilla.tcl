@@ -5586,7 +5586,7 @@ proc gorilla::DatabasePreferencesDialog {} {
 		
 		ttk::label  $delayf.feedback -text [ mc "Default: %s" $::gorilla::dpd(keyStretchingIterations) ]
 		ttk::button $delayf.compute  -text [ mc "Calculate" ] -command [ namespace code [ subst {
-		  $delayf.compute configure -text [ mc "Calculating" ]
+		  $delayf.compute configure -text "[ mc "Calculating" ]"
 		  update idletasks
 		  $delayf.feedback configure -text \[ mc "%s sec(s) for %d iterations" \
                                    \[ expr { \[ pwsafe::int::keyStretchMsDelay \[ $top.stretch.spin get ] ] / 1000.0 } ] \
@@ -5605,7 +5605,7 @@ proc gorilla::DatabasePreferencesDialog {} {
 		ttk::label $aiterf.spinlabel2 -text [ mc "sec(s)" ]
 		ttk::button $aiterf.calculate -text [ mc "Calculate" ] \
 		  -command [ namespace code [ subst { 
-		    $aiterf.calculate configure -text [ mc "Calculating" ]
+		    $aiterf.calculate configure -text "[ mc "Calculating" ]"
 		    update idletasks
 		    $top.stretch.spin set \[ pwsafe::int::calculateKeyStrechForDelay \[ $aiterf.spin get ] ]
 		    $aiterf.calculate configure -text [ mc "Calculate" ]
