@@ -6179,7 +6179,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 	dict for {pref value} $::gorilla::preference(all-preferences) {
 		# lru and exportFieldSeparator are handled specially below
 		if { $pref ni { lru exportFieldSeparator findThisText } } {
-			puts $f "$pref=$::gorilla::preference($pref)"
+			puts $f "$pref=[ quoteBackslashes $::gorilla::preference($pref) ]"
 		}
 	}
 
@@ -6194,7 +6194,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 	}
 
 	foreach file $lru {
-		puts $f "lru=\"[string map {\\ \\\\ \" \\\"} $file]\""
+		puts $f "lru=\"[ quoteBackslashes $file ]\""
 	}
 
 	if {$::gorilla::preference(rememberGeometries)} {
@@ -6210,6 +6210,10 @@ proc gorilla::SavePreferencesToRCFile {} {
 		return 0
 	}
 	return 1
+}
+
+proc gorilla::quoteBackslashes { str } {
+  string map {\\ \\\\} $str
 }
 
 proc gorilla::SavePreferences {} {
