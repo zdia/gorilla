@@ -7751,7 +7751,9 @@ proc gorilla::get-selected-tree-data { {returninfo {}} } {
 
 proc gorilla::LaunchBrowser { rn } {
 
-	set URL [ dbget url $rn ]
+	# add quotes around the URL value to protect it from most issues
+	# with {*} expansion
+	set URL \"[ dbget url $rn ]\"
 	if { $URL eq "" } { 
 		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
 	} elseif { $::gorilla::preference(browser-exe) eq "" } {
@@ -7766,7 +7768,7 @@ proc gorilla::LaunchBrowser { rn } {
 				return
 			}
 		}
-		if { [ catch { exec $::gorilla::preference(browser-exe) $URL & } mesg ] } {
+		if { [ catch { exec $::gorilla::preference(browser-exe) {*}$URL & } mesg ] } {
 			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
 		} else {
 			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
