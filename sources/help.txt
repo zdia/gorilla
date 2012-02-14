@@ -580,6 +580,11 @@ for various browsers is beyond the scope of Password Gorilla.  Please
 consult your browser documentation to determine if any special command line
 parameters are required to launch directly to a URL.
 
+ | If any parameter contains spaces, you must surround that parameter with
+double quotes (") to ensure that the spaces are properly passed through to
+the browser during the launch process.  I.e., C:\Documents and Settings\ 
+would be entered as: "C:\Documents and Settings\".
+
 '''Also copy username to clipboard'''
 
  | If this checkbox is selected, then as part of the launch browser sequence

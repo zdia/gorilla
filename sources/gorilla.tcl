@@ -58,6 +58,24 @@ if {[catch {package require Tk 8.5} oops]} {
 	exit 1
 }
 
+# Fix the issue of TTk widgets having different default background colors
+# from Tk widgets (esp.  toplevel widgets) by automatically placing a TTk
+# frame in each toplevel when the toplevel is created - this way when
+# widgets are positioned in the toplevel, what should show through behind
+# them is the ::ttk::frame background color, not the ::tk::toplevel
+# background color.
+
+rename toplevel _toplevel
+proc toplevel {path args} {
+	_toplevel $path {*}$args
+	::ttk::frame $path.ttkbkg
+	place $path.ttkbkg -in $path -anchor nw -x 0 -y 0 -bordermode outside \
+	                   -relheight 1.0 -relwidth 1.0
+	# this lower should be redundant, but do it just to be sure
+	lower $path.ttkbkg
+	return $path
+}
+
 option add *Dialog.msg.wrapLength 6i
 
 if {[catch {package require Tcl 8.5}]} {
@@ -1920,7 +1938,7 @@ namespace eval ::gorilla::LoginDialog {
 		                               password [ mc Password ] entry  ] {
 			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
-					-sticky news -ipady 5
+					-sticky news -pady 5
 		} ; # end foreach {child label}
 
 		# password should show "*" by default
@@ -1941,7 +1959,7 @@ namespace eval ::gorilla::LoginDialog {
 
 		grid [ make-label $top [mc Notes] ] \
 		     $textframe \
-		     -sticky news -ipady 5
+		     -sticky news -pady 5
 
 		grid rowconfigure    $top $textframe -weight 1
 		grid columnconfigure $top $textframe -weight 1
@@ -1951,7 +1969,7 @@ namespace eval ::gorilla::LoginDialog {
 		foreach {child label} $lastChangeList {
 			grid [ make-label $top $label ] \
 			     [ ttk::label $top.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
-			     -sticky news -ipady 5
+			     -sticky news -pady 5
 		}
 
 		# bias the lengths of the labels to a slightly larger size than the average
@@ -7751,7 +7769,9 @@ proc gorilla::get-selected-tree-data { {returninfo {}} } {
 
 proc gorilla::LaunchBrowser { rn } {
 
-	set URL [ dbget url $rn ]
+	# add quotes around the URL value to protect it from most issues
+	# with {*} expansion
+	set URL \"[ dbget url $rn ]\"
 	if { $URL eq "" } { 
 		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
 	} elseif { $::gorilla::preference(browser-exe) eq "" } {
@@ -7766,7 +7786,7 @@ proc gorilla::LaunchBrowser { rn } {
 				return
 			}
 		}
-		if { [ catch { exec $::gorilla::preference(browser-exe) $URL & } mesg ] } {
+		if { [ catch { exec $::gorilla::preference(browser-exe) {*}$URL & } mesg ] } {
 			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
 		} else {
 			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
