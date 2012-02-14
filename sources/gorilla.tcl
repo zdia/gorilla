@@ -1920,7 +1920,7 @@ namespace eval ::gorilla::LoginDialog {
 		                               password [ mc Password ] entry  ] {
 			grid [ make-label $top $label ] \
 			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
-					-sticky news -pady 5
+					-sticky news -ipady 5
 		} ; # end foreach {child label}
 
 		# password should show "*" by default
@@ -1933,7 +1933,7 @@ namespace eval ::gorilla::LoginDialog {
 		# because the text widget plus scrollbar needs to fit into the single
 		# column holding all the other ttk::entries in the outer grid
 		
-		set textframe [ frame $top.e-notes-f ]
+		set textframe [ ttk::frame $top.e-notes-f ]
 		set widget(notes) [ set ${pvns}::notes [ text $textframe.e-notes -width 40 -height 5 -wrap word -yscrollcommand [ list $textframe.vsb set ] ] ]
 		grid $widget(notes) [ scrollbar $textframe.vsb -command [ list $widget(notes) yview ] ] -sticky news
 		grid rowconfigure $textframe $widget(notes) -weight 1
@@ -1941,7 +1941,7 @@ namespace eval ::gorilla::LoginDialog {
 
 		grid [ make-label $top [mc Notes] ] \
 		     $textframe \
-		     -sticky news -pady 5
+		     -sticky news -ipady 5
 
 		grid rowconfigure    $top $textframe -weight 1
 		grid columnconfigure $top $textframe -weight 1
@@ -1951,7 +1951,7 @@ namespace eval ::gorilla::LoginDialog {
 		foreach {child label} $lastChangeList {
 			grid [ make-label $top $label ] \
 			     [ ttk::label $top.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
-			     -sticky news -pady 5
+			     -sticky news -ipady 5
 		}
 
 		# bias the lengths of the labels to a slightly larger size than the average
