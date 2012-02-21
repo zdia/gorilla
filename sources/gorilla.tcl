@@ -1443,25 +1443,10 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			pwsafe::int::randomizeVar password
 			break
 		} elseif {$::gorilla::guimutex == 3} {
-			set types {
-				{{Password Database Files} {.psafe3 .dat}}
-				{{All Files} *}
-			}
 
-			if {![info exists ::gorilla::dirName]} {
-				if {[tk windowingsystem] == "aqua"} {
-					set ::gorilla::dirName "~/Documents"
-				} else {
-				# Windows-Abfrage auch nötig ...
-					set ::gorilla::dirName [pwd]
-				}
-			}
+			set fileName [ filename_query Open -parent $top \
+					-title [ mc "Browse for a password database ..." ] ]
 
-			set fileName [tk_getOpenFile -parent $top \
-				-title [mc "Browse for a password database ..."] \
-				-filetypes $types \
-				-initialdir $::gorilla::dirName]
-			# -defaultextension ".psafe3" 
 			if {$fileName == ""} {
 				continue
 			}
@@ -4418,25 +4403,8 @@ proc gorilla::SaveAs {} {
 	# Query user for file name
 	#
 
-	set types {
-		{{Password Database Files} {.psafe3 .dat}}
-		{{All Files} *}
-	}
-
-	if {![info exists ::gorilla::dirName]} {
-		if {[tk windowingsystem] == "aqua"} {
-			set ::gorilla::dirName "~/Documents"
-		} else {
-		# Windows-Abfrage auch nötig ...
-			set ::gorilla::dirName [pwd]
-		}
-	}
-
-		set fileName [tk_getSaveFile -parent . \
-			-title [mc "Save password database ..."] \
-			-filetypes $types \
-			-initialdir $::gorilla::dirName]
-						# -defaultextension $defaultExtension \
+	set fileName [ filename_query Save -parent . \
+		-title [ mc "Save password database ..." ] ]
 
 	if {$fileName == ""} {
 		return 0
@@ -4519,6 +4487,26 @@ proc gorilla::SaveAs {} {
 	
 	return GORILLA_OK
 }
+
+proc gorilla::filename_query {type args} {
+
+	if { $type ni {Open Save} } {
+		error "type parameter must be one of 'Open' or 'Save'"
+	}
+	
+	set types {	{{Password Database Files} {.psafe3 .dat}}
+			{{All Files} *}	}
+
+	if {[tk windowingsystem] == "aqua"} {
+	  # if MacOSX - remove the .psafe3 type leaving only "*"
+	  set types [ lindex $types 1 ]
+	}
+
+	setup-default-dirname
+
+	tk_get${type}File {*}$args -filetypes $types -initialdir $::gorilla::dirName
+
+} ; # end proc gorilla::filename_query
 
 proc gorilla::SaveBackup { filename } {
 	# tries to backup the actual database observing the keepBackupFile flag.
