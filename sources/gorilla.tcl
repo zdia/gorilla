@@ -4499,7 +4499,7 @@ proc gorilla::filename_query {type args} {
 
 	if {[tk windowingsystem] == "aqua"} {
 	  # if MacOSX - remove the .psafe3 type leaving only "*"
-	  set types [ lindex $types 1 ]
+	  set types [ lreplace $types 0 0 ]
 	}
 
 	setup-default-dirname
