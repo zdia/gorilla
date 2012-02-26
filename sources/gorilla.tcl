@@ -5005,6 +5005,9 @@ proc gorilla::LockDatabase {} {
 	#
 
 	focus $aframe.mitte.pw.pw
+  # synchronize Tk's event-loop with Aqua's event-loop
+  update idletasks
+  
 	if {[catch { grab $top } oops]} {
 		set ::gorilla::status [mc "error: %s" $oops]
 	}
