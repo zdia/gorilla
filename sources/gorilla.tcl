@@ -7161,8 +7161,13 @@ proc gorilla::RunFind {} {
 }
 
 proc gorilla::FindNext {} {
-	set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
-	gorilla::RunFind
+	if { [ info exists ::gorilla::findCurrentNode ] } {
+		set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
+		gorilla::RunFind
+	} else {
+		# if no find state - just jump into a regular "find" operation
+		gorilla::Find
+	}
 }
 
 proc gorilla::getAvailableLanguages {  } {
@@ -8194,6 +8199,11 @@ namespace eval ::gorilla::dnd {
 				update idletasks
 				foreach item $selectedItems {
 					::gorilla::MoveTreeNode $item $dropIdx
+				}
+				# if a drop occurs while "find" state exists, set "find" state to
+				# the root of the tree
+				if { [ info exists ::gorilla::findCurrentNode ] } {
+					set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
 				}
 			}
 
