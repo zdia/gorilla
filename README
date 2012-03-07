@@ -1,15 +1,16 @@
 
 # Password Gorilla, a password database manager
 # Copyright (c) 2005-2009 Frank Pilhofer
-# Copyright (c) 2010 Zbigniew Diaczyszyn
+# Copyright (c) 2010-2012 Zbigniew Diaczyszyn
+# Copyright (c) 2010-2012 Richard Ellis
 #
 # The original version 1.4.7 was modified for use with wish8.5, 
 # the new ttk-expansion and the msgcat localization facility.
 #
 # Email: z_dot_dia_at_gmx_dot_de
 #
-# tested with ActiveTcl 8.5.7, 8.5.8, 8.5.9
-# The executables have been compiled with tclkit 8.5.9 (universal for MacOSX)
+# tested with ActiveTcl 8.5.7, 8.5.8, 8.5.9, 8.5.11
+# The executables have been compiled with tclkit 8.5.11 (universal for MacOSX)
 # For further details see http://www.equi4.com/tclkit/download.html
 #
 # This program is free software; you can redistribute it and/or modify

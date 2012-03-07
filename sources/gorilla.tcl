@@ -6727,7 +6727,7 @@ proc gorilla::About {} {
 			-font {sans 16 bold} -padding {10 10}
 		ttk::label $w.description -text [ mc "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" ] -wraplength 350 -padding {10 0}
 		ttk::label $w.copyright \
-			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2011 Zbigniew Diaczyszyn and\n\u00a9 2010-2011 Richard Ellis" \
+			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2012 Zbigniew Diaczyszyn and\n\u00a9 2010-2012 Richard Ellis" \
 			-font {sans 9} -padding {10 0}
 		ttk::label $w.url -text "https:/github.com/zdia/gorilla" -foreground blue \
 			-font {sans 10}
