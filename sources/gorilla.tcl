@@ -4497,10 +4497,11 @@ proc gorilla::filename_query {type args} {
 	set types {	{{Password Database Files} {.psafe3 .dat}}
 			{{All Files} *}	}
 
-	if {[tk windowingsystem] == "aqua"} {
-	  # if MacOSX - remove the .psafe3 type leaving only "*"
-	  set types [ lreplace $types 0 0 ]
-	}
+  if {[tk windowingsystem] == "aqua"} {
+    # if MacOSX - remove the .psafe3 type leaving only "*"
+    # set types [ lreplace $types 0 0 ]
+    set types [list ]
+  }
 
 	setup-default-dirname
 
