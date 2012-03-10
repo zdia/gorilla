@@ -130,6 +130,7 @@ Failure to load package: $package
 catch result: $catchResult
 catch options: $catchOptions
 auto_path: $::auto_path
+modules path: [ ::tcl::tm::path list ]
 tcl_platform: [ array get ::tcl_platform ]
 info library: [ info library ]
 gorillaDir: $::gorillaDir
@@ -139,8 +140,15 @@ auto_path dir contents:
 [ set result ""
   foreach dir $::auto_path {
     append result "$dir\n"
-    append result "[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
+    append result "\t[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
   } 
+  return $result ]
+modules dir contents:
+[ set result ""
+  foreach dir [ ::tcl::tm::path list ] {
+    append result "$dir\n"
+    append result "\t[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
+  }
   return $result ]
 -end--------------------------------------------------------------------
 } ] ; # end of subst
