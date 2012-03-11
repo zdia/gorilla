@@ -88,6 +88,37 @@ itcl::class pwsafe::db {
 	{B 22 LockOnIdleTimeout LockOnIdleTimeout 1 1}
 	{B 23 EscExits EscExits 1 1}
 	{B 24 IsUTF8 isutf8 0 1}
+	{B 25 HotKeyEnabled hotkeyenabled false 00}
+	{B 26 MRUOnFileMenu mruonfilemenu true 00}
+	{B 27 DisplayExpandedAddEditDlg displayexpandedaddeditdlg true 0}
+	{B 28 MaintainDateTimeStamps maintaindatetimestamps false 1}
+	{B 29 SavePasswordHistory savepasswordhistory false 1}
+	{B 30 FindWraps findwraps false 0}
+	{B 31 ShowNotesDefault shownotesdefault false 1}
+	{B 32 BackupBeforeEverySave backupbeforeeverysave true 00}
+	{B 33 PreExpiryWarn preexpirywarn false 00}
+	{B 34 ExplorerTypeTree explorertypetree false 00}
+	{B 35 ListViewGridLines listviewgridlines false 00}
+	{B 36 MinimizeOnAutotype minimizeonautotype true 00}
+	{B 37 ShowUsernameInTree showusernameintree true 1}
+	{B 38 PWMakePronounceable pwmakepronounceable false 1}
+	{B 39 ClearClipoardOnMinimize clearclipoardonminimize true 0}
+	{B 40 ClearClipoardOneExit clearclipoardoneexit true 0}
+	{B 41 ShowToolbar showtoolbar true 00}
+	{B 42 ShowNotesAsToolTipsInViews shownotesastooltipsinviews false 00}
+	{B 43 DefaultOpenRO defaultopenro false 00}
+	{B 44 MultipleInstances multipleinstances true 00}
+	{B 45 ShowDragbar showdragbar true 00}
+	{B 46 ClearClipboardOnMinimize clearclipboardonminimize true 00}
+	{B 47 ClearClipboardOnExit clearclipboardonexit true 00}
+	{B 48 ShowFindToolBarOnOpen showfindtoolbaronopen false 00}
+	{B 49 NotesWordWrap noteswordwrap false 00}
+	{B 50 LockDBOnIdleTimeout lockdbonidletimeout true 1}
+	{B 51 HighlightChanges highlightchanges true 00}
+	{B 52 HideSystemTray hidesystemtray false 00}
+	{B 53 UsePrimarySelectionForClipboard useprimaryselectionforclipboard false 00}
+	{B 54 CopyPasswordWhenBrowseToURL copypasswordwhenbrowsetourl true 1}
+                                                            
 	{I 0 Column1Width column1width -1 0}
 	{I 1 Column2Width column2width -1 0}
 	{I 2 Column3Width column3width -1 0}
@@ -96,10 +127,45 @@ itcl::class pwsafe::db {
 	{I 5 PWLenDefault pwlendefault 8 1}
 	{I 6 MaxMRUItems maxmruitems 4 1}
 	{I 7 IdleTimeout IdleTimeout 5 1}
+	{I 8 DoubleClickAction doubleclickaction 0 1}
+	{I 9 HotKey hotkey 0 1}
+	{I 10 MaxREItems maxreitems 25 1}
+	{I 11 TreeDisplayStatusAtOpen treedisplaystatusatopen 0 1}
+	{I 12 NumPWHistoryDefault numpwhistorydefault 3 1}
+	{I 13 BackupSuffix backupsuffix 0 1}
+	{I 14 BackupMaxIncremented backupmaxincremented 3 1}
+	{I 15 PreExpiryWarnDays preexpirywarndays 1 1}
+	{I 16 ClosedTrayIconColour closedtrayiconcolour 0 1}
+	{I 17 PWDigitMinLength pwdigitminlength 0 1}
+	{I 18 PWLowercaseMinLength pwlowercaseminlength 0 1}
+	{I 19 PWSymbolMinLength pwsymbolminlength 0 1}
+	{I 20 PWUppercaseMinLength pwuppercaseminlength 0 1}
+	{I 21 OptShortcutColumnWidth optshortcutcolumnwidth 92 1}
+	{I 22 ShiftDoubleClickAction shiftdoubleclickaction 0 1}
+                             
 	{S 0 CurrentBackup currentbackup "" 1}
 	{S 1 CurrentFile currentfile "" 0}
 	{S 2 LastView lastview "list" 1}
 	{S 3 DefUserName defusername "" 1}
+	{S 4 treefont treefont "" 00}
+	{S 5 BackupPrefixValue backupprefixvalue "" 00}
+	{S 6 BackupDir backupdir "" 00}
+	{S 7 AltBrowser altbrowser "" 00}
+	{S 8 ListColumns listcolumns "" 00}
+	{S 9 ColumnWidths columnwidths "" 00}
+	{S 10 DefaultAutotypeString  defaultautotypestring "" 1}
+	{S 11 AltBrowserCmdLineParms altbrowsercmdlineparms "" 00}
+	{S 12 MainToolBarButtons maintoolbarbuttons "" 00}
+	{S 13 PasswordFont passwordfont "" 00}
+	{S 14 TreeListSampleText treelistsampletext "AaBbYyZz 0O1IlL" 00}
+	{S 15 PswdSampleText pswdsampletext "AaBbYyZz 0O1IlL" 00}
+	{S 16 LastUsedKeyboard lastusedkeyboard "" 00}
+	{S 17 VKeyboardFontName vkeyboardfontname "" 00}
+	{S 18 VKSampleText vksampletext "AaBbYyZz 0O1IlL" 00}
+	{S 19 AltNotesEditor altnoteseditor "" 00}
+	{S 20 LanguageFile languagefile "" 00}
+	{S 21 DefaultSymbols defaultsymbols "" 1}
+
     }
 
     #
@@ -245,8 +311,28 @@ itcl::class pwsafe::db {
 		    if {$isUTF8} {
 			set prefValue [encoding convertto utf-8 $prefValue]
 		    }
-		    append result "\"" [string map {\\ \\\\ \" \\\"} \
-			    $prefValue] "\""
+
+		    # find a suitable quote character for the string preference -
+		    # footnote [3] in section 3.2 of the password safe V3 file format
+		    # documentation states:
+		    #
+		    # "Note: normally strings are delimited by the doublequote
+		    # character.  However, if this character is in the string value, an
+		    # arbitrary character will be chosen to delimit the string."
+		    
+		    set delim \"
+		    # 34 is " in ascii/utf-8
+		    # 35 is # in ascii/utf-8 - the next char after "
+		    set ascii 35
+		    while { ( -1 != [ string first $delim $prefValue ] )
+		         && ( $ascii != 34 ) } {
+		         set delim [ format %c $ascii ]
+		         set ascii [ expr { ($ascii + 1) % 256 } ]
+                    }
+                    if { $ascii == 34 } {
+                        error [ mc "Unable to find unused character with which to quote preference string.\nNormally this should not happen." ]
+                    }
+		    append result $delim $prefValue $delim 
 		}
 	    }
 	}
@@ -331,22 +417,15 @@ itcl::class pwsafe::db {
 		    error [ mc "expected number for value, got %s" $prefValString ]
 		}
 	    } elseif {$prefType == "S"} {
-		if {[string index $newPreferences $i] != "\""} {
-		    error [ mc "expected initial quote for string value" ]
-		}
+		# V2 format files use " as string delimiter
+		# V3 format files use an arbitrary character (typically dblquote)
+		set delim [string index $newPreferences $i]
 		incr i
-		set prefValue ""
-		while {$i < [string length $newPreferences]} {
-		    set c [string index $newPreferences $i]
-		    if {$c == "\\"} {
-			append prefValue [string index $newPreferences [incr i]]
-		    } elseif {$c == "\""} {
-			break
-		    } else {
-			append prefValue $c
-		    }
-		    incr i
+		if { -1 == [ set endi [ string first $delim $newPreferences $i ] ] } {
+		  error [ mc "end delimiter '%s' not found in saved DB preference" $delim ]
 		}
+		set prefValue [ string range $newPreferences $i $endi-1 ]
+		set i $endi
 		if {$i >= [string length $newPreferences]} {
 		    error [ mc "premature end of string value" ]
 		}
@@ -363,7 +442,8 @@ itcl::class pwsafe::db {
 
 	    set preferences($prefType,$prefNumber) $prefValue
 	}
-    }
+
+    } ; # end setPreferencesFromString
 
     #
     # Get/set named preferences
