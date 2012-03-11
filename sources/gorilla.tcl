@@ -510,7 +510,7 @@ proc gorilla::InitGui {} {
 				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              ""
 				           }
 
-		"[ mc Help ]" help {"[ mc Help ] ..."    ""  gorilla::Help    ""
+		"[ mc Help ]" help {"[ mc Help ] ..."    mac  gorilla::Help    ""
 				    "[ mc License ] ..." ""  gorilla::License ""
 				    separator            mac ""               ""
 				    "[ mc About ] ..."   mac tkAboutDialog    ""
@@ -8670,7 +8670,10 @@ if {[tk windowingsystem] == "aqua"} {
 	proc ::tk::mac::Quit {} {
 		gorilla::Exit
 	}
-
+  
+  proc tk::mac::ShowHelp {} {
+    gorilla::Help
+  } 
 }
 	
 proc usage {} {
