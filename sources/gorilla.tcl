@@ -4267,9 +4267,13 @@ proc gorilla::Save {} {
 	# If not writable, give user the option to change it to writable and
 	# retry, or to abort the save operation entirely
 	#
+	# Work around tcl-Bugs-1852572 regarding "file writable" and samba mounts
+	# by simply attempting to open the file in write only append mode (append
+	# so as not to destroy the file while testing for write access).  If the
+	# open succeeds, we have write permission.
 
-	while { ! [ file writable $::gorilla::fileName ] } {
-	
+	while { [ catch { set fd [ open $::gorilla::fileName {WRONLY APPEND} ] } ] } {
+
 		# build the message in two stages:
 		set message    "[ mc "Warning: Can not save to" ] '[ file normalize $::gorilla::fileName ]' [ mc "because the file permissions are set for read-only access." ]\n\n"
 		append message "[ mc "Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file." ]\n"
@@ -4281,6 +4285,9 @@ proc gorilla::Save {} {
 		}
 	
 	} ; # end while gorilla::fileName read-only
+
+	# don't need the open file descriptor once out of the while loop
+	close $fd
 
 	set myOldCursor [. cget -cursor]
 	. configure -cursor watch
