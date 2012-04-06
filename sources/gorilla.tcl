@@ -5014,7 +5014,12 @@ proc gorilla::LockDatabase {} {
 	}
 
 	wm title $top "Password Gorilla"
-	$aframe.title configure -text  [mc "Database Locked"]
+	$aframe.title configure -text  [ ::gorilla::LockDirtyMessage ]
+
+	# and setup a variable write trace to toggle the title text as the
+	# database transitions between dirty and clean states
+	trace add variable ::gorilla::dirty write [ namespace code [ list ::gorilla::LockDirtyHandler $aframe.title ] ]
+	
 	$aframe.mitte.pw.pw delete 0 end
 	$aframe.info configure -text [mc "Enter the Master Password."]
 
@@ -5104,6 +5109,21 @@ proc gorilla::LockDatabase {} {
 	return GORILLA_OK
 }
 
+# ----------------------------------------------------------------------
+
+proc gorilla::LockDirtyMessage {} {
+  if { $::gorilla::dirty } {
+    return [ mc "Database Locked (with unsaved changes)" ]
+  } else {
+    return [ mc "Database Locked" ]
+  }
+}
+
+# ----------------------------------------------------------------------
+
+proc gorilla::LockDirtyHandler { win args } {
+  $win configure -text [ ::gorilla::LockDirtyMessage ]
+}
 
 # ----------------------------------------------------------------------
 # Prompt for a Password
