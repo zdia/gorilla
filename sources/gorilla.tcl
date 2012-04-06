@@ -1400,13 +1400,27 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				tk_messageBox -parent $top -type ok -icon error -default ok \
 					-title [mc "No File"] \
 					-message [mc "Please select a password database."]
-        continue
+				continue
 			}
 
-			if {![file readable $fileName]} {
+			# work around an issue with "file readable" and Windows samba mounts
+			# by simply attempting to open the PWFile in read only mode.  If the
+			# open succeeds then we have read access.  If it fails, we don't have
+			# access of some form.
+			
+			# If the open succeeds, immediately close the file because the open is
+			# just a test for access.
+			
+			if { [ catch { close [ open $fileName RDONLY ] } ] } {
+				# also generate a more meaningful error message
+				if { [ file exists $fileName ] } {
+				  set error_message [ mc "The password database %s can not be read." $nativeName ]
+				} else {
+				  set error_message [ mc "The password database %s does not exist." $nativeName ]
+				}
 				tk_messageBox -parent $top -type ok -icon error -default ok \
-					-title [mc "File Not Found"] \
-					-message [mc "The password database %s does not exist or can not be read." $nativeName]
+					-title [ mc "Error Accessing File" ] \
+					-message $error_message
 				continue
 			}
 
