@@ -32,7 +32,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.6 $}
+set ::gorillaVersion {$Revision: 1.5.3.6.3 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -510,10 +510,11 @@ proc gorilla::InitGui {} {
 				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              ""
 				           }
 
-		"[ mc Help ]" help {"[ mc Help ] ..."    mac  gorilla::Help    ""
-				    "[ mc License ] ..." ""  gorilla::License ""
-				    separator            mac ""               ""
-				    "[ mc About ] ..."   mac tkAboutDialog    ""
+		"[ mc Help ]" help {"[ mc Help ] ..." mac  gorilla::Help    ""
+				    "[ mc License ] ..."          ""   gorilla::License ""
+            "[ mc "Look for Update"]"     ""   gorilla::versionLookup ""
+				    separator                     mac  ""  ""
+				    "[ mc About ] ..."            mac tkAboutDialog ""
 				   }
 
 	} ] ;# end ::gorilla::menu_desc
@@ -8691,6 +8692,127 @@ proc ::gorilla::remove-from-conflict-list { current_dbidx merged_dbidx current_t
 		set ::gorilla::merge_conflict_data  $temp
 
 } ; # end proc ::gorilla::remove-from-conflict-list
+
+#
+# ----------------------------------------------------------------------
+# Lookup for new Version
+# ----------------------------------------------------------------------
+#
+
+proc alert { text } {
+  puts $text
+  # tk_dialog ...
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionIsNewer { github } {
+  
+  # github - Version downloaded from Github version.txt
+  # format is: n.n.n(...)
+  # returns 1 if github version is newer otherwise 0
+  
+  regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version
+
+	set actualList [split $version .]
+	set gitList [split $github .]
+
+	foreach n $gitList i $actualList {
+		if { $n > $i } {
+			# puts "git $n, actual $i"
+      return 1
+		} else {
+			continue
+		}
+	}
+  return 0
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionGet { platform } {
+  
+  # platform - The Tk windowingsystem or string "tarball"
+  # returns list: version url || 0 errormessage
+  
+  #
+  # http error checking
+  #
+  
+  set uri "http://cloud.github.com/downloads/zdia/gorilla/version.txt"
+  
+  # catch failing socket connection
+  if { [catch {set gitToken [::http::geturl $uri]} oops] } {
+    return [list 0 "$oops -\nURI: $uri"]
+  }
+  
+  # check http status
+  if { [::http::status $gitToken] ne "ok" } {
+    return [list 0 "http::error: [::http::error $gitToken]"]
+  }
+  
+  # check code content fot http error
+  # Codes beginning with 2 indicate success.
+  set ncode [::http::ncode $gitToken]
+  if { [string index $ncode 0] != 2 } {
+    return [list 0 "URI: $uri -\n[::http::code $gitToken]"]
+  }
+  
+  #
+  # extract version data
+  #
+  
+  set versionsDict [::http::data $gitToken]
+  ::http::cleanup $gitToken
+
+  set version [dict get $versionsDict $platform version]
+  set url [dict get $versionsDict $platform url]
+
+  return [list $version $url]
+  
+} ;# end proc gorilla::versionGet
+
+# ----------------------------------------------------------------------
+proc gorilla::versionLookup {} {
+  
+  # Look if there is a new version on the Github Download site. The version
+  # data are contained in the file version.txt
+  
+  load-package http
+  set source ""
+  
+  switch [tk windowingsystem] {
+    x11     { set platform Linux }
+    win32   { set platform Windows }
+    aqua    { set platform MacOSX }
+    default { set platform source }
+  }
+  
+  lassign [gorilla::versionGet $platform] githubVersion githubUrl
+puts "+++platform $platform"    
+  
+  if { $githubVersion == 0 } {
+    gorilla::ErrorPopup "Http error" $githubUrl
+    return
+  }
+  
+  if { [gorilla::versionIsNewer githubVersion] } {
+puts "platform $platform"    
+    if { $platform eq "source" } {
+      set message "[mc "There is a new source version %s on Github." $githubVersion]"
+    } else {
+      set message "[mc "There is a new version %s for %s." $githubVersion $platform]"
+    }
+    
+    append message "\n\nShall I download the new version?"
+    set answer [tk_messageBox -title "[mc "New version available"]" -message $message -icon info -type yesno]
+    
+  } else {
+    set message [mc "No new version for platform $platform"]
+    tk_messageBox -message $message -icon info -type ok 
+  }
+  
+  return
+  
+} ;# end proc gorilla::versionLookup
 
 #
 # ----------------------------------------------------------------------
