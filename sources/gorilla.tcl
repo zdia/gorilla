@@ -663,6 +663,19 @@ proc gorilla::InitGui {} {
 	# bind . <$meta-q> "gorilla::msg"
 	# ctrl-x ist auch exit, ctrl-q reicht
 
+	if {[tk windowingsystem] == "aqua"}	{
+		# for some reason, on MacOS, PWGorilla will "freeze" if the Cmd+o key is
+		# used to access the "File->Open" function.  The "freeze" happens once
+		# PGWorilla enters the vwait loop within the OpenDatabase proc.  For
+		# some reason the event loop stops processing user input from that point
+		# forward.  However, inserting a short amount of delay before invoking
+		# the open dialog prevents the "freeze" from happening.  Note, this is a
+		# workaround.  A true fix will involve rewriting the open dialog to
+		# remove the internal vwait event loop.
+		bind . <$meta-o> "after 150 [ bind . <$meta-o> ]"
+	}
+
+
 	#
 	# Handler for the X Selection
 	#
