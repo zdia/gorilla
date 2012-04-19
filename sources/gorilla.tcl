@@ -1437,8 +1437,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# much better seed now
 
 			set password [$aframe.pw.pw get]
-			
 			set pvar [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
+			
 
 #set a [ clock milliseconds ]
 			if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
@@ -4564,7 +4564,7 @@ proc gorilla::SaveBackup { filename } {
 		append backupFileName [file extension $filename]
 	}
 
-        # determine where to save the backup based upon preference setting
+  # determine where to save the backup based upon preference setting
         
 	if { $::gorilla::preference(backupPath) eq "" } {
 		# place backup file into same directory as current password db file
@@ -8730,18 +8730,18 @@ proc gorilla::versionIsNewer { github } {
 # ----------------------------------------------------------------------
 proc gorilla::versionGet { platform } {
   
-  # platform - The Tk windowingsystem or string "tarball"
+  # platform - The Tk windowingsystem or string "source"
   # returns list: version url || 0 errormessage
   
   #
   # http error checking
   #
   
-  set uri "http://cloud.github.com/downloads/zdia/gorilla/version.txt"
+  set url "http://cloud.github.com/downloads/zdia/gorilla/version.txt"
   
   # catch failing socket connection
-  if { [catch {set gitToken [::http::geturl $uri]} oops] } {
-    return [list 0 "$oops -\nURI: $uri"]
+  if { [catch {set gitToken [::http::geturl $url]} oops] } {
+    return [list 0 "$oops -\nurl: $url"]
   }
   
   # check http status
@@ -8753,8 +8753,10 @@ proc gorilla::versionGet { platform } {
   # Codes beginning with 2 indicate success.
   set ncode [::http::ncode $gitToken]
   if { [string index $ncode 0] != 2 } {
-    return [list 0 "URI: $uri -\n[::http::code $gitToken]"]
+    return [list 0 "url: $url -\n[::http::code $gitToken]"]
   }
+  
+  # No file length check, it's just text
   
   #
   # extract version data
@@ -8764,11 +8766,98 @@ proc gorilla::versionGet { platform } {
   ::http::cleanup $gitToken
 
   set version [dict get $versionsDict $platform version]
-  set url [dict get $versionsDict $platform url]
+
+  if { $platform eq "source" } {
+    set url [dict get $versionsDict $platform url]
+  } else {
+    set url [dict get $versionsDict $platform url $::tcl_platform(machine)]
+  }
 
   return [list $version $url]
   
 } ;# end proc gorilla::versionGet
+
+# ----------------------------------------------------------------------
+proc gorilla::versionCallback { token total current } {
+  .status.pb configure -value $current
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionDownload { url } {
+  # url - the url of the file to be downloaded
+  
+  #
+  # define target location
+  #
+  
+  # debug
+  # tcl_platform(machine)
+  # set url "http://cloud.github.com/downloads/zdia/gorilla/gorilla-1.4.4b-MacOSX.zip"
+  # set path ""
+  # set filename "/home/dia/Downloads/demo.png"
+  
+	if { $::gorilla::preference(backupPath) eq "" } {
+		# place backup file into same directory as current password db file
+		set backupPath "~"
+	} else {
+		# place backup file into users preference directory
+
+		set backupPath $::gorilla::preference(backupPath)
+		if { ! [file isdirectory $backupPath] } {
+			gorilla::ErrorPopup [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] ]
+		}	
+	} 
+	
+	set filename [ file join $backupPath [file tail $url] ]
+  set out [open $filename w]
+
+  #
+  # validate the meta data
+  #
+  
+  if { [catch {set gitDownload [::http::geturl $url -validate 1]} oops] } {
+    gorilla::ErrorPopup "[mc "Http error"]" $oops
+  } else {
+    set fileMeta [http::meta $gitDownload]
+    set fileLen [dict get $fileMeta Content-Length]
+  }
+  http::cleanup $gitDownload
+  
+  #
+  # prepare display
+  #
+  
+  ttk::progressbar .status.pb -mode determinate -orient horizontal \
+    -value 0 -maximum $fileLen -length 300
+  ttk::label .status.lb -text [mc "Downloading: "]
+  pack .status.lb .status.pb -side left
+
+  #
+  # start download
+  #
+  
+  if { [catch {set gitDownload [::http::geturl $url -channel $out \
+            -progress gorilla::versionCallback -blocksize 4096]} oops] } {
+    
+    gorilla::ErrorPopup "[mc "Http error"]" $oops
+    
+  } else {
+    
+    # go on and check correct file size
+
+    if { [file size $filename] != $fileLen } {
+      gorilla::ErrorPopup "[mc "Download Error"]" "[mc "Downloaded File has wrong size."]"
+    } else {
+      tk_messageBox -title [mc "Download finished"] \
+        -message [mc "The new version was successfully downloaded as\n%s." $filename] \
+        -icon info -type ok
+    }
+  }
+  http::cleanup $gitDownload
+  pack forget .status.lb .status.pb
+  close $out
+  
+} ;# end proc gorilla::versionDownload
 
 # ----------------------------------------------------------------------
 proc gorilla::versionLookup {} {
@@ -8777,7 +8866,6 @@ proc gorilla::versionLookup {} {
   # data are contained in the file version.txt
   
   load-package http
-  set source ""
   
   switch [tk windowingsystem] {
     x11     { set platform Linux }
@@ -8787,7 +8875,6 @@ proc gorilla::versionLookup {} {
   }
   
   lassign [gorilla::versionGet $platform] githubVersion githubUrl
-puts "+++platform $platform"    
   
   if { $githubVersion == 0 } {
     gorilla::ErrorPopup "Http error" $githubUrl
@@ -8795,15 +8882,18 @@ puts "+++platform $platform"
   }
   
   if { [gorilla::versionIsNewer githubVersion] } {
-puts "platform $platform"    
+
     if { $platform eq "source" } {
       set message "[mc "There is a new source version %s on Github." $githubVersion]"
     } else {
       set message "[mc "There is a new version %s for %s." $githubVersion $platform]"
     }
-    
     append message "\n\nShall I download the new version?"
-    set answer [tk_messageBox -title "[mc "New version available"]" -message $message -icon info -type yesno]
+    
+    set answer [tk_messageBox -title "[mc "New version available"]" \
+      -message $message -icon info -type yesno]
+    
+    if { $answer eq "yes" } { gorilla::versionDownload $githubUrl }
     
   } else {
     set message [mc "No new version for platform $platform"]
