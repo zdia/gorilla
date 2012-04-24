@@ -53,8 +53,8 @@ if {[catch {package require Tk 8.5} oops]} {
 	# Because of using Themed Widgets we need Tk 8.5
 	#
 
-	puts "This application requires Tk 8.5, which does not seem to be available."
-	puts $oops
+	puts "Password Gorilla has been unable to load Tk 8.5, which is required."
+	puts "Reason: '$oops'"
 	exit 1
 }
 
