@@ -584,27 +584,28 @@ proc gorilla::InitGui {} {
 	#---------------------------------------------------------------------
 	
 	set tree [ttk::treeview .tree \
-		-yscroll ".vsb set" -xscroll ".hsb set" -show tree \
+		-yscroll [ list .vsb set ] -xscroll [ list .hsb set ] -show tree \
 		-style gorilla.Treeview]
 	.tree tag configure red -foreground red
 	.tree tag configure black -foreground black
 
 	if {[tk windowingsystem] ne "aqua"} {
-		ttk::scrollbar .vsb -orient vertical -command ".tree yview"
-		ttk::scrollbar .hsb -orient horizontal -command ".tree xview"
+		set sbtype ttk::scrollbar
 	} else {
-		scrollbar .vsb -orient vertical -command ".tree yview"
-		scrollbar .hsb -orient horizontal -command ".tree xview"
+		set sbtype scrollbar
 	}
-	ttk::label .status -relief sunken -padding [list 5 2]
-	pack .status -side bottom -fill x
+	$sbtype .vsb -orient vertical   -command [ list .tree yview ]
+	$sbtype .hsb -orient horizontal -command [ list .tree xview ]
 
-	## Arrange the tree and its scrollbars in the toplevel
-	lower [ttk::frame .dummy]
-	pack .dummy -fill both -expand 1
-	grid .tree .vsb -sticky nsew -in .dummy
-	grid columnconfigure .dummy 0 -weight 1
-	grid rowconfigure .dummy 0 -weight 1
+	ttk::label .status -relief sunken -padding [list 5 2]
+
+	## Arrange the tree, its scrollbars, and the status line in the toplevel
+	grid .tree   .vsb -sticky nsew
+	# .hsb does not do anything at the moment - therefore do not display it
+	#grid .hsb    x    -sticky news
+	grid .status -    -sticky news
+	grid columnconfigure . 0 -weight 1
+	grid rowconfigure    . 0 -weight 1
 	
 	bind .tree <Double-Button-1> {gorilla::TreeNodeDouble [.tree focus]}
 	bind .tree <Button-3> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
