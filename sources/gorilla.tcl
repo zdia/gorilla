@@ -8779,12 +8779,12 @@ proc gorilla::versionGet { platform } {
 } ;# end proc gorilla::versionGet
 
 # ----------------------------------------------------------------------
-proc gorilla::versionCallback { token total current } {
-  .status.pb configure -value $current
+proc gorilla::versionCallback { w token total current } {
+  $w configure -value $current
 }
 
 # ----------------------------------------------------------------------
-proc gorilla::versionDownload { url } {
+proc gorilla::versionDownload { githubVersion url } {
   # url - the url of the file to be downloaded
   
   #
@@ -8827,18 +8827,21 @@ proc gorilla::versionDownload { url } {
   #
   # prepare display
   #
-  
-  ttk::progressbar .status.pb -mode determinate -orient horizontal \
-    -value 0 -maximum $fileLen -length 300
-  ttk::label .status.lb -text [mc "Downloading: "]
-  pack .status.lb .status.pb -side left
+
+  ttk::frame .status-dl -relief sunken
+  ttk::progressbar .status-dl.pb -mode determinate -orient horizontal \
+    -value 0 -maximum $fileLen
+  ttk::label .status-dl.lb -text [mc "Downloading %s: " $githubVersion ] -relief sunken
+  grid .status-dl.lb .status-dl.pb -sticky news
+  grid columnconfigure .status-dl 1 -weight 1
+  grid .status-dl - -sticky news
 
   #
   # start download
   #
   
   if { [catch {set gitDownload [::http::geturl $url -channel $out \
-            -progress gorilla::versionCallback -blocksize 4096]} oops] } {
+            -progress [ list gorilla::versionCallback .status-dl.pb ] -blocksize 4096]} oops] } {
     
     gorilla::ErrorPopup "[mc "Http error"]" $oops
     
@@ -8850,12 +8853,12 @@ proc gorilla::versionDownload { url } {
       gorilla::ErrorPopup "[mc "Download Error"]" "[mc "Downloaded File has wrong size."]"
     } else {
       tk_messageBox -title [mc "Download finished"] \
-        -message [mc "The new version was successfully downloaded as\n%s." $filename] \
+        -message [mc "The new version was successfully downloaded as\n%s." [ file nativename $filename ] ] \
         -icon info -type ok
     }
   }
   http::cleanup $gitDownload
-  pack forget .status.lb .status.pb
+  destroy .status-dl
   close $out
   
 } ;# end proc gorilla::versionDownload
@@ -8884,17 +8887,19 @@ proc gorilla::versionLookup {} {
   
   if { [gorilla::versionIsNewer githubVersion] } {
 
+    set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version ; set version ] ]\n\n"
+
     if { $platform eq "source" } {
-      set message "[mc "There is a new source version %s on Github." $githubVersion]"
+      append message "[mc "There is a new source version %s on Github." $githubVersion]"
     } else {
-      set message "[mc "There is a new version %s for %s." $githubVersion $platform]"
+      append message "[mc "There is a new version %s for %s." $githubVersion $platform]"
     }
     append message "\n\nShall I download the new version?"
     
     set answer [tk_messageBox -title "[mc "New version available"]" \
       -message $message -icon info -type yesno]
     
-    if { $answer eq "yes" } { gorilla::versionDownload $githubUrl }
+    if { $answer eq "yes" } { gorilla::versionDownload $githubVersion $githubUrl }
     
   } else {
     set message [mc "No new version for platform $platform"]
