@@ -8700,11 +8700,6 @@ proc ::gorilla::remove-from-conflict-list { current_dbidx merged_dbidx current_t
 # ----------------------------------------------------------------------
 #
 
-proc alert { text } {
-  puts $text
-  # tk_dialog ...
-}
-
 # ----------------------------------------------------------------------
 proc gorilla::versionIsNewer { github } {
   
@@ -8785,31 +8780,35 @@ proc gorilla::versionCallback { w token total current } {
 
 # ----------------------------------------------------------------------
 proc gorilla::versionDownload { githubVersion url } {
+  # githubVersion - actual version on Github server
   # url - the url of the file to be downloaded
   
   #
   # define target location
   #
   
-  # debug
-  # tcl_platform(machine)
+  # urls for tests
   # set url "http://cloud.github.com/downloads/zdia/gorilla/gorilla-1.4.4b-MacOSX.zip"
-  # set path ""
-  # set filename "/home/dia/Downloads/demo.png"
-  
+  # set url http://nodeload.github.com/zdia/gorilla/zipball/v1.5.3.6.3
+
 	if { $::gorilla::preference(backupPath) eq "" } {
 		# place backup file into same directory as current password db file
 		set backupPath "~"
 	} else {
 		# place backup file into users preference directory
-
 		set backupPath $::gorilla::preference(backupPath)
 		if { ! [file isdirectory $backupPath] } {
-			gorilla::ErrorPopup [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] ]
-		}	
+			gorilla::ErrorPopup [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."]
+      return DIR_ERROR
+		}
 	} 
 	
 	set filename [ file join $backupPath [file tail $url] ]
+  if { [regexp nodeload $url] } {
+    # currently we use zipballs
+    append filename ".zip"
+  }
+  
   set out [open $filename w]
 
   #
@@ -8818,6 +8817,8 @@ proc gorilla::versionDownload { githubVersion url } {
   
   if { [catch {set gitDownload [::http::geturl $url -validate 1]} oops] } {
     gorilla::ErrorPopup "[mc "Http error"]" $oops
+    close $out
+    return HTTP_ERROR
   } else {
     set fileMeta [http::meta $gitDownload]
     set fileLen [dict get $fileMeta Content-Length]
@@ -8844,6 +8845,9 @@ proc gorilla::versionDownload { githubVersion url } {
             -progress [ list gorilla::versionCallback .status-dl.pb ] -blocksize 4096]} oops] } {
     
     gorilla::ErrorPopup "[mc "Http error"]" $oops
+    puts beep
+    close $out
+    # return HTTP_ERROR
     
   } else {
     
@@ -8851,6 +8855,9 @@ proc gorilla::versionDownload { githubVersion url } {
 
     if { [file size $filename] != $fileLen } {
       gorilla::ErrorPopup "[mc "Download Error"]" "[mc "Downloaded File has wrong size."]"
+        close $out
+        destroy .status-dl
+        return DOWNLOAD_ERROR
     } else {
       tk_messageBox -title [mc "Download finished"] \
         -message [mc "The new version was successfully downloaded as\n%s." [ file nativename $filename ] ] \
@@ -8860,6 +8867,7 @@ proc gorilla::versionDownload { githubVersion url } {
   http::cleanup $gitDownload
   destroy .status-dl
   close $out
+  return GORILLA_OK
   
 } ;# end proc gorilla::versionDownload
 
@@ -8871,11 +8879,15 @@ proc gorilla::versionLookup {} {
   
   load-package http
   
-  switch [tk windowingsystem] {
-    x11     { set platform Linux }
-    win32   { set platform Windows }
-    aqua    { set platform MacOSX }
-    default { set platform source }
+  if { [regexp tclsh [info nameofexecutable]] } {
+    set platform source
+  } else {
+    switch [tk windowingsystem] {
+      x11     { set platform Linux }
+      win32   { set platform Windows }
+      aqua    { set platform MacOSX }
+      default { set platform unknown }
+    }
   }
   
   lassign [gorilla::versionGet $platform] githubVersion githubUrl
@@ -8885,7 +8897,7 @@ proc gorilla::versionLookup {} {
     return
   }
   
-  if { [gorilla::versionIsNewer githubVersion] } {
+  if { [gorilla::versionIsNewer $githubVersion] } {
 
     set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version ; set version ] ]\n\n"
 
@@ -8902,7 +8914,7 @@ proc gorilla::versionLookup {} {
     if { $answer eq "yes" } { gorilla::versionDownload $githubVersion $githubUrl }
     
   } else {
-    set message [mc "No new version for platform $platform"]
+    set message [mc "No new version available"]
     tk_messageBox -message $message -icon info -type ok 
   }
   
