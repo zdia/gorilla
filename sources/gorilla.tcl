@@ -557,7 +557,8 @@ proc gorilla::InitGui {} {
 	. configure -menu .mbar
 
 	# note - if the help menu widget name changes, this will need to be updated	
-	::gorilla::addRufftoHelp .mbar.help
+  # To generate documentation use command line: gorilla --sourcedoc
+	# ::gorilla::addRufftoHelp .mbar.help
 
 	# menueintrag deaktivieren mit dem tag "login
 	# suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
@@ -8650,8 +8651,7 @@ proc ::gorilla::merge-destroy { container tabset } {
 	# the last contained merge widget set and if so also destroys the toplevel
 	#
 	# container - the container to destroy
-	# tabs - the tabset to check for emptiness
-	# toplevel - the toplevel to destroy if the tabset becomes empty
+	# tabset - the tabset to check for emptiness
 
 	::gorilla::ArrangeIdleTimeout
 
@@ -8974,27 +8974,33 @@ if {$::gorilla::init == 0} {
 	for {set i 0} {$i < $argc} {incr i} {
 		switch -- [lindex $argv $i] {
 			--sourcedoc {
-					# Need ruff! and struct::list from tcllib - both should be
-					# installed properly for this option to work
+					# Need ruff! and struct::list from tcllib - 
+          # Ruff! is installed under /utilities/ruff
 
-					set error false
+          lappend auto_path "$::gorillaDir/../utilities/ruff"
+
 					foreach pkg { ruff struct::list } {
 						if { [ catch { package require $pkg } ] } {
 							puts stderr "Could not load package $pkg, aborting documentation processing."
-							set error true 
+              exit
 						}
 					} ; # end foreach pkg
 
-					if { ! $error } {
-						# document all namespaces, except for tcl/tk system namespaces
-						# (tk, ttk, itcl, etc.)
-						set nslist [ ::struct::list filterfor z [ namespace children :: ] \
-						{ ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
-						::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
-					}
-
+          # document all namespaces, except for tcl/tk system namespaces
+          # (tk, ttk, itcl, etc.)
+          set nslist [ ::struct::list filterfor z [ namespace children :: ] \
+          { ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
+          
+          if { [ catch { ::ruff::document_namespaces html $nslist -output $::gorillaDir/../utilities/gorilladoc.html -recurse true } oops ] } {
+            puts stderr "Could not generate documentation - $oops."
+            exit
+          }
+          
 					# cleanup after ourselves
-					unset -nocomplain error nslist pkg z 
+					unset -nocomplain nslist pkg z 
+          
+          puts "Documentation file $::gorillaDir/../utilities/gorilladoc.html has been successfully generated."
+          exit
 				}
 			--norc -
 			-norc {
