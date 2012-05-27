@@ -32,7 +32,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.6 $}
+set ::gorillaVersion {$Revision: 1.5.3.6.3 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
@@ -510,10 +510,11 @@ proc gorilla::InitGui {} {
 				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              ""
 				           }
 
-		"[ mc Help ]" help {"[ mc Help ] ..."    mac  gorilla::Help    ""
-				    "[ mc License ] ..." ""  gorilla::License ""
-				    separator            mac ""               ""
-				    "[ mc About ] ..."   mac tkAboutDialog    ""
+		"[ mc Help ]" help {"[ mc Help ] ..." mac  gorilla::Help    ""
+				    "[ mc License ] ..."          ""   gorilla::License ""
+            "[ mc "Look for Update"]"     ""   gorilla::versionLookup ""
+				    separator                     mac  ""  ""
+				    "[ mc About ] ..."            mac tkAboutDialog ""
 				   }
 
 	} ] ;# end ::gorilla::menu_desc
@@ -583,27 +584,28 @@ proc gorilla::InitGui {} {
 	#---------------------------------------------------------------------
 	
 	set tree [ttk::treeview .tree \
-		-yscroll ".vsb set" -xscroll ".hsb set" -show tree \
+		-yscroll [ list .vsb set ] -xscroll [ list .hsb set ] -show tree \
 		-style gorilla.Treeview]
 	.tree tag configure red -foreground red
 	.tree tag configure black -foreground black
 
 	if {[tk windowingsystem] ne "aqua"} {
-		ttk::scrollbar .vsb -orient vertical -command ".tree yview"
-		ttk::scrollbar .hsb -orient horizontal -command ".tree xview"
+		set sbtype ttk::scrollbar
 	} else {
-		scrollbar .vsb -orient vertical -command ".tree yview"
-		scrollbar .hsb -orient horizontal -command ".tree xview"
+		set sbtype scrollbar
 	}
-	ttk::label .status -relief sunken -padding [list 5 2]
-	pack .status -side bottom -fill x
+	$sbtype .vsb -orient vertical   -command [ list .tree yview ]
+	$sbtype .hsb -orient horizontal -command [ list .tree xview ]
 
-	## Arrange the tree and its scrollbars in the toplevel
-	lower [ttk::frame .dummy]
-	pack .dummy -fill both -expand 1
-	grid .tree .vsb -sticky nsew -in .dummy
-	grid columnconfigure .dummy 0 -weight 1
-	grid rowconfigure .dummy 0 -weight 1
+	ttk::label .status -relief sunken -padding [list 5 2]
+
+	## Arrange the tree, its scrollbars, and the status line in the toplevel
+	grid .tree   .vsb -sticky nsew
+	# .hsb does not do anything at the moment - therefore do not display it
+	#grid .hsb    x    -sticky news
+	grid .status -    -sticky news
+	grid columnconfigure . 0 -weight 1
+	grid rowconfigure    . 0 -weight 1
 	
 	bind .tree <Double-Button-1> {gorilla::TreeNodeDouble [.tree focus]}
 	bind .tree <Button-3> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
@@ -1449,8 +1451,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# much better seed now
 
 			set password [$aframe.pw.pw get]
-			
 			set pvar [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
+			
 
 #set a [ clock milliseconds ]
 			if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
@@ -4576,7 +4578,7 @@ proc gorilla::SaveBackup { filename } {
 		append backupFileName [file extension $filename]
 	}
 
-        # determine where to save the backup based upon preference setting
+  # determine where to save the backup based upon preference setting
         
 	if { $::gorilla::preference(backupPath) eq "" } {
 		# place backup file into same directory as current password db file
@@ -8709,6 +8711,222 @@ proc ::gorilla::remove-from-conflict-list { current_dbidx merged_dbidx current_t
 		set ::gorilla::merge_conflict_data  $temp
 
 } ; # end proc ::gorilla::remove-from-conflict-list
+
+#
+# ----------------------------------------------------------------------
+# Lookup for new Version
+# ----------------------------------------------------------------------
+#
+
+proc alert { text } {
+  puts $text
+  # tk_dialog ...
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionIsNewer { github } {
+  
+  # github - Version downloaded from Github version.txt
+  # format is: n.n.n(...)
+  # returns 1 if github version is newer otherwise 0
+  
+  regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version
+
+	set actualList [split $version .]
+	set gitList [split $github .]
+
+	foreach n $gitList i $actualList {
+		if { $n > $i } {
+			# puts "git $n, actual $i"
+      return 1
+		} else {
+			continue
+		}
+	}
+  return 0
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionGet { platform } {
+  
+  # platform - The Tk windowingsystem or string "source"
+  # returns list: version url || 0 errormessage
+  
+  #
+  # http error checking
+  #
+  
+  set url "http://cloud.github.com/downloads/zdia/gorilla/version.txt"
+  
+  # catch failing socket connection
+  if { [catch {set gitToken [::http::geturl $url]} oops] } {
+    return [list 0 "$oops -\nurl: $url"]
+  }
+  
+  # check http status
+  if { [::http::status $gitToken] ne "ok" } {
+    return [list 0 "http::error: [::http::error $gitToken]"]
+  }
+  
+  # check code content fot http error
+  # Codes beginning with 2 indicate success.
+  set ncode [::http::ncode $gitToken]
+  if { [string index $ncode 0] != 2 } {
+    return [list 0 "url: $url -\n[::http::code $gitToken]"]
+  }
+  
+  # No file length check, it's just text
+  
+  #
+  # extract version data
+  #
+  
+  set versionsDict [::http::data $gitToken]
+  ::http::cleanup $gitToken
+
+  set version [dict get $versionsDict $platform version]
+
+  if { $platform eq "source" } {
+    set url [dict get $versionsDict $platform url]
+  } else {
+    set url [dict get $versionsDict $platform url $::tcl_platform(machine)]
+  }
+
+  return [list $version $url]
+  
+} ;# end proc gorilla::versionGet
+
+# ----------------------------------------------------------------------
+proc gorilla::versionCallback { w token total current } {
+  $w configure -value $current
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionDownload { githubVersion url } {
+  # url - the url of the file to be downloaded
+  
+  #
+  # define target location
+  #
+  
+  # debug
+  # tcl_platform(machine)
+  # set url "http://cloud.github.com/downloads/zdia/gorilla/gorilla-1.4.4b-MacOSX.zip"
+  # set path ""
+  # set filename "/home/dia/Downloads/demo.png"
+  
+	if { $::gorilla::preference(backupPath) eq "" } {
+		# place backup file into same directory as current password db file
+		set backupPath "~"
+	} else {
+		# place backup file into users preference directory
+
+		set backupPath $::gorilla::preference(backupPath)
+		if { ! [file isdirectory $backupPath] } {
+			gorilla::ErrorPopup [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."] ]
+		}	
+	} 
+	
+	set filename [ file join $backupPath [file tail $url] ]
+  set out [open $filename w]
+
+  #
+  # validate the meta data
+  #
+  
+  if { [catch {set gitDownload [::http::geturl $url -validate 1]} oops] } {
+    gorilla::ErrorPopup "[mc "Http error"]" $oops
+  } else {
+    set fileMeta [http::meta $gitDownload]
+    set fileLen [dict get $fileMeta Content-Length]
+  }
+  http::cleanup $gitDownload
+  
+  #
+  # prepare display
+  #
+
+  ttk::frame .status-dl -relief sunken
+  ttk::progressbar .status-dl.pb -mode determinate -orient horizontal \
+    -value 0 -maximum $fileLen
+  ttk::label .status-dl.lb -text [mc "Downloading %s: " $githubVersion ] -relief sunken
+  grid .status-dl.lb .status-dl.pb -sticky news
+  grid columnconfigure .status-dl 1 -weight 1
+  grid .status-dl - -sticky news
+
+  #
+  # start download
+  #
+  
+  if { [catch {set gitDownload [::http::geturl $url -channel $out \
+            -progress [ list gorilla::versionCallback .status-dl.pb ] -blocksize 4096]} oops] } {
+    
+    gorilla::ErrorPopup "[mc "Http error"]" $oops
+    
+  } else {
+    
+    # go on and check correct file size
+
+    if { [file size $filename] != $fileLen } {
+      gorilla::ErrorPopup "[mc "Download Error"]" "[mc "Downloaded File has wrong size."]"
+    } else {
+      tk_messageBox -title [mc "Download finished"] \
+        -message [mc "The new version was successfully downloaded as\n%s." [ file nativename $filename ] ] \
+        -icon info -type ok
+    }
+  }
+  http::cleanup $gitDownload
+  destroy .status-dl
+  close $out
+  
+} ;# end proc gorilla::versionDownload
+
+# ----------------------------------------------------------------------
+proc gorilla::versionLookup {} {
+  
+  # Look if there is a new version on the Github Download site. The version
+  # data are contained in the file version.txt
+  
+  load-package http
+  
+  switch [tk windowingsystem] {
+    x11     { set platform Linux }
+    win32   { set platform Windows }
+    aqua    { set platform MacOSX }
+    default { set platform source }
+  }
+  
+  lassign [gorilla::versionGet $platform] githubVersion githubUrl
+  
+  if { $githubVersion == 0 } {
+    gorilla::ErrorPopup "Http error" $githubUrl
+    return
+  }
+  
+  if { [gorilla::versionIsNewer githubVersion] } {
+
+    set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version ; set version ] ]\n\n"
+
+    if { $platform eq "source" } {
+      append message "[mc "There is a new source version %s on Github." $githubVersion]"
+    } else {
+      append message "[mc "There is a new version %s for %s." $githubVersion $platform]"
+    }
+    append message "\n\nShall I download the new version?"
+    
+    set answer [tk_messageBox -title "[mc "New version available"]" \
+      -message $message -icon info -type yesno]
+    
+    if { $answer eq "yes" } { gorilla::versionDownload $githubVersion $githubUrl }
+    
+  } else {
+    set message [mc "No new version for platform $platform"]
+    tk_messageBox -message $message -icon info -type ok 
+  }
+  
+  return
+  
+} ;# end proc gorilla::versionLookup
 
 #
 # ----------------------------------------------------------------------
