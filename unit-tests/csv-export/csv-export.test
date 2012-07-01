@@ -46,12 +46,17 @@ namespace eval ::gorilla::test {
 	set ::gorilla::preference(exportShowWarning) 0
 
 	test $testname-1.0 {create and test testexport.csv} \
-    -setup { set ::DEBUG(CSVEXPORT) 1 } \
+    -setup { set ::DEBUG(CSVEXPORT) 1 
+             set prefback [ array get ::gorilla::preference ]
+             # set expected export options for the test
+             array set ::gorilla::preference {exportIncludePassword 1 exportIncludeNotes 1 exportFieldSeparator , exportAsUnicode 1}
+             } \
     -body {
 						gorilla::Export
 						return [viewFile testexport.csv ./]
 					} \
-    -cleanup { set ::DEBUG(CSVEXPORT) 0 } \
+    -cleanup { set ::DEBUG(CSVEXPORT) 0 
+               array get ::gorilla::preference $prefback } \
     -result [viewFile normexport.csv ./]
 
 	# global cleanup
