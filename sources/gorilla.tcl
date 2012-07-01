@@ -240,7 +240,7 @@ foreach testitdir [glob -nocomplain [file join $::gorilla::Dir itcl*]] {
 	if {[file isdirectory $testitdir]} {
 		lappend auto_path $testitdir
 	}
-} ; unset testitdir
+} ; unset -nocomplain testitdir
 
 #
 # Check the subdirectories for needed packages
