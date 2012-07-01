@@ -254,6 +254,7 @@ source [file join $pwsafeDir "pwsafe-db.tcl"]
 source [file join $pwsafeDir "pwsafe-io.tcl"]
 source [file join $pwsafeDir "pwsafe-v2.tcl"]
 source [file join $pwsafeDir "pwsafe-v3.tcl"]
+unset pwsafeDir
 
 #
 # ----------------------------------------------------------------------

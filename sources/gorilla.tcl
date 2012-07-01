@@ -32,14 +32,16 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.6.3 $}
+namespace eval ::gorilla {
+	variable Version {$Revision: 1.5.3.6.3 $}
 
-# find the location of the install directory even when "executing" a symlink
-# pointing to the gorilla.tcl file
-if { [ file type [ info script ] ] eq "link" } {
-	set ::gorillaDir [ file normalize [ file dirname [ file join [ file dirname [ info script ] ] [ file readlink [ info script ] ] ] ] ]
-} else {
-	set ::gorillaDir [ file normalize [ file dirname [ info script ] ] ]
+	# find the location of the install directory even when "executing" a symlink
+	# pointing to the gorilla.tcl file
+	if { [ file type [ info script ] ] eq "link" } {
+		variable Dir [ file normalize [ file dirname [ file join [ file dirname [ info script ] ] [ file readlink [ info script ] ] ] ] ]
+	} else {
+		variable Dir [ file normalize [ file dirname [ info script ] ] ]
+	}
 }
 
 # ----------------------------------------------------------------------
@@ -90,7 +92,7 @@ if {[catch {package require Tcl 8.5}]} {
 
 # ----------------------------------------------------------------------
 
-proc if-platform? { test body } {
+proc ::gorilla::if-platform? { test body } {
 
 	if { $::tcl_platform(platform) eq $test } {
 	  uplevel 1 $body
@@ -106,13 +108,13 @@ proc if-platform? { test body } {
 } ; # end proc if-platform?
 
 # ----------------------------------------------------------------------
+# Note - the load-package proc is defined in the global namespace because it
+#        is called from outside the gorilla namespace in order to load
+#        packages
 
 proc load-package { args } {
 	# A helper proc to load packages.  This collects the details of "catching"
-	# and reporting errors upon package loading into one single proc.  It must
-	# be defined here because it has to be defined before it can be called.
-	# Note, not in "gorilla" namespace because the gorilla namespace has not yet
-	# been created.
+	# and reporting errors upon package loading into one single proc.
 	#
 	# args - package(s) to load
 
@@ -125,7 +127,7 @@ proc load-package { args } {
 			set statusinfo [ subst {
 -begin------------------------------------------------------------------
 Statusinfo created [ clock format [ clock seconds ] -format "%b %d %Y %H:%M:%S" ]
-Password Gorilla version: $::gorillaVersion
+Password Gorilla version: $::gorilla::Version
 Failure to load package: $package
 catch result: $catchResult
 catch options: $catchOptions
@@ -133,9 +135,9 @@ auto_path: $::auto_path
 modules path: [ ::tcl::tm::path list ]
 tcl_platform: [ array get ::tcl_platform ]
 info library: [ info library ]
-gorillaDir: $::gorillaDir
-gorillaDir contents:
-	[ join [ glob -directory $::gorillaDir -nocomplain * ] "\n\t" ]
+gorilla::Dir: $::gorilla::Dir
+gorilla::Dir contents:
+	[ join [ glob -directory $::gorilla::Dir -nocomplain * ] "\n\t" ]
 auto_path dir contents:
 [ set result ""
   foreach dir $::auto_path {
@@ -197,7 +199,7 @@ load-package msgcat
 
 namespace import msgcat::*
 
-mcload [file join $::gorillaDir msgs]
+mcload [file join $::gorilla::Dir msgs]
 # The message files will be loaded according to the system's actual
 # language. During initialization of Gorilla's preferences the command
 # 'mclocale' will set the language accoring to Gorilla's resource file.
@@ -210,7 +212,7 @@ mcload [file join $::gorillaDir msgs]
 #
 
 foreach file {isaac.tcl viewhelp.tcl} {
-	if {[catch {source [file join $::gorillaDir $file]} oops]} {
+	if {[catch {source [file join $::gorilla::Dir $file]} oops]} {
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
 			-title [ mc "Need %s" $file ] \
@@ -220,7 +222,7 @@ foreach file {isaac.tcl viewhelp.tcl} {
 			distribution.\n\nError message: %s" $file $oops ]
 		exit 1
 	}
-}
+} ; unset file
 
 #
 # Itcl 3.4 is in an subdirectory available to auto_path
@@ -234,11 +236,11 @@ if {[tk windowingsystem] == "aqua"}	{
 	set auto_path ""
 }
 
-foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
+foreach testitdir [glob -nocomplain [file join $::gorilla::Dir itcl*]] {
 	if {[file isdirectory $testitdir]} {
 		lappend auto_path $testitdir
 	}
-}
+} ; unset testitdir
 
 #
 # Check the subdirectories for needed packages
@@ -247,10 +249,10 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 # Set our own install directory and our local tcllib directory as first
 # elements in auto_path, so that local items will be found before system
 # installed items
-set auto_path [ list $::gorillaDir [ file join $::gorillaDir tcllib ] {*}$auto_path ]
+set auto_path [ list $::gorilla::Dir [ file join $::gorilla::Dir tcllib ] {*}$auto_path ]
 
 # Initialize the Tcl modules system to look into modules/ directory
-::tcl::tm::add [ file join $::gorillaDir modules ]
+::tcl::tm::add [ file join $::gorilla::Dir modules ]
 
 #
 # Look for Itcl
@@ -278,11 +280,11 @@ if {[catch {package require pwsafe} oops]} {
 	exit
 	# exit 1 ;# needs testing on the Mac. It seems that
 	# the parameter 1 is setting gorilla.tcl's filelength to 0
-}
+} ; unset oops
 
 foreach package {tooltip PWGprogress} {
 	load-package $package
-}
+} ; unset package
 
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
@@ -1621,11 +1623,11 @@ proc gorilla::Open {{defaultFile ""}} {
 		}
 	}
 
-	if { $::DEBUG(TEST) } {
+	if { $::gorilla::DEBUG(TEST) } {
 		# Skip OpenDialog
 		set ::gorilla::collectedTicks [list [clock clicks]]
 		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
-		set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
+		set fileName [file join $::gorilla::Dir ../unit-tests testdb.psafe3]
 		set newdb [pwsafe::createFromFile $fileName test ::gorilla::openPercent]
 		set openInfo [list "Open" $fileName $newdb ]
 	} else {
@@ -3375,7 +3377,7 @@ proc gorilla::Export {} {
 
 	setup-default-dirname
 
-	if { $::DEBUG(CSVEXPORT) } {
+	if { $::gorilla::DEBUG(CSVEXPORT) } {
 		set fileName testexport.csv
 	} else {
 		set types {
@@ -3390,7 +3392,7 @@ proc gorilla::Export {} {
 			-filetypes $types \
 			-initialdir $::gorilla::dirName ]
 
-	};# end if $::DEBUG(CSVEXPORT)
+	};# end if $::gorilla::DEBUG(CSVEXPORT)
 	
 	if {$fileName == ""} {
 		return
@@ -3566,7 +3568,7 @@ proc gorilla::Import { {input_file ""} } {
 	
 	if { "group" ni $columns_present } {
 		set default_group_name "Newly Imported [ clock format [ clock seconds ] ]"
-		if { $::DEBUG(CSVIMPORT) } {
+		if { $::gorilla::DEBUG(CSVIMPORT) } {
 			. configure -cursor $myOldCursor
 			return GORILLA_ADDDEFAULTGROUP
 		}
@@ -3677,7 +3679,7 @@ proc gorilla::Import { {input_file ""} } {
 	} ; # end foreach line in input file
 	
 	if { [ info exists error_lines ] } {
-		if { $::DEBUG(CSVIMPORT) } {
+		if { $::gorilla::DEBUG(CSVIMPORT) } {
 			. configure -cursor $myOldCursor
 			return [lindex $error_lines 0 0]
 		}
@@ -3716,7 +3718,7 @@ proc gorilla::ErrorPopup {title message} {
 	# a small helper proc to encapsulate all the details of opening a
 	# tk_messageBox with a title and message
 
-	if { $::DEBUG(CSVIMPORT) } { return }
+	if { $::gorilla::DEBUG(CSVIMPORT) } { return }
 	
 	tk_messageBox -parent . -type ok -icon error -default ok \
 		-title $title \
@@ -5071,7 +5073,7 @@ proc gorilla::LockDatabase {} {
 		wm iconify $top
 	}
 
-	if { ! $::DEBUG(TEST) } {		
+	if { ! $::gorilla::DEBUG(TEST) } {		
 		while {42} {
 			set ::gorilla::lockedMutex 0
 			vwait ::gorilla::lockedMutex
@@ -6150,7 +6152,7 @@ proc gorilla::SavePreferencesToRegistry {} {
 
 	set key {HKEY_CURRENT_USER\Software\FPX\Password Gorilla}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+	if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 		set revision "<unknown>"
 	}
 
@@ -6245,7 +6247,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 		return 0
 	}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+	if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 		set revision "<unknown>"
 	}
 
@@ -6321,7 +6323,7 @@ proc gorilla::LoadPreferencesFromRegistry {} {
 		return 0
 	}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+	if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 		set revision "<unmatchable>"
 	}
 
@@ -6416,7 +6418,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 
 	} ; # end if info exists ::gorilla::preference(rc)
 
-	if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion -> revision ] } {
+	if { ! [ regexp {Revision: ([0-9.]+)} $::gorilla::Version -> revision ] } {
 		set revision "<unmatchable>"
 	}
 
@@ -6486,7 +6488,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 
 	# Load msgcat data into the global namespace so that it is visible
 	# from both the ::gorilla and ::pwsafe namespaces.
-	namespace eval :: { mcload [file join $::gorillaDir msgs] }
+	namespace eval :: { mcload [file join $::gorilla::Dir msgs] }
 	
 	set value $::gorilla::preference(fontsize) 
 	font configure TkDefaultFont -size $value
@@ -6786,7 +6788,7 @@ proc gorilla::About {} {
 		
 		set w .about.mainframe
 		
-		if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+		if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 			set revision "<unknown>"
 		}
 		
@@ -6850,7 +6852,7 @@ proc gorilla::Help {} {
 
 	# ReadHelpFiles is looking in the given directory 
 	# for a file named help.txt
-	::Help::ReadHelpFiles $::gorillaDir $::gorilla::preference(lang)
+	::Help::ReadHelpFiles $::gorilla::Dir $::gorilla::preference(lang)
 	::Help::Help Overview
 }
 
@@ -6904,7 +6906,7 @@ proc gorilla::ShowTextFile {top title fileName} {
 		$text configure -state normal
 		$text delete 1.0 end
 
-		set filename [file join $::gorillaDir $fileName]
+		set filename [file join $::gorilla::Dir $fileName]
 		if {[catch {
 				set file [open $filename]
 				$text insert 1.0 [read $file]
@@ -7241,7 +7243,7 @@ proc gorilla::FindNext {} {
 }
 
 proc gorilla::getAvailableLanguages {  } {
-	set files [glob -tail -path "$::gorillaDir/msgs/" *.msg]
+	set files [glob -tail -path "$::gorilla::Dir/msgs/" *.msg]
 	set msgList [list ]    ;# en.msg exists
 	
 	foreach file $files {
@@ -8730,7 +8732,7 @@ proc gorilla::versionIsNewer { github } {
   # format is: n.n.n(...)
   # returns 1 if github version is newer otherwise 0
   
-  regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version
+  regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy version
 
 	set actualList [split $version .]
 	set gitList [split $github .]
@@ -8905,7 +8907,7 @@ proc gorilla::versionLookup {} {
   
   if { [gorilla::versionIsNewer githubVersion] } {
 
-    set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version ; set version ] ]\n\n"
+    set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy version ; set version ] ]\n\n"
 
     if { $platform eq "source" } {
       append message "[mc "There is a new source version %s on Github." $githubVersion]"
@@ -8968,7 +8970,7 @@ if {$::gorilla::init == 0} {
 
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
-	array set ::DEBUG {
+	array set ::gorilla::DEBUG {
 		TCLTEST 0 \
 		TEST 0 \
 		CSVEXPORT 0 \
@@ -9038,10 +9040,10 @@ if {$::gorilla::init == 0} {
 			--tcltest {
 				# TCLTEST 1 and TEST 1:
 				# skip the OpenDatabase dialog and load testdb.psafe3
-				array set ::DEBUG { TCLTEST 1 TEST 1 }
+				array set ::gorilla::DEBUG { TCLTEST 1 TEST 1 }
 			}
 			--test {
-				array set ::DEBUG { TEST 1 }
+				array set ::gorilla::DEBUG { TEST 1 }
 			}
 			default {
 				if {$haveDatabaseToLoad} {
@@ -9052,7 +9054,7 @@ if {$::gorilla::init == 0} {
 				set databaseToLoad [lindex $argv $i]
 			}
 		}
-	}
+	} ; unset i
 }
 
 gorilla::Init
@@ -9069,7 +9071,7 @@ if {$haveDatabaseToLoad} {
 if {$action == "Cancel"} {
 	destroy .
 	exit		
-}
+} ; unset action haveDatabaseToLoad databaseToLoad
 
 if { [tk windowingsystem] eq "aqua" } {
 	eval $gorilla::MacShowPreferences
@@ -9081,7 +9083,7 @@ update
 
 set ::gorilla::status [mc "Welcome to the Password Gorilla."]
 
-if { $::DEBUG(TCLTEST) } {
+if { $::gorilla::DEBUG(TCLTEST) } {
 	set argv ""
-	source [file join $::gorillaDir .. unit-tests RunAllTests.tcl]
+	source [file join $::gorilla::Dir .. unit-tests RunAllTests.tcl]
 }
