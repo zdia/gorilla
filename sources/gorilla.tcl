@@ -514,7 +514,7 @@ proc gorilla::InitGui {} {
 
 		"[ mc Help ]" help {"[ mc Help ] ..." mac  gorilla::Help    ""
 				    "[ mc License ] ..."          ""   gorilla::License ""
-            "[ mc "Look for Update"]"     ""   gorilla::versionLookup ""
+				    "[ mc "Look for Update"]"     ""   gorilla::versionLookup ""
 				    separator                     mac  ""  ""
 				    "[ mc About ] ..."            mac tkAboutDialog ""
 				   }
@@ -542,8 +542,8 @@ proc gorilla::InitGui {} {
 				.mbar.$menu_widget add command -label $menu_item \
 					-command $menu_command -accelerator $shortcut
 			} 	
-			set ::gorilla::tag_list($menu_widget) $taglist
-		} 
+		}
+		set ::gorilla::tag_list($menu_widget) $taglist
 	}
 	
 	# modify the "About" menuitem in the Apple application menu
@@ -5062,8 +5062,8 @@ proc gorilla::LockDatabase {} {
 	#
 
 	focus $aframe.mitte.pw.pw
-  # synchronize Tk's event-loop with Aqua's event-loop
-  update idletasks
+	# synchronize Tk's event-loop with Aqua's event-loop
+	update idletasks
   
 	if {[catch { grab $top } oops]} {
 		set ::gorilla::status [mc "error: %s" $oops]
