@@ -825,6 +825,31 @@ proc setmenustate {widget tag_pattern state} {
 	}
 }
 
+proc gorilla::getMenuState { menu } {
+
+  # Walk a Tk "menu" hierarchy, building a script that captures the current
+  # state (normal/disabled) of each item in the menu heirarchy.
+  #
+  # menu - The menu widget at which to start traversing the hierarchy.
+  #
+  # Returns a script which can be "eval'ed" to return the menu hierarchy to
+  # the state it was in when this command was called.
+
+  set result ""
+
+  for {set idx 0} {$idx <= [ $menu index end ]} {incr idx} {
+    if { [ catch {$menu entrycget $idx -menu } submenu ] } {
+      if { ! [ catch {$menu entrycget $idx -state} state ] } {
+        append result "$menu entryconfigure $idx -state $state" \n
+      }
+    } else {
+      append result [ getMenuState $submenu ]
+    }
+  }
+
+  return $result
+} ; # end proc gorilla::getMenuState
+
 proc gorilla::EvalIfStateNormal {menuentry index} {
 	if {[$menuentry entrycget $index -state] == "normal"} {
 		eval [$menuentry entrycget 0 -command]
