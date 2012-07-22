@@ -4980,6 +4980,8 @@ proc gorilla::LockDatabase {} {
 	# MacOSX gives access to the menubar as long as the application is launched
 	# so we grey out the menuitems
 	if {[tk windowingsystem] eq "aqua"} {
+		# save current state of menu entries
+		set stateofmenus [ getMenuState $::gorilla::widgets(main) ]
 		setmenustate $::gorilla::widgets(main) all disabled
 		rename ::tk::mac::ShowPreferences ""
 	}
@@ -5141,7 +5143,8 @@ proc gorilla::LockDatabase {} {
 	}
 
 	if { [tk windowingsystem] eq "aqua"} {
-		setmenustate $::gorilla::widgets(main) all normal
+		# restore saved menu entry states
+		eval $stateofmenus
 		eval $::gorilla::MacShowPreferences
 	}
 		
