@@ -1658,6 +1658,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		-text $nativeName \
 		-values [list Root]
 
+	FocusRootNode
 	AddAllRecordsToTree
 	UpdateMenu
 	return "Open"
@@ -4707,7 +4708,10 @@ proc gorilla::AddGroupToTree {groupName} {
 	return $parentNode
 }
 
-
+proc gorilla::FocusRootNode {} {
+	focus .tree
+	.tree focus "RootNode"
+}
 #
 # Update Menu items
 #
