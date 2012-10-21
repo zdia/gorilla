@@ -1323,6 +1323,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	}
 
 	wm title $top $title
+	wm iconphoto $top $::gorilla::images(application)
+
 	$aframe.pw.pw delete 0 end
 
 	if { [llength $::gorilla::preference(lru)] } {
