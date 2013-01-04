@@ -632,7 +632,7 @@ msgstr "Grupo renomeado."
 
 #: ../../sources/gorilla.tcl:3326
 msgid "Export Security Warning"
-msgstr "Aviso de segurança ao exportar "
+msgstr "Aviso de segurança ao exportar"
 
 #: ../../sources/gorilla.tcl:3327
 msgid ""
@@ -777,7 +777,7 @@ msgstr ""
 
 #: ../../sources/gorilla.tcl:4100
 msgid "Merge Results"
-msgstr "Resultados da união"
+msgstr "Unir Resultados"
 
 #: ../../sources/gorilla.tcl:4101
 msgid "Do you want to view a detailed report?"
@@ -910,7 +910,7 @@ msgstr "Área de transferência, limpa."
 
 #: ../../sources/gorilla.tcl:4983
 msgid "Database Locked"
-msgstr "Banco de dados, bloqueado "
+msgstr "Banco de dados, bloqueado"
 
 #: ../../sources/gorilla.tcl:4985
 msgid "Enter the Master Password."
@@ -1039,7 +1039,7 @@ msgstr "Geral"
 
 #: ../../sources/gorilla.tcl:5733
 msgid "When double clicking a login ..."
-msgstr "Quando clicar duas vezes uma conta ..."
+msgstr "Quando clicar duas vezes numa conta ..."
 
 #: ../../sources/gorilla.tcl:5735
 msgid "Copy password to clipboard"

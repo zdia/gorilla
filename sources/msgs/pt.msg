@@ -138,7 +138,7 @@ Parent: Pai:
 Name Nome
 {Group name unchanged.} {Nome, do grupo, não modificado.}
 {Group renamed.} {Grupo renomeado.}
-{Export Security Warning} {Aviso de segurança ao exportar }
+{Export Security Warning} {Aviso de segurança ao exportar}
 {You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {Você está prestes a exportar o banco, de dados das senhas, para um arquivo de texto simples. Este arquivo não será encriptografado ou protegido por senha. Qualquer um, que possa acessar, pode ler este arquivo, e aprender os seus nomes de usuário e suas senhas. Certifique-se de armazenar este arquivo em um local seguro. Você quer continuar?}
 {Export password database as text ...} {Exportar banco, de dados das senhas, como texto ...}
 {Error Exporting Database} {Erro ao exportar o banco de dados}
@@ -174,7 +174,7 @@ conflicts conflitos
 {Merged %s;
 %d %s, %d identical, %d added, %d %s.} {Unido %s;
 %d %s, %d idêntico, %d adicionado, %d %s.}
-{Merge Results} {Resultados da união}
+{Merge Results} {Unir Resultados}
 {Do you want to view a detailed report?} {Você quer ver um relatório detalhado?}
 {Resolve Conflicts} {Resolva Conflitos}
 Close Fechar
@@ -200,7 +200,7 @@ Por favor defina um diretório válido para backup
 no menu de Preferências.}
 {The current password database is modified. Do you want to save the database? &lt;Yes&gt; saves the database and exits. &lt;No&gt; discards all changes and exits. &lt;Cancel&gt; returns to the main menu.} {O banco de dados das senhas, atual, foi modificado. Você quer salvar este banco de dados? &lt;Sim&gt; salva este banco de dados e sai. &lt;Não&gt; descarta todas as mudanças e sai. &lt;Cancelar&gt; returna ao menu principal.}
 {Clipboard cleared.} {Área de transferência, limpa.}
-{Database Locked} {Banco de dados, bloqueado }
+{Database Locked} {Banco de dados, bloqueado}
 {Enter the Master Password.} {Digite a Senha Mestre.}
 {error: %s} {erro: %s}
 {Wrong Password} {Senha Errada}
@@ -229,7 +229,7 @@ Calculating Calculando
 {Delay for} {Atraso para}
 sec(s) seg(s)
 General Geral
-{When double clicking a login ...} {Quando clicar duas vezes uma conta ...}
+{When double clicking a login ...} {Quando clicar duas vezes numa conta ...}
 {Copy password to clipboard} {Copie a senha para a área de transferência}
 {Launch Browser directed to URL} {Inicie o Navegador web direcionado para a URL}
 {Do nothing} {Faça nada}
