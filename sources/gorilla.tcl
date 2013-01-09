@@ -252,35 +252,7 @@ set auto_path [ list $::gorillaDir [ file join $::gorillaDir tcllib ] {*}$auto_p
 # Initialize the Tcl modules system to look into modules/ directory
 ::tcl::tm::add [ file join $::gorillaDir modules ]
 
-#
-# Look for Itcl
-#
-
-if {[catch {package require Itcl} oops]} {
-	#
-	# Itcl is included in tclkit and ActiveState...
-	#
-	wm withdraw .
-	tk_messageBox -type ok -icon error -default ok \
-		-title [ mc "Need \[Incr Tcl\]" ] \
-		-message [ mc "The Password Gorilla requires the \[incr Tcl\]\
-		add-on to Tcl. Please install the \[incr Tcl\] package.\n\nError Message: %s" $oops ]
-	exit 1
-}
-
-if {[catch {package require pwsafe} oops]} {
-	wm withdraw .
-	tk_messageBox -type ok -icon error -default ok \
-		-title [ mc "Need PWSafe" ] \
-		-message [ mc "The Password Gorilla requires the \"pwsafe\" package.\
-		This seems to be an installation problem, as the pwsafe package\
-		ought to be part of the Password Gorilla distribution.\n\nError Message: %s" $oops ]
-	exit
-	# exit 1 ;# needs testing on the Mac. It seems that
-	# the parameter 1 is setting gorilla.tcl's filelength to 0
-}
-
-foreach package {tooltip PWGprogress} {
+foreach package {Itcl pwsafe tooltip PWGprogress} {
 	load-package $package
 }
 
