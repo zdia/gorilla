@@ -8673,27 +8673,26 @@ proc ::gorilla::remove-from-conflict-list { current_dbidx merged_dbidx current_t
 
 } ; # end proc ::gorilla::remove-from-conflict-list
 
-#
-# ----------------------------------------------------------------------
+
+# ======================================================================
 # Lookup for new Version
-# ----------------------------------------------------------------------
-#
+# ======================================================================
+
 
 # ----------------------------------------------------------------------
-proc gorilla::versionIsNewer { github } {
+proc gorilla::versionIsNewer { server } {
   
-  # github - Version downloaded from Github version.txt
+  # server - Version downloaded from version.txt on server
   # format is: n.n.n(...)
-  # returns 1 if github version is newer otherwise 0
+  # returns 1 if server version is newer otherwise 0
   
   regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version
 
-	set actualList [split $version .]
-	set gitList [split $github .]
+	set localList [split $version .]
+	set serverList [split $server .]
 
-	foreach n $gitList i $actualList {
-		if { $n > $i } {
-			# puts "git $n, actual $i"
+	foreach remote $serverList local $localList {
+		if { $remote > $local } {
       return 1
 		} else {
 			continue
@@ -8703,52 +8702,79 @@ proc gorilla::versionIsNewer { github } {
 }
 
 # ----------------------------------------------------------------------
+proc gorilla::versionCheckHttp { url {flag 0} } {
+# ----------------------------------------------------------------------
+  # tries to connect to the passed url and returns results
+  # url - see downloads.txt
+  # flag - the optional validate flag prevents downloading the whole data
+  # if there is a check for the large binaries
+  # returns { 0 errortext } || { fileLen http::data }
+  
+  set result ""
+  
+  if { [ catch { set token [::http::geturl $url -validate $flag ] } oops ] } {
+    
+    # in error case no http::cleanup necessary
+    return [list 0 "Error: $oops -\n\nTried: $url"]
+
+  } elseif { [::http::status $token] ne "ok" } {
+
+      set result [list 0 "[::http::error $token]"]
+
+  } elseif { [string index [::http::ncode $token] 0] != 2 } {
+
+      # codes beginning with 2 are ok.
+      set result [list 0 "[::http::code $token]"]
+
+  } else {
+
+      # get file length and http::data
+      set result [list [dict get [http::meta $token] Content-Length] [http::data $token]]
+  }
+  http::cleanup $token
+  return $result
+}
+
+# ----------------------------------------------------------------------
 proc gorilla::versionGet { platform } {
   
-  # platform - The Tk windowingsystem or string "source"
+  # /sources/downloads.txt contains download sites
+  # version.txt on the server contains version information
+  #
+  # platform - The user's actual Tk windowingsystem
   # returns list: version url || 0 errormessage
   
-  #
-  # http error checking
-  #
+  set fh [open $::gorillaDir/downloads.txt r]
+  set data [read $fh]
+  close $fh
   
-  set url "http://cloud.github.com/downloads/zdia/gorilla/version.txt"
-  
-  # catch failing socket connection
-  if { [catch {set gitToken [::http::geturl $url]} oops] } {
-    return [list 0 "$oops -\nurl: $url"]
-  }
-  
-  # check http status
-  if { [::http::status $gitToken] ne "ok" } {
-    return [list 0 "http::error: [::http::error $gitToken]"]
-  }
-  
-  # check code content fot http error
-  # Codes beginning with 2 indicate success.
-  set ncode [::http::ncode $gitToken]
-  if { [string index $ncode 0] != 2 } {
-    return [list 0 "url: $url -\n[::http::code $gitToken]"]
-  }
-  
-  # No file length check, it's just text
-  
-  #
-  # extract version data
-  #
-  
-  set versionsDict [::http::data $gitToken]
-  ::http::cleanup $gitToken
+  lassign $data mirrors
 
-  set version [dict get $versionsDict $platform version]
+  #
+  # connect to mirrors
+  #
+  
+  foreach mirror $mirrors {
+    
+    set url $mirror/version.txt
+    set error 0
+    
+    lassign [gorilla::versionCheckHttp $url] fileLen data
 
-  if { $platform eq "source" } {
-    set url [dict get $versionsDict $platform url]
-  } else {
-    set url [dict get $versionsDict $platform url $::tcl_platform(machine)]
-  }
+    if { $fileLen == 0 } { set error 1 }
 
-  return [list $version $url]
+  } ;# end foreach mirror
+
+  if { $error } { return [list 0 "Last mirror: $url\n\n$data"] }
+
+  #
+  # extract version data 
+  #
+  
+  set version [dict get $data $platform version]
+  set exe [dict get $data $platform executable $::tcl_platform(machine)]
+
+  return [list $version $mirror/$exe]
   
 } ;# end proc gorilla::versionGet
 
@@ -8758,23 +8784,17 @@ proc gorilla::versionCallback { w token total current } {
 }
 
 # ----------------------------------------------------------------------
-proc gorilla::versionDownload { githubVersion url } {
-  # githubVersion - actual version on Github server
-  # url - the url of the file to be downloaded
+proc gorilla::versionDownload { url } {
+  # url - url of new version
   
   #
   # define target location
   #
   
-  # urls for tests
-  # set url "http://cloud.github.com/downloads/zdia/gorilla/gorilla-1.4.4b-MacOSX.zip"
-  # set url http://nodeload.github.com/zdia/gorilla/zipball/v1.5.3.6.3
-
 	if { $::gorilla::preference(backupPath) eq "" } {
-		# place backup file into same directory as current password db file
 		set backupPath "~"
 	} else {
-		# place backup file into users preference directory
+		# place backup file into user''s preference directory
 		set backupPath $::gorilla::preference(backupPath)
 		if { ! [file isdirectory $backupPath] } {
 			gorilla::ErrorPopup [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."]
@@ -8783,27 +8803,18 @@ proc gorilla::versionDownload { githubVersion url } {
 	} 
 	
 	set filename [ file join $backupPath [file tail $url] ]
-  if { [regexp nodeload $url] } {
-    # currently we use zipballs
-    append filename ".zip"
-  }
-  
-  set out [open $filename w]
 
   #
-  # validate the meta data
+  # check the connection
   #
-  
-  if { [catch {set gitDownload [::http::geturl $url -validate 1]} oops] } {
-    gorilla::ErrorPopup "[mc "Http error"]" $oops
-    close $out
-    return HTTP_ERROR
-  } else {
-    set fileMeta [http::meta $gitDownload]
-    set fileLen [dict get $fileMeta Content-Length]
+    
+  lassign [gorilla::versionCheckHttp $url 1] fileLen message
+
+  if { $fileLen == 0 } {
+    gorilla::ErrorPopup [mc "Http Error"] $message
+    return
   }
-  http::cleanup $gitDownload
-  
+
   #
   # prepare display
   #
@@ -8811,7 +8822,7 @@ proc gorilla::versionDownload { githubVersion url } {
   ttk::frame .status-dl -relief sunken
   ttk::progressbar .status-dl.pb -mode determinate -orient horizontal \
     -value 0 -maximum $fileLen
-  ttk::label .status-dl.lb -text [mc "Downloading %s: " $githubVersion ] -relief sunken
+  ttk::label .status-dl.lb -text [mc "Downloading %s: " $url ] -relief sunken
   grid .status-dl.lb .status-dl.pb -sticky news
   grid columnconfigure .status-dl 1 -weight 1
   grid .status-dl - -sticky news
@@ -8820,81 +8831,82 @@ proc gorilla::versionDownload { githubVersion url } {
   # start download
   #
   
-  if { [catch {set gitDownload [::http::geturl $url -channel $out \
+  set out [open $filename w]  
+  
+  if { [catch {set download [::http::geturl $url -channel $out \
             -progress [ list gorilla::versionCallback .status-dl.pb ] -blocksize 4096]} oops] } {
     
     gorilla::ErrorPopup "[mc "Http error"]" $oops
-    puts beep
-    close $out
-    # return HTTP_ERROR
     
   } else {
     
-    # go on and check correct file size
+    # go on and check file size
 
     if { [file size $filename] != $fileLen } {
+      
       gorilla::ErrorPopup "[mc "Download Error"]" "[mc "Downloaded File has wrong size."]"
-        close $out
-        destroy .status-dl
-        return DOWNLOAD_ERROR
+      
     } else {
+      
       tk_messageBox -title [mc "Download finished"] \
         -message [mc "The new version was successfully downloaded as\n%s." [ file nativename $filename ] ] \
         -icon info -type ok
     }
   }
-  http::cleanup $gitDownload
+  http::cleanup $download
   destroy .status-dl
   close $out
-  return GORILLA_OK
+  return
   
 } ;# end proc gorilla::versionDownload
 
 # ----------------------------------------------------------------------
 proc gorilla::versionLookup {} {
   
-  # Look if there is a new version on the Github Download site. The version
-  # data are contained in the file version.txt
+  # Look if there is a new version on the mirrors defined in 
+  # /source/downloads.txt. The version data are lying in the file 
+  # version.txt on the mirrors
   
   load-package http
   
-  if { [regexp tclsh [info nameofexecutable]] } {
-    set platform source
-  } else {
-    switch [tk windowingsystem] {
-      x11     { set platform Linux }
-      win32   { set platform Windows }
-      aqua    { set platform MacOSX }
-      default { set platform unknown }
-    }
+  switch [tk windowingsystem] {
+    x11     { set platform Linux }
+    win32   { set platform Windows }
+    aqua    { set platform MacOSX }
+    default { set platform unknown }
   }
   
-  lassign [gorilla::versionGet $platform] githubVersion githubUrl
-  
-  if { $githubVersion == 0 } {
-    gorilla::ErrorPopup "Http error" $githubUrl
+  if { $platform eq "unknown" } {
+    gorilla::ErrorPopup [mc Error] [mc "Unknown windowing system"]
     return
   }
   
-  if { [gorilla::versionIsNewer $githubVersion] } {
+  lassign [gorilla::versionGet $platform] version url
+  
+  if { $version == 0 } {
+    gorilla::ErrorPopup [mc "Connection error"] $url
+    return
+  }
 
-    set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy version ; set version ] ]\n\n"
-
-    if { $platform eq "source" } {
-      append message "[mc "There is a new source version %s on Github." $githubVersion]"
-    } else {
-      append message "[mc "There is a new version %s for %s." $githubVersion $platform]"
-    }
-    append message "\n\nShall I download the new version?"
-    
-    set answer [tk_messageBox -title "[mc "New version available"]" \
-      -message $message -icon info -type yesno]
-    
-    if { $answer eq "yes" } { gorilla::versionDownload $githubVersion $githubUrl }
-    
-  } else {
+  if { ! [gorilla::versionIsNewer $version] } {
     set message [mc "No new version available"]
     tk_messageBox -message $message -icon info -type ok 
+    return
+  } 
+  
+  set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy actual ; set actual ] ]\n\n"
+
+  append message "[mc "There is a new version %s for %s." $version $platform]"
+  append message "\n\n[mc "Shall I download the new version?"]"
+  
+  # Tk font default style is ugly bold
+  option add *Dialog.msg.font {Arial 11}
+  set answer [tk_dialog .download [mc "New version available"] $message "" 0 [mc "Executable"] [mc "Sourcecode"] [mc "Cancel"] ]
+  
+  switch $answer {
+    0          { gorilla::versionDownload $url }
+    1          { gorilla::versionDownload [regsub [file tail $url] $url gorilla-$version.zip] }
+    default    { return }
   }
   
   return
