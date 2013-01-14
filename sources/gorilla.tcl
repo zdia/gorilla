@@ -7045,10 +7045,16 @@ proc gorilla::FindCompare {needle haystack caseSensitive} {
 }
 
 proc gorilla::RunFind {} {
-	if {![info exists ::gorilla::findCurrentNode]} {
-		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
-	} else {
+
+	# The call to "tree exists" below is to prevent an error message in the
+	# instance that the node referenced by "findCurrentNode" has been deleted
+	# from the tree prior to calling "RunFind"
+	
+	if { [ info exists ::gorilla::findCurrentNode ]
+	  && [ $::gorilla::widgets(tree) exists $::gorilla::findCurrentNode ] } {
 		set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
+	} else {
+		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
 	}
 	
 	set text $::gorilla::preference(findThisText)
