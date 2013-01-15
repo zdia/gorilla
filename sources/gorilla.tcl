@@ -8,9 +8,9 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # ----------------------------------------------------------------------
 #
 # Copyright (c) 2005-2009 Frank Pilhofer
-# Copyright (c) 2010-2011 Richard Ellis and Zbigniew Diaczyszyn
+# Copyright (c) 2010-2013 Richard Ellis and Zbigniew Diaczyszyn
 #
-# Version 1.5.3.6 tested with ActiveState's Tcl/Tk 8.5.11
+# Version 1.5.3.7 tested with ActiveState's Tcl/Tk 8.5.13.0
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.6.3 $}
+set ::gorillaVersion {$Revision: 1.5.3.7 $}
 
 # find the location of the install directory even when "executing" a symlink
 # pointing to the gorilla.tcl file
