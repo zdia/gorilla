@@ -1,1 +1,1 @@
-{http://gorilla.dp100.com/downloads http://zdia.de/downloads}
+{http://gorilla.dp100.com/downloads http://zdia.de/downloads/gorilla}
