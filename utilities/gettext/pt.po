@@ -4,13 +4,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Password Gorilla\n"
+"Project-Id-Version: Password Gorilla 1.5.3.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-14 19:38+0100\n"
-"PO-Revision-Date: 2012-12-09 21:02-0300\n"
+"PO-Revision-Date: 2013-01-19 14:31-0300\n"
 "Last-Translator: Daniel Silva Ferreira Bruno <dsfbstudent@yahoo.com.br>\n"
 "Language-Team: Daniel Silva Ferreira Bruno &lt;dsfbstudent@yahoo.com.br&gt;\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -192,9 +191,8 @@ msgid "Change Master Password"
 msgstr "Mudar Senha Mestre ..."
 
 #: ../../sources/gorilla.tcl:482
-#, fuzzy
 msgid "Lock now"
-msgstr "Lock now"
+msgstr "Bloqueiar agora"
 
 #: ../../sources/gorilla.tcl:485 ../../sources/viewhelp.tcl:181
 msgid "Help"
@@ -206,7 +204,7 @@ msgstr "Licença"
 
 #: ../../sources/gorilla.tcl:487
 msgid "Look for Update"
-msgstr ""
+msgstr "Procurar por Atualizações"
 
 #: ../../sources/gorilla.tcl:489 ../../sources/gorilla.tcl:524
 msgid "About"
@@ -250,20 +248,16 @@ msgid "New Database: Choose Master Password"
 msgstr "Novo Banco de dados: Escolha a senha mestre"
 
 #: ../../sources/gorilla.tcl:1151
-#, fuzzy
 msgid "Password Gorilla - <New Database>"
-msgstr "Password Gorilla - &lt;Novo Banco de dados&gt;"
+msgstr "Password Gorilla - <Novo Banco de dados>"
 
 #: ../../sources/gorilla.tcl:1197 ../../sources/gorilla.tcl:5015
-#, fuzzy
 msgid "<New Database>"
-msgstr "Sem banco de dados"
+msgstr "<Novo Banco de dados>"
 
 #: ../../sources/gorilla.tcl:1200
-#, fuzzy
 msgid "Add logins using <Add Login> in the <Login> menu."
-msgstr ""
-"Adicionar contas usando o&lt;Adicionar conta no&gt; menu de &lt;conta&gt."
+msgstr "Adicionar contas usando <Adicionar conta> no menu de <conta>."
 
 #: ../../sources/gorilla.tcl:1246 ../../sources/gorilla.tcl:4955
 msgid "Database:"
@@ -290,11 +284,8 @@ msgstr ""
 "criar um novo banco de dados."
 
 #: ../../sources/gorilla.tcl:1311
-#, fuzzy
 msgid "Select a database, and enter its password."
-msgstr ""
-"Selecione um banco de dados, e digite a senha dele. Clique \"Novo\" para "
-"criar um novo banco de dados."
+msgstr "Selecione um banco de dados, e digite a senha dele."
 
 # This is the template for Gorilla's menuitems which are not marked by
 # a keyword in the source file
@@ -317,49 +308,46 @@ msgid "No File"
 msgstr "Sem arquivo"
 
 #: ../../sources/gorilla.tcl:1379
-#, fuzzy
 msgid "Please select a password database."
-msgstr "Browse for a password database ..."
+msgstr "Por favor, selecione um banco de dados das senhas."
 
 #: ../../sources/gorilla.tcl:1394
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "The password database %s can not be read."
-msgstr "O banco, de dados das senhas, %s não existe ou não pode ser lido."
+msgstr "O banco, de dados das senhas, %s, não pode ser lido."
 
 #: ../../sources/gorilla.tcl:1396
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "The password database %s does not exist."
-msgstr "O banco, de dados das senhas, %s não existe ou não pode ser lido."
+msgstr "O banco, de dados das senhas, %s não existe."
 
 #: ../../sources/gorilla.tcl:1399
-#, fuzzy
 msgid "Error Accessing File"
-msgstr "Erro enquanto estava-se salvando o arquivo RC"
+msgstr "Erro ao Acessar o Arquivo"
 
 #: ../../sources/gorilla.tcl:1404
 msgid "Please be patient. Verifying password ..."
 msgstr "Por favor, seja paciente. Verificando senha ..."
 
 #: ../../sources/gorilla.tcl:1416
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Opening ... %d %%"
-msgstr "Opening ... %2.0f %%"
+msgstr "Abrindo ... %d %%"
 
 #: ../../sources/gorilla.tcl:1428
 msgid "Error Opening Database"
 msgstr "Erro ao abrir o banco de dados"
 
 #: ../../sources/gorilla.tcl:1429
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Can not open password database \"%s\": %s"
-msgstr "Can not open password database \"%s\": %s"
+msgstr "Não pode abrir o banco de dados das senhas \"%s\": %s"
 
 #: ../../sources/gorilla.tcl:1447
 msgid "Browse for a password database ..."
 msgstr "Procurar um banco de dados das senhas ..."
 
 #: ../../sources/gorilla.tcl:1566
-#, fuzzy
 msgid ""
 "The current password database is modified. Do you want to save the "
 "database?\n"
@@ -367,9 +355,12 @@ msgid ""
 " \"No\" discards all changes, and continues to the \"Open File\" dialog.\n"
 " \"Cancel\" returns to the main menu."
 msgstr ""
-"The current password database is modified. Do you want to save the database? "
-"&lt;Yes&gt; saves the database and exits. &lt;No&gt; discards all changes "
-"and exits. &lt;Cancel&gt; returns to the main menu."
+"O banco atual, de dados das senhas, foi modificado. Você quer salvar o banco "
+"de dados?\n"
+" \"Sim\" salva o banco de dados, e continua no diálogo \"Abrir Arquivo\".\n"
+" \"Não\" descarta todas as mudanças, e continua no diálogo \"Abrir Arquivo"
+"\".\n"
+" \"Cancelar\" retorna ao menu principal."
 
 #: ../../sources/gorilla.tcl:1594
 msgid "Open Password Database"
@@ -410,14 +401,12 @@ msgid "Notes"
 msgstr "Notas"
 
 #: ../../sources/gorilla.tcl:1952
-#, fuzzy
 msgid "Last Password Change"
-msgstr "Master password changed."
+msgstr "Última Mudança de Senha"
 
 #: ../../sources/gorilla.tcl:1952
-#, fuzzy
 msgid "Last Modified"
-msgstr "Login modified."
+msgstr "Última modificação"
 
 #: ../../sources/gorilla.tcl:1967 ../../sources/gorilla.tcl:2570
 #: ../../sources/gorilla.tcl:2798 ../../sources/gorilla.tcl:3153
@@ -456,7 +445,7 @@ msgstr "Configuração inválida da política de senha."
 
 #: ../../sources/gorilla.tcl:2290
 msgid "<unknown>"
-msgstr ""
+msgstr "<desconhecido(a)>"
 
 #: ../../sources/gorilla.tcl:2386
 msgid "This login must have a title, url or username."
@@ -484,9 +473,8 @@ msgid "Move %s"
 msgstr "Mover %s"
 
 #: ../../sources/gorilla.tcl:2556
-#, fuzzy
 msgid "Destination Group with format <Group.Subgroup> :"
-msgstr "Grupo, de destino, com formato &lt;Grupo.Subgrupo&gt; :"
+msgstr "Grupo, de destino, com formato <Grupo.Subgrupo> :"
 
 #: ../../sources/gorilla.tcl:2630 ../../sources/gorilla.tcl:2644
 #: ../../sources/gorilla.tcl:2847 ../../sources/gorilla.tcl:2861
@@ -504,9 +492,9 @@ msgid "The name of the parent group is invalid."
 msgstr "O nome, do grupo pai, é inválido."
 
 #: ../../sources/gorilla.tcl:2661
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Moving of %s canceled."
-msgstr "Addition of group canceled."
+msgstr "Movimentação cancelada de %s."
 
 #: ../../sources/gorilla.tcl:2669
 #, tcl-format
@@ -527,11 +515,10 @@ msgid "No Database"
 msgstr "Sem banco de dados"
 
 #: ../../sources/gorilla.tcl:2771 ../../sources/gorilla.tcl:5290
-#, fuzzy
 msgid "Please create a new database, or open an existing database first."
 msgstr ""
-"Please create a new database, or open an existing\n"
-"database first."
+"Por favor, primeiro crie um novo banco de dados, ou abra um banco existente "
+"de dados."
 
 #: ../../sources/gorilla.tcl:2781
 msgid "Add a new Group"
@@ -570,14 +557,12 @@ msgid "Can not move a group to a subgroup of itself."
 msgstr "Não pode mover um grupo para um subgrupo interno."
 
 #: ../../sources/gorilla.tcl:3034
-#, fuzzy
 msgid "Can Not Delete Root"
-msgstr "Can Not Move Node"
+msgstr "Não Pode Excluir a Raíz"
 
 #: ../../sources/gorilla.tcl:3035
-#, fuzzy
 msgid "The root node can not be deleted."
-msgstr "The root node can not be moved."
+msgstr "O nó raíz não pode ser excluído."
 
 #: ../../sources/gorilla.tcl:3047
 msgid "Are you sure that you want to delete group and all its contents?"
@@ -589,23 +574,20 @@ msgid "Group deleted."
 msgstr "Grupo excluído."
 
 #: ../../sources/gorilla.tcl:3103
-#, fuzzy
 msgid "Can Not Rename Root"
-msgstr "Can Not Move Node"
+msgstr "Não Pode Renomear a Raíz"
 
 #: ../../sources/gorilla.tcl:3104
-#, fuzzy
 msgid "The root node can not be renamed."
-msgstr "The root node can not be moved."
+msgstr "O nó raíz não pode ser renomeado."
 
 #: ../../sources/gorilla.tcl:3141
 msgid "Name"
 msgstr "Nome"
 
 #: ../../sources/gorilla.tcl:3209
-#, fuzzy
 msgid "The name of the group's parent node is invalid."
-msgstr "The name of the parent group is invalid."
+msgstr "O nome do nó pai, do grupo, é inválido."
 
 #: ../../sources/gorilla.tcl:3237
 msgid "Group name unchanged."
@@ -734,40 +716,38 @@ msgid "Merging (%d %% done)"
 msgstr "Unindo (%d %% pronto)"
 
 #: ../../sources/gorilla.tcl:4021
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Conflict for login %s"
-msgstr "Conflito %d"
+msgstr "Conflito para a conta %s"
 
 #: ../../sources/gorilla.tcl:4023 ../../sources/gorilla.tcl:4043
 #: ../../sources/gorilla.tcl:4052
 #, tcl-format
 msgid "(in group %s)"
-msgstr ""
+msgstr "(no grupo %s)"
 
 #: ../../sources/gorilla.tcl:4025
 #, tcl-format
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #: ../../sources/gorilla.tcl:4041
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Added login %s"
-msgstr "Adicionar conta"
+msgstr "Conta adicionada %s"
 
 #: ../../sources/gorilla.tcl:4050
 #, tcl-format
 msgid "Identical login %s"
-msgstr ""
+msgstr "Conta idêntica %s"
 
 #: ../../sources/gorilla.tcl:4071
-#, fuzzy
 msgid "login"
-msgstr "Login"
+msgstr "conta"
 
 #: ../../sources/gorilla.tcl:4071
-#, fuzzy
 msgid "logins"
-msgstr "Login"
+msgstr "contas"
 
 #: ../../sources/gorilla.tcl:4073
 msgid "conflict"
@@ -805,9 +785,8 @@ msgid "Close"
 msgstr "Fechar"
 
 #: ../../sources/gorilla.tcl:4180
-#, fuzzy
 msgid "Conflicts"
-msgstr "conflitos"
+msgstr "Conflitos"
 
 #: ../../sources/gorilla.tcl:4270
 msgid "Warning: Can not save to"
@@ -820,23 +799,22 @@ msgstr ""
 "leitura."
 
 #: ../../sources/gorilla.tcl:4271
-#, fuzzy
 msgid ""
 "Please change the file permissions to read-write and hit 'Retry' or hit "
 "'Cancel' and use 'File'->'Save As' to save into a different file."
 msgstr ""
 "Por favor, mude as permissões deste arquivo para leitura-escrita e aperte "
-"'Retentar' ou aperte 'Cancelar' e use 'Arquivo'-&gt;'Salvar como' para "
-"salvar em um arquivo diferente."
+"'Retentar' ou aperte 'Cancelar' e use 'Arquivo'->'Salvar como' para salvar "
+"em um arquivo diferente."
 
 #: ../../sources/gorilla.tcl:4273
 msgid "Warning: Read-only password file"
 msgstr "Aviso: Arquivo de senha, com permissão somente de leitura"
 
 #: ../../sources/gorilla.tcl:4313 ../../sources/gorilla.tcl:4428
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Saving ... %d %%"
-msgstr "Saving ... %2.0f %%"
+msgstr "Salvando ... %d %%"
 
 #: ../../sources/gorilla.tcl:4323 ../../sources/gorilla.tcl:4530
 msgid "Error Saving Backup of Database"
@@ -852,9 +830,8 @@ msgstr ""
 "%s: %s"
 
 #: ../../sources/gorilla.tcl:4365 ../../sources/gorilla.tcl:4489
-#, fuzzy
 msgid "Password database saved with backup copy."
-msgstr "Password database saved with backup copy"
+msgstr "Banco, de dados das senhas, salvo com cópia de 'backup'"
 
 #: ../../sources/gorilla.tcl:4369 ../../sources/gorilla.tcl:4465
 #: ../../sources/gorilla.tcl:4493
@@ -897,30 +874,33 @@ msgstr ""
 "no menu de Preferências."
 
 #: ../../sources/gorilla.tcl:4556
-#, fuzzy
 msgid ""
 "Unknown file. - \n"
 "Please select a valid database filename."
-msgstr "Browse for a password database ..."
+msgstr ""
+"Arquivo Desconhecido. - \n"
+"Por favor, selecione um nome válido do arquivo do banco de dados."
 
 #: ../../sources/gorilla.tcl:4568
-#, fuzzy, tcl-format
+#, tcl-format
 msgid ""
 "Failed to make backup copy of password\n"
 "database as %s: \n"
 "%s"
-msgstr "Failed to save password database as \"%s\": %s"
+msgstr ""
+"Uma falha ocorreu ao se fazer uma cópia de backup do\n"
+"banco, de dados das senhas, como %s: \n"
+"%s"
 
 #: ../../sources/gorilla.tcl:4760
-#, fuzzy
 msgid ""
 "The current password database is modified. Do you want to save the database? "
 "<Yes> saves the database and exits. <No> discards all changes and exits. "
 "<Cancel> returns to the main menu."
 msgstr ""
 "O banco de dados das senhas, atual, foi modificado. Você quer salvar este "
-"banco de dados? &lt;Sim&gt; salva este banco de dados e sai. &lt;Não&gt; "
-"descarta todas as mudanças e sai. &lt;Cancelar&gt; returna ao menu principal."
+"banco de dados? <Sim> salva este banco de dados e sai. <Não> descarta todas "
+"as mudanças e sai. <Cancelar> returna ao menu principal."
 
 #: ../../sources/gorilla.tcl:4819
 msgid "Clipboard cleared."
@@ -949,7 +929,7 @@ msgstr "Bem-vindo de volta."
 
 #: ../../sources/gorilla.tcl:5097
 msgid "Database Locked (with unsaved changes)"
-msgstr ""
+msgstr "Banco bloqueado de dados (com mudanças não salvas)"
 
 #: ../../sources/gorilla.tcl:5099
 msgid "Database Locked"
@@ -996,9 +976,8 @@ msgid "Use easy to read characters only (e.g. no \"0\" or \"O\")"
 msgstr "Use somente caracteres fáceis de ler (isto é, não \"0\" ou \"O\")"
 
 #: ../../sources/gorilla.tcl:5587
-#, fuzzy
 msgid "Database Preferences"
-msgstr "Database Preferences"
+msgstr "Preferências do Banco de Dados"
 
 #: ../../sources/gorilla.tcl:5591 ../../sources/gorilla.tcl:5832
 msgid "Lock when idle after"
@@ -1030,9 +1009,9 @@ msgid "Calculate delay time"
 msgstr "Calcule o tempo de atraso"
 
 #: ../../sources/gorilla.tcl:5627
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Default: %s"
-msgstr "Defaults"
+msgstr "Padrão: %s"
 
 #: ../../sources/gorilla.tcl:5628 ../../sources/gorilla.tcl:5634
 #: ../../sources/gorilla.tcl:5646 ../../sources/gorilla.tcl:5651
@@ -1365,19 +1344,19 @@ msgid "Italian translation by %s"
 msgstr "Tradução em italiano por %s"
 
 #: ../../sources/gorilla.tcl:6771
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "French translation by %s"
-msgstr "German translation by %s"
+msgstr "Tradução em francês por %s"
 
 #: ../../sources/gorilla.tcl:6772
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Spanish translation by %s"
-msgstr "German translation by %s"
+msgstr "tradução em espanhol por %s"
 
 #: ../../sources/gorilla.tcl:6773
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Portuguese translation by %s"
-msgstr "German translation by %s"
+msgstr "tradução em português por %s"
 
 #: ../../sources/gorilla.tcl:6776
 #, tcl-format
@@ -1476,39 +1455,37 @@ msgid "Current"
 msgstr "Atual"
 
 #: ../../sources/gorilla.tcl:8475
-#, fuzzy
 msgid "Merged"
-msgstr "Merge ..."
+msgstr "Unido(a)"
 
 #: ../../sources/gorilla.tcl:8599
 msgid "A selection is required for:"
 msgstr "Uma seleção é requerida para:"
 
 #: ../../sources/gorilla.tcl:8820
-#, fuzzy
 msgid "Http Error"
-msgstr "Erro"
+msgstr "Erro de Http"
 
 #: ../../sources/gorilla.tcl:8831
 #, tcl-format
 msgid "Downloading %s: "
-msgstr ""
+msgstr "Baixando %s: "
 
 #: ../../sources/gorilla.tcl:8845
 msgid "Http error"
-msgstr ""
+msgstr "Erro de http"
 
 #: ../../sources/gorilla.tcl:8853
 msgid "Download Error"
-msgstr ""
+msgstr "Erro de Download"
 
 #: ../../sources/gorilla.tcl:8853
 msgid "Downloaded File has wrong size."
-msgstr ""
+msgstr "O arquivo baixado tem tamanho errado."
 
 #: ../../sources/gorilla.tcl:8857
 msgid "Download finished"
-msgstr ""
+msgstr "Download acabado"
 
 #: ../../sources/gorilla.tcl:8858
 #, tcl-format
@@ -1516,44 +1493,46 @@ msgid ""
 "The new version was successfully downloaded as\n"
 "%s."
 msgstr ""
+"A nova versão foi baixada, com sucesso, como\n"
+"%s."
 
 #: ../../sources/gorilla.tcl:8886
 msgid "Unknown windowing system"
-msgstr ""
+msgstr "Sistema desconhecido de janelamento"
 
 #: ../../sources/gorilla.tcl:8893
 msgid "Connection error"
-msgstr ""
+msgstr "Erro de conexão"
 
 #: ../../sources/gorilla.tcl:8898
 msgid "No new version available"
-msgstr ""
+msgstr "Sem nova versão disponível"
 
 #: ../../sources/gorilla.tcl:8903
 #, tcl-format
 msgid "You are running version %s."
-msgstr ""
+msgstr "Você está executando a versão %s."
 
 #: ../../sources/gorilla.tcl:8905
 #, tcl-format
 msgid "There is a new version %s for %s."
-msgstr ""
+msgstr "Há uma nova versão %s para %s."
 
 #: ../../sources/gorilla.tcl:8906
 msgid "Shall I download the new version?"
-msgstr ""
+msgstr "Eu devo baixar a nova versão?"
 
 #: ../../sources/gorilla.tcl:8910
 msgid "New version available"
-msgstr ""
+msgstr "Nova versão disponível"
 
 #: ../../sources/gorilla.tcl:8910
 msgid "Executable"
-msgstr ""
+msgstr "Executável"
 
 #: ../../sources/gorilla.tcl:8910
 msgid "Sourcecode"
-msgstr ""
+msgstr "Código-fonte"
 
 #: ../../sources/viewhelp.tcl:118 ../../sources/viewhelp.tcl:423
 #: ../../sources/viewhelp.tcl:448
@@ -1598,6 +1577,9 @@ msgid ""
 "Unable to find unused character with which to quote preference string.\n"
 "Normally this should not happen."
 msgstr ""
+"Não é possível encontrar o caractere não usado, com o qual cota-se a "
+"'string' de preferência.\n"
+"Normalmente isto não deveria acontecer."
 
 #: ../../sources/pwsafe/pwsafe-db.tcl:364
 #, tcl-format
@@ -1616,7 +1598,7 @@ msgstr "número esperado para valor, mas dado %s"
 #: ../../sources/pwsafe/pwsafe-db.tcl:425
 #, tcl-format
 msgid "end delimiter '%s' not found in saved DB preference"
-msgstr ""
+msgstr "delimitador final '%s' não encontrado na preferência BD salva"
 
 #: ../../sources/pwsafe/pwsafe-db.tcl:430
 msgid "premature end of string value"
@@ -1625,17 +1607,16 @@ msgstr "fim prematuro do valor da string"
 #: ../../sources/pwsafe/pwsafe-db.tcl:467
 #: ../../sources/pwsafe/pwsafe-db.tcl:485
 #: ../../sources/pwsafe/pwsafe-db.tcl:504
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "no such preference: %s"
-msgstr "Preferences"
+msgstr "sem tal preferência: %s"
 
 #: ../../sources/pwsafe/pwsafe-db.tcl:525
 #: ../../sources/pwsafe/pwsafe-db.tcl:544
 #: ../../sources/pwsafe/pwsafe-db.tcl:554
 #: ../../sources/pwsafe/pwsafe-db.tcl:573
-#, fuzzy
 msgid "group name can not be empty"
-msgstr "The group name can not be empty."
+msgstr "O nome, do grupo, não pode estar vazio."
 
 #: ../../sources/pwsafe/pwsafe-db.tcl:629
 #: ../../sources/pwsafe/pwsafe-db.tcl:643
@@ -1684,9 +1665,8 @@ msgstr "campo do nome V1 parece suspeito"
 #: ../../sources/pwsafe/pwsafe-v2.tcl:640
 #: ../../sources/pwsafe/pwsafe-v3.tcl:309
 #: ../../sources/pwsafe/pwsafe-v3.tcl:744
-#, fuzzy
 msgid "this object can not be reused"
-msgstr "The root node can not be moved."
+msgstr "este objeto não pode ser reusado"
 
 #: ../../sources/pwsafe/pwsafe-v2.tcl:363
 #: ../../sources/pwsafe/pwsafe-v3.tcl:367
@@ -1695,14 +1675,12 @@ msgstr "fim de arquivo enquanto estava-se lendo o cabeçalho"
 
 #: ../../sources/pwsafe/pwsafe-v2.tcl:373
 #: ../../sources/pwsafe/pwsafe-v3.tcl:395
-#, fuzzy
 msgid "wrong password"
-msgstr "Wrong Password"
+msgstr "senha errada"
 
 #: ../../sources/pwsafe/pwsafe-v3.tcl:61
-#, fuzzy
 msgid "EOF while reading field"
-msgstr "Error while saving RC-File"
+msgstr "EOF ao ler o campo"
 
 #: ../../sources/pwsafe/pwsafe-v3.tcl:65
 msgid "less than 16 bytes remaining for first block"

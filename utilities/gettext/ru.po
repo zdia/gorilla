@@ -1,9 +1,9 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: Gorilla 1.5.3.6\n"
+"Project-Id-Version: Gorilla 1.5.3.7\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-01-14 19:38+0100\n"
-"PO-Revision-Date: 2011-11-25 22:22+0800\n"
+"PO-Revision-Date: 2013-01-18 23:58+0800\n"
 "Last-Translator: Evgenii Terechkov <evg@Aaltlinux.org>\n"
 "Language-Team: Russian <ru@li.org>\n"
 "Language: Russian\n"
@@ -183,7 +183,7 @@ msgstr "Лицензия"
 
 #: ../../sources/gorilla.tcl:487
 msgid "Look for Update"
-msgstr ""
+msgstr "Проверить обновления"
 
 #: ../../sources/gorilla.tcl:489 ../../sources/gorilla.tcl:524
 msgid "About"
@@ -262,10 +262,8 @@ msgstr ""
 "Выберите БД и введите её пароль. Нажмите \"Новая\" для создания новой БД."
 
 #: ../../sources/gorilla.tcl:1311
-#, fuzzy
 msgid "Select a database, and enter its password."
-msgstr ""
-"Выберите БД и введите её пароль. Нажмите \"Новая\" для создания новой БД."
+msgstr "Выберите БД и введите её пароль."
 
 #: ../../sources/gorilla.tcl:1378
 msgid "No File"
@@ -276,19 +274,18 @@ msgid "Please select a password database."
 msgstr "Пожалуйста, выберите БД паролей."
 
 #: ../../sources/gorilla.tcl:1394
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "The password database %s can not be read."
-msgstr "БД паролей %s не существует или не может быть прочитана."
+msgstr "БД паролей %s не может быть прочитана."
 
 #: ../../sources/gorilla.tcl:1396
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "The password database %s does not exist."
-msgstr "БД паролей %s не существует или не может быть прочитана."
+msgstr "БД паролей %s не существует."
 
 #: ../../sources/gorilla.tcl:1399
-#, fuzzy
 msgid "Error Accessing File"
-msgstr "Ошибка сохранения RC-файла"
+msgstr "Ошибка доступа к файлу"
 
 #: ../../sources/gorilla.tcl:1404
 msgid "Please be patient. Verifying password ..."
@@ -671,30 +668,30 @@ msgid "Merging (%d %% done)"
 msgstr "Объединение (выполнено %d %%)"
 
 #: ../../sources/gorilla.tcl:4021
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Conflict for login %s"
-msgstr "Конфликт %d"
+msgstr "Конфликт логина %s"
 
 #: ../../sources/gorilla.tcl:4023 ../../sources/gorilla.tcl:4043
 #: ../../sources/gorilla.tcl:4052
 #, tcl-format
 msgid "(in group %s)"
-msgstr ""
+msgstr "(в группе %s)"
 
 #: ../../sources/gorilla.tcl:4025
 #, tcl-format
 msgid "%s"
-msgstr ""
+msgstr "%s"
 
 #: ../../sources/gorilla.tcl:4041
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Added login %s"
-msgstr "Добавить логин"
+msgstr "Добавлен логин %s"
 
 #: ../../sources/gorilla.tcl:4050
 #, tcl-format
 msgid "Identical login %s"
-msgstr ""
+msgstr "Идентичный логин %s"
 
 #: ../../sources/gorilla.tcl:4071
 msgid "login"
@@ -740,9 +737,8 @@ msgid "Close"
 msgstr "Закрыть"
 
 #: ../../sources/gorilla.tcl:4180
-#, fuzzy
 msgid "Conflicts"
-msgstr "конфликты"
+msgstr "Конфликты"
 
 #: ../../sources/gorilla.tcl:4270
 msgid "Warning: Can not save to"
@@ -880,7 +876,7 @@ msgstr "Добро пожаловать назад."
 
 #: ../../sources/gorilla.tcl:5097
 msgid "Database Locked (with unsaved changes)"
-msgstr ""
+msgstr "БД заблокирована (НЕ сохранена)"
 
 #: ../../sources/gorilla.tcl:5099
 msgid "Database Locked"
@@ -1291,14 +1287,14 @@ msgid "Spanish translation by %s"
 msgstr "Испанский перевод: %s"
 
 #: ../../sources/gorilla.tcl:6773
-#, fuzzy, tcl-format
+#, tcl-format
 msgid "Portuguese translation by %s"
-msgstr "Французский перевод: %s"
+msgstr "Португальский перевод: %s"
 
 #: ../../sources/gorilla.tcl:6776
 #, tcl-format
 msgid "Using %s sha256 extension."
-msgstr ""
+msgstr "Используется sha256 расширение %s"
 
 #: ../../sources/gorilla.tcl:6793
 msgid "About Password Gorilla"
@@ -1398,30 +1394,29 @@ msgid "A selection is required for:"
 msgstr "Выделение требуется для:"
 
 #: ../../sources/gorilla.tcl:8820
-#, fuzzy
 msgid "Http Error"
-msgstr "Ошибка"
+msgstr "Ошибка http"
 
 #: ../../sources/gorilla.tcl:8831
 #, tcl-format
 msgid "Downloading %s: "
-msgstr ""
+msgstr "Загрузка %s: "
 
 #: ../../sources/gorilla.tcl:8845
 msgid "Http error"
-msgstr ""
+msgstr "Ошибка http"
 
 #: ../../sources/gorilla.tcl:8853
 msgid "Download Error"
-msgstr ""
+msgstr "Ошибка загрузки"
 
 #: ../../sources/gorilla.tcl:8853
 msgid "Downloaded File has wrong size."
-msgstr ""
+msgstr "Загруженный файл имеет неверный размер."
 
 #: ../../sources/gorilla.tcl:8857
 msgid "Download finished"
-msgstr ""
+msgstr "Загрузка завершена"
 
 #: ../../sources/gorilla.tcl:8858
 #, tcl-format
@@ -1429,44 +1424,46 @@ msgid ""
 "The new version was successfully downloaded as\n"
 "%s."
 msgstr ""
+"Новая версия загружена как\n"
+"%s."
 
 #: ../../sources/gorilla.tcl:8886
 msgid "Unknown windowing system"
-msgstr ""
+msgstr "Неизвестная оконная система"
 
 #: ../../sources/gorilla.tcl:8893
 msgid "Connection error"
-msgstr ""
+msgstr "Ошибка соединения"
 
 #: ../../sources/gorilla.tcl:8898
 msgid "No new version available"
-msgstr ""
+msgstr "Новых версий нет"
 
 #: ../../sources/gorilla.tcl:8903
 #, tcl-format
 msgid "You are running version %s."
-msgstr ""
+msgstr "Текущая версия %s."
 
 #: ../../sources/gorilla.tcl:8905
 #, tcl-format
 msgid "There is a new version %s for %s."
-msgstr ""
+msgstr "Есть новая версия %s для %s."
 
 #: ../../sources/gorilla.tcl:8906
 msgid "Shall I download the new version?"
-msgstr ""
+msgstr "Загрузить новую версию?"
 
 #: ../../sources/gorilla.tcl:8910
 msgid "New version available"
-msgstr ""
+msgstr "Доступна новая версия"
 
 #: ../../sources/gorilla.tcl:8910
 msgid "Executable"
-msgstr ""
+msgstr "Исполнимый"
 
 #: ../../sources/gorilla.tcl:8910
 msgid "Sourcecode"
-msgstr ""
+msgstr "Исходный код"
 
 #: ../../sources/viewhelp.tcl:118 ../../sources/viewhelp.tcl:423
 #: ../../sources/viewhelp.tcl:448
@@ -1500,7 +1497,7 @@ msgstr "Индекс"
 
 #: ../../sources/viewhelp.tcl:229
 msgid "Table of Contents"
-msgstr ""
+msgstr "Содержимое"
 
 #: ../../sources/viewhelp.tcl:345
 msgid "Search!"
@@ -1511,6 +1508,8 @@ msgid ""
 "Unable to find unused character with which to quote preference string.\n"
 "Normally this should not happen."
 msgstr ""
+"Не получается найти неиспользованный символ для экранирования строки настроект.\n"
+"Этого не должно было случиться."
 
 #: ../../sources/pwsafe/pwsafe-db.tcl:364
 #, tcl-format
@@ -1529,7 +1528,7 @@ msgstr "ожидалась цифра, а получено %s"
 #: ../../sources/pwsafe/pwsafe-db.tcl:425
 #, tcl-format
 msgid "end delimiter '%s' not found in saved DB preference"
-msgstr ""
+msgstr "признак конца строки '%s' не найден в настройках БД"
 
 #: ../../sources/pwsafe/pwsafe-db.tcl:430
 msgid "premature end of string value"
@@ -1728,3 +1727,4 @@ msgstr "неверная версия %s"
 
 #~ msgid "Please select an entry in the tree to move."
 #~ msgstr "Please select an entry in the tree to move."
+
