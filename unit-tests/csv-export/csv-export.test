@@ -56,7 +56,7 @@ namespace eval ::gorilla::test {
 						return [viewFile testexport.csv ./]
 					} \
     -cleanup { set ::DEBUG(CSVEXPORT) 0 
-               array get ::gorilla::preference $prefback } \
+               array set ::gorilla::preference $prefback } \
     -result [viewFile normexport.csv ./]
 
 	# global cleanup
