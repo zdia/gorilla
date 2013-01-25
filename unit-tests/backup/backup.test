@@ -36,25 +36,25 @@ namespace eval ::gorilla::test {
 	# ----------------
 
 	# perform the backup test into a temporary directory
-        set testbackupdir [ expr { rand() } ]
-        file mkdir $testbackupdir
+	set testbackupdir [ expr { rand() } ]
+	file mkdir $testbackupdir
 
 	test backup-1.1 {General test with timestamp} \
-    -setup {
+		-setup {
 			set prefback [ array get ::gorilla::preference ]
 			set ::gorilla::preference(keepBackupFile) 1
 			set ::gorilla::preference(timeStampBackup) 1 
-                        set ::gorilla::preference(backupPath) $testbackupdir } \
-    -body { gorilla::Save } \
-    -cleanup { array set ::gorilla::preference $prefback } \
-    -result GORILLA_OK
+			set ::gorilla::preference(backupPath) $testbackupdir } \
+		-body { gorilla::Save } \
+		-cleanup { array set ::gorilla::preference $prefback } \
+		-result GORILLA_OK
 
 	test backup-1.2 {Timestamp check} \
-    -body {
-      return [ llength [ glob [ file join $testbackupdir testdb-????-??-??-??-??-??.psafe3 ] ] ] } \
-    -cleanup {
-      file delete -force $testbackupdir } \
-    -result 1
+		-body {
+			return [ llength [ glob [ file join $testbackupdir testdb-????-??-??-??-??-??.psafe3 ] ] ] } \
+		-cleanup {
+			file delete -force $testbackupdir } \
+		-result 1
 
 # The following errors are caught in procedure gorilla::SaveBackup:
 # ERROR-SaveBackup-no-directory

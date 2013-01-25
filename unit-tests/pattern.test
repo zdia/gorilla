@@ -41,10 +41,10 @@ namespace eval ::gorilla::test {
 	# --------------------
 
 	# test $testname-1.2 {File Open Error} \
-    # -setup { set ::DEBUG(CSVIMPORT) 1 } \
-    # -body { gorilla::Import unknown.csv } \
-    # -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
-    # -result GORILLA_OPENERROR
+	# -setup { set ::DEBUG(CSVIMPORT) 1 } \
+	# -body { gorilla::Import unknown.csv } \
+	# -cleanup { set ::DEBUG(CSVIMPORT) 0 } \
+	# -result GORILLA_OPENERROR
 
 	cleanupTests
 	
