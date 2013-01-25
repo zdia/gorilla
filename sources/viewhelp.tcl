@@ -113,7 +113,7 @@ proc ::Help::Help {{title ""}} {
 	variable aliasList
 
 	mclocale $locale
-	mcload [file join $::gorillaDir msgs help]
+	mcload [file join $::gorilla::Dir msgs help]
 
 	set aliasList [list [mc Back] [mc Search] [mc Previous] [mc Next] [mc History] [mc Index] ]
 	set fname [file join $dir help.txt]
