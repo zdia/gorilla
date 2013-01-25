@@ -44,7 +44,7 @@ namespace eval ::gorilla {
 	}
 }
 
-set ::gorillaPicsDir [ file join $::gorillaDir pics ]
+set ::gorillaPicsDir [ file join $::gorilla::Dir pics ]
 
 # ----------------------------------------------------------------------
 # Make sure that our prerequisite packages are available. Don't want
