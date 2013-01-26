@@ -33,7 +33,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 package provide app-gorilla 1.0
 
 namespace eval ::gorilla {
-	variable Version {$Revision: 1.5.3.6.7 $}
+	variable Version {$Revision: 1.5.3.7 $}
 
 	# find the location of the install directory even when "executing" a symlink
 	# pointing to the gorilla.tcl file
@@ -42,9 +42,9 @@ namespace eval ::gorilla {
 	} else {
 		variable Dir [ file normalize [ file dirname [ info script ] ] ]
 	}
-}
 
-set ::gorillaPicsDir [ file join $::gorilla::Dir pics ]
+	set ::gorilla::PicsDir [ file join $::gorilla::Dir pics ]
+}
 
 # ----------------------------------------------------------------------
 # Make sure that our prerequisite packages are available. Don't want
@@ -7283,17 +7283,17 @@ proc gorilla::getAvailableLanguages {  } {
 # ----------------------------------------------------------------------
 #
 
-set ::gorilla::images(application) [image create photo -file [file join $::gorillaPicsDir application.gif]]
+set ::gorilla::images(application) [image create photo -file [file join $::gorilla::PicsDir application.gif]]
 
-set ::gorilla::images(browse) [image create photo -file [file join $::gorillaPicsDir browse.gif]]
+set ::gorilla::images(browse) [image create photo -file [file join $::gorilla::PicsDir browse.gif]]
 
-set ::gorilla::images(group) [image create photo -file [file join $::gorillaPicsDir group.gif]]
+set ::gorilla::images(group) [image create photo -file [file join $::gorilla::PicsDir group.gif]]
 
-set ::gorilla::images(login) [image create photo -file [file join $::gorillaPicsDir login.gif]]
+set ::gorilla::images(login) [image create photo -file [file join $::gorilla::PicsDir login.gif]]
 
 # vgl. auch Quelle: http://www.clipart-kiste.de/archiv/Tiere/Affen/affe_08.gif
 
-set ::gorilla::images(splash) [image create photo -file [file join $::gorillaPicsDir splash.gif]]
+set ::gorilla::images(splash) [image create photo -file [file join $::gorilla::PicsDir splash.gif]]
 
 proc gorilla::CheckDefaultExtension {name extension} {
 	set res [split $name .]
@@ -8448,7 +8448,7 @@ proc gorilla::versionGet { platform } {
   # platform - The user's actual Tk windowingsystem
   # returns list: version url || 0 errormessage
   
-  set fh [open $::gorillaDir/downloads.txt r]
+  set fh [open $::gorilla::Dir/downloads.txt r]
   set data [read $fh]
   close $fh
   
@@ -8598,7 +8598,7 @@ proc gorilla::versionLookup {} {
     return
   } 
   
-  set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy actual ; set actual ] ]\n\n"
+  set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy actual ; set actual ] ]\n\n"
 
   append message "[mc "There is a new version %s for %s." $version $platform]"
   append message "\n\n[mc "Shall I download the new version?"]"
@@ -8672,7 +8672,7 @@ if {$::gorilla::init == 0} {
 					# Need ruff! and struct::list from tcllib - 
           # Ruff! is installed under /utilities/ruff
 
-          lappend auto_path "$::gorillaDir/../utilities/ruff"
+          lappend auto_path "$::gorilla::Dir/../utilities/ruff"
 
 					foreach pkg { ruff struct::list } {
 						if { [ catch { package require $pkg } ] } {
@@ -8686,7 +8686,7 @@ if {$::gorilla::init == 0} {
           set nslist [ ::struct::list filterfor z [ namespace children :: ] \
           { ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
           
-          if { [ catch { ::ruff::document_namespaces html $nslist -output $::gorillaDir/../utilities/gorilladoc.html -recurse true } oops ] } {
+          if { [ catch { ::ruff::document_namespaces html $nslist -output $::gorilla::Dir/../utilities/gorilladoc.html -recurse true } oops ] } {
             puts stderr "Could not generate documentation - $oops."
             exit
           }
@@ -8694,7 +8694,7 @@ if {$::gorilla::init == 0} {
 					# cleanup after ourselves
 					unset -nocomplain nslist pkg z 
           
-          puts "Documentation file $::gorillaDir/../utilities/gorilladoc.html has been successfully generated."
+          puts "Documentation file $::gorilla::Dir/../utilities/gorilladoc.html has been successfully generated."
           exit
 				}
 			--norc -
