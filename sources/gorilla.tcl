@@ -483,7 +483,7 @@ proc gorilla::InitGui {} {
 				            separator                             ""   ""                                 ""
 				            "[ mc "Change Master Password" ] ..." open gorilla::ChangePassword            ""
 				            separator                             ""   ""                                 ""
-				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              ""
+				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              $menu_meta+L
 				           }
 
 		"[ mc Help ]" help {"[ mc Help ] ..." mac  gorilla::Help    ""
@@ -634,7 +634,9 @@ proc gorilla::InitGui {} {
 	bind . <$meta-a> {.mbar.login invoke 0}
 	bind . <$meta-e> {.mbar.login invoke 1}
 	bind . <$meta-v> {.mbar.login invoke 2}
-	
+
+	bind . <$meta-l> {.mbar.security invoke 5}
+
 	# bind . <$meta-L> "gorilla::Reload"
 	# bind . <$meta-R> "gorilla::Refresh"
 	# bind . <$meta-C> "gorilla::ToggleConsole"
