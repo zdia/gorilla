@@ -5930,7 +5930,7 @@ proc gorilla::PreferencesDialog {} {
 			-variable ::gorilla::prefTemp(exportIncludeNotes) 
 
 		ttk::frame $epf.fs
-		ttk::label $epf.fs.l -text [mc "Field separator"] -width 16 -anchor w
+		ttk::label $epf.fs.l -text [mc "Field separator"] -width 20 -anchor w
 		spinbox $epf.fs.e \
 			-values [list , \; :] \
 			-textvariable ::gorilla::prefTemp(exportFieldSeparator) \
