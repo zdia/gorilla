@@ -43,7 +43,7 @@ namespace eval ::gorilla {
 		variable Dir [ file normalize [ file dirname [ info script ] ] ]
 	}
 
-	set ::gorilla::PicsDir [ file join $::gorilla::Dir pics ]
+	variable PicsDir [ file join $::gorilla::Dir pics ]
 }
 
 # ----------------------------------------------------------------------
