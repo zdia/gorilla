@@ -43,7 +43,7 @@ namespace eval ::gorilla {
 		variable Dir [ file normalize [ file dirname [ info script ] ] ]
 	}
 
-	set ::gorilla::PicsDir [ file join $::gorilla::Dir pics ]
+	variable PicsDir [ file join $::gorilla::Dir pics ]
 }
 
 # ----------------------------------------------------------------------
@@ -267,6 +267,9 @@ foreach package {Itcl pwsafe tooltip PWGprogress} {
 
 catch {package require uuid}
 
+# Detect whether or not the file containing download sites exists
+set ::gorilla::hasDownloadsFile [ file exists [ file join $::gorilla::Dir downloads.txt ] ]
+
 #
 # ----------------------------------------------------------------------
 # Prepare and hide main window
@@ -488,7 +491,7 @@ proc gorilla::InitGui {} {
 
 		"[ mc Help ]" help {"[ mc Help ] ..." mac  gorilla::Help    ""
 				    "[ mc License ] ..."          ""   gorilla::License ""
-				    "[ mc "Look for Update"]"     ""   gorilla::versionLookup ""
+				    "[ mc "Look for Update"]"     dld  gorilla::versionLookup ""
 				    separator                     mac  ""  ""
 				    "[ mc About ] ..."            mac tkAboutDialog ""
 				   }
@@ -4770,6 +4773,10 @@ proc gorilla::UpdateMenu {} {
 	} else {
 		setmenustate $::gorilla::widgets(main) conflict disabled
 	}
+
+    if { ! $::gorilla::hasDownloadsFile } {
+		setmenustate $::gorilla::widgets(main) dld disabled
+    }
 	
 }
 
@@ -6811,7 +6818,7 @@ proc gorilla::About {} {
 		ttk::label $w.copyright \
 			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2013 Zbigniew Diaczyszyn and\n\u00a9 2010-2013 Richard Ellis" \
 			-font {sans 9} -padding {10 0}
-		ttk::label $w.url -text "https:/github.com/zdia/gorilla" -foreground blue \
+		ttk::label $w.url -text "https://github.com/zdia/gorilla" -foreground blue \
 			-font {sans 10}
 
 		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
