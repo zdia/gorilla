@@ -6811,7 +6811,7 @@ proc gorilla::About {} {
 		ttk::label $w.copyright \
 			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2013 Zbigniew Diaczyszyn and\n\u00a9 2010-2013 Richard Ellis" \
 			-font {sans 9} -padding {10 0}
-		ttk::label $w.url -text "https:/github.com/zdia/gorilla" -foreground blue \
+		ttk::label $w.url -text "https://github.com/zdia/gorilla" -foreground blue \
 			-font {sans 10}
 
 		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
