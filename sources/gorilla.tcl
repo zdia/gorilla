@@ -267,6 +267,9 @@ foreach package {Itcl pwsafe tooltip PWGprogress} {
 
 catch {package require uuid}
 
+# Detect whether or not the file containing download sites exists
+set ::gorilla::hasDownloadsFile [ file exists [ file join $::gorilla::Dir downloads.txt ] ]
+
 #
 # ----------------------------------------------------------------------
 # Prepare and hide main window
@@ -488,7 +491,7 @@ proc gorilla::InitGui {} {
 
 		"[ mc Help ]" help {"[ mc Help ] ..." mac  gorilla::Help    ""
 				    "[ mc License ] ..."          ""   gorilla::License ""
-				    "[ mc "Look for Update"]"     ""   gorilla::versionLookup ""
+				    "[ mc "Look for Update"]"     dld  gorilla::versionLookup ""
 				    separator                     mac  ""  ""
 				    "[ mc About ] ..."            mac tkAboutDialog ""
 				   }
@@ -4770,6 +4773,10 @@ proc gorilla::UpdateMenu {} {
 	} else {
 		setmenustate $::gorilla::widgets(main) conflict disabled
 	}
+
+    if { ! $::gorilla::hasDownloadsFile } {
+		setmenustate $::gorilla::widgets(main) dld disabled
+    }
 	
 }
 
