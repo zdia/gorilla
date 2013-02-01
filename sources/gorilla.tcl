@@ -5345,7 +5345,7 @@ proc gorilla::PasswordPolicy {} {
 	}
 
 	set oldSettings [GetDefaultPasswordPolicy]
-	set newSettings [PasswordPolicyDialog "Password Policy" $oldSettings]
+	set newSettings [PasswordPolicyDialog [mc "Password Policy"] $oldSettings]
 
 	if {[llength $newSettings]} {
 		SetDefaultPasswordPolicy $newSettings
@@ -6965,7 +6965,7 @@ proc gorilla::Find {} {
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
-		wm title $top "Find"
+		wm title $top "[mc Find]"
 
 		ttk::frame $top.text -padding [list 10 10]
 		ttk::label $top.text.l -text [mc "Find Text:"] -anchor w -width 10
