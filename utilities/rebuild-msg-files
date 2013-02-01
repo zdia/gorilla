@@ -7,6 +7,7 @@
 # Part of Password Gorilla
 
 # Copyright 2011 - Richard L Ellis
+# Copyright 2013 - Alexandre Raymond
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the Free
@@ -25,51 +26,66 @@
 # A copy of the GNU General Public License may be found in the Password
 # Gorilla sources/ directory, named LICENSE.txt.
 
-# see if we are running from the utilities directory
+# ./rebuild-msg-files [-f] [lang]
 
-if [[ $PWD != ${PWD%%/utilities} ]] ; then
-  POPATH=gettext
-  HELPPATH=help2po
-else
-  echo
-  echo "ERROR - this script must be run from the [gorilla-local-dir]/utilities directory"
-  echo "It is being run from $PWD at present"
-  echo "Unable to continue"
-  echo
-  exit 1
-fi
+POPATH=gettext
+HELPPATH=help2po
+
+cd $(dirname $0)
+if [[ -d ./msgs ]]; then
+    echo
+    echo "ERROR - this script must be run from the [gorilla-local-dir]/utilities directory"
+    echo "It is being run from $PWD at present"
+    echo "Unable to continue"
+    echo
+    exit 1
+fi 
 
 function mk-msg () {
-  local OUTDIR=$1 ; shift
-  for POFILE in "$@" ; do
-    LANG=$( basename $POFILE .po )
-    echo $POFILE LANG=$LANG
-    msgfmt --tcl -l$LANG -d $OUTDIR $POFILE
-  done
+    local OUTDIR=$1 ; shift
+    for POFILE in "$@" ; do
+        LANG=$( basename $POFILE .po )
+        echo $POFILE LANG=$LANG
+        msgfmt --tcl -l$LANG -d $OUTDIR $POFILE
+    done
 }
 
-# create everything in a new temp directory
 
-OUTDIR=$( mktemp -d )
+# Allow in-place refreshes
+if [[ "$1" = "-f" ]]; then
+    OUTDIR=../sources/msgs
+    shift
+else
+    OUTDIR=$( mktemp -d )
+fi
 
-# rebuild translation files
-mk-msg $OUTDIR $POPATH/*.po
+# Specific lang
+TLANG="$1"
+TLANG_POFILES="$(ls $POPATH/${TLANG}*.po 2>/dev/null)"
+TLANG_HELPFILES="$(ls $HELPPATH/${TLANG}*.po 2>/dev/null)"
 
-# rebuild help.txt file
-mkdir $OUTDIR/help
+if [[ ! -z "$TLANG_POFILES" ]]; then
+    # rebuild translation files
+    mk-msg $OUTDIR $TLANG_POFILES
+fi
 
-mk-msg $OUTDIR/help $HELPPATH/*.po
+if [[ ! -z "$TLANG_HELPFILES" ]]; then
+    # rebuild help.txt files
+    mkdir -p $OUTDIR/help
 
-# convert and add DO NOT EDIT header
-./mcset2mcmset.tcl $( find $OUTDIR -type f )
+    mk-msg $OUTDIR/help $TLANG_HELPFILES
+fi
 
-# replace msg files with converted files
-for name in $( find $OUTDIR -name \*conv ) ; do
-  mv -fv $name ${name/.conv}
-done
+if [[ ! -z "$TLANG_POFILES" ]] || [[ ! -z "$TLANG_HELPFILES" ]]; then
+    # convert and add DO NOT EDIT header
+    ./mcset2mcmset.tcl $(find $OUTDIR -type f -name "${TLANG}*.msg")
 
-# done
+    # replace msg files with converted files
+    for name in $( find $OUTDIR -name \*conv ) ; do
+        mv -fv $name ${name/.conv}
+    done
+fi
 
 echo
-echo New msg files have been created in $OUTDIR
+echo "New msg files have been created in $OUTDIR"
 echo

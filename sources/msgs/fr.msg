@@ -7,11 +7,11 @@
 # rebuild-msg-files script.
 #
 #
-# Project-Id-Version: Gorilla 1.5.3.5
+# Project-Id-Version: Gorilla 1.5.3.6.3
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-27 17:31+0100
-# PO-Revision-Date: 2011-11-24 12:28-0500
-# Last-Translator: Benoit Mercier <benoit.mercibe@gmail.com>
+# POT-Creation-Date: 2013-01-14 19:38+0100
+# PO-Revision-Date: 2013-01-31 10:24-0500
+# Last-Translator: Alexandre Raymond <alexandre.j.raymond@gmail.com>
 # Language-Team: French
 # Language: fr
 # MIME-Version: 1.0
@@ -20,119 +20,140 @@
 # Plural-Forms: nplurals=2; plural=(n > 1);
 
 mcmset fr {
-{Need %s} {Besoin %s}
+{Need %s} {A besoin de %s}
 {The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
 
-Error message: %s} {Password Gorilla nécessite le paquet "%s".  Il s'agit probablement d'un problème d'installation car ce fichier fait normalement partie de la distribution de Password Gorilla.
-
-Message d'erreur: %s}
-{Need [Incr Tcl]} {Besoin [Incr Tcl]}
-{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s} {Password Gorilla nécessite l'ajout de l'extension  [incr Tcl] à Tcl.  Veuillez installer le paquet logiciel   [incr Tcl]
-
-Message d'erreur: %s}
-{Need PWSafe} {Besoin PWSafe}
-{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s} {Password Gorilla nécessite le paquet"pwsafe".  Il s'agit probablement d'un problème d'installation car ce paquet fait normalement partie de la distribution de Password Gorilla.
+Error message: %s} {Password Gorilla nécessite le paquet "%s". Il s'agit probablement d'un problème d'installation, car ce fichier fait normalement partie de la distribution de Password Gorilla.
 
 Message d'erreur: %s}
 {Welcome to the Password Gorilla.} {Bienvenue dans Password Gorilla.}
 File Fichier
 New Nouveau
+Open Ouvrir
+Merge Fusionner
 Save Enregistrer
+{Save As} {Enregistrer sous}
 Export Exporter
+Import Importer
 Preferences Préférences
 Exit Quitter
 Edit Édition
 {Copy Username} {Copier le nom d'utilisateur}
 {Copy Password} {Copier le mot de passe}
+{Copy URL} {Copier l'URL}
 {Clear Clipboard} {Vider le presse-papier}
 Find Rechercher
 {Find next} {Rechercher le suivant}
-Login Connexion
-{Add Login} {Ajouter une connexion}
-{Edit Login} {Éditer la connexion}
-{View Login} {Afficher la connexion}
-{Delete Login} {Supprimer la connexion}
+Login Identifiant
+{Add Login} {Ajouter un identifiant}
+{Edit Login} {Modifier l'identifiant}
+{View Login} {Afficher l'identifiant}
+{Delete Login} {Supprimer l'identifiant}
+{Move Login} {Déplacer l'identifiant}
+{Add Group} {Ajouter un groupe}
 {Add Subgroup} {Ajouter un sous-groupe}
 {Rename Group} {Renommer un groupe}
+{Move Group} {Déplacer le groupe}
 {Delete Group} {Supprimer le groupe}
 Security Sécurité
+{Password Policy} {Politique de mots de passe}
+Customize Personnaliser
+{Change Master Password} {Modifier le mot de passe maître}
+{Lock now} {Verrouiller maintenant}
 Help Aide
 License Licence
+{Look for Update} {Vérifier les mises à jour}
 About {À propos}
 {Open URL} {Ouvrir l'URL}
 {Copy Username to Clipboard} {Copier le nom d'utilisateur dans le presse-papier}
 {Copy Password to Clipboard} {Copier le mot de passe dans le presse-papier}
 {Copy URL to Clipboard} {Copier l'URL dans le presse-papier}
-{Move Login to:} {Déplacer la connexion vers:}
+{Move Login to:} {Déplacer l'identifiant vers:}
 {Save changes?} {Enregistrer les modifications?}
-{The current password database is modified. Do you want to save the current database before creating the new database?} {La base de données actuelle des mots de passe a été modifiée.  Souhaitez-vous enregistrer cette version modifiée avant d'en créer une nouvelle?}
+{The current password database is modified. Do you want to save the current database before creating the new database?} {La base de données d'identifiants courante a été modifiée. Souhaitez-vous enregistrer cette version modifiée avant d'en créer une nouvelle?}
 {New Database: Choose Master Password} {Nouvelle base de données: sélectionner un mot de passe maître}
 {Password Gorilla - <New Database>} {Password Grilla - <Nouvelle base de données>}
 {<New Database>} {<Nouvelle base de données>}
-{Add logins using <Add Login> in the <Login> menu.} {Ajouter des connexions en utilisant <Ajouter une connexion>  depuis le menu <Connexion>}
+{Add logins using <Add Login> in the <Login> menu.} {Ajouter des identifiants en utilisant <Ajouter un identifiant> depuis le menu <Identifiant>}
 Database: {Base de données:}
 Password: {Mot de passe:}
 OK OK
-{Select a database, and enter its password. Click "New" to create a new database.} {Sélectionnez une base de données et introduisez son mot de passe.  CLiquez sur "Nouveau" pour créer une nouvelle base de données.}
-{The password database %s does not exist or can not be read.} {La base de données des mots de passe %s n'existe pas ou ne peut être lue.}
+{Select a database, and enter its password. Click "New" to create a new database.} {Sélectionnez une base de données et saisissez son mot de passe.
+Cliquez sur "Nouveau" pour créer une nouvelle base de données.}
+{Select a database, and enter its password.} {Sélectionnez une base de données et saisissez son mot de passe.}
+{No File} {Aucun fichier}
+{Please select a password database.} {Sélectionner un fichier de base de données d'identifiants.}
+{The password database %s can not be read.} {La base de données d'identifiants %s ne peut être lue.}
+{The password database %s does not exist.} {La base de données d'identifiants %s n'existe pas.}
+{Error Accessing File} {Erreur d'accès au fichier}
 {Please be patient. Verifying password ...} {Veuillez patienter pendant la vérification du mot de passe...}
 {Opening ... %d %%} {Ouverture... %d %%}
 {Error Opening Database} {Erreur lors de l'ouverture de la base de données}
-{Browse for a password database ...} {Sélectionner un fichier de base de données de mot de passe...}
-{Open Password Database} {Ouvrir la base de données des mots de passe}
-{Password database %s loaded.} {La base de données des mots de passe %s a été chargée.}
-{Add/Edit/View Login} {Ajout/Modification/Affichage de connexion}
+{Can not open password database "%s": %s} {Impossible d'ouvrir la base de données "%s": %s}
+{Browse for a password database ...} {Sélectionner un fichier de base de données d'identifiants...}
+{The current password database is modified. Do you want to save the database?
+ "Yes" saves the database, and continues to the "Open File" dialog.
+ "No" discards all changes, and continues to the "Open File" dialog.
+ "Cancel" returns to the main menu.} {La base de données courante a été modifiée. Souhaitez-vous enregistrer les modifications? Cliquer sur <Oui> pour enregistrer la base de données et quitter. Cliquer sur <Non> pour annuler les modifications et quitter. Cliquer sur <Annuler> pour revenir au menu principal.}
+{Open Password Database} {Ouvrir la base de données d'identifiants}
+{Password database %s loaded.} {La base de données d'identifiants %s a été chargée.}
+{Add/Edit/View Login} {Ajouter/Modifier/Afficher un identifiant}
 Group Groupe
 Title Titre
 URL URL
 Username {Nom d'utilisateur}
 Password {Mot de passe}
 Notes Notes
+{Last Password Change} {Dernière modification du mot de passe}
+{Last Modified} {Dernière modification}
 Cancel Annuler
-{Show Password} {Afficher le mot de passe}
-{Generate Password} {Générer un mot de passe}
-{Override Password Policy} {Outrepasser la politique de mot de passe globale}
+{Show Password} {Afficher m. passe}
+{Generate Password} {Générer m. passe}
+{Override Password Policy} {Outrepasser politique de mots de passe}
 {Password Length} {Longueur du mot de passe}
 {Hide Password} {Cacher le mot de passe}
-{Password policy settings invalid.} {Paramètres de politique de mot de passe invalide. }
+{Password policy settings invalid.} {Paramètres de politique de mots de passe invalides.}
 <unknown> <inconnu>
-{This login must have a title, url or username.} {Cette connexion doit disposer d'un titre, d'une URL ou d'un nom d'utilisateur.}
-{This login's group name is not valid.} {Le nom de ce groupe de connexion est invalide.}
-{New login added.} {Nouvelle connexion ajoutée.}
-{Login modified.} {Connexion modifiée.}
-{Group entries may be renamed, not edited.} {Les groupes peuvent être renommés, pas édités.}
-{Move %s} {Déplace %s}
+{This login must have a title, url or username.} {Cet identifiant doit disposer d'un titre, d'une URL ou d'un nom d'utilisateur.}
+{This login's group name is not valid.} {Le nom de ce groupe est invalide.}
+{New login added.} {Nouvel identifiant ajouté.}
+{Login modified.} {Identifiant modifié.}
+{Group entries may be renamed, not edited.} {Les groupes peuvent être renommés mais pas modifiés.}
+{Move %s} {Déplacer %s}
 {Destination Group with format <Group.Subgroup> :} {Groupe destinataire au format <groupe.sous-groupe> :}
 {Invalid Group Name} {Nom de groupe invalide}
 {The group name can not be empty.} {Le nom de groupe ne peut être vide.}
-{The name of the parent group is invalid.} {Le nom du groupe parent est invalide}
+{The name of the parent group is invalid.} {Le nom du groupe parent est invalide.}
+{Moving of %s canceled.} {Ajout du groupe %s annulé.}
 {%s moved.} {%s déplacé.}
-{Are you sure that you want to delete this login?} {Êtes-vous certain de vouloir supprimer cette connexion?}
-{Login deleted.} {Connexion supprimée.}
+{Are you sure that you want to delete this login?} {Êtes-vous certain de vouloir supprimer cet identifiant?}
+{Login deleted.} {Identifiant supprimé.}
 {No Database} {Pas de base de données.}
+{Please create a new database, or open an existing database first.} {Veuillez d'abord créer une nouvelle base de données ou en ouvrir une existante.}
 {Add a new Group} {Ajouter un nouveau groupe}
 Parent: Parent:
-{New Group Name:} {Nouveau nom de groupe:}
+{New Group Name:} {Nom du nouveau groupe:}
 {Addition of group canceled.} {Ajout du groupe annulé.}
 {New group added.} {Nouveau groupe ajouté.}
-{Root Node Can Not Be Moved} {L'élément racine ne peut être déplacé.}
+{Root Node Can Not Be Moved} {L'élément racine ne peut être déplacé}
 {The root node can not be moved.} {L'élément racine ne peut être déplacé.}
-{Can Not Move Node} {Cet élément ne peut être déplacé.}
+{Can Not Move Node} {Cet élément ne peut être déplacé}
 {Can not move a group to a subgroup of itself.} {Un groupe ne peut pas être déplacé dans l'un de ses sous-groupes.}
+{Can Not Delete Root} {L'élément racine ne peut être supprimé.}
+{The root node can not be deleted.} {L'élément racine ne peut être supprimé.}
 {Are you sure that you want to delete group and all its contents?} {Êtes-vous certain de vouloir supprimer ce groupe ainsi que tout son contenu? }
 {Group deleted.} {Groupe supprimé.}
+{Can Not Rename Root} {Cet élément ne peut être renommé.}
+{The root node can not be renamed.} {L'élément racine ne peut être renommé.}
 Name Nom
+{The name of the group's parent node is invalid.} {Le nom du groupe parent est invalide.}
 {Group name unchanged.} {Nom du groupe inchangé.}
 {Group renamed.} {Groupe renommé.}
-{Export Security Warning} {Exporter les avertissements de sécurité}
-{You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {Vous êtes sur le point d'exporter la base de données de mots de passe dans un fichier texte.  Ce fichier ne sera pas encrypté et son accès ne sera pas  protégé par un mot de passe.  Toute personne pouvant accéder à ce fichier aura accès à vos noms d'utilisateur et mots de passe..  Veuillez vous assurer de conserver ce fichier dans un endroit sécurisé.  Voulez-vous continuer? }
+{Export Security Warning} {Avertissement de sécurité sur l'export}
+{You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {Vous êtes sur le point d'exporter la base de données de mots de passe dans un fichier texte. Ce fichier ne sera pas encrypté et son accès ne sera pas protégé par un mot de passe. Toute personne pouvant accéder à ce fichier aura accès à vos noms d'utilisateur et mots de passe... Veuillez vous assurer de conserver ce fichier dans un endroit sécurisé. Voulez-vous continuer? }
 {Export password database as text ...} {Exporter la base de données de mots de passe dans un fichier texte...}
 {Error Exporting Database} {Erreur lors de l'exportation de la base de données}
-{Failed to export password database to} {Échec de l'exportation de la base de données des mots de passe vers}
+{Failed to export password database to} {Échec de l'exportation de la base de données d'identifiants vers}
 {Exporting ...} Exportation...
 {Database exported.} {Base de données exportée.}
 {Import CSV datafile} {Importer un fichier de données CSV}
@@ -146,19 +167,26 @@ the help for details on how to format import
 CSV data files for Password Gorilla.} {Aucune donnée valide à importer n'a été trouvée. 
 Veuillez consulter l'aide pour plus de détails sur la
 manière de formatter les fichier CSV pour Password Gorilla.}
-{Error, undefined data columns} {Erreur, colonnes de données indéfinies.}
+{Error, undefined data columns} {Erreur, colonnes de données indéfinies}
 {The following data items are not recognized as import data items.
 Unable to continue.} {Les données suivantes ne sont pas reconnues comme des données importables.
 Impossible de continuer.}
 {Some records from the CSV file were not imported.
 Do you wish to save a log of skipped records?} {Certains enregistrements du fichier CSV n'ont pas été importés.
 Souhaitez-vous conserver une trace dans un fichier de ces enregistrements non importés?}
-{Some records skipped during import} {Certains enregistrements ont été omis pendant l'inportation}
+{Some records skipped during import} {Certains enregistrements ont été omis pendant l'importation}
 {Enter a file into which to save the log} {Entrez le nom d'un fichier dans lequel sauvegarder la trace}
 {record(s) successfully imported.} {enregistrement(s) importé(s) avec succès.}
-{Merge Password Database} {Fusionner les base de données de mot de passe}
-Merging Fusionner
-{Merging (%d %% done)} {Fusion (%d %% effectué)}
+{Merge Password Database} {Fusionner les bases de données d'identifiants}
+Merging Fusionne
+{Merging (%d %% done)} {Fusionne (%d %% effectué)}
+{Conflict for login %s} {Conflit pour l'identifiant %s}
+{(in group %s)} {(dans le groupe %s)}
+%s %s
+{Added login %s} {A ajouté l'identifiant %s}
+{Identical login %s} {Identifiant doublon %s}
+login identifiant
+logins identifiants
 conflict conflit
 conflicts conflits
 {Merged %s;
@@ -168,106 +196,123 @@ conflicts conflits
 {Do you want to view a detailed report?} {Souhaitez-vous visualiser un rapport détaillé?}
 {Resolve Conflicts} {Résoudre les conflits}
 Close Fermer
+Conflicts Conflits
 {Warning: Can not save to} {Attention: impossible de sauver dans}
-{because the file permissions are set for read-only access.} {car le fichier est en mode lecture seule.}
+{because the file permissions are set for read-only access.} {car le fichier est en mode lecture-seule.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Veuillez changer les droits d'accès du fichier en mode lecture/écriture et cliquer ensuite sur le bouton 'Réessayer' ou cliquer sur 'Annuler' et utiliser 'Fichier'->'Enregistrer sous' pour enregistrer dans un fichier différent.}
-{Warning: Read-only password file} {Attention: le fichier des mots de passe est en mode lecture seule}
+{Warning: Read-only password file} {Attention: la base de données d'identifiants est en mode lecture-seule}
 {Saving ... %d %%} {Enregistrement... %d %% }
-{Password database saved.} {Base de données des mots de passe sauvegardée.}
+{Error Saving Backup of Database} {Erreur lors de l'enregistrement de la base de données}
+{Failed to save password database as
+%s: %s} {Échec de l'enregistrement de la base de données d'identifiants dans
+%s: %s}
+{Password database saved with backup copy.} {Base de données d'identifiants enregistrée avec copie de sauvegarde.}
+{Password database saved.} {Base de données d'identifiants sauvegardée.}
 {Nothing To Save} {Rien à sauvegarder}
-{Save password database ...} {Enregistrement de la base de données des mots de passe...}
-{Error Saving Database} {Erreur lors de l'enregistrement de la base de données.}
-{Failed to save password database as "%s": %s} {Échec de l'enregistrement de la base de données des mots de passe dans "%s": %s}
+{No password database to save.} {Base de données d'identifiants sauvegardée.}
+{Save password database ...} {Enregistrement de la base de données d'identifiants...}
+{Error Saving Database} {Erreur lors de l'enregistrement de la base de données}
+{Failed to save password database as "%s": %s} {Échec de l'enregistrement de la base de données des identifiants dans "%s": %s}
+{Password database saved with backup copy} {Base de données d'identifiants enregistrée avec copie de sauvegarde}
 {No valid directory. - 
 Please define a valid backup directory
 in the Preferences menu.} {Dossier invalide. - 
 Veuillez sélectionner un dossier de sauvegarde valide
 dans le menu Préférences.}
-{The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {La base de données courante a été modifiée.  Souhaitez-vous enregistrer les modifications? Cliquer sur <Oui> pour enregistrer la base de données et quitter.  Cliquer sur <Non> pour annuler les modifications et quitter. Cliquer sur <Annuler> pour retourner au menu principal.}
+{Unknown file. - 
+Please select a valid database filename.} {Fichier inconnu. - 
+Sélectionner un fichier de base de données d'identifiants.}
+{Failed to make backup copy of password
+database as %s: 
+%s} {Échec lors de la création d'une copie de sauvegarde de la base de données d'identifiants dans %s: 
+%s}
+{The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {La base de données courante a été modifiée. Souhaitez-vous enregistrer les modifications? Cliquer sur <Oui> pour enregistrer la base de données et quitter. Cliquer sur <Non> pour annuler les modifications et quitter. Cliquer sur <Annuler> pour revenir au menu principal.}
 {Clipboard cleared.} {Presse-papier vidé.}
-{Database Locked} {Base de données verrouillée}
-{Enter the Master Password.} {Introduire le mot de passe maître}
+{Enter the Master Password.} {Saisissez le mot de passe maître}
 {error: %s} {erreur: %s}
 {Wrong Password} {Mot de passe incorrect}
 {That password is not correct.} {Le mot de passe est incorrect.}
 {Welcome back.} Bienvenue.
+{Database Locked (with unsaved changes)} {Base de données verrouillée (avec modifications en cours)}
+{Database Locked} {Base de données verrouillée}
 Confirm: Confirmer:
-{Passwords Do Not Match} {Les mots de passe ne correspondent pas.}
+{Passwords Do Not Match} {Les mots de passe ne correspondent pas}
 {The confirmed password does not match.} {Le mot de passe de confirmation ne correspond pas au mot de passe initial.}
-{Password policy changed.} {Politique de mot de passe modifiée.}
-{Use lowercase letters} {Utilise des lettres minuscules}
-{Use UPPERCASE letters} {Utilise des lettres MAJUSCULES}
-{Use digits} {Utilise des chiffres}
-{Use hexadecimal digits} {Utilise des chiffres hexadécimaux}
-{Use symbols (%, $, @, #, etc.)} {Utilise des symboles (%, $, @, #, etc.)}
-{Use easy to read characters only (e.g. no "0" or "O")} {Utilise uniquement des caractères faciles à lire (e.g. no "0" or "O")}
+{Password policy changed.} {Politique de mots de passe modifiée.}
+{Use lowercase letters} {Utiliser des lettres minuscules}
+{Use UPPERCASE letters} {Utiliser des lettres MAJUSCULES}
+{Use digits} {Utiliser des chiffres}
+{Use hexadecimal digits} {Utiliser des chiffres hexadécimaux}
+{Use symbols (%, $, @, #, etc.)} {Utiliser des symboles (%, $, @, #, etc.)}
+{Use easy to read characters only (e.g. no "0" or "O")} {Utilise uniquement des caractères faciles à lire (e.g. pas 0 ou O)}
 {Database Preferences} {Préférences de la base de données}
 {Lock when idle after} {Verrouiller après une période d'inactivité de}
-{minutes (0=never)} {minutes (=jamais)}
-{Auto-save database immediately when changed} {Sauvegarder automatiquement immédiatement la base de données lorsqu'elle est modifiée}
+{minutes (0=never)} {minutes (0=jamais)}
+{Auto-save database immediately when changed} {Sauvegarder automatiquement la base de données dès qu'elle est modifiée}
 {Use Password Safe 3 format} {Utiliser le format de fichier Password Safe 3}
-{V2 Unicode support} {Support Univode V2}
+{V2 Unicode support} {Support Unicode V2}
 {V3 key stretching iterations} {Itérations d'étirement de clé V3}
 {Calculate delay time} {Calculer le délai}
+{Default: %s} {Valeurs par défauts: %s}
 Calculate Calculer
 Calculating Calcule
-{Calculate iterations} {Itérations de calcul}
-{Delay for} {Reporté pour}
+{Calculate iterations} {Calcul des itérations}
+{Delay for} {Délai de}
 sec(s) s
 General Général
-{When double clicking a login ...} {Un double-clic sur une connexion...}
-{Copy password to clipboard} {Copier le mot de passe dans le presse papier}
+{When double clicking a login ...} {Lors d'un double-clic sur un identifiant...}
+{Copy password to clipboard} {Copier le mot de passe dans le presse-papier}
 {Launch Browser directed to URL} {Ouvrir l'URL dans un navigateur}
 {Do nothing} {Ne rien faire}
 {Clear clipboard after} {Vider le presse-papier après}
 {seconds (0=never)} {secondes (0=jamais)}
-Remember {Se souvenir}
+Remember {Se souvenir de}
 {database names} {noms de base de données}
 Clear Vider
-{Backup database on save} {Créer une copie de sauvegarde de la base de données lors de l'enregistrement}
-{Remember sizes of dialog boxes} {Mémoriser les dimensions des boîtes de dialogue}
+{Backup database on save} {Faire une copie de sauvegarde lors de l'enregistrement}
+{Remember sizes of dialog boxes} {Mémoriser la dimension des boîtes de dialogue}
 {Use Gorilla auto-copy} {Utiliser la copie automatique de Gorilla}
 {Automatically copy password associated
 with login to clipboard after pasting
 of user-name.} {Copier automatiquement le mot de passe associé
-à la connexion dans le presse-papier après avoir
+à l'identifiant dans le presse-papier après avoir
 collé le nom d'utilisateur.}
 {This option does not function on
 Windows(TM) or MacOS(TM) platforms.
-See the help system for details.} {Cette fonctionnalité n'est pas disponible 
-les plateformes  Windows(TM) ou MacOS(TM).
+See the help system for details.} {Cette fonctionnalité n'est pas disponible sur
+les plateformes Windows(TM) ou MacOS(TM).
 Voir le système d'aide pour plus de détais.}
 Defaults {Valeurs par défauts}
-{Time stamp backup} {Ajoute une estampille temporelle à la copie de sauvegarde}
-{Backup path:} {Copie de sauvegarde:}
+{Time stamp backup} {Ajouter une estampille temporelle aux copies de sauvegarde}
+{Backup path:} {Dossier des copies de sauvegarde:}
 {Choose a directory} {Sélectionner un dossier}
-{Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Note: ces valeurs par défaut seront appliquées aux nouvelles bases de données.  Pour modifier les paramètres d'une base de données existante, aller dans  "Personnaliser" du menu "Sécurité".}
-{Include password field} {Inclure le champ "mot de passe"}
-{Include "Notes" field} {Inclure le champ "Notes"}
+{Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Note: ces valeurs par défaut seront appliquées aux nouvelles bases de données. Pour modifier les paramètres d'une base de données existante, aller dans "Personnaliser" sous le menu "Sécurité".}
+{Include password field} {Inclure le champ Mot de passe}
+{Include "Notes" field} {Inclure le champ Notes}
 {Field separator} {Séparateur de champ}
 {Show security warning} {Afficher les avertissements de sécurité}
 Display Affichage
 Language: Langue:
-Size Taille
+Size Police
 {Show Gorilla Icon} {Afficher l'icône de Gorilla}
 {Iconify upon auto-lock} {Réduire sous forme d'icône lors du verrouillage automatique}
-{Hide login name in tree view} {Cacher le nom de la connexion dans la vue arborescente}
+{Hide login name in tree view} {Cacher le nom d'utilisateur dans l'arborescence}
 {This option takes effect after exiting
-and restarting of Password Gorilla} {Cette option ne devient fonctionnelle qu'après avoir quitté
-et redémarré l'application Password Gorilla}
+and restarting of Password Gorilla} {Cette option requiert un redémarrage
+de Password Gorilla}
 Browser Navigateur
 {Browser executable to launch (required):} {Exécutable du navigateur à démarrer (obligatoire):}
-{Command line parameter (if any) to pass (optional):} {Paramètres éventuels à passer sur la ligne de commande (optionnel):}
+{Command line parameter (if any) to pass (optional):} {Paramètres à passer sur la ligne de commande (optionnel):}
 {Find Browser} {Rechercher un navigateur}
-{If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details.} {Si un argument est passé en ligne de commande, il doit contenir la chaîne de caractères: %url%.  Cette chaîne de caractère sera remplacée par l'URL à accéder lors du lancement du navigateur.  Veuillez consulter le système d'aide pour plus de détails.}
+{If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details.} {Si un argument est passé en ligne de commande, il doit contenir la chaîne de caractères: %url%. Cette chaîne de caractère sera remplacée par l'URL à accéder lors du lancement du navigateur. Veuillez consulter le système d'aide pour plus de détails.}
 {Also copy username to clipboard} {Copier également le nom d'utilisateur dans le presse-papier}
 {When selected the username
 from the login entry will also
 be copied to the clipboard
 when opening a browser.} {Lorsque sélectionné, le nom
-d'utilisateur de la connexion
+d'utilisateur de l'identifiant
 sera également copié dans le
-presse papier lors de l'ouverture
+presse-papier lors de l'ouverture
 du navigateur.}
 {Determines how Password
 Gorilla handles clearing the
@@ -281,75 +326,107 @@ Gorilla gère le nettoyage du presse-papier.
 De zéro à vingt.
 
 Voir <Aide> pour plus de détails.}
-{Clipboard autoclear multiplier} {Multiplicateur de nettoyage automatique de presse-papier}
-{History deleted. After a restart the list will be empty.} {Historique supprimé.  Après un redémarrage la liste sera vide.}
+{Clipboard autoclear multiplier} {Multiplicateur de nettoyage automatique du presse-papier}
+{History deleted. After a restart the list will be empty.} {Historique supprimé. Après un redémarrage la liste sera vide.}
 Error Erreur
+{Error while saving RC-File} {Erreur lors de l'analyse du fichier de préférences}
 {Please create a new database, or open an existing
 database first.} {Veuillez d'abord créer une nouvelle base de données ou en ouvrir une existante.}
 {Current Master Password:} {Mot de passe maître actuel:}
 {New Master Password:} {Nouveau mot de passe maître:}
-{Password Not Changed} {Mot de passe inchangé.}
+{Password Not Changed} {Mot de passe inchangé}
 {You canceled the setting of a new password.
 Therefore, the existing password remains in effect.} {Vous avez annulé la mise en place d'un nouveau mot de passe.
-Le mot de passe existant reste dès lors effectif.}
+Le mot de passe existant reste donc effectif.}
 {Master password changed.} {Mot de passe maître modifié.}
-{gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'} {gorilla::CopyToClipboard: paramètre %s invalide.  Devrait être une des 3 valeurs suivantes:  'Username', 'Password', 'URL'}
+{gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'} {gorilla::CopyToClipboard: paramètre %s invalide. Devrait être une des 3 valeurs suivantes: 'Username', 'Password', 'URL'}
 {Can not copy %s to clipboard: no %s defined.} {Impossible de copier %s dans le presse-papier: %s est indéfini.}
 {Copied %s to clipboard.} {%s a été copié dans le presse-papier.}
 {Password Gorilla} {Password Gorilla}
-{Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database} {Gorilla protégera vos mots de passe et vous aidera à les gérer au sein d'une base de données compatible avec le format 3.2 de pwsafe}
+{Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database} {Password Gorilla protège vos mots de passe et vous aide à les gérer à l'aide d'une base de données compatible avec le format pwsafe 3.2}
 Contributors Contributeurs
 {Gorilla artwork contributed by %s} {Contributions artistiques à Gorilla de %s}
 {German translation by %s} {Traduction allemande par %s}
 {Russian translation by %s} {Traduction russe par %s}
 {Italian translation by %s} {Traduction italienne par %s}
+{French translation by %s} {Traduction française par %s}
+{Spanish translation by %s} {Traduction espagnole par %s}
+{Portuguese translation by %s} {Traduction portugaise par %s}
+{Using %s sha256 extension.} {Utilise l'extension %s de sha256}
 {About Password Gorilla} {Au sujet de Password Gorilla}
 {Password Gorilla License} {Licence d'utilisation de Password Gorilla}
-{Find Text:} {Recherche du texte:}
+{Find Text:} Recherche:
 {Find Options ...} {Options de recherche...}
 {Any field} {N'importe quel champ}
-{Case sensitive find} {Recherche sensible à la casse}
+{Case sensitive find} {Sensible à la casse}
 {Text not found.} {Texte non trouvé.}
-{Please select a login entry first.} {Veuillez d'abord sélectionner une connexion.}
-{The selected login does not contain a URL value.} {La connexion sélectionnée ne contient pas d'URL}
-{Browser launching is not configured. See help.} {Le lancement d'un navigateur n'est pas configuré.  Voir l'aide.}
-{Browser parameter lacks '%url%' string. See help.} {Il manque le paramètre '%url%' dans la ligne de commande pour lancer le navigateur.  Voir l'aide.}
-{Error launching browser, the OS error message is:} {Erreur lors du lancement du navigateur.  Le message d'erreur système est:}
-{Oh well...} {Oh well...}
+{Please select a login entry first.} {Veuillez d'abord sélectionner un identifiant.}
+{The selected login does not contain a URL value.} {L'identifiant sélectionnée ne contient pas d'URL}
+{Browser launching is not configured. See help.} {Le lancement d'un navigateur n'est pas configuré. Voir l'aide.}
+{Browser parameter lacks '%url%' string. See help.} {Il manque le paramètre '%url%' dans la ligne de commande pour lancer le navigateur. Voir l'aide.}
+{Error launching browser, the OS error message is:} {Erreur lors du lancement du navigateur. Le message d'erreur système est:}
+{Oh well...} {Eh bien...}
 {Launched browser:} {Navigateur démarré:}
 {Generate gorilladoc.html} {Générer gorilladoc.html}
 {Conflict Merge Tool} {Outil de fusion de conflit}
 {Conflict %d} {Conflit %d}
-{Combine and Save} {Combiner et Sauver}
+{Combine and Save} {Combiner et sauvegarder}
 {Reset Values} {Réinitialiser les valeurs}
 {Ignore Conflict} {Ignorer les conflits}
 {No existing merge conflicts were found.} {Aucun conflit de fusion détecté.}
 Current Actuel
+Merged Fusionné
 {A selection is required for:} {Une sélection est nécessaire pour:}
+{Http Error} {Erreur http}
+{Downloading %s: } {Télécharge %s:}
+{Http error} {Erreur http}
+{Download Error} {Erreur de téléchargement}
+{Downloaded File has wrong size.} {Le fichier téléchargé a la mauvaise taille.}
+{Download finished} {Téléchargement terminé}
+{The new version was successfully downloaded as
+%s.} {La nouvelle version a été téléchargée avec succès
+%s.}
+{Unknown windowing system} {Système de fenêtrage inconnu}
+{Connection error} {Erreur de connexion}
+{No new version available} {Aucune nouvelle version disponible}
+{You are running version %s.} {Vous utilisez la version %s.}
+{There is a new version %s for %s.} {Il existe une version plus récente %s pour %s.}
+{Shall I download the new version?} {Dois-je télécharger la nouvelle version?}
+{New version available} {Nouvelle version disponible}
+Executable Éxécutable
+Sourcecode {Code source}
 Back Retour
 Search Recherche
 Previous Précédent
 Next Suivant
 History Historique
 Index Index
+{Table of Contents} {Table des matières}
 Search! Chercher!
+{Unable to find unused character with which to quote preference string.
+Normally this should not happen.} {Impossible de trouver un caractère inutilisé pour citer la préférence.
+Ceci ne devrait pas se produire.}
 {unknown preference type: %s} {type de préférence inconnu: %s}
 {premature end of preference} {fin prématurée de préférence}
-{expected number for value, got %s} {la valeur « %s » n'est pas un nombre  }
-{expected initial quote for string value} {les valeurs de type chaîne de caractères doivent débuter par un guillemet simple}
+{expected number for value, got %s} {la valeur "%s" n'est pas un nombre}
+{end delimiter '%s' not found in saved DB preference} {Délimiteur '%s' non trouvé dans les préférences sauvegardées}
 {premature end of string value} {fin prématurée de la chaîne de caractères}
+{no such preference: %s} {Préférences inexistante: %s}
+{group name can not be empty} {Le nom du groupe ne peut être vide}
 {record %d does not exist} {l'enregistrement %d n'existe pas}
 {record %d does not have field %s} {l'enregistrement %d ne contient pas le champ %s}
 {no header field %s} {il manque le champ titre %s}
-{invalid version %s} {version invalide: %s}
-{less than 8 bytes remaining for length field} {il reste moins de 8 bytes pour la longueur du champ}
-oops oops
+{less than 8 bytes remaining for length field} {il reste moins de 8 octets pour la longueur du champ}
+oops oups
 {field length %d looks insane} {la taille %d paraît étrange pour un champ}
 {out of data} {plus de données}
 {V1 name field looks suspect} {le nom de champ V1 paraît suspect}
-{end of file while reading header} {fin du fichier pendant la lecteur de l'entête}
+{this object can not be reused} {Cet élément ne peut être réutilisé}
+{end of file while reading header} {fin du fichier pendant la lecteur de l'en-tête}
+{wrong password} {Mot de passe incorrect}
 {EOF while reading field} {fin de fichier pendant la lecture du champ}
-{less than 16 bytes remaining for first block} {il reste moins de 16 bytes pour le premier bloc}
-{file does not have PWS3 magic} {le fichier ne dispose pas du « PWS3 magic »}
-{Failed to scan key stretch iteration count from binary data.} {Échec lors de la vérification du compteur d'étirement de clé depuis les données binaires}
+{less than 16 bytes remaining for first block} {il reste moins de 16 octets pour le premier bloc}
+{file does not have PWS3 magic} {le fichier ne dispose pas du "PWS3 magic"}
+{Failed to scan key stretch iteration count from binary data.} {Échec lors de la vérification du compteur d'étirement de clé depuis les données binaires.}
+{invalid version %s} {version invalide: %s}
 }
