@@ -5352,7 +5352,7 @@ proc gorilla::PasswordPolicy {} {
 	}
 
 	set oldSettings [GetDefaultPasswordPolicy]
-	set newSettings [PasswordPolicyDialog "Password Policy" $oldSettings]
+	set newSettings [PasswordPolicyDialog [mc "Password Policy"] $oldSettings]
 
 	if {[llength $newSettings]} {
 		SetDefaultPasswordPolicy $newSettings
@@ -5937,7 +5937,7 @@ proc gorilla::PreferencesDialog {} {
 			-variable ::gorilla::prefTemp(exportIncludeNotes) 
 
 		ttk::frame $epf.fs
-		ttk::label $epf.fs.l -text [mc "Field separator"] -width 16 -anchor w
+		ttk::label $epf.fs.l -text [mc "Field separator"] -width 20 -anchor w
 		spinbox $epf.fs.e \
 			-values [list , \; :] \
 			-textvariable ::gorilla::prefTemp(exportFieldSeparator) \
@@ -6972,7 +6972,7 @@ proc gorilla::Find {} {
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
-		wm title $top "Find"
+		wm title $top "[mc Find]"
 
 		ttk::frame $top.text -padding [list 10 10]
 		ttk::label $top.text.l -text [mc "Find Text:"] -anchor w -width 10
