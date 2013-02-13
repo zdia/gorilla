@@ -4540,7 +4540,8 @@ proc gorilla::SaveAs {} {
 	set ::gorilla::status [mc "Password database saved."] 
 	
 	return GORILLA_OK
-}
+  
+} ; # end proc gorilla::SaveAs
 
 proc gorilla::filename_query {type args} {
 
@@ -4976,9 +4977,17 @@ proc gorilla::LockDatabase {} {
 		rename ::tk::mac::ShowPreferences ""
 	}
 
-	# FIXME: perhaps it's better to backup the db in any case?
 	if { $::gorilla::preference(keepBackupFile) } {
-		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+    
+    if { ![info exists ::gorilla::fileName] } {
+      set nosave [tk_dialog .nosave [mc "Database not saved!"] \
+      [mc "This database has not been saved. Do you want to save it now?"] \
+        "" 0 [mc Yes] [mc No] ]
+      if {$nosave} { set message GORILLA_OK
+      } else { set message [gorilla::SaveAs] }
+      
+    } else { set message [ gorilla::SaveBackup $::gorilla::fileName ] }
+
 		if { $message ne "GORILLA_OK" } {
 			gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
 		}
