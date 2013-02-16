@@ -1,2 +1,3 @@
-Linux {version 1.5.3.6.4 executable {i686 gorilla15363.bin x86_64 gorilla15363_64.bin}} MacOSX {version 1.5.3.7.3 url {i868 http://cloud.github.com/downloads/zdia/gorilla/gorilla15363.zip x86_64 http://cloud.github.com/downloads/zdia/gorilla/gorilla15363.zip}} Windows {version 1.5.3.7.1 url {i686 http://cloud.github.com/downloads/zdia/gorilla/gorilla15363.exe x86_64 http://cloud.github.com/downloads/zdia/gorilla/gorilla15363_64.exe}} source {version 1.5.3.6.5 url http://nodeload.github.com/zdia/gorilla/zipball/v1.5.3.6.3}
-
+Linux {version 1.5.3.7 executable {i686 gorilla1537.bin x86_64 gorilla1537_64.bin}} \
+MacOSX {version 1.5.3.7 executable {i686 gorilla1537.zip x86_64 gorilla1537.zip}} \
+Windows {version 1.5.3.7 executable {i686 gorilla1537.exe x86_64 gorilla1537_64.exe}}

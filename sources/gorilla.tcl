@@ -6836,7 +6836,7 @@ proc gorilla::About {} {
 		lappend ctr [ ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts ]
-		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier, Alexandre Raymond" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib6 -text "\u2022 [ mc "Spanish translation by %s" "Juan Roldan Ruiz" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib7 -text "\u2022 [ mc "Portuguese translation by %s" "Daniel Bruno" ]" {*}$stdopts ]
 
