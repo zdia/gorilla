@@ -202,7 +202,7 @@ if {([llength [info commands itcl_class]] == 0)
                 sequence of commands.\n\tIncomplete command:\n$chunk"
 	}
 	return $commands
-    }
+    } ; unset cmd
 
     proc ::itcl::itcl_class {className body} {
 	# inherit baseClass ?baseClass...? ; # no change

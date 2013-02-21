@@ -9,7 +9,7 @@
 #
 # Project-Id-Version: PACKAGE VERSION
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-27 17:31+0100
+# POT-Creation-Date: 2013-01-14 19:38+0100
 # PO-Revision-Date: 2011-06-15 09:10+0100
 # Last-Translator: zdia <z.dia@gmx.de>
 # Language-Team: LANGUAGE <LL@li.org>
@@ -25,18 +25,6 @@ mcmset en {
 Error message: %s} {The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
 
 Error message: %s}
-{Need [Incr Tcl]} {Need [Incr Tcl]}
-{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s} {The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s}
-{Need PWSafe} {Need PWSafe}
-{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s} {The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s}
 {Welcome to the Password Gorilla.} {Welcome to the Password Gorilla.}
 File File
 New New
@@ -169,12 +157,12 @@ Close Close
 {Password database saved with backup copy} {Password database saved with backup copy}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.}
 {Clipboard cleared.} {Clipboard cleared.}
-{Database Locked} {Database Locked}
 {Enter the Master Password.} {Enter the Master Password.}
 {error: %s} {error: %s}
 {Wrong Password} {Wrong Password}
 {That password is not correct.} {That password is not correct.}
 {Welcome back.} {Welcome back.}
+{Database Locked} {Database Locked}
 Confirm: Confirm:
 {Passwords Do Not Match} {Passwords Do Not Match}
 {The confirmed password does not match.} {The confirmed password does not match.}

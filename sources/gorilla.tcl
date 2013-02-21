@@ -8,9 +8,9 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # ----------------------------------------------------------------------
 #
 # Copyright (c) 2005-2009 Frank Pilhofer
-# Copyright (c) 2010-2011 Richard Ellis and Zbigniew Diaczyszyn
+# Copyright (c) 2010-2013 Richard Ellis and Zbigniew Diaczyszyn
 #
-# Version 1.5.3.6 tested with ActiveState's Tcl/Tk 8.5.11
+# Version 1.5.3.7 tested with ActiveState's Tcl/Tk 8.5.13.0
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,14 +32,18 @@ exec tclsh8.5 "$0" ${1+"$@"}
 
 package provide app-gorilla 1.0
 
-set ::gorillaVersion {$Revision: 1.5.3.6 $}
+namespace eval ::gorilla {
+	variable Version {$Revision: 1.5.3.7 $}
 
-# find the location of the install directory even when "executing" a symlink
-# pointing to the gorilla.tcl file
-if { [ file type [ info script ] ] eq "link" } {
-	set ::gorillaDir [ file normalize [ file dirname [ file join [ file dirname [ info script ] ] [ file readlink [ info script ] ] ] ] ]
-} else {
-	set ::gorillaDir [ file normalize [ file dirname [ info script ] ] ]
+	# find the location of the install directory even when "executing" a symlink
+	# pointing to the gorilla.tcl file
+	if { [ file type [ info script ] ] eq "link" } {
+		variable Dir [ file normalize [ file dirname [ file join [ file dirname [ info script ] ] [ file readlink [ info script ] ] ] ] ]
+	} else {
+		variable Dir [ file normalize [ file dirname [ info script ] ] ]
+	}
+
+	variable PicsDir [ file join $::gorilla::Dir pics ]
 }
 
 # ----------------------------------------------------------------------
@@ -53,9 +57,27 @@ if {[catch {package require Tk 8.5} oops]} {
 	# Because of using Themed Widgets we need Tk 8.5
 	#
 
-	puts "This application requires Tk 8.5, which does not seem to be available."
-	puts $oops
+	puts "Password Gorilla has been unable to load Tk 8.5, which is required."
+	puts "Reason: '$oops'"
 	exit 1
+}
+
+# Fix the issue of TTk widgets having different default background colors
+# from Tk widgets (esp.  toplevel widgets) by automatically placing a TTk
+# frame in each toplevel when the toplevel is created - this way when
+# widgets are positioned in the toplevel, what should show through behind
+# them is the ::ttk::frame background color, not the ::tk::toplevel
+# background color.
+
+rename toplevel _toplevel
+proc toplevel {path args} {
+	_toplevel $path {*}$args
+	::ttk::frame $path.ttkbkg
+	place $path.ttkbkg -in $path -anchor nw -x 0 -y 0 -bordermode outside \
+	                   -relheight 1.0 -relwidth 1.0
+	# this lower should be redundant, but do it just to be sure
+	lower $path.ttkbkg
+	return $path
 }
 
 option add *Dialog.msg.wrapLength 6i
@@ -72,7 +94,7 @@ if {[catch {package require Tcl 8.5}]} {
 
 # ----------------------------------------------------------------------
 
-proc if-platform? { test body } {
+proc ::gorilla::if-platform? { test body } {
 
 	if { $::tcl_platform(platform) eq $test } {
 	  uplevel 1 $body
@@ -88,13 +110,13 @@ proc if-platform? { test body } {
 } ; # end proc if-platform?
 
 # ----------------------------------------------------------------------
+# Note - the load-package proc is defined in the global namespace because it
+#        is called from outside the gorilla namespace in order to load
+#        packages
 
 proc load-package { args } {
 	# A helper proc to load packages.  This collects the details of "catching"
-	# and reporting errors upon package loading into one single proc.  It must
-	# be defined here because it has to be defined before it can be called.
-	# Note, not in "gorilla" namespace because the gorilla namespace has not yet
-	# been created.
+	# and reporting errors upon package loading into one single proc.
 	#
 	# args - package(s) to load
 
@@ -107,22 +129,30 @@ proc load-package { args } {
 			set statusinfo [ subst {
 -begin------------------------------------------------------------------
 Statusinfo created [ clock format [ clock seconds ] -format "%b %d %Y %H:%M:%S" ]
-Password Gorilla version: $::gorillaVersion
+Password Gorilla version: $::gorilla::Version
 Failure to load package: $package
 catch result: $catchResult
 catch options: $catchOptions
 auto_path: $::auto_path
+modules path: [ ::tcl::tm::path list ]
 tcl_platform: [ array get ::tcl_platform ]
 info library: [ info library ]
-gorillaDir: $::gorillaDir
-gorillaDir contents:
-	[ join [ glob -directory $::gorillaDir -nocomplain * ] "\n\t" ]
+gorilla::Dir: $::gorilla::Dir
+gorilla::Dir contents:
+	[ join [ glob -directory $::gorilla::Dir -nocomplain * ] "\n\t" ]
 auto_path dir contents:
 [ set result ""
   foreach dir $::auto_path {
     append result "$dir\n"
-    append result "[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
+    append result "\t[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
   } 
+  return $result ]
+modules dir contents:
+[ set result ""
+  foreach dir [ ::tcl::tm::path list ] {
+    append result "$dir\n"
+    append result "\t[ join [ glob -directory $dir -nocomplain -- * ] "\n\t" ]\n"
+  }
   return $result ]
 -end--------------------------------------------------------------------
 } ] ; # end of subst
@@ -171,7 +201,7 @@ load-package msgcat
 
 namespace import msgcat::*
 
-mcload [file join $::gorillaDir msgs]
+mcload [file join $::gorilla::Dir msgs]
 # The message files will be loaded according to the system's actual
 # language. During initialization of Gorilla's preferences the command
 # 'mclocale' will set the language accoring to Gorilla's resource file.
@@ -184,7 +214,7 @@ mcload [file join $::gorillaDir msgs]
 #
 
 foreach file {isaac.tcl viewhelp.tcl} {
-	if {[catch {source [file join $::gorillaDir $file]} oops]} {
+	if {[catch {source [file join $::gorilla::Dir $file]} oops]} {
 		wm withdraw .
 		tk_messageBox -type ok -icon error -default ok \
 			-title [ mc "Need %s" $file ] \
@@ -194,7 +224,7 @@ foreach file {isaac.tcl viewhelp.tcl} {
 			distribution.\n\nError message: %s" $file $oops ]
 		exit 1
 	}
-}
+} ; unset file
 
 #
 # Itcl 3.4 is in an subdirectory available to auto_path
@@ -208,11 +238,11 @@ if {[tk windowingsystem] == "aqua"}	{
 	set auto_path ""
 }
 
-foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
+foreach testitdir [glob -nocomplain [file join $::gorilla::Dir itcl*]] {
 	if {[file isdirectory $testitdir]} {
 		lappend auto_path $testitdir
 	}
-}
+} ; unset -nocomplain testitdir
 
 #
 # Check the subdirectories for needed packages
@@ -221,42 +251,14 @@ foreach testitdir [glob -nocomplain [file join $::gorillaDir itcl*]] {
 # Set our own install directory and our local tcllib directory as first
 # elements in auto_path, so that local items will be found before system
 # installed items
-set auto_path [ list $::gorillaDir [ file join $::gorillaDir tcllib ] {*}$auto_path ]
+set auto_path [ list $::gorilla::Dir [ file join $::gorilla::Dir tcllib ] {*}$auto_path ]
 
 # Initialize the Tcl modules system to look into modules/ directory
-::tcl::tm::add [ file join $::gorillaDir modules ]
+::tcl::tm::add [ file join $::gorilla::Dir modules ]
 
-#
-# Look for Itcl
-#
-
-if {[catch {package require Itcl} oops]} {
-	#
-	# Itcl is included in tclkit and ActiveState...
-	#
-	wm withdraw .
-	tk_messageBox -type ok -icon error -default ok \
-		-title [ mc "Need \[Incr Tcl\]" ] \
-		-message [ mc "The Password Gorilla requires the \[incr Tcl\]\
-		add-on to Tcl. Please install the \[incr Tcl\] package.\n\nError Message: %s" $oops ]
-	exit 1
-}
-
-if {[catch {package require pwsafe} oops]} {
-	wm withdraw .
-	tk_messageBox -type ok -icon error -default ok \
-		-title [ mc "Need PWSafe" ] \
-		-message [ mc "The Password Gorilla requires the \"pwsafe\" package.\
-		This seems to be an installation problem, as the pwsafe package\
-		ought to be part of the Password Gorilla distribution.\n\nError Message: %s" $oops ]
-	exit
-	# exit 1 ;# needs testing on the Mac. It seems that
-	# the parameter 1 is setting gorilla.tcl's filelength to 0
-}
-
-foreach package {tooltip PWGprogress} {
+foreach package {Itcl pwsafe tooltip PWGprogress} {
 	load-package $package
-}
+} ; unset package
 
 #
 # If installed, we can use the uuid package (part of Tcllib) to generate
@@ -264,6 +266,9 @@ foreach package {tooltip PWGprogress} {
 #
 
 catch {package require uuid}
+
+# Detect whether or not the file containing download sites exists
+set ::gorilla::hasDownloadsFile [ file exists [ file join $::gorilla::Dir downloads.txt ] ]
 
 #
 # ----------------------------------------------------------------------
@@ -481,13 +486,14 @@ proc gorilla::InitGui {} {
 				            separator                             ""   ""                                 ""
 				            "[ mc "Change Master Password" ] ..." open gorilla::ChangePassword            ""
 				            separator                             ""   ""                                 ""
-				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              ""
+				            "[ mc "Lock now" ]"                   open gorilla::LockDatabase              $menu_meta+L
 				           }
 
-		"[ mc Help ]" help {"[ mc Help ] ..."    ""  gorilla::Help    ""
-				    "[ mc License ] ..." ""  gorilla::License ""
-				    separator            mac ""               ""
-				    "[ mc About ] ..."   mac tkAboutDialog    ""
+		"[ mc Help ]" help {"[ mc Help ] ..." mac  gorilla::Help    ""
+				    "[ mc License ] ..."          ""   gorilla::License ""
+				    "[ mc "Look for Update"]"     dld  gorilla::versionLookup ""
+				    separator                     mac  ""  ""
+				    "[ mc About ] ..."            mac tkAboutDialog ""
 				   }
 
 	} ] ;# end ::gorilla::menu_desc
@@ -513,8 +519,8 @@ proc gorilla::InitGui {} {
 				.mbar.$menu_widget add command -label $menu_item \
 					-command $menu_command -accelerator $shortcut
 			} 	
-			set ::gorilla::tag_list($menu_widget) $taglist
-		} 
+		}
+		set ::gorilla::tag_list($menu_widget) $taglist
 	}
 	
 	# modify the "About" menuitem in the Apple application menu
@@ -530,7 +536,8 @@ proc gorilla::InitGui {} {
 	. configure -menu .mbar
 
 	# note - if the help menu widget name changes, this will need to be updated	
-	::gorilla::addRufftoHelp .mbar.help
+  # To generate documentation use command line: gorilla --sourcedoc
+	# ::gorilla::addRufftoHelp .mbar.help
 
 	# menueintrag deaktivieren mit dem tag "login
 	# suche in menu_tag(widget) in den Listen dort nach dem Tag "open" mit lsearch -all
@@ -557,27 +564,28 @@ proc gorilla::InitGui {} {
 	#---------------------------------------------------------------------
 	
 	set tree [ttk::treeview .tree \
-		-yscroll ".vsb set" -xscroll ".hsb set" -show tree \
+		-yscroll [ list .vsb set ] -xscroll [ list .hsb set ] -show tree \
 		-style gorilla.Treeview]
 	.tree tag configure red -foreground red
 	.tree tag configure black -foreground black
 
 	if {[tk windowingsystem] ne "aqua"} {
-		ttk::scrollbar .vsb -orient vertical -command ".tree yview"
-		ttk::scrollbar .hsb -orient horizontal -command ".tree xview"
+		set sbtype ttk::scrollbar
 	} else {
-		scrollbar .vsb -orient vertical -command ".tree yview"
-		scrollbar .hsb -orient horizontal -command ".tree xview"
+		set sbtype scrollbar
 	}
-	ttk::label .status -relief sunken -padding [list 5 2]
-	pack .status -side bottom -fill x
+	$sbtype .vsb -orient vertical   -command [ list .tree yview ]
+	$sbtype .hsb -orient horizontal -command [ list .tree xview ]
 
-	## Arrange the tree and its scrollbars in the toplevel
-	lower [ttk::frame .dummy]
-	pack .dummy -fill both -expand 1
-	grid .tree .vsb -sticky nsew -in .dummy
-	grid columnconfigure .dummy 0 -weight 1
-	grid rowconfigure .dummy 0 -weight 1
+	ttk::label .status -relief sunken -padding [list 5 2]
+
+	## Arrange the tree, its scrollbars, and the status line in the toplevel
+	grid .tree   .vsb -sticky nsew
+	# .hsb does not do anything at the moment - therefore do not display it
+	#grid .hsb    x    -sticky news
+	grid .status -    -sticky news
+	grid columnconfigure . 0 -weight 1
+	grid rowconfigure    . 0 -weight 1
 	
 	bind .tree <Double-Button-1> {gorilla::TreeNodeDouble [.tree focus]}
 	bind .tree <Button-3> { gorilla::TreeNodePopup [ gorilla::GetSelectedNode %x %y ] }
@@ -629,13 +637,28 @@ proc gorilla::InitGui {} {
 	bind . <$meta-a> {.mbar.login invoke 0}
 	bind . <$meta-e> {.mbar.login invoke 1}
 	bind . <$meta-v> {.mbar.login invoke 2}
-	
+
+	bind . <$meta-l> {.mbar.security invoke 5}
+
 	# bind . <$meta-L> "gorilla::Reload"
 	# bind . <$meta-R> "gorilla::Refresh"
 	# bind . <$meta-C> "gorilla::ToggleConsole"
 	# bind . <$meta-q> "gorilla::Exit"
 	# bind . <$meta-q> "gorilla::msg"
 	# ctrl-x ist auch exit, ctrl-q reicht
+
+	if {[tk windowingsystem] == "aqua"}	{
+		# for some reason, on MacOS, PWGorilla will "freeze" if the Cmd+o key is
+		# used to access the "File->Open" function.  The "freeze" happens once
+		# PGWorilla enters the vwait loop within the OpenDatabase proc.  For
+		# some reason the event loop stops processing user input from that point
+		# forward.  However, inserting a short amount of delay before invoking
+		# the open dialog prevents the "freeze" from happening.  Note, this is a
+		# workaround.  A true fix will involve rewriting the open dialog to
+		# remove the internal vwait event loop.
+		bind . <$meta-o> "after 150 [ bind . <$meta-o> ]"
+	}
+
 
 	#
 	# Handler for the X Selection
@@ -781,6 +804,31 @@ proc setmenustate {widget tag_pattern state} {
 		}	
 	}
 }
+
+proc gorilla::getMenuState { menu } {
+
+  # Walk a Tk "menu" hierarchy, building a script that captures the current
+  # state (normal/disabled) of each item in the menu heirarchy.
+  #
+  # menu - The menu widget at which to start traversing the hierarchy.
+  #
+  # Returns a script which can be "eval'ed" to return the menu hierarchy to
+  # the state it was in when this command was called.
+
+  set result ""
+
+  for {set idx 0} {$idx <= [ $menu index end ]} {incr idx} {
+    if { [ catch {$menu entrycget $idx -menu } submenu ] } {
+      if { ! [ catch {$menu entrycget $idx -state} state ] } {
+        append result "$menu entryconfigure $idx -state $state" \n
+      }
+    } else {
+      append result [ getMenuState $submenu ]
+    }
+  }
+
+  return $result
+} ; # end proc gorilla::getMenuState
 
 proc gorilla::EvalIfStateNormal {menuentry index} {
 	if {[$menuentry entrycget $index -state] == "normal"} {
@@ -1294,6 +1342,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	}
 
 	wm title $top $title
+	wm iconphoto $top $::gorilla::images(application)
+
 	$aframe.pw.pw delete 0 end
 
 	if { [llength $::gorilla::preference(lru)] } {
@@ -1374,13 +1424,27 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 				tk_messageBox -parent $top -type ok -icon error -default ok \
 					-title [mc "No File"] \
 					-message [mc "Please select a password database."]
-        continue
+				continue
 			}
 
-			if {![file readable $fileName]} {
+			# work around an issue with "file readable" and Windows samba mounts
+			# by simply attempting to open the PWFile in read only mode.  If the
+			# open succeeds then we have read access.  If it fails, we don't have
+			# access of some form.
+			
+			# If the open succeeds, immediately close the file because the open is
+			# just a test for access.
+			
+			if { [ catch { close [ open $fileName RDONLY ] } ] } {
+				# also generate a more meaningful error message
+				if { [ file exists $fileName ] } {
+				  set error_message [ mc "The password database %s can not be read." $nativeName ]
+				} else {
+				  set error_message [ mc "The password database %s does not exist." $nativeName ]
+				}
 				tk_messageBox -parent $top -type ok -icon error -default ok \
-					-title [mc "File Not Found"] \
-					-message [mc "The password database %s does not exist or can not be read." $nativeName]
+					-title [ mc "Error Accessing File" ] \
+					-message $error_message
 				continue
 			}
 
@@ -1396,8 +1460,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# much better seed now
 
 			set password [$aframe.pw.pw get]
-			
 			set pvar [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
+			
 
 #set a [ clock milliseconds ]
 			if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
@@ -1425,25 +1489,10 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 			pwsafe::int::randomizeVar password
 			break
 		} elseif {$::gorilla::guimutex == 3} {
-			set types {
-				{{Password Database Files} {.psafe3 .dat}}
-				{{All Files} *}
-			}
 
-			if {![info exists ::gorilla::dirName]} {
-				if {[tk windowingsystem] == "aqua"} {
-					set ::gorilla::dirName "~/Documents"
-				} else {
-				# Windows-Abfrage auch nötig ...
-					set ::gorilla::dirName [pwd]
-				}
-			}
+			set fileName [ filename_query Open -parent $top \
+					-title [ mc "Browse for a password database ..." ] ]
 
-			set fileName [tk_getOpenFile -parent $top \
-				-title [mc "Browse for a password database ..."] \
-				-filetypes $types \
-				-initialdir $::gorilla::dirName]
-			# -defaultextension ".psafe3" 
 			if {$fileName == ""} {
 				continue
 			}
@@ -1581,11 +1630,11 @@ proc gorilla::Open {{defaultFile ""}} {
 		}
 	}
 
-	if { $::DEBUG(TEST) } {
+	if { $::gorilla::DEBUG(TEST) } {
 		# Skip OpenDialog
 		set ::gorilla::collectedTicks [list [clock clicks]]
 		gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# not a very good seed yet
-		set fileName [file join $::gorillaDir ../unit-tests testdb.psafe3]
+		set fileName [file join $::gorilla::Dir ../unit-tests testdb.psafe3]
 		set newdb [pwsafe::createFromFile $fileName test ::gorilla::openPercent]
 		set openInfo [list "Open" $fileName $newdb ]
 	} else {
@@ -1630,6 +1679,7 @@ proc gorilla::Open {{defaultFile ""}} {
 		-text $nativeName \
 		-values [list Root]
 
+	FocusRootNode
 	AddAllRecordsToTree
 	UpdateMenu
 	return "Open"
@@ -1933,7 +1983,7 @@ namespace eval ::gorilla::LoginDialog {
 		# because the text widget plus scrollbar needs to fit into the single
 		# column holding all the other ttk::entries in the outer grid
 		
-		set textframe [ frame $top.e-notes-f ]
+		set textframe [ ttk::frame $top.e-notes-f ]
 		set widget(notes) [ set ${pvns}::notes [ text $textframe.e-notes -width 40 -height 5 -wrap word -yscrollcommand [ list $textframe.vsb set ] ] ]
 		grid $widget(notes) [ scrollbar $textframe.vsb -command [ list $widget(notes) yview ] ] -sticky news
 		grid rowconfigure $textframe $widget(notes) -weight 1
@@ -3335,7 +3385,7 @@ proc gorilla::Export {} {
 
 	setup-default-dirname
 
-	if { $::DEBUG(CSVEXPORT) } {
+	if { $::gorilla::DEBUG(CSVEXPORT) } {
 		set fileName testexport.csv
 	} else {
 		set types {
@@ -3350,7 +3400,7 @@ proc gorilla::Export {} {
 			-filetypes $types \
 			-initialdir $::gorilla::dirName ]
 
-	};# end if $::DEBUG(CSVEXPORT)
+	};# end if $::gorilla::DEBUG(CSVEXPORT)
 	
 	if {$fileName == ""} {
 		return
@@ -3526,7 +3576,7 @@ proc gorilla::Import { {input_file ""} } {
 	
 	if { "group" ni $columns_present } {
 		set default_group_name "Newly Imported [ clock format [ clock seconds ] ]"
-		if { $::DEBUG(CSVIMPORT) } {
+		if { $::gorilla::DEBUG(CSVIMPORT) } {
 			. configure -cursor $myOldCursor
 			return GORILLA_ADDDEFAULTGROUP
 		}
@@ -3637,7 +3687,7 @@ proc gorilla::Import { {input_file ""} } {
 	} ; # end foreach line in input file
 	
 	if { [ info exists error_lines ] } {
-		if { $::DEBUG(CSVIMPORT) } {
+		if { $::gorilla::DEBUG(CSVIMPORT) } {
 			. configure -cursor $myOldCursor
 			return [lindex $error_lines 0 0]
 		}
@@ -3676,7 +3726,7 @@ proc gorilla::ErrorPopup {title message} {
 	# a small helper proc to encapsulate all the details of opening a
 	# tk_messageBox with a title and message
 
-	if { $::DEBUG(CSVIMPORT) } { return }
+	if { $::gorilla::DEBUG(CSVIMPORT) } { return }
 	
 	tk_messageBox -parent . -type ok -icon error -default ok \
 		-title $title \
@@ -4256,9 +4306,13 @@ proc gorilla::Save {} {
 	# If not writable, give user the option to change it to writable and
 	# retry, or to abort the save operation entirely
 	#
+	# Work around tcl-Bugs-1852572 regarding "file writable" and samba mounts
+	# by simply attempting to open the file in write only append mode (append
+	# so as not to destroy the file while testing for write access).  If the
+	# open succeeds, we have write permission.
 
-	while { ! [ file writable $::gorilla::fileName ] } {
-	
+	while { [ catch { set fd [ open $::gorilla::fileName {WRONLY APPEND} ] } ] } {
+
 		# build the message in two stages:
 		set message    "[ mc "Warning: Can not save to" ] '[ file normalize $::gorilla::fileName ]' [ mc "because the file permissions are set for read-only access." ]\n\n"
 		append message "[ mc "Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file." ]\n"
@@ -4270,6 +4324,9 @@ proc gorilla::Save {} {
 		}
 	
 	} ; # end while gorilla::fileName read-only
+
+	# don't need the open file descriptor once out of the while loop
+	close $fd
 
 	set myOldCursor [. cget -cursor]
 	. configure -cursor watch
@@ -4400,25 +4457,8 @@ proc gorilla::SaveAs {} {
 	# Query user for file name
 	#
 
-	set types {
-		{{Password Database Files} {.psafe3 .dat}}
-		{{All Files} *}
-	}
-
-	if {![info exists ::gorilla::dirName]} {
-		if {[tk windowingsystem] == "aqua"} {
-			set ::gorilla::dirName "~/Documents"
-		} else {
-		# Windows-Abfrage auch nötig ...
-			set ::gorilla::dirName [pwd]
-		}
-	}
-
-		set fileName [tk_getSaveFile -parent . \
-			-title [mc "Save password database ..."] \
-			-filetypes $types \
-			-initialdir $::gorilla::dirName]
-						# -defaultextension $defaultExtension \
+	set fileName [ filename_query Save -parent . \
+		-title [ mc "Save password database ..." ] ]
 
 	if {$fileName == ""} {
 		return 0
@@ -4500,7 +4540,29 @@ proc gorilla::SaveAs {} {
 	set ::gorilla::status [mc "Password database saved."] 
 	
 	return GORILLA_OK
-}
+  
+} ; # end proc gorilla::SaveAs
+
+proc gorilla::filename_query {type args} {
+
+	if { $type ni {Open Save} } {
+		error "type parameter must be one of 'Open' or 'Save'"
+	}
+	
+	set types {	{{Password Database Files} {.psafe3 .dat}}
+			{{All Files} *}	}
+
+  if {[tk windowingsystem] == "aqua"} {
+    # if MacOSX - remove the .psafe3 type leaving only "*"
+    # set types [ lreplace $types 0 0 ]
+    set types [list ]
+  }
+
+	setup-default-dirname
+
+	tk_get${type}File {*}$args -filetypes $types -initialdir $::gorilla::dirName
+
+} ; # end proc gorilla::filename_query
 
 proc gorilla::SaveBackup { filename } {
 	# tries to backup the actual database observing the keepBackupFile flag.
@@ -4527,7 +4589,7 @@ proc gorilla::SaveBackup { filename } {
 		append backupFileName [file extension $filename]
 	}
 
-        # determine where to save the backup based upon preference setting
+  # determine where to save the backup based upon preference setting
         
 	if { $::gorilla::preference(backupPath) eq "" } {
 		# place backup file into same directory as current password db file
@@ -4668,7 +4730,10 @@ proc gorilla::AddGroupToTree {groupName} {
 	return $parentNode
 }
 
-
+proc gorilla::FocusRootNode {} {
+	focus .tree
+	.tree focus "RootNode"
+}
 #
 # Update Menu items
 #
@@ -4709,6 +4774,10 @@ proc gorilla::UpdateMenu {} {
 	} else {
 		setmenustate $::gorilla::widgets(main) conflict disabled
 	}
+
+    if { ! $::gorilla::hasDownloadsFile } {
+		setmenustate $::gorilla::widgets(main) dld disabled
+    }
 	
 }
 
@@ -4902,13 +4971,23 @@ proc gorilla::LockDatabase {} {
 	# MacOSX gives access to the menubar as long as the application is launched
 	# so we grey out the menuitems
 	if {[tk windowingsystem] eq "aqua"} {
+		# save current state of menu entries
+		set stateofmenus [ getMenuState $::gorilla::widgets(main) ]
 		setmenustate $::gorilla::widgets(main) all disabled
 		rename ::tk::mac::ShowPreferences ""
 	}
 
-	# FIXME: perhaps it's better to backup the db in any case?
 	if { $::gorilla::preference(keepBackupFile) } {
-		set message [ gorilla::SaveBackup $::gorilla::fileName ]
+    
+    if { ![info exists ::gorilla::fileName] } {
+      set nosave [tk_dialog .nosave [mc "Database not saved!"] \
+      [mc "This database has not been saved. Do you want to save it now?"] \
+        "" 0 [mc Yes] [mc No] ]
+      if {$nosave} { set message GORILLA_OK
+      } else { set message [gorilla::SaveAs] }
+      
+    } else { set message [ gorilla::SaveBackup $::gorilla::fileName ] }
+
 		if { $message ne "GORILLA_OK" } {
 			gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
 		}
@@ -4978,7 +5057,17 @@ proc gorilla::LockDatabase {} {
 	}
 
 	wm title $top "Password Gorilla"
-	$aframe.title configure -text  [mc "Database Locked"]
+	$aframe.title configure -text  [ ::gorilla::LockDirtyMessage ]
+
+	# and setup a pair of variable write traces to toggle the title text
+	#
+	# the toggle happens upon
+	# 1) database marked dirty/clean
+	# 2) open/close of edit password dialogs
+
+	trace add variable ::gorilla::dirty write [ namespace code [ list ::gorilla::LockDirtyHandler $aframe.title ] ]
+	trace add variable ::gorilla::LoginDialog::arbiter write [ namespace code [ list ::gorilla::LockDirtyHandler $aframe.title ] ]
+	
 	$aframe.mitte.pw.pw delete 0 end
 	$aframe.info configure -text [mc "Enter the Master Password."]
 
@@ -4999,6 +5088,9 @@ proc gorilla::LockDatabase {} {
 	#
 
 	focus $aframe.mitte.pw.pw
+	# synchronize Tk's event-loop with Aqua's event-loop
+	update idletasks
+  
 	if {[catch { grab $top } oops]} {
 		set ::gorilla::status [mc "error: %s" $oops]
 	}
@@ -5007,7 +5099,7 @@ proc gorilla::LockDatabase {} {
 		wm iconify $top
 	}
 
-	if { ! $::DEBUG(TEST) } {		
+	if { ! $::gorilla::DEBUG(TEST) } {		
 		while {42} {
 			set ::gorilla::lockedMutex 0
 			vwait ::gorilla::lockedMutex
@@ -5050,7 +5142,8 @@ proc gorilla::LockDatabase {} {
 	}
 
 	if { [tk windowingsystem] eq "aqua"} {
-		setmenustate $::gorilla::widgets(main) all normal
+		# restore saved menu entry states
+		eval $stateofmenus
 		eval $::gorilla::MacShowPreferences
 	}
 		
@@ -5065,6 +5158,21 @@ proc gorilla::LockDatabase {} {
 	return GORILLA_OK
 }
 
+# ----------------------------------------------------------------------
+
+proc gorilla::LockDirtyMessage {} {
+  if { $::gorilla::dirty || ( [ dict size $::gorilla::LoginDialog::arbiter ] > 0 ) } {
+    return [ mc "Database Locked (with unsaved changes)" ]
+  } else {
+    return [ mc "Database Locked" ]
+  }
+}
+
+# ----------------------------------------------------------------------
+
+proc gorilla::LockDirtyHandler { win args } {
+  $win configure -text [ ::gorilla::LockDirtyMessage ]
+}
 
 # ----------------------------------------------------------------------
 # Prompt for a Password
@@ -5253,7 +5361,7 @@ proc gorilla::PasswordPolicy {} {
 	}
 
 	set oldSettings [GetDefaultPasswordPolicy]
-	set newSettings [PasswordPolicyDialog "Password Policy" $oldSettings]
+	set newSettings [PasswordPolicyDialog [mc "Password Policy"] $oldSettings]
 
 	if {[llength $newSettings]} {
 		SetDefaultPasswordPolicy $newSettings
@@ -5838,7 +5946,7 @@ proc gorilla::PreferencesDialog {} {
 			-variable ::gorilla::prefTemp(exportIncludeNotes) 
 
 		ttk::frame $epf.fs
-		ttk::label $epf.fs.l -text [mc "Field separator"] -width 16 -anchor w
+		ttk::label $epf.fs.l -text [mc "Field separator"] -width 20 -anchor w
 		spinbox $epf.fs.e \
 			-values [list , \; :] \
 			-textvariable ::gorilla::prefTemp(exportFieldSeparator) \
@@ -6071,7 +6179,7 @@ proc gorilla::SavePreferencesToRegistry {} {
 
 	set key {HKEY_CURRENT_USER\Software\FPX\Password Gorilla}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+	if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 		set revision "<unknown>"
 	}
 
@@ -6166,7 +6274,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 		return 0
 	}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+	if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 		set revision "<unknown>"
 	}
 
@@ -6179,7 +6287,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 	dict for {pref value} $::gorilla::preference(all-preferences) {
 		# lru and exportFieldSeparator are handled specially below
 		if { $pref ni { lru exportFieldSeparator findThisText } } {
-			puts $f "$pref=$::gorilla::preference($pref)"
+			puts $f "$pref=[ quoteBackslashes $::gorilla::preference($pref) ]"
 		}
 	}
 
@@ -6194,7 +6302,7 @@ proc gorilla::SavePreferencesToRCFile {} {
 	}
 
 	foreach file $lru {
-		puts $f "lru=\"[string map {\\ \\\\ \" \\\"} $file]\""
+		puts $f "lru=\"[ quoteBackslashes $file ]\""
 	}
 
 	if {$::gorilla::preference(rememberGeometries)} {
@@ -6210,6 +6318,10 @@ proc gorilla::SavePreferencesToRCFile {} {
 		return 0
 	}
 	return 1
+}
+
+proc gorilla::quoteBackslashes { str } {
+  string map {\\ \\\\} $str
 }
 
 proc gorilla::SavePreferences {} {
@@ -6238,7 +6350,7 @@ proc gorilla::LoadPreferencesFromRegistry {} {
 		return 0
 	}
 
-	if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+	if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 		set revision "<unmatchable>"
 	}
 
@@ -6333,7 +6445,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 
 	} ; # end if info exists ::gorilla::preference(rc)
 
-	if { ! [ regexp {Revision: ([0-9.]+)} $::gorillaVersion -> revision ] } {
+	if { ! [ regexp {Revision: ([0-9.]+)} $::gorilla::Version -> revision ] } {
 		set revision "<unmatchable>"
 	}
 
@@ -6403,7 +6515,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 
 	# Load msgcat data into the global namespace so that it is visible
 	# from both the ::gorilla and ::pwsafe namespaces.
-	namespace eval :: { mcload [file join $::gorillaDir msgs] }
+	namespace eval :: { mcload [file join $::gorilla::Dir msgs] }
 	
 	set value $::gorilla::preference(fontsize) 
 	font configure TkDefaultFont -size $value
@@ -6703,7 +6815,7 @@ proc gorilla::About {} {
 		
 		set w .about.mainframe
 		
-		if {![regexp {Revision: ([0-9.]+)} $::gorillaVersion dummy revision]} {
+		if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
 			set revision "<unknown>"
 		}
 		
@@ -6713,9 +6825,9 @@ proc gorilla::About {} {
 			-font {sans 16 bold} -padding {10 10}
 		ttk::label $w.description -text [ mc "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" ] -wraplength 350 -padding {10 0}
 		ttk::label $w.copyright \
-			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2011 Zbigniew Diaczyszyn and\n\u00a9 2010-2011 Richard Ellis" \
+			-text "\u00a9 2004-2009 Frank Pillhofer\n\u00a9 2010-2013 Zbigniew Diaczyszyn and\n\u00a9 2010-2013 Richard Ellis" \
 			-font {sans 9} -padding {10 0}
-		ttk::label $w.url -text "https:/github.com/zdia/gorilla" -foreground blue \
+		ttk::label $w.url -text "https://github.com/zdia/gorilla" -foreground blue \
 			-font {sans 10}
 
 		set stdopts [ list -padding {10 0} -font {sans 9} -wraplength 350 ]
@@ -6724,8 +6836,9 @@ proc gorilla::About {} {
 		lappend ctr [ ttk::label $w.contrib2 -text "\u2022 [ mc "German translation by %s" "Zbigniew Diaczyszyn" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib3 -text "\u2022 [ mc "Russian translation by %s" "Evgenii Terechkov" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib4 -text "\u2022 [ mc "Italian translation by %s" "Marco Ciampa" ]" {*}$stdopts ]
-		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib5 -text "\u2022 [ mc "French translation by %s" "Benoit Mercier, Alexandre Raymond" ]" {*}$stdopts ]
 		lappend ctr [ ttk::label $w.contrib6 -text "\u2022 [ mc "Spanish translation by %s" "Juan Roldan Ruiz" ]" {*}$stdopts ]
+		lappend ctr [ ttk::label $w.contrib7 -text "\u2022 [ mc "Portuguese translation by %s" "Daniel Bruno" ]" {*}$stdopts ]
 
 		set I [ expr { [ info exists ::sha2::accel(critcl) ] && $::sha2::accel(critcl) ? "C" : "Tcl" } ]
 		ttk::label $w.exten -text [ mc "Using %s sha256 extension." $I ] {*}$stdopts
@@ -6767,7 +6880,7 @@ proc gorilla::Help {} {
 
 	# ReadHelpFiles is looking in the given directory 
 	# for a file named help.txt
-	::Help::ReadHelpFiles $::gorillaDir $::gorilla::preference(lang)
+	::Help::ReadHelpFiles $::gorilla::Dir $::gorilla::preference(lang)
 	::Help::Help Overview
 }
 
@@ -6821,7 +6934,7 @@ proc gorilla::ShowTextFile {top title fileName} {
 		$text configure -state normal
 		$text delete 1.0 end
 
-		set filename [file join $::gorillaDir $fileName]
+		set filename [file join $::gorilla::Dir $fileName]
 		if {[catch {
 				set file [open $filename]
 				$text insert 1.0 [read $file]
@@ -6868,7 +6981,7 @@ proc gorilla::Find {} {
 	if {![info exists ::gorilla::toplevel($top)]} {
 		toplevel $top -class "Gorilla"
 		TryResizeFromPreference $top
-		wm title $top "Find"
+		wm title $top "[mc Find]"
 
 		ttk::frame $top.text -padding [list 10 10]
 		ttk::label $top.text.l -text [mc "Find Text:"] -anchor w -width 10
@@ -7000,10 +7113,16 @@ proc gorilla::FindCompare {needle haystack caseSensitive} {
 }
 
 proc gorilla::RunFind {} {
-	if {![info exists ::gorilla::findCurrentNode]} {
-		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
-	} else {
+
+	# The call to "tree exists" below is to prevent an error message in the
+	# instance that the node referenced by "findCurrentNode" has been deleted
+	# from the tree prior to calling "RunFind"
+	
+	if { [ info exists ::gorilla::findCurrentNode ]
+	  && [ $::gorilla::widgets(tree) exists $::gorilla::findCurrentNode ] } {
 		set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
+	} else {
+		set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
 	}
 	
 	set text $::gorilla::preference(findThisText)
@@ -7148,12 +7267,17 @@ proc gorilla::RunFind {} {
 }
 
 proc gorilla::FindNext {} {
-	set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
-	gorilla::RunFind
+	if { [ info exists ::gorilla::findCurrentNode ] } {
+		set ::gorilla::findCurrentNode [::gorilla::FindNextNode $::gorilla::findCurrentNode]
+		gorilla::RunFind
+	} else {
+		# if no find state - just jump into a regular "find" operation
+		gorilla::Find
+	}
 }
 
 proc gorilla::getAvailableLanguages {  } {
-	set files [glob -tail -path "$::gorillaDir/msgs/" *.msg]
+	set files [glob -tail -path "$::gorilla::Dir/msgs/" *.msg]
 	set msgList [list ]    ;# en.msg exists
 	
 	foreach file $files {
@@ -7161,7 +7285,7 @@ proc gorilla::getAvailableLanguages {  } {
 	}
 	
 	# FIXME: This dictionary of possible languages has to be expanded
-	set langFullName [list en English de Deutsch fr Fran\u00e7ais es Espa\u00f1ol ru Russian it Italiano]
+	set langFullName [list en English de Deutsch fr Fran\u00e7ais es Espa\u00f1ol ru Russian it Italiano pt Portuguese]
 
 	# create langList from *.msg pool
 	set langList {}
@@ -7177,369 +7301,17 @@ proc gorilla::getAvailableLanguages {  } {
 # ----------------------------------------------------------------------
 #
 
-set ::gorilla::images(application) [image create photo -data "
-R0lGODlhEAAQAMZxAF4qAl4rAWAtAmEuBmMvAWQwAGIwCmMxCmU0DWk4DGs5DW87AGw7DXA8AW88
-BGw8EGw8EnFADnFCHHdFD3dGDn1JA3ZJIX9MBX1ND4VRBIFSGIJSHItZC4RZM49eEoxeH4peKZJh
-GYxiNpFkLYxlOZBoP5dqJpRqNZlrIJ1uG6V5LKJ5PaJ7RquAK6OBTrCMSriQILmPLraPVbaUYcKZ
-SMCaUsqcLdirIsiqdNWtOcmsdNm3UuC5SuzAMeTBVN/DcuzMUPjQI+7OVfjQJvXQNfDOWO3PV/bP
-Q/7TKvbUOO/TZfbUVPvYKvzZKvvaJ/jXUfDYePbYZ/bZY/ncRPzcRPnbZ/zgMvjeWf/iJv7iM/ff
-df/jOfjhe//nLvbhhP/oNPvkdf/qNP/mZ/rnh/voh/fsqPrtnf7ukvfuqP3wm/nwqPryqfryq/vy
-qv70q//1qP32sv///////////////////////////////////////////////////////////yH+
-EUNyZWF0ZWQgd2l0aCBHSU1QACH5BAEKAH8ALAAAAAAQABAAAAeXgH+Cg4ISIicgDISLfyVKU0mR
-G4yCHVdfWTAHGkkTjAM/YVZNGH8GNkkEixBGXU5BNxQtRTwOiw9AWExER0tVXD4NiwI7W1RPUlpj
-ZjkFjC9CYmBkaXBeFYwuazFRZ29uUByMJG0qQzQpKB4LjBZqK0g1H5SCCGgsPReK9ABlMyYZ6AkK
-wAbHCIGDEuiQEQLhIAURHAoKBAA7"]
+set ::gorilla::images(application) [image create photo -file [file join $::gorilla::PicsDir application.gif]]
 
-set ::gorilla::images(browse) [image create photo -data "
-R0lGODlhFAASAKEBAC5Ecv///5sJCQAAACH5BAEAAAMALAAAAAAUABIAAAJCnI+pywoPowQIBDvj
-rbnXAIaiSB1WIAhiSn5oqr7sZo52WBrnDPK03oMFZ7nB6TYq7mLBVk0Wg8WUSJuyk2lot9wCADs=
-"]
+set ::gorilla::images(browse) [image create photo -file [file join $::gorilla::PicsDir browse.gif]]
 
-set ::gorilla::images(group) [image create photo -data "
-R0lGODlhDQANAJEAANnZ2QAAAP//AP///yH5BAEAAAAALAAAAAANAA0AAAIyhI+pe0EJ4VuE
-iFBC+EGyg2AHyZcAAKBQvgQAAIXyJQh2kOwg+BEiEhTCt4hAREQIHVIAOw==
-"]
+set ::gorilla::images(group) [image create photo -file [file join $::gorilla::PicsDir group.gif]]
 
-set ::gorilla::images(login) [image create photo -data "
-R0lGODlhDQANAJEAANnZ2QAAAAD/AP///yH5BAEAAAAALAAAAAANAA0AAAI0hI+pS/EPACBI
-vgQAAIXyJQAAKJQvAQBAoXwJAAAK5UsAAFAoXwIAgEL5EgAAFP8IPqZuAQA7
-"]
-
-set ::gorilla::images(wfpxsm) [image create photo -data "
-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
-"]
+set ::gorilla::images(login) [image create photo -file [file join $::gorilla::PicsDir login.gif]]
 
 # vgl. auch Quelle: http://www.clipart-kiste.de/archiv/Tiere/Affen/affe_08.gif
 
-set ::gorilla::images(splash) [image create photo -data "
-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
-"]
+set ::gorilla::images(splash) [image create photo -file [file join $::gorilla::PicsDir splash.gif]]
 
 proc gorilla::CheckDefaultExtension {name extension} {
 	set res [split $name .]
@@ -7747,7 +7519,9 @@ proc gorilla::get-selected-tree-data { {returninfo {}} } {
 
 proc gorilla::LaunchBrowser { rn } {
 
-	set URL [ dbget url $rn ]
+	# add quotes around the URL value to protect it from most issues
+	# with {*} expansion
+	set URL \"[ dbget url $rn ]\"
 	if { $URL eq "" } { 
 		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
 	} elseif { $::gorilla::preference(browser-exe) eq "" } {
@@ -7762,7 +7536,7 @@ proc gorilla::LaunchBrowser { rn } {
 				return
 			}
 		}
-		if { [ catch { exec $::gorilla::preference(browser-exe) $URL & } mesg ] } {
+		if { [ catch { exec $::gorilla::preference(browser-exe) {*}$URL & } mesg ] } {
 			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
 		} else {
 			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
@@ -8180,6 +7954,11 @@ namespace eval ::gorilla::dnd {
 				foreach item $selectedItems {
 					::gorilla::MoveTreeNode $item $dropIdx
 				}
+				# if a drop occurs while "find" state exists, set "find" state to
+				# the root of the tree
+				if { [ info exists ::gorilla::findCurrentNode ] } {
+					set ::gorilla::findCurrentNode [lindex [$::gorilla::widgets(tree) children {}] 0]
+				}
 			}
 
 			. configure -cursor {}
@@ -8573,8 +8352,7 @@ proc ::gorilla::merge-destroy { container tabset } {
 	# the last contained merge widget set and if so also destroys the toplevel
 	#
 	# container - the container to destroy
-	# tabs - the tabset to check for emptiness
-	# toplevel - the toplevel to destroy if the tabset becomes empty
+	# tabset - the tabset to check for emptiness
 
 	::gorilla::ArrangeIdleTimeout
 
@@ -8617,6 +8395,246 @@ proc ::gorilla::remove-from-conflict-list { current_dbidx merged_dbidx current_t
 
 } ; # end proc ::gorilla::remove-from-conflict-list
 
+
+# ======================================================================
+# Lookup for new Version
+# ======================================================================
+
+
+# ----------------------------------------------------------------------
+proc gorilla::versionIsNewer { server } {
+  
+  # server - Version downloaded from version.txt on server
+  # format is: n.n.n(...)
+  # returns 1 if server version is newer otherwise 0
+  
+  regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy version
+
+	set localList [split $version .]
+	set serverList [split $server .]
+
+	foreach remote $serverList local $localList {
+		if { $remote > $local } {
+      return 1
+		} else {
+			continue
+		}
+	}
+  return 0
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionCheckHttp { url {flag 0} } {
+# ----------------------------------------------------------------------
+  # tries to connect to the passed url and returns results
+  # url - see downloads.txt
+  # flag - the optional validate flag prevents downloading the whole data
+  # if there is a check for the large binaries
+  # returns { 0 errortext } || { fileLen http::data }
+  
+  set result ""
+  
+  if { [ catch { set token [::http::geturl $url -validate $flag ] } oops ] } {
+    
+    # in error case no http::cleanup necessary
+    return [list 0 "Error: $oops -\n\nTried: $url"]
+
+  } elseif { [::http::status $token] ne "ok" } {
+
+      set result [list 0 "[::http::error $token]"]
+
+  } elseif { [string index [::http::ncode $token] 0] != 2 } {
+
+      # codes beginning with 2 are ok.
+      set result [list 0 "[::http::code $token]"]
+
+  } else {
+
+      # get file length and http::data
+      set result [list [dict get [http::meta $token] Content-Length] [http::data $token]]
+  }
+  http::cleanup $token
+  return $result
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionGet { platform } {
+  
+  # /sources/downloads.txt contains download sites
+  # version.txt on the server contains version information
+  #
+  # platform - The user's actual Tk windowingsystem
+  # returns list: version url || 0 errormessage
+  
+  set fh [open $::gorilla::Dir/downloads.txt r]
+  set data [read $fh]
+  close $fh
+  
+  lassign $data mirrors
+
+  #
+  # connect to mirrors
+  #
+  
+  foreach mirror $mirrors {
+    
+    set url $mirror/version.txt
+    set error 0
+    
+    lassign [gorilla::versionCheckHttp $url] fileLen data
+
+    if { $fileLen == 0 } { set error 1 }
+
+  } ;# end foreach mirror
+
+  if { $error } { return [list 0 "Last mirror: $url\n\n$data"] }
+
+  #
+  # extract version data 
+  #
+  
+  set version [dict get $data $platform version]
+  set exe [dict get $data $platform executable $::tcl_platform(machine)]
+
+  return [list $version $mirror/$exe]
+  
+} ;# end proc gorilla::versionGet
+
+# ----------------------------------------------------------------------
+proc gorilla::versionCallback { w token total current } {
+  $w configure -value $current
+}
+
+# ----------------------------------------------------------------------
+proc gorilla::versionDownload { url } {
+  # url - url of new version
+  
+  #
+  # define target location
+  #
+  
+	if { $::gorilla::preference(backupPath) eq "" } {
+		set backupPath "~"
+	} else {
+		# place backup file into user''s preference directory
+		set backupPath $::gorilla::preference(backupPath)
+		if { ! [file isdirectory $backupPath] } {
+			gorilla::ErrorPopup [mc "No valid directory. - \nPlease define a valid backup directory\nin the Preferences menu."]
+      return DIR_ERROR
+		}
+	} 
+	
+	set filename [ file join $backupPath [file tail $url] ]
+
+  #
+  # check the connection
+  #
+    
+  lassign [gorilla::versionCheckHttp $url 1] fileLen message
+
+  if { $fileLen == 0 } {
+    gorilla::ErrorPopup [mc "Http Error"] $message
+    return
+  }
+
+  #
+  # prepare display
+  #
+
+  ttk::frame .status-dl -relief sunken
+  ttk::progressbar .status-dl.pb -mode determinate -orient horizontal \
+    -value 0 -maximum $fileLen
+  ttk::label .status-dl.lb -text [mc "Downloading %s: " $url ] -relief sunken
+  grid .status-dl.lb .status-dl.pb -sticky news
+  grid columnconfigure .status-dl 1 -weight 1
+  grid .status-dl - -sticky news
+
+  #
+  # start download
+  #
+  
+  set out [open $filename w]  
+  
+  if { [catch {set download [::http::geturl $url -channel $out \
+            -progress [ list gorilla::versionCallback .status-dl.pb ] -blocksize 4096]} oops] } {
+    
+    gorilla::ErrorPopup "[mc "Http error"]" $oops
+    
+  } else {
+    
+    # go on and check file size
+
+    if { [file size $filename] != $fileLen } {
+      
+      gorilla::ErrorPopup "[mc "Download Error"]" "[mc "Downloaded File has wrong size."]"
+      
+    } else {
+      
+      tk_messageBox -title [mc "Download finished"] \
+        -message [mc "The new version was successfully downloaded as\n%s." [ file nativename $filename ] ] \
+        -icon info -type ok
+    }
+  }
+  http::cleanup $download
+  destroy .status-dl
+  close $out
+  return
+  
+} ;# end proc gorilla::versionDownload
+
+# ----------------------------------------------------------------------
+proc gorilla::versionLookup {} {
+  
+  # Look if there is a new version on the mirrors defined in 
+  # /source/downloads.txt. The version data are lying in the file 
+  # version.txt on the mirrors
+  
+  load-package http
+  
+  switch [tk windowingsystem] {
+    x11     { set platform Linux }
+    win32   { set platform Windows }
+    aqua    { set platform MacOSX }
+    default { set platform unknown }
+  }
+  
+  if { $platform eq "unknown" } {
+    gorilla::ErrorPopup [mc Error] [mc "Unknown windowing system"]
+    return
+  }
+  
+  lassign [gorilla::versionGet $platform] version url
+  
+  if { $version == 0 } {
+    gorilla::ErrorPopup [mc "Connection error"] $url
+    return
+  }
+
+  if { ! [gorilla::versionIsNewer $version] } {
+    set message [mc "No new version available"]
+    tk_messageBox -message $message -icon info -type ok 
+    return
+  } 
+  
+  set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy actual ; set actual ] ]\n\n"
+
+  append message "[mc "There is a new version %s for %s." $version $platform]"
+  append message "\n\n[mc "Shall I download the new version?"]"
+  
+  # Tk font default style is ugly bold
+  option add *Dialog.msg.font {Arial 11}
+  set answer [tk_dialog .download [mc "New version available"] $message "" 0 [mc "Executable"] [mc "Sourcecode"] [mc "Cancel"] ]
+  
+  switch $answer {
+    0          { gorilla::versionDownload $url }
+    1          { gorilla::versionDownload [regsub [file tail $url] $url gorilla-$version.zip] }
+    default    { return }
+  }
+  
+  return
+  
+} ;# end proc gorilla::versionLookup
+
 #
 # ----------------------------------------------------------------------
 # Init
@@ -8636,7 +8654,10 @@ if {[tk windowingsystem] == "aqua"} {
 	proc ::tk::mac::Quit {} {
 		gorilla::Exit
 	}
-
+  
+  proc tk::mac::ShowHelp {} {
+    gorilla::Help
+  } 
 }
 	
 proc usage {} {
@@ -8654,7 +8675,7 @@ if {$::gorilla::init == 0} {
 
 	set haveDatabaseToLoad 0
 	set databaseToLoad ""
-	array set ::DEBUG {
+	array set ::gorilla::DEBUG {
 		TCLTEST 0 \
 		TEST 0 \
 		CSVEXPORT 0 \
@@ -8666,27 +8687,33 @@ if {$::gorilla::init == 0} {
 	for {set i 0} {$i < $argc} {incr i} {
 		switch -- [lindex $argv $i] {
 			--sourcedoc {
-					# Need ruff! and struct::list from tcllib - both should be
-					# installed properly for this option to work
+					# Need ruff! and struct::list from tcllib - 
+          # Ruff! is installed under /utilities/ruff
 
-					set error false
+          lappend auto_path "$::gorilla::Dir/../utilities/ruff"
+
 					foreach pkg { ruff struct::list } {
 						if { [ catch { package require $pkg } ] } {
 							puts stderr "Could not load package $pkg, aborting documentation processing."
-							set error true 
+              exit
 						}
 					} ; # end foreach pkg
 
-					if { ! $error } {
-						# document all namespaces, except for tcl/tk system namespaces
-						# (tk, ttk, itcl, etc.)
-						set nslist [ ::struct::list filterfor z [ namespace children :: ] \
-						{ ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
-						::ruff::document_namespaces html $nslist -output gorilladoc.html -recurse true
-					}
-
+          # document all namespaces, except for tcl/tk system namespaces
+          # (tk, ttk, itcl, etc.)
+          set nslist [ ::struct::list filterfor z [ namespace children :: ] \
+          { ! [ regexp {^::(ttk|uuid|msgcat|pkg|tcl|auto_mkindex_parser|itcl|sha2|tk|struct|ruff|textutil|cmdline|critcl|activestate|platform)$} $z ] } ]
+          
+          if { [ catch { ::ruff::document_namespaces html $nslist -output $::gorilla::Dir/../utilities/gorilladoc.html -recurse true } oops ] } {
+            puts stderr "Could not generate documentation - $oops."
+            exit
+          }
+          
 					# cleanup after ourselves
-					unset -nocomplain error nslist pkg z 
+					unset -nocomplain nslist pkg z 
+          
+          puts "Documentation file $::gorilla::Dir/../utilities/gorilladoc.html has been successfully generated."
+          exit
 				}
 			--norc -
 			-norc {
@@ -8724,10 +8751,10 @@ if {$::gorilla::init == 0} {
 			--tcltest {
 				# TCLTEST 1 and TEST 1:
 				# skip the OpenDatabase dialog and load testdb.psafe3
-				array set ::DEBUG { TCLTEST 1 TEST 1 }
+				array set ::gorilla::DEBUG { TCLTEST 1 TEST 1 }
 			}
 			--test {
-				array set ::DEBUG { TEST 1 }
+				array set ::gorilla::DEBUG { TEST 1 }
 			}
 			default {
 				if {$haveDatabaseToLoad} {
@@ -8738,7 +8765,7 @@ if {$::gorilla::init == 0} {
 				set databaseToLoad [lindex $argv $i]
 			}
 		}
-	}
+	} ; unset i
 }
 
 gorilla::Init
@@ -8755,7 +8782,7 @@ if {$haveDatabaseToLoad} {
 if {$action == "Cancel"} {
 	destroy .
 	exit		
-}
+} ; unset action haveDatabaseToLoad databaseToLoad
 
 if { [tk windowingsystem] eq "aqua" } {
 	eval $gorilla::MacShowPreferences
@@ -8767,7 +8794,7 @@ update
 
 set ::gorilla::status [mc "Welcome to the Password Gorilla."]
 
-if { $::DEBUG(TCLTEST) } {
+if { $::gorilla::DEBUG(TCLTEST) } {
 	set argv ""
-	source [file join $::gorillaDir .. unit-tests RunAllTests.tcl]
+	source [file join $::gorilla::Dir .. unit-tests RunAllTests.tcl]
 }

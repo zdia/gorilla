@@ -124,8 +124,8 @@ itcl::class ::itwofish::itwofish {
 
 		# since Tcl 8.5.9.1: Darwin >= 10.5
 		
-# puts stderr "twofish: gorillaDir = $gorillaDir"
-    set lib [ file join $::gorillaDir twofish f32-$os-$machine[ info sharedlibextension ] ]
+# puts stderr "twofish: gorilla::Dir = $gorilla::Dir"
+    set lib [ file join $::gorilla::Dir twofish f32-$os-$machine[ info sharedlibextension ] ]
 #    puts stderr "twofish: lib -> $lib"
 
     if { [ catch { load $lib f32 } ] } {

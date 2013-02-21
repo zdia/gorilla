@@ -7,10 +7,10 @@
 # rebuild-msg-files script.
 #
 #
-# Project-Id-Version: Gorilla 1.5.3.6
+# Project-Id-Version: Gorilla 1.5.3.7
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-24 11:49+0100
-# PO-Revision-Date: 2011-11-25 22:22+0800
+# POT-Creation-Date: 2013-01-14 19:38+0100
+# PO-Revision-Date: 2013-01-18 23:58+0800
 # Last-Translator: Evgenii Terechkov <evg@Aaltlinux.org>
 # Language-Team: Russian <ru@li.org>
 # Language: Russian
@@ -26,19 +26,6 @@ Error message: %s} {Требуется пакет "%s". Это похоже на
 входит в дистрибутив программы.
 
 Сообщение об ошибке: %s}
-{Need [Incr Tcl]} {Требуется [Incr Tcl]}
-{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s} {Требуется надстройка [incr Tcl] на Tcl. Пожалуйста, установите пакет [incr Tcl].
-
-Сообщение об ошибке: %s}
-{Need PWSafe} {Требуется PWSafe}
-{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s} {Требуется пакет "pwsafe". Это похоже на проблему установки, т.к. пакет
-входит в дистрибутив программы.
-
-Сообщение об ошибке: %s<}
 {Welcome to the Password Gorilla.} {Добро пожаловать в Password Gorilla}
 File Файл
 New Новая
@@ -75,6 +62,7 @@ Customize Настроить
 {Lock now} {Заблокировать сейчас}
 Help Помощь
 License Лицензия
+{Look for Update} {Проверить обновления}
 About {О программе}
 {Open URL} {Открыть URL}
 {Copy Username to Clipboard} {Копировать логин в буфер обмена}
@@ -91,10 +79,12 @@ Database: БД:
 Password: Пароль:
 OK ОК
 {Select a database, and enter its password. Click "New" to create a new database.} {Выберите БД и введите её пароль. Нажмите "Новая" для создания новой БД.}
+{Select a database, and enter its password.} {Выберите БД и введите её пароль.}
 {No File} {Нет файла}
 {Please select a password database.} {Пожалуйста, выберите БД паролей.}
-{File Not Found} {Файл не найден.}
-{The password database %s does not exist or can not be read.} {БД паролей %s не существует или не может быть прочитана.}
+{The password database %s can not be read.} {БД паролей %s не может быть прочитана.}
+{The password database %s does not exist.} {БД паролей %s не существует.}
+{Error Accessing File} {Ошибка доступа к файлу}
 {Please be patient. Verifying password ...} {Будьте терпеливы. Проверка пароля ...}
 {Opening ... %d %%} {Opening ... %d %%}
 {Error Opening Database} {Error Opening Database}
@@ -189,6 +179,11 @@ Do you wish to save a log of skipped records?} {Некоторые записи 
 {Merge Password Database} {Объединить БД}
 Merging Объединение
 {Merging (%d %% done)} {Объединение (выполнено %d %%)}
+{Conflict for login %s} {Конфликт логина %s}
+{(in group %s)} {(в группе %s)}
+%s %s
+{Added login %s} {Добавлен логин %s}
+{Identical login %s} {Идентичный логин %s}
 login логин
 logins логины
 conflict конфликт
@@ -200,6 +195,7 @@ conflicts конфликты
 {Do you want to view a detailed report?} {Хотите посмотреть детальный отчёт?}
 {Resolve Conflicts} {Разрешить конфликты}
 Close Закрыть
+Conflicts Конфликты
 {Warning: Can not save to} {Предупреждение: не могу сохранить в}
 {because the file permissions are set for read-only access.} {т.к. есть права лишь на чтение файла.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Пожалуйста, смените права доступа на чтение-запись и нажмите 'Повтор' или нажмите 'Отмена' и сохраните БД в другой файл.}
@@ -231,12 +227,13 @@ database as %s:
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {БД изменена. Хотите сохранить изменения?
 "Yes" - сохранить БД и выйти, "No" - выйти без сохранения, "Cancel" - вернуться в программу.}
 {Clipboard cleared.} {Буфер обмена очищен.}
-{Database Locked} {БД заблокирована}
 {Enter the Master Password.} {Введите мастер-пароль.}
 {error: %s} {error: %s}
 {Wrong Password} {Wrong Password}
 {That password is not correct.} {That password is not correct.}
 {Welcome back.} {Добро пожаловать назад.}
+{Database Locked (with unsaved changes)} {БД заблокирована (НЕ сохранена)}
+{Database Locked} {БД заблокирована}
 Confirm: Подтверждение:
 {Passwords Do Not Match} {Пароли не совпадают.}
 {The confirmed password does not match.} {Подтверждённый пароль не совпадает.}
@@ -345,6 +342,8 @@ Contributors Контрибьюторы
 {Italian translation by %s} {Italian translation by %s}
 {French translation by %s} {Французский перевод: %s}
 {Spanish translation by %s} {Испанский перевод: %s}
+{Portuguese translation by %s} {Португальский перевод: %s}
+{Using %s sha256 extension.} {Используется sha256 расширение %s}
 {About Password Gorilla} {О Password Gorilla}
 {Password Gorilla License} {Лицензия на Password Gorilla}
 {Find Text:} Найти:
@@ -369,17 +368,39 @@ Contributors Контрибьюторы
 Current Текущий
 Merged Объединено
 {A selection is required for:} {Выделение требуется для:}
+{Http Error} {Ошибка http}
+{Downloading %s: } {Загрузка %s: }
+{Http error} {Ошибка http}
+{Download Error} {Ошибка загрузки}
+{Downloaded File has wrong size.} {Загруженный файл имеет неверный размер.}
+{Download finished} {Загрузка завершена}
+{The new version was successfully downloaded as
+%s.} {Новая версия загружена как
+%s.}
+{Unknown windowing system} {Неизвестная оконная система}
+{Connection error} {Ошибка соединения}
+{No new version available} {Новых версий нет}
+{You are running version %s.} {Текущая версия %s.}
+{There is a new version %s for %s.} {Есть новая версия %s для %s.}
+{Shall I download the new version?} {Загрузить новую версию?}
+{New version available} {Доступна новая версия}
+Executable Исполнимый
+Sourcecode {Исходный код}
 Back Назад
 Search Поиск
 Previous Предыдущий
 Next Следующий
 History История
 Index Индекс
+{Table of Contents} Содержимое
 Search! Искать!
+{Unable to find unused character with which to quote preference string.
+Normally this should not happen.} {Не получается найти неиспользованный символ для экранирования строки настроект.
+Этого не должно было случиться.}
 {unknown preference type: %s} {неизвестный тип настройки: %s}
 {premature end of preference} {Неожиданное завершение настроек}
 {expected number for value, got %s} {ожидалась цифра, а получено %s}
-{expected initial quote for string value} {ожидалась открывающая кавычка для строкового значения}
+{end delimiter '%s' not found in saved DB preference} {признак конца строки '%s' не найден в настройках БД}
 {premature end of string value} {неожиданное завершение строкового значения}
 {no such preference: %s} {нет такой настройки: %s}
 {group name can not be empty} {имя группы не может быть пустым}

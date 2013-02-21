@@ -24,9 +24,6 @@ package require tcltest 2.2
 set argv ""
 eval ::tcltest::configure $argv
 
-# WARNING: config the correct backup folder!
-set backupDir "~/gorilla-backup"
-
 # puts "------------------------------------------------------------------"
 # puts "+++ Running module backup for Password Gorilla ..."
 
@@ -38,23 +35,26 @@ namespace eval ::gorilla::test {
 	# CATEGORY: BACKUP
 	# ----------------
 
-	test backup-1.1 {General test with timestamp} \
-    -setup {
-			set oldflag $::gorilla::preference(keepBackupFile)
-			set ::gorilla::preference(keepBackupFile) 1
-			set ::gorilla::preference(timeStampBackup) 1
-			set timestamp [clock format [clock seconds] -format "-%Y-%m-%d-%H-%M-%S"] } \
-    -body { gorilla::Save } \
-    -cleanup { set ::gorilla::preference(keepBackupFile) $oldflag } \
-    -result GORILLA_OK
+	# perform the backup test into a temporary directory
+	set testbackupdir [ expr { rand() } ]
+	file mkdir $testbackupdir
 
-  # we are at the moment in folder /unit-tests/backup
+	test backup-1.1 {General test with timestamp} \
+		-setup {
+			set prefback [ array get ::gorilla::preference ]
+			set ::gorilla::preference(keepBackupFile) 1
+			set ::gorilla::preference(timeStampBackup) 1 
+			set ::gorilla::preference(backupPath) $testbackupdir } \
+		-body { gorilla::Save } \
+		-cleanup { array set ::gorilla::preference $prefback } \
+		-result GORILLA_OK
+
 	test backup-1.2 {Timestamp check} \
-    -body { return [ file exists "../testdb$timestamp.psafe3" ] } \
-    -cleanup {
-      file delete "../testdb$timestamp.psafe3"
-      set timestamp "" } \
-    -result 1
+		-body {
+			return [ llength [ glob [ file join $testbackupdir testdb-????-??-??-??-??-??.psafe3 ] ] ] } \
+		-cleanup {
+			file delete -force $testbackupdir } \
+		-result 1
 
 # The following errors are caught in procedure gorilla::SaveBackup:
 # ERROR-SaveBackup-no-directory

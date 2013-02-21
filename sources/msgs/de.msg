@@ -7,40 +7,30 @@
 # rebuild-msg-files script.
 #
 #
-# Project-Id-Version: 
+# Project-Id-Version: Password Gorilla 1.5.3.7
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-27 17:31+0100
+# POT-Creation-Date: 2013-01-14 19:38+0100
 # PO-Revision-Date: 
 # Last-Translator: Zbigniew Diaczyszyn <z.dia@gmx.de>
-# Language-Team: 
+# Language-Team: Zbigniew Diaczyszyn <PWGorilla@t-online.de>
 # Language: 
 # MIME-Version: 1.0
 # Content-Type: text/plain; charset=UTF-8
 # Content-Transfer-Encoding: 8bit
 # X-Poedit-SourceCharset: utf-8
 # X-Poedit-KeywordsList: mc
-# X-Poedit-Basepath: /home/dia/Projekte/git/gorilla/sources
+# X-Poedit-Basepath: /home/dia/Projekte/git/gorilla/utilities/gettext
 # X-Poedit-SourceCharset: utf-8
 # X-Poedit-KeywordsList: mc
 # X-Poedit-Basepath: /home/dia/Projekte/git/gorilla/sources
-# X-Poedit-SearchPath-0: msgs
-# X-Poedit-SearchPath-1: .
+# X-Poedit-Language: German
+# X-Poedit-Country: GERMANY
 
 mcmset de {
 {Need %s} {Benötige %s}
 {The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
 
 Error message: %s} {Password Gorilla benötigt das "%s" Paket. Dies scheint ein Installationsproblem zu sein, da dies Paket Teil der Distribution von Password Gorilla  ist.
-Fehler: %s}
-{Need [Incr Tcl]} {Benötige [Incr Tcl]}
-{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s} {Password Gorilla benötigt das [incr Tcl] Paket. Bitte installieren Sie es.
-Fehler: %s}
-{Need PWSafe} {Benötige PWSafe}
-{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s} {Password Gorilla benötigt das <pwsafe> Paket. Dies scheint ein Installationsproblem zu sein, das dies Paket Teil der Password Gorilla Distribution ist.
 Fehler: %s}
 {Welcome to the Password Gorilla.} {Hallo bei Password Gorilla}
 File Datenbank
@@ -78,6 +68,7 @@ Customize Anpassen
 {Lock now} {Sofort sperren}
 Help Hilfe
 License Lizenz
+{Look for Update} {Neue Version}
 About Über
 {Open URL} {Springe zu URL}
 {Copy Username to Clipboard} {Kopiere Benutzernamen in die Zwischenablage}
@@ -94,10 +85,12 @@ Database: Datenbank:
 Password: Passwort:
 OK OK
 {Select a database, and enter its password. Click "New" to create a new database.} {Wählen Sie eine Datenbank und geben Sie das Passwort ein. Klicken Sie auf  "Neu" um eine Datenbank anzulegen.}
+{Select a database, and enter its password.} {Wählen Sie eine Datenbank und geben Sie das Passwort ein.}
 {No File} {Keine Datei}
 {Please select a password database.} {Bitte Passwort-Datenbank wählen.}
-{File Not Found} {Datei nicht gefunden}
-{The password database %s does not exist or can not be read.} {Die Passwort-Datenbank %s existiert nicht oder ist nicht lesbar.}
+{The password database %s can not be read.} {Die Passwort-Datenbank %s ist nicht lesbar.}
+{The password database %s does not exist.} {Die Passwort-Datenbank %s existiert nicht.}
+{Error Accessing File} {Fehler beim Öffnen der Datei}
 {Please be patient. Verifying password ...} {Bitte etwas Geduld. Überprüfe Passwort ...}
 {Opening ... %d %%} {Öffne ... %d %%}
 {Error Opening Database} {Fehler beim Öffnen der Datenbank}
@@ -193,6 +186,11 @@ Möchten Sie eine Übersicht der ausgelassenen Datensätze speichern?}
 {Merge Password Database} {Importiere Passwort-Datenbank}
 Merging Vereinigen
 {Merging (%d %% done)} {Mische (%d %% fertig)}
+{Conflict for login %s} {Konflikt für das Login %s}
+{(in group %s)} {(in Gruppe %s)}
+%s %s
+{Added login %s} {Login %s hinzugefügt}
+{Identical login %s} {Identisches Login %s}
 login Login
 logins Datensätze
 conflict Konflikt
@@ -204,6 +202,7 @@ conflicts Konflikte
 {Do you want to view a detailed report?} {Möchten Sie Details sehen?}
 {Resolve Conflicts} {Konflikte bereinigen}
 Close Schließen
+Conflicts Konflikte
 {Warning: Can not save to} {Achtung: Speichern gescheitert für}
 {because the file permissions are set for read-only access.} {kann nicht gesichert werden, weil sie schreibgeschützt ist.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Entfernen Sie den Schreibschutz und wählen dann 'Wiederholen' oder brechen Sie den Vorgang ab und speichern Sie die Datei unter einem neuen Namen.}
@@ -234,12 +233,13 @@ database as %s:
 %s} {Fehler beim Speichern der Sicherungskopie "%s": %s}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {Die Datenbank wurde modizifiert. Soll sie gespeichert werden?}
 {Clipboard cleared.} {Zwischenablage geleert.}
-{Database Locked} {Datenbank gesperrt}
 {Enter the Master Password.} {Bitte Master Passwort eingeben.}
 {error: %s} {Fehler: %s}
 {Wrong Password} {Falsches Passwort}
 {That password is not correct.} {Falsches Passwort.}
 {Welcome back.} {Sperre aufgehoben.}
+{Database Locked (with unsaved changes)} {Datenbank gesperrt (Änderungen nicht gesichert)}
+{Database Locked} {Datenbank gesperrt}
 Confirm: Bestätigung:
 {Passwords Do Not Match} {Die Passwörter stimmen nicht überein.}
 {The confirmed password does not match.} {Die Bestätigung des Passworts ist gescheitert.}
@@ -347,6 +347,8 @@ Contributors Mitarbeiter
 {Italian translation by %s} {Italienische Übersetzung von %s}
 {French translation by %s} {Französische Übersetzung von %s}
 {Spanish translation by %s} {Spanische Übersetzung von %s}
+{Portuguese translation by %s} {Portugiesische Übersetzung von %s}
+{Using %s sha256 extension.} {Verwende %s sha256 Modul.}
 {About Password Gorilla} {Über Password Gorilla}
 {Password Gorilla License} {Password Gorilla Lizenz}
 {Find Text:} Suchtext:
@@ -371,24 +373,45 @@ Contributors Mitarbeiter
 Current Current
 Merged {Mischen beendet}
 {A selection is required for:} {Auswahl nötig:}
+{Http Error} {Http Fehler}
+{Downloading %s: } {Hole %s:}
+{Http error} {Http Fehler}
+{Download Error} {Download Fehler}
+{Downloaded File has wrong size.} {Die heruntergeladene Datei hat die falsche Länge.}
+{Download finished} {Download beendet}
+{The new version was successfully downloaded as
+%s.} {Die neue Version ist erfolgreich heruntergeladen als
+%s.}
+{Unknown windowing system} {Unbekanntes System Fensterverwaltung}
+{Connection error} Verbindungsfehler
+{No new version available} {Keine neue Version vorhanden}
+{You are running version %s.} {Sie arbeiten mit Version %s.}
+{There is a new version %s for %s.} {Es gibt eine neue Version %s für %s.}
+{Shall I download the new version?} {Soll ich die neue Version herunterladen?}
+{New version available} {Neue Version vorhanden}
+Executable Lauffähig
+Sourcecode Quellcode
 Back Zurück
 Search Suchen
 Previous Vorige
 Next {Nächster Eintrag}
 History Verlauf
 Index Index
+{Table of Contents} Inhaltsverzeichnis
 Search! Suchen!
+{Unable to find unused character with which to quote preference string.
+Normally this should not happen.} {Kann kein Zitierungszeichen für den Einstellungs-String finden.
+Dies sollte normalerweise nicht passieren.}
 {unknown preference type: %s} {unbekannte Einstellung: %s}
 {premature end of preference} {vorzeitiges Ende der Einstellungen}
 {expected number for value, got %s} {statt Zahlenwert %s erhalten}
-{expected initial quote for string value} {Einführungszeichen für Zeichenkette erwartet}
+{end delimiter '%s' not found in saved DB preference} {Das Schlusszeichen '%s' kann in den gespeicherten Datenbankeinstellungen nicht gefunden werden.}
 {premature end of string value} {vorzeitiges Ende der Zeichenkette}
 {no such preference: %s} {Einstellung %s unbekannt}
 {group name can not be empty} {Der Gruppenname darf nicht leer sein}
 {record %d does not exist} {Datensatz %d existiert nicht}
 {record %d does not have field %s} {Datensatz %d kennt kein Feld %s}
 {no header field %s} {Kein header field %s}
-{invalid version %s} {Ungültige Version %s}
 {less than 8 bytes remaining for length field} {weniger als 8 Bytes bleiben für das length Feld}
 oops Hoppla
 {field length %d looks insane} {field length %d looks insane}
@@ -401,4 +424,5 @@ oops Hoppla
 {less than 16 bytes remaining for first block} {less than 16 bytes remaining for first block}
 {file does not have PWS3 magic} {Die Datei hat kein PWS3 Schlüsselwort}
 {Failed to scan key stretch iteration count from binary data.} {Failed to scan key stretch iteration count from binary data.}
+{invalid version %s} {Ungültige Version %s}
 }
