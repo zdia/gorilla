@@ -7,10 +7,10 @@
 # rebuild-msg-files script.
 #
 #
-# Project-Id-Version: Gorila Password 1.*
+# Project-Id-Version: Gorilla Password 1.5.3.7
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-12-01 18:18+0100
-# PO-Revision-Date: 2011-12-01 18:20+0100
+# POT-Creation-Date: 2013-01-14 19:38+0100
+# PO-Revision-Date: 2013-01-26 00:16+0100
 # Last-Translator: Marco Ciampa <ciampix@libero.it>
 # Language-Team: Italian <it@li.org>
 # Language: it
@@ -23,18 +23,6 @@ mcmset it {
 {The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
 
 Error message: %s} {Password Gorilla rechiede il pacchetto "%s". Sembra ci sia un problema di installazione, dato che questo file dovrebbe far parte della distribuzione di Password Gorilla.
-
-Messaggio d'errore: %s}
-{Need [Incr Tcl]} {Serve [Incr Tcl]}
-{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s} {Password Gorilla richiede che il Tcl includa [incr Tcl]. Installare il pacchetto [incr Tcl].
-
-Messaggio d'errore: %s}
-{Need PWSafe} {Serve PWSafe}
-{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s} {Password Gorilla richiede il pacchetto "pwsafe". Sembra ci sia un problema di installazione dato che il pacchetto pwsafe dovrebbe far parte della distribuzione di Password Gorilla.
 
 Messaggio d'errore: %s}
 {Welcome to the Password Gorilla.} {Benvenuti in Password Gorilla}
@@ -73,6 +61,7 @@ Customize Personalizza
 {Lock now} {Blocca ora}
 Help Aiuto
 License Licenza
+{Look for Update} {Controllo aggiornamenti}
 About Informazioni
 {Open URL} {Apri URL}
 {Copy Username to Clipboard} {Copia nome utente negli appunti}
@@ -92,8 +81,9 @@ OK OK
 {Select a database, and enter its password.} {Selezionare un archivio e inserire la password.}
 {No File} {Nessun file}
 {Please select a password database.} {Seleziona un archivio password.}
-{File Not Found} {File non trovato}
-{The password database %s does not exist or can not be read.} {L'archivio password %s non esiste o non è leggibile.}
+{The password database %s can not be read.} {L'archivio password %s non è leggibile.}
+{The password database %s does not exist.} {L'archivio password %s non esiste.}
+{Error Accessing File} {Errore durante l'accesso al file}
 {Please be patient. Verifying password ...} {Verifica password. Attendere prego ...}
 {Opening ... %d %%} {Apertura di ... %d %%}
 {Error Opening Database} {Errore durante l'apertura dell'archivio}
@@ -240,12 +230,13 @@ dell'archivio password come "%s":
 %s}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {L'archivio delle password corrente è stato modificato. Salvare l'archivio? <Sì> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale.}
 {Clipboard cleared.} {Appunti cancellati.}
-{Database Locked} {Archivio bloccato}
 {Enter the Master Password.} {Inserisci la password principale.}
 {error: %s} {errore: %s}
 {Wrong Password} {Password errata}
 {That password is not correct.} {La password è sbagliata.}
 {Welcome back.} Bentornati.
+{Database Locked (with unsaved changes)} {L'archivio è bloccato (con cambiamenti non salvati)}
+{Database Locked} {Archivio bloccato}
 Confirm: Conferma:
 {Passwords Do Not Match} {Le password non corrispondono.}
 {The confirmed password does not match.} {La password di conferma non corrisponde.}
@@ -362,6 +353,7 @@ Contributors Contributi
 {Italian translation by %s} {Traduzione in italiano di %s}
 {French translation by %s} {Traduzione in francese di %s}
 {Spanish translation by %s} {Traduzione in spagnolo di %s}
+{Portuguese translation by %s} {Traduzione in portoghese di %s}
 {Using %s sha256 extension.} {In uso l'estensione %s di sha256.}
 {About Password Gorilla} {Informazioni su Password Gorilla}
 {Password Gorilla License} {Licenza di Password Gorilla}
@@ -387,6 +379,24 @@ Contributors Contributi
 Current Attuale
 Merged Fuso
 {A selection is required for:} {È richiesta una selezione per:}
+{Http Error} {Errore http}
+{Downloading %s: } {Scaricamento di %s:}
+{Http error} {Errore http}
+{Download Error} {Errore scaricamento}
+{Downloaded File has wrong size.} {Il file scaricato è di dimensione errata.}
+{Download finished} {Scaricamento terminato}
+{The new version was successfully downloaded as
+%s.} {La nuova versione è stata scaricata con successo come
+%s.}
+{Unknown windowing system} {Sistema di finestre sconosciuto}
+{Connection error} {Errore di connessione}
+{No new version available} {Nessuna nuova versione rilevata}
+{You are running version %s.} {È in esecuzion la versione %s.}
+{There is a new version %s for %s.} {C'è una nuova versione %s per %s.}
+{Shall I download the new version?} {Scaricare la nuova versione?}
+{New version available} {Nuova versione disponibile}
+Executable Eseguibile
+Sourcecode {Codice sorgente}
 Back Indietro
 Search Cerca
 Previous Precedente
@@ -395,17 +405,19 @@ History Cronistoria
 Index Indice
 {Table of Contents} Sommario
 Search! Cerca!
+{Unable to find unused character with which to quote preference string.
+Normally this should not happen.} {Impossibile trovare caratteri non usati con i quali virgolettare la stringa delle preferenze.
+Questo solitamente non dovrebbe accadere.}
 {unknown preference type: %s} {tipo di preferenza sconosciuto: %s}
 {premature end of preference} {fine prematura di una preferenza}
 {expected number for value, got %s} {valore numerico richiesto, ottenuto %s}
-{expected initial quote for string value} {previste virgolette iniziali per valore stringa}
+{end delimiter '%s' not found in saved DB preference} {il delimitatore finale "%s" non è stato trovato nelle preferenze dell'archivio}
 {premature end of string value} {fine prematura di un valore stringa}
 {no such preference: %s} {preferenza non esistente: %s}
 {group name can not be empty} {il nome gruppo non può essere vuoto}
 {record %d does not exist} {il record %d non esiste}
 {record %d does not have field %s} {il record %d non ha il campo %s}
 {no header field %s} {nessun campo intestazione %s}
-{invalid version %s} {versione non valida %s}
 {less than 8 bytes remaining for length field} {rimangono per il campo lunghezza meno di 8 bytes}
 oops oops
 {field length %d looks insane} {il campo lunghezza %d sembra irragionevole}
@@ -418,4 +430,5 @@ oops oops
 {less than 16 bytes remaining for first block} {rimangono meno di 16 byte per il primo blocco}
 {file does not have PWS3 magic} {il file non possiede il marcatore magic PWS3}
 {Failed to scan key stretch iteration count from binary data.} {Fallita la ricerca del contatore iterazioni "key stretch" dai dati binari.}
+{invalid version %s} {versione non valida %s}
 }

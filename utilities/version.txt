@@ -1,1 +1,1 @@
-Linux {version 1.5.3.8 executable {i686 gorilla1537.bin x86_64 gorilla1537_64.bin}} MacOSX {version 1.5.3.7 executable {i686 gorilla1537.zip x86_64 gorilla1537.zip}} Windows {version 1.5.3.7 executable {intel gorilla1537.exe x86_64 gorilla1537_64.exe}}
+Linux {version 1.5.3.8 executable {i686 gorilla1537.bin x86_64 gorilla1537_64.bin}} MacOSX {version 1.5.3.7 executable {i386 gorilla1537.zip x86_64 gorilla1537.zip}} Windows {version 1.5.3.7 executable {intel gorilla1537.exe amd64 gorilla1537_64.exe}}

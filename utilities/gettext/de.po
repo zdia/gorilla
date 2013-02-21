@@ -202,9 +202,8 @@ msgid "License"
 msgstr "Lizenz"
 
 #: ../../sources/gorilla.tcl:487
-#, fuzzy
 msgid "Look for Update"
-msgstr "Neue Version?"
+msgstr "Neue Version"
 
 #: ../../sources/gorilla.tcl:489
 #: ../../sources/gorilla.tcl:524

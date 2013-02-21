@@ -9,7 +9,7 @@
 #
 # Project-Id-Version: 
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-27 17:31+0100
+# POT-Creation-Date: 2013-01-14 19:38+0100
 # PO-Revision-Date: 2011-09-07 18:54+0100
 # Last-Translator: Juan Roldan Ruiz <juan@shoden.es>
 # Language-Team:  <LL@li.org>
@@ -23,18 +23,6 @@ mcmset es {
 {The Password Gorilla requires the "%s" package. This seems to be an installation problem, as this file ought to be part of the Password Gorilla distribution.
 
 Error message: %s} {Password Gorilla necesita el paquete "%s". Parece que hay un error de instalación, como si este fichero debiera ser parte de Password Gorilla.
-
-Mensaje de error: %s}
-{Need [Incr Tcl]} {Necesita [Incr Tcl]}
-{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s} {Password Gorilla necesita el extra [incr Tcl] para Tcl. Por favor instale el paquete [incr Tcl].
-
-Mensaje de error: %s}
-{Need PWSafe} {Necesita PWSafe}
-{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s} {Password Gorilla necesita el paquete "pwsafe". Parece que hay un error de instalación, como si el paquete pwsafe debiera ser parte de Password Gorilla.
 
 Mensaje de error: %s}
 {Welcome to the Password Gorilla.} {Bienvenido a Password Gorilla.}
@@ -166,12 +154,12 @@ Close Cerrar
 {Failed to save password database as "%s": %s} {Fallo al guardar la base de datos en "%s": %s}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {La base de datos actual ha sido modificada. ¿Desea guardar la base de datos? <Sí> guarda la base de datos y sale. <No> descarta todos los cambios y sale. <Cancelar> vuelve al menú principal.}
 {Clipboard cleared.} {Portapapeles limpiado.}
-{Database Locked} {Base de datos bloqueada}
 {Enter the Master Password.} {Introduzca la contraseña maestra.}
 {error: %s} {error: %s}
 {Wrong Password} {Contraseña incorrecta}
 {That password is not correct.} {La contraseña no es correcta.}
 {Welcome back.} {Bienvenido de nuevo.}
+{Database Locked} {Base de datos bloqueada}
 Confirm: Confirmar:
 {Passwords Do Not Match} {Las contraseñas no coinciden}
 {The confirmed password does not match.} {La contraseña confirmada no coincide.}

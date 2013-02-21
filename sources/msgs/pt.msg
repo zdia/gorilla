@@ -7,10 +7,10 @@
 # rebuild-msg-files script.
 #
 #
-# Project-Id-Version: Password Gorilla
+# Project-Id-Version: Password Gorilla 1.5.3.7
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2011-11-27 17:31+0100
-# PO-Revision-Date: 2012-12-09 21:02-0300
+# POT-Creation-Date: 2013-01-14 19:38+0100
+# PO-Revision-Date: 2013-01-19 14:31-0300
 # Last-Translator: Daniel Silva Ferreira Bruno <dsfbstudent@yahoo.com.br>
 # Language-Team: Daniel Silva Ferreira Bruno &lt;dsfbstudent@yahoo.com.br&gt;
 # MIME-Version: 1.0
@@ -25,18 +25,6 @@ mcmset pt {
 Error message: %s} {O Password Gorilla requer o pacote  "%s". Este parece ser um problema de instalação, como se este arquivo devesse ser parte da distribuição do Password Gorilla.
 
 Error message: %s}
-{Need [Incr Tcl]} {Necessita [Incr Tcl]}
-{The Password Gorilla requires the [incr Tcl] add-on to Tcl. Please install the [incr Tcl] package.
-
-Error Message: %s} {O Password Gorilla requer o complemento  [incr Tcl] para Tcl. Por favor instale o pacote [incr Tcl].
-
-Messagem de erro: %s}
-{Need PWSafe} {Necessita PWSafe}
-{The Password Gorilla requires the "pwsafe" package. This seems to be an installation problem, as the pwsafe package ought to be part of the Password Gorilla distribution.
-
-Error Message: %s} {O Password Gorilla requer o pacote "pwsafe". Este parece ser um problema de instalação, como se o pacote pwsafe devesse ser parte da distribuição do Password Gorilla.
-
-Messagem de erro: %s}
 {Welcome to the Password Gorilla.} {Bem-vindo ao Password Gorilla.}
 File Arquivo
 New Novo
@@ -70,8 +58,10 @@ Security Segurança
 {Password Policy} {Política de Senha ...}
 Customize {Customizar ...}
 {Change Master Password} {Mudar Senha Mestre ...}
+{Lock now} {Bloqueiar agora}
 Help Ajuda
 License Licença
+{Look for Update} {Procurar por Atualizações}
 About Sobre
 {Open URL} {Abrir URL}
 {Copy Username to Clipboard} {Copiar nome de usuário para Área de transferência}
@@ -81,18 +71,31 @@ About Sobre
 {Save changes?} {Salvar mudanças?}
 {The current password database is modified. Do you want to save the current database before creating the new database?} {O banco de dados das senhas, atual, foi modificado. Você quer salvar o atual banco de dados antes de criar o novo banco de dados?}
 {New Database: Choose Master Password} {Novo Banco de dados: Escolha a senha mestre}
-{Password Gorilla - &lt;New Database&gt;} {Password Gorilla - &lt;Novo Banco de dados&gt;}
-{&lt;New Database&gt;} {&lt;Novo banco de dados&gt;}
-{Add logins using &lt;Add Login&gt; in the &lt;Login&gt; menu.} {Adicionar contas usando o&lt;Adicionar conta no&gt; menu de &lt;conta&gt.}
+{Password Gorilla - <New Database>} {Password Gorilla - <Novo Banco de dados>}
+{<New Database>} {<Novo Banco de dados>}
+{Add logins using <Add Login> in the <Login> menu.} {Adicionar contas usando <Adicionar conta> no menu de <conta>.}
 Database: {Banco de dados:}
 Password: Senha:
 OK Aceitar
 {Select a database, and enter its password. Click "New" to create a new database.} {Selecione um banco de dados, e digite a senha dele. Clique "Novo" para criar um novo banco de dados.}
+{Select a database, and enter its password.} {Selecione um banco de dados, e digite a senha dele.}
 {No File} {Sem arquivo}
-{The password database %s does not exist or can not be read.} {O banco, de dados das senhas, %s não existe ou não pode ser lido.}
+{Please select a password database.} {Por favor, selecione um banco de dados das senhas.}
+{The password database %s can not be read.} {O banco, de dados das senhas, %s, não pode ser lido.}
+{The password database %s does not exist.} {O banco, de dados das senhas, %s não existe.}
+{Error Accessing File} {Erro ao Acessar o Arquivo}
 {Please be patient. Verifying password ...} {Por favor, seja paciente. Verificando senha ...}
+{Opening ... %d %%} {Abrindo ... %d %%}
 {Error Opening Database} {Erro ao abrir o banco de dados}
+{Can not open password database "%s": %s} {Não pode abrir o banco de dados das senhas "%s": %s}
 {Browse for a password database ...} {Procurar um banco de dados das senhas ...}
+{The current password database is modified. Do you want to save the database?
+ "Yes" saves the database, and continues to the "Open File" dialog.
+ "No" discards all changes, and continues to the "Open File" dialog.
+ "Cancel" returns to the main menu.} {O banco atual, de dados das senhas, foi modificado. Você quer salvar o banco de dados?
+ "Sim" salva o banco de dados, e continua no diálogo "Abrir Arquivo".
+ "Não" descarta todas as mudanças, e continua no diálogo "Abrir Arquivo".
+ "Cancelar" retorna ao menu principal.}
 {Open Password Database} {Abrir banco de dados das senhas}
 {Password database %s loaded.} {Banco, de dados das senhas, %s carregado.}
 {Add/Edit/View Login} {Adicionar/Editar/Ver conta}
@@ -102,6 +105,8 @@ URL URL
 Username {Nome do usuário}
 Password Senha
 Notes Notas
+{Last Password Change} {Última Mudança de Senha}
+{Last Modified} {Última modificação}
 Cancel Cancelar
 {Show Password} {Mostrar senha}
 {Generate Password} {Gerar senha}
@@ -109,21 +114,23 @@ Cancel Cancelar
 {Password Length} {Comprimento da senha}
 {Hide Password} {Esconder senha}
 {Password policy settings invalid.} {Configuração inválida da política de senha.}
-{&lt;unknown&gt;} {&lt;desconhecido&gt;}
+<unknown> <desconhecido(a)>
 {This login must have a title, url or username.} {Esta conta deve ter um título, url ou nome de usuário.}
 {This login's group name is not valid.} {Este nome, do grupo da conta, não é válido.}
 {New login added.} {Nova conta adicionada.}
 {Login modified.} {Conta modificada.}
 {Group entries may be renamed, not edited.} {As entradas do grupo, podem ser renomeadas, mas não são editáveis.}
 {Move %s} {Mover %s}
-{Destination Group with format &lt;Group.Subgroup&gt; :} {Grupo, de destino, com formato &lt;Grupo.Subgrupo&gt; :}
+{Destination Group with format <Group.Subgroup> :} {Grupo, de destino, com formato <Grupo.Subgrupo> :}
 {Invalid Group Name} {Nome, de grupo, inválido}
 {The group name can not be empty.} {O nome, do grupo, não pode estar vazio.}
 {The name of the parent group is invalid.} {O nome, do grupo pai, é inválido.}
+{Moving of %s canceled.} {Movimentação cancelada de %s.}
 {%s moved.} {%s movido.}
 {Are you sure that you want to delete this login?} {Você está ciente que você deseja excluir esta conta?}
 {Login deleted.} {Conta excluída.}
 {No Database} {Sem banco de dados}
+{Please create a new database, or open an existing database first.} {Por favor, primeiro crie um novo banco de dados, ou abra um banco existente de dados.}
 {Add a new Group} {Adicionar um novo grupo}
 Parent: Pai:
 {New Group Name:} {Novo nome de grupo:}
@@ -133,9 +140,14 @@ Parent: Pai:
 {The root node can not be moved.} {O nó raíz não pode ser movido.}
 {Can Not Move Node} {Não Pode Mover o Nó}
 {Can not move a group to a subgroup of itself.} {Não pode mover um grupo para um subgrupo interno.}
+{Can Not Delete Root} {Não Pode Excluir a Raíz}
+{The root node can not be deleted.} {O nó raíz não pode ser excluído.}
 {Are you sure that you want to delete group and all its contents?} {Você está ciente que você quer excluir este grupo e todo o conteúdo dele?}
 {Group deleted.} {Grupo excluído.}
+{Can Not Rename Root} {Não Pode Renomear a Raíz}
+{The root node can not be renamed.} {O nó raíz não pode ser renomeado.}
 Name Nome
+{The name of the group's parent node is invalid.} {O nome do nó pai, do grupo, é inválido.}
 {Group name unchanged.} {Nome, do grupo, não modificado.}
 {Group renamed.} {Grupo renomeado.}
 {Export Security Warning} {Aviso de segurança ao exportar}
@@ -169,6 +181,13 @@ Você deseja salvar um registro dos registros ignorados?}
 {Merge Password Database} {Unir banco de dados das senhas}
 Merging Unindo
 {Merging (%d %% done)} {Unindo (%d %% pronto)}
+{Conflict for login %s} {Conflito para a conta %s}
+{(in group %s)} {(no grupo %s)}
+%s %s
+{Added login %s} {Conta adicionada %s}
+{Identical login %s} {Conta idêntica %s}
+login conta
+logins contas
 conflict conflito
 conflicts conflitos
 {Merged %s;
@@ -178,14 +197,17 @@ conflicts conflitos
 {Do you want to view a detailed report?} {Você quer ver um relatório detalhado?}
 {Resolve Conflicts} {Resolva Conflitos}
 Close Fechar
+Conflicts Conflitos
 {Warning: Can not save to} {Aviso: Não pode salvar para}
 {because the file permissions are set for read-only access.} {porque as permissões deste arquivo estão fixadas somente para acesso de leitura.}
-{Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'-&gt;'Save As' to save into a different file.} {Por favor, mude as permissões deste arquivo para leitura-escrita e aperte 'Retentar' ou aperte 'Cancelar' e use 'Arquivo'-&gt;'Salvar como' para salvar em um arquivo diferente.}
+{Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Por favor, mude as permissões deste arquivo para leitura-escrita e aperte 'Retentar' ou aperte 'Cancelar' e use 'Arquivo'->'Salvar como' para salvar em um arquivo diferente.}
 {Warning: Read-only password file} {Aviso: Arquivo de senha, com permissão somente de leitura}
+{Saving ... %d %%} {Salvando ... %d %%}
 {Error Saving Backup of Database} {Erro ao Salvar o Backup do Banco de dados}
 {Failed to save password database as
 %s: %s} {Falhou ao salvar o banco de dados das senhas como
 %s: %s}
+{Password database saved with backup copy.} {Banco, de dados das senhas, salvo com cópia de 'backup'}
 {Password database saved.} {Banco, de dados das senhas, salvo.}
 {Nothing To Save} {Nada para Salvar}
 {No password database to save.} {Sem banco de dados das senhas para salvar.}
@@ -198,14 +220,23 @@ Please define a valid backup directory
 in the Preferences menu.} {Sem diretório válido. - 
 Por favor defina um diretório válido para backup
 no menu de Preferências.}
-{The current password database is modified. Do you want to save the database? &lt;Yes&gt; saves the database and exits. &lt;No&gt; discards all changes and exits. &lt;Cancel&gt; returns to the main menu.} {O banco de dados das senhas, atual, foi modificado. Você quer salvar este banco de dados? &lt;Sim&gt; salva este banco de dados e sai. &lt;Não&gt; descarta todas as mudanças e sai. &lt;Cancelar&gt; returna ao menu principal.}
+{Unknown file. - 
+Please select a valid database filename.} {Arquivo Desconhecido. - 
+Por favor, selecione um nome válido do arquivo do banco de dados.}
+{Failed to make backup copy of password
+database as %s: 
+%s} {Uma falha ocorreu ao se fazer uma cópia de backup do
+banco, de dados das senhas, como %s: 
+%s}
+{The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {O banco de dados das senhas, atual, foi modificado. Você quer salvar este banco de dados? <Sim> salva este banco de dados e sai. <Não> descarta todas as mudanças e sai. <Cancelar> returna ao menu principal.}
 {Clipboard cleared.} {Área de transferência, limpa.}
-{Database Locked} {Banco de dados, bloqueado}
 {Enter the Master Password.} {Digite a Senha Mestre.}
 {error: %s} {erro: %s}
 {Wrong Password} {Senha Errada}
 {That password is not correct.} {Esta senha não está correta.}
 {Welcome back.} {Bem-vindo de volta.}
+{Database Locked (with unsaved changes)} {Banco bloqueado de dados (com mudanças não salvas)}
+{Database Locked} {Banco de dados, bloqueado}
 Confirm: Confirmar:
 {Passwords Do Not Match} {Senhas não coincidem-se}
 {The confirmed password does not match.} {A senha confirmada não coincide.}
@@ -216,6 +247,7 @@ Confirm: Confirmar:
 {Use hexadecimal digits} {Use dígitos hexadecimais}
 {Use symbols (%, $, @, #, etc.)} {Use símbolos (%, $, @, #, etc.)}
 {Use easy to read characters only (e.g. no "0" or "O")} {Use somente caracteres fáceis de ler (isto é, não "0" ou "O")}
+{Database Preferences} {Preferências do Banco de Dados}
 {Lock when idle after} {Bloqueie quando ocioso depois de}
 {minutes (0=never)} {minutos (0 = nunca)}
 {Auto-save database immediately when changed} {Salve automaticamente o banco de dados imediatamente quando ele for alterado}
@@ -223,6 +255,7 @@ Confirm: Confirmar:
 {V2 Unicode support} {Suporte para V2 Unicode}
 {V3 key stretching iterations} { Iterações de extensão da chave V3}
 {Calculate delay time} {Calcule o tempo de atraso}
+{Default: %s} {Padrão: %s}
 Calculate Calcular
 Calculating Calculando
 {Calculate iterations} {Calcule iterações}
@@ -319,6 +352,9 @@ Contributors Colaboradores
 {German translation by %s} {Tradução em alemão por %s}
 {Russian translation by %s} {Tradução em russo por %s}
 {Italian translation by %s} {Tradução em italiano por %s}
+{French translation by %s} {Tradução em francês por %s}
+{Spanish translation by %s} {tradução em espanhol por %s}
+{Portuguese translation by %s} {tradução em português por %s}
 {Using %s sha256 extension.} {Usando a extensão sha256 %s.}
 {About Password Gorilla} {Sobre Password Gorilla}
 {Password Gorilla License} {Licença Password Gorilla}
@@ -342,7 +378,26 @@ Contributors Colaboradores
 {Ignore Conflict} {Ignore Conflito}
 {No existing merge conflicts were found.} {Nenhum conflito de união foi encontrado}
 Current Atual
+Merged Unido(a)
 {A selection is required for:} {Uma seleção é requerida para:}
+{Http Error} {Erro de Http}
+{Downloading %s: } {Baixando %s: }
+{Http error} {Erro de http}
+{Download Error} {Erro de Download}
+{Downloaded File has wrong size.} {O arquivo baixado tem tamanho errado.}
+{Download finished} {Download acabado}
+{The new version was successfully downloaded as
+%s.} {A nova versão foi baixada, com sucesso, como
+%s.}
+{Unknown windowing system} {Sistema desconhecido de janelamento}
+{Connection error} {Erro de conexão}
+{No new version available} {Sem nova versão disponível}
+{You are running version %s.} {Você está executando a versão %s.}
+{There is a new version %s for %s.} {Há uma nova versão %s para %s.}
+{Shall I download the new version?} {Eu devo baixar a nova versão?}
+{New version available} {Nova versão disponível}
+Executable Executável
+Sourcecode Código-fonte
 Back Voltar
 Search Pesquisar
 Previous Anterior
@@ -351,22 +406,30 @@ History Histórico
 Index Índice
 {Table of Contents} {Tabela de Conteúdos}
 Search! Localizar!
+{Unable to find unused character with which to quote preference string.
+Normally this should not happen.} {Não é possível encontrar o caractere não usado, com o qual cota-se a 'string' de preferência.
+Normalmente isto não deveria acontecer.}
 {unknown preference type: %s} {tipo de preferência desconhecida: %s}
 {premature end of preference} {fim prematuro de preferência}
 {expected number for value, got %s} {número esperado para valor, mas dado %s}
-{expected initial quote for string value} {citação inicial esperada para o valor da string}
+{end delimiter '%s' not found in saved DB preference} {delimitador final '%s' não encontrado na preferência BD salva}
 {premature end of string value} {fim prematuro do valor da string}
+{no such preference: %s} {sem tal preferência: %s}
+{group name can not be empty} {O nome, do grupo, não pode estar vazio.}
 {record %d does not exist} {registro %d não existe}
 {record %d does not have field %s} {registro %d não tem campo %s}
 {no header field %s} {sem campo de cabeçalho %s}
-{invalid version %s} {versão inválida %s}
 {less than 8 bytes remaining for length field} {menos que 8 bytes restantes para o comprimento do campo}
 oops oops
 {field length %d looks insane} {comprimento do campo %d parece insano}
 {out of data} {fora dos dados}
 {V1 name field looks suspect} {campo do nome V1 parece suspeito}
+{this object can not be reused} {este objeto não pode ser reusado}
 {end of file while reading header} {fim de arquivo enquanto estava-se lendo o cabeçalho}
+{wrong password} {senha errada}
+{EOF while reading field} {EOF ao ler o campo}
 {less than 16 bytes remaining for first block} {menos que 16 bytes restantes para o primeiro bloco}
 {file does not have PWS3 magic} {arquivo não tem a mágica PWS3}
 {Failed to scan key stretch iteration count from binary data.} {Falhou ao verificar a contagem, da iteração de extensão de chave, a partir dos dados binários.}
+{invalid version %s} {versão inválida %s}
 }
