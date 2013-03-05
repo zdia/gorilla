@@ -8514,7 +8514,11 @@ proc gorilla::versionDownload { url } {
   #
   
 	if { $::gorilla::preference(backupPath) eq "" } {
-		set backupPath "~"
+    if {[tk windowingsystem] == "aqua"} {
+      set backupPath "~/Downloads"
+    } else {
+      set backupPath "~"
+    } 
 	} else {
 		# place backup file into user''s preference directory
 		set backupPath $::gorilla::preference(backupPath)
