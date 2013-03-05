@@ -1,7 +1,3 @@
-#! /bin/sh
-# the next line restarts using tclsh \
-exec tclsh84 "`cygpath --windows $0`" ${1+"$@"}
-
 if {[file exists twofish.tcl]} {
     source twofish.tcl
 }
