@@ -690,13 +690,6 @@ itcl::class pwsafe::db {
 			error [ mc "record %d does not have field %s" $rn $field ]
 		}
 
-		if {$field == 2 || $field == 3 || $field == 4 || \
-			$field == 5 || $field == 6} {
-			# text fields
-			return [encoding convertfrom utf-8 \
-				[decryptField $records($rn,$field)]]
-		}
-
 		return [decryptField $records($rn,$field)]
 	}
 
@@ -709,14 +702,7 @@ itcl::class pwsafe::db {
 			error [ mc "record %d does not exist" $rn ]
 		}
 
-		if {$field == 2 || $field == 3 || $field == 4 || \
-			$field == 5 || $field == 6} {
-			# text fields
-			set records($rn,$field) [encryptField \
-						 [encoding convertto utf-8 $value]]
-		} else {
-			set records($rn,$field) [encryptField $value]
-		}
+		set records($rn,$field) [encryptField $value]
 	}
 
 	#
