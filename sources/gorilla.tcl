@@ -2367,7 +2367,14 @@ namespace eval ::gorilla::LoginDialog {
 				if { [ dbget uuid $rn ] eq "" } {
 					if { ! [ catch { package present uuid } ] } {
 						dbset uuid $rn [uuid::uuid generate]
+						set modified 1
 					}                              
+				}
+
+				set history [ dbget history $rn ]
+
+				if { $history eq "" } {
+					set history [ dict create active 1 passwords [ list ] ]
 				}
 
 				foreach element [ list {*}$varlist notes ] {
@@ -2390,6 +2397,12 @@ namespace eval ::gorilla::LoginDialog {
 
 							if { $element eq "password" } {
 								dbset last-pass-change $rn $now
+
+								if { [ dict get $history active ] && ( $old_value ne "" ) } {
+									dict lappend history passwords [ list $now $old_value ]
+									dbset history $rn $history
+								}
+
 							} ; # end if element eq password
 
 						} ; # end if new_value eq ""
@@ -7584,12 +7597,12 @@ namespace eval ::gorilla::dbget {
         # enumerating them.
 
 	foreach {procname recnum} [ list  uuid 1  group 2  title 3  user 4 username 4 \
-					notes 5  password 6  url 13 ] {
+					notes 5  password 6  url 13 history 15 ] {
 
 		proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
 			get-record %recnum $rn $default
 		} ]
-
+		namespace export $procname
 	} ; # end foreach procname,recnum
 
         foreach {procname recnum} [ list  create-time 7  last-pass-change 8  last-access 9 \
@@ -7598,10 +7611,8 @@ namespace eval ::gorilla::dbget {
 		proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
 			get-date-record %recnum $rn $default
 		} ]
-
+		namespace export $procname
 	} ; # end foreach procname,recnum
-
-	namespace export uuid group title user username notes password url create-time last-pass-change last-access lifetime last-modified
 
 	# get-record -> a helper proc for the ensemble that hides in one place all
 	# the complexity of checking for a records/fields existance and returning
@@ -7666,12 +7677,12 @@ namespace eval ::gorilla::dbset {
 					notes 5  password 6  create-time 7 \
 					last-pass-change 8   last-access 9 \
         				lifetime 10          last-modified 12 \
-        				url 13 ] {
+					url 13 history 15 ] {
 
 		proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
 			$::gorilla::db setFieldValue $rn %fieldnum $value
-
 		} ]
+		namespace export $procname
 
 	} ; # end foreach procname,fieldnum
 
@@ -7681,10 +7692,8 @@ namespace eval ::gorilla::dbset {
 		proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
 			$::gorilla::db setFieldValue $rn %fieldnum [ clock scan $value -format "%Y-%m-%d %H:%M:%S" ]
 		} ]
-
+		namespace export $procname
 	} ; # end foreach procname,fieldnum
-
-	namespace export uuid group title user username notes password url create-time last-pass-change last-access lifetime last-modified
 
   	namespace ensemble create
 
@@ -7707,15 +7716,13 @@ namespace eval ::gorilla::dbunset {
 					notes 5  password 6  create-time 7 \
 					last-pass-change 8   last-access 9 \
         				lifetime 10          last-modified 12 \
-        				url 13 ] {
+					url 13 history 15 ] {
 
 		proc $procname { rn } [ string map [ list %fieldnum $fieldnum ] {
 			$::gorilla::db unsetFieldValue $rn %fieldnum
 		} ]
-
+		namespace export $procname
 	} ; # end foreach procname,fieldnum
-
-	namespace export uuid group title user notes password url create-time last-pass-change last-access lifetime last-modified
 
   	namespace ensemble create
 
