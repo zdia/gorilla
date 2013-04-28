@@ -298,7 +298,7 @@ itcl::class pwsafe::v3::reader {
 					}
 				}
 				15 { # Password History
-					# Format of the data within the field is
+					# Format of the data within this field is
 					# fmmnnTLPTLP...TLP
 					# where:
 					# f  = 0,1 - history off/on for this record
@@ -307,10 +307,6 @@ itcl::class pwsafe::v3::reader {
 					# T  = Time password was set (time_t written as %08x)
 					# L  = 4 hex digit length
 					# P  = Password bytes
-					#
-					# The question of why field mm is in the format is unanswered,
-					# current size field nn already limits the max size to 255 by
-					# being two hex digits itself.
 					#
 					# The PasswordSafe formatV3.txt file is ambigious as to how the P
 					# elements are encoded.  The entire field itself is typed Text,
@@ -321,16 +317,33 @@ itcl::class pwsafe::v3::reader {
 					# "in TCHAR" but fails to define TCHAR.  This implies "total
 					# characters" but is not clear as to that fact.
 
-					# what is stored in the database object is a dict containing two keys:
-					# active - equal to the "f" field above
-					# passwords - list of lists - each sublist being the T and P from above
-					# The passwords list is stored in increasing T order.
-					# Within the list, T is the decimal integer count of seconds from the epoch
+					# what is stored in the database object is a dict containing three
+					# keys:
+					# active    - equal to the "f" field above
+					# maxsize   - maximum length value ("mm" above)
+					# passwords - list of lists - each sublist being the T and P from
+					# above
+
+					# The passwords list is stored in increasing T order.  Within the
+					# list, T is the decimal integer count of seconds from the epoch
 
 					set fieldValue [ encoding convertfrom utf-8 $fieldValue ]
-					dict set history active [ string range $fieldValue 0 0 ]
-					scan [ string range $fieldValue 1 4 ] "%2x%2x" maxsize currentsize
 
+					if { [ string length $fieldValue ] < 5 } {
+					  error "Insufficient data in password history field to scan header."
+					}
+
+					if { 3 != [ scan [ string range $fieldValue 0 4 ] %1d%2x%2x active maxsize currentsize ] } {
+					  error "Failure to scan correct number of fields from history header."
+					}
+
+          if { ! [ string is boolean -strict $active ] } {
+            error "Active field from history record is not a valid boolean value."
+          }
+
+					set history [ dict create active $active maxsize $maxsize ]
+
+					# now scan "currentsize" number of records
 					set cursor 5
 					for {set i 0} {$i < $currentsize} {incr i} {
 						if { $cursor > [ string length $fieldValue ] } {
@@ -368,7 +381,7 @@ itcl::class pwsafe::v3::reader {
 					} ; # end for i from 0 to currentsize
 					set fieldValue $history
 					unset history
-					# end of arm 15
+					# end of switch arm 15
 				}
 			}
 
@@ -803,35 +816,38 @@ itcl::class pwsafe::v3::writer {
 						# this is indicated as the preferred method to indicate no
 						# history according to the formatV3.txt file
 
-						if { ( 0 == [ dict get $fieldValue active ] ) \
+						if { ( ! [ dict get $fieldValue active ] ) \
 						  && ( 0 == [ llength [ dict get $fieldValue passwords ] ] ) } {
 						  set ignoreField 1
 						}
 
-						set output [ dict get $fieldValue active ]ff
-						set pwhist [ dict get $fieldValue passwords ]
-						if { [ llength $pwhist ] > 255 } {
-							# history is overlength - reduce to 255 entries maximum
-							set pwhist [ lrange $l end-254 end ]
-						}
+						dict with fieldValue {
 
-						append output [ format %02x [ llength $pwhist ] ]
-
-						foreach item $pwhist {
-						  lassign $item ptime pword
-							if {[info exists ::tcl_platform(platform)] && \
-								[string equal $::tcl_platform(platform) "macintosh"]} {
-								incr ptime -2082844800
+							if { [ llength $passwords ] > $maxsize } {
+								# history is overlength - reduce to $maxsize entries maximum
+								set passwords [ lrange $passwords end-[ expr { $maxsize - 1 } ] end ]
 							}
-							# PasswordSafe formatV3.txt implies that the length is "character" length
-							# so encode the character length, not byte length, of the password
-						  append output [ format "%08x%04x%s" $ptime [ string length $pword ] $pword ]
-						}
+
+							# header
+						  set output [ format "%1d%2x%2x" [ expr { $active ? 0 : 1 } ] \
+						                                  $maxsize \
+						                                  [ llength $passwords ] ]
+
+						  # passwords
+							foreach item $passwords {
+							  lassign $item ptime pword
+								::gorilla::if-platform? macintosh { incr ptime -2082844800 }
+								# PasswordSafe formatV3.txt implies that the length is "character" length
+								# so encode the character length, not byte length, of the password
+							  append output [ format "%08x%04x%s" $ptime [ string length $pword ] $pword ]
+							}
+
+						} ; # end dict with fieldValue
 
 					  set fieldValue [ encoding convertto utf-8 $output ]
-					  unset output
+					  unset -nocomplain output active maxsize passwords
 
-						# end of arm 15
+					# end of switch arm 15
 					}
 				}
 
