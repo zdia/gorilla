@@ -51,15 +51,15 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
     #
 
     # pad to 512 bits (512/8 = 64 bytes)
-    
+
     set msgLen [string length $msg]
-    
+
     # last 8 bytes are reserved for msgLen
     # plus 1 for "1"
-    
+
     set padLen [expr {56 - $msgLen%64}]
     if {$msgLen % 64 >= 56} {
-	incr padLen 64
+  incr padLen 64
     }
 
     # 4a. and b. append single 1b followed by 0b's
@@ -75,17 +75,17 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
     # initial H buffer
 
     if {!$isz} {
-	set H0 [expr {int(0x67452301)}]
-	set H1 [expr {int(0xEFCDAB89)}]
-	set H2 [expr {int(0x98BADCFE)}]
-	set H3 [expr {int(0x10325476)}]
-	set H4 [expr {int(0xC3D2E1F0)}]
+  set H0 [expr {int(0x67452301)}]
+  set H1 [expr {int(0xEFCDAB89)}]
+  set H2 [expr {int(0x98BADCFE)}]
+  set H3 [expr {int(0x10325476)}]
+  set H4 [expr {int(0xC3D2E1F0)}]
     } else {
-	set H0 0
-	set H1 0
-	set H2 0
-	set H3 0
-	set H4 0
+  set H0 0
+  set H1 0
+  set H2 0
+  set H3 0
+  set H4 0
     }
 
     #
@@ -99,76 +99,76 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
     set blockLen [llength $words]
 
     for {set i 0} {$i < $blockLen} {incr i 16} {
-	# 7a. Divide M[i] into 16 words W[0], W[1], ...
-	set W [lrange $words $i [expr {$i+15}]]
-	
-	# 7b. For t = 16 to 79 let W[t] = ....
-	set t   16
-	set t3  12
-	set t8   7
-	set t14  1
-	set t16 -1
-	for {} {$t < 80} {incr t} {
-	    set x [expr {[lindex $W [incr t3]] ^ [lindex $W [incr t8]] ^ \
-		    [lindex $W [incr t14]] ^ [lindex $W [incr t16]]}]
-	    lappend W [expr {($x << 1) | (($x >> 31) & 1)}]
-	}
+  # 7a. Divide M[i] into 16 words W[0], W[1], ...
+  set W [lrange $words $i [expr {$i+15}]]
 
-	# 7c. Let A = H[0] ....
-	set A $H0
-	set B $H1
-	set C $H2
-	set D $H3
-	set E $H4
-	
-	# 7d. For t = 0 to 79 do
-	# because of use in 64bit systems it is important to cut off the lower part
-	# by an AND: value & 0xffffffff)
-	for {set t 0} {$t < 20} {incr t} {
-	    set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
-		    (($B & $C) | ((~$B) & $D)) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
-			set E $D
-	    set D $C
-	    set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
-	    set B $A
-	    set A $TEMP
-	}
-	for {} {$t<40} {incr t} {
-	    set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
-		    ($B ^ $C ^ $D) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
-	    set E $D
-	    set D $C
-	    set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
-	    set B $A
-	    set A $TEMP
-	}
-	for {} {$t<60} {incr t} {
-	    set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
-		    (($B & $C) | ($B & $D) | ($C & $D)) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
-	    set E $D
-	    set D $C
-	    set C [expr {(($B << 30)  & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
-	    set B $A
-	    set A $TEMP
-	}
-	for {} {$t<80} {incr t} {
-	    set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
-		    ($B ^ $C ^ $D) \
-		    + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
-	    set E $D
-	    set D $C
-	    set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
-	    set B $A
-	    set A $TEMP
-	}
-	set H0 [expr {int(($H0 + $A) & 0xffffffff)}]
-	set H1 [expr {int(($H1 + $B) & 0xffffffff)}]
-	set H2 [expr {int(($H2 + $C) & 0xffffffff)}]
-	set H3 [expr {int(($H3 + $D) & 0xffffffff)}]
-	set H4 [expr {int(($H4 + $E) & 0xffffffff)}]
+  # 7b. For t = 16 to 79 let W[t] = ....
+  set t   16
+  set t3  12
+  set t8   7
+  set t14  1
+  set t16 -1
+  for {} {$t < 80} {incr t} {
+      set x [expr {[lindex $W [incr t3]] ^ [lindex $W [incr t8]] ^ \
+        [lindex $W [incr t14]] ^ [lindex $W [incr t16]]}]
+      lappend W [expr {($x << 1) | (($x >> 31) & 1)}]
+  }
+
+  # 7c. Let A = H[0] ....
+  set A $H0
+  set B $H1
+  set C $H2
+  set D $H3
+  set E $H4
+
+  # 7d. For t = 0 to 79 do
+  # because of use in 64bit systems it is important to cut off the lower part
+  # by an AND: value & 0xffffffff)
+  for {set t 0} {$t < 20} {incr t} {
+      set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
+        (($B & $C) | ((~$B) & $D)) \
+        + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+      set E $D
+      set D $C
+      set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
+      set B $A
+      set A $TEMP
+  }
+  for {} {$t<40} {incr t} {
+      set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
+        ($B ^ $C ^ $D) \
+        + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+      set E $D
+      set D $C
+      set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
+      set B $A
+      set A $TEMP
+  }
+  for {} {$t<60} {incr t} {
+      set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
+        (($B & $C) | ($B & $D) | ($C & $D)) \
+        + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+      set E $D
+      set D $C
+      set C [expr {(($B << 30)  & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
+      set B $A
+      set A $TEMP
+  }
+  for {} {$t<80} {incr t} {
+      set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
+        ($B ^ $C ^ $D) \
+        + $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+      set E $D
+      set D $C
+      set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
+      set B $A
+      set A $TEMP
+  }
+  set H0 [expr {int(($H0 + $A) & 0xffffffff)}]
+  set H1 [expr {int(($H1 + $B) & 0xffffffff)}]
+  set H2 [expr {int(($H2 + $C) & 0xffffffff)}]
+  set H3 [expr {int(($H3 + $D) & 0xffffffff)}]
+  set H4 [expr {int(($H4 + $E) & 0xffffffff)}]
     }
 
     return [binary format IIIII $H0 $H1 $H2 $H3 $H4]
@@ -205,7 +205,7 @@ proc pwsafe::int::computeHRND {RND password} {
     set engine [iblowfish::ecb \#auto $tempSalt]
     set cipher [pwsafe::int::genderbender $RND]
     for {set i 0} {$i < 1000} {incr i} {
-	set cipher [$engine encryptBlock $cipher]
+  set cipher [$engine encryptBlock $cipher]
     }
     itcl::delete object $engine
 
@@ -223,77 +223,87 @@ proc pwsafe::int::computeHRND {RND password} {
 #
 
 proc pwsafe::int::computeStretchedKey {salt password iterations pvar_in} {
-	upvar $pvar_in pvar
-	set st [sha2::SHA256Init] ;# st = stretched key
-# puts [info commands ::sha2::*]
+
+  if { $gorilla::extension(stretchkey) } {
+puts "pure C: iterations=$iterations passwd=[hex $password], salt=[hex $salt]"
+    set res [computeStretchedKey_c $password$salt $iterations 2048 "::gorilla::progress::values(.openDialog)"]
+    # puts "pvar=$::p"
+    return $res
+  }
+
+  upvar $pvar_in pvar
+puts "Tcl: iterations=$iterations password=[hex $password], salt=[hex $salt] len=[string length $salt]"
+
+  set st [sha2::SHA256Init]
 # puts "salt [hex $salt]\npassword $password iterations $iterations"
     sha2::SHA256Update $st $password
 # puts "sha2::Hex [sha2::Hex $st]"
     sha2::SHA256Update $st $salt
     set Xi [sha2::SHA256Final $st]
 # puts "Xi [hex $Xi]"
-	set blocks [ expr { $iterations / 256 } ]
-	for {set j 0} {$j < $blocks} {incr j} {
-		for {set i 0} {$i < 256} {incr i} {
-			set Xi [sha2::sha256 -bin $Xi]
-		}
-		set pvar [ expr { 100 * $j * 256 / $iterations } ]
-	}
-	set remain [ expr {$iterations - ($j * 256) } ]
-	for {set i 0} {$i < $remain} {incr i} {
-		set Xi [sha2::sha256 -bin $Xi]
-	}
-	set pvar 100
-	return $Xi
+  set blocks [ expr { $iterations / 256 } ]
+  for {set j 0} {$j < $blocks} {incr j} {
+    for {set i 0} {$i < 256} {incr i} {
+      set Xi [sha2::sha256 -bin $Xi]
+    }
+    set pvar [ expr { 100 * $j * 256 / $iterations } ]
+  }
+  set remain [ expr {$iterations - ($j * 256) } ]
+  for {set i 0} {$i < $remain} {incr i} {
+    set Xi [sha2::sha256 -bin $Xi]
+  }
+  set pvar 100
+# puts "pvar=$pvar"
+  return $Xi
 }
 
 proc pwsafe::int::calculateKeyStrechForDelay { seconds } {
 
-	set iter 1024
-	set elapsed 0
+  set iter 1024
+  set elapsed 0
 
-	# quickly locate an iteration amount that produces some measurable
-	# time delay - as the iteration count increases by powers of 2 this
-	# should reasonably quickly locate a useful value on very fast CPU's
+  # quickly locate an iteration amount that produces some measurable
+  # time delay - as the iteration count increases by powers of 2 this
+  # should reasonably quickly locate a useful value on very fast CPU's
 
-	while { $elapsed < 256 } {
-		set iter [ expr { $iter * 2 } ]
-		set elapsed [ pwsafe::int::keyStretchMsDelay $iter ]
-	}
+  while { $elapsed < 256 } {
+    set iter [ expr { $iter * 2 } ]
+    set elapsed [ pwsafe::int::keyStretchMsDelay $iter ]
+  }
 
-	# compute and return a final iteration amount based upon the located value
-	# above and the requested time delay factor
-  
-	return [ expr { int( ceil( $iter * ( $seconds * 1000.0 / $elapsed ) ) ) } ]
+  # compute and return a final iteration amount based upon the located value
+  # above and the requested time delay factor
 
-	#ruff
-	#
-	# Computes a V3 keystretch iteration value that produces a time
-	# delay of "seconds".  Note that the returned value will be
-	# dependent upon whether the sha256 C extension is in use or not.
-	#
-	# seconds - the number of seconds that the V3 keystrech function should execute
-	#
-	# returns an iteration count value
+  return [ expr { int( ceil( $iter * ( $seconds * 1000.0 / $elapsed ) ) ) } ]
+
+  #ruff
+  #
+  # Computes a V3 keystretch iteration value that produces a time
+  # delay of "seconds".  Note that the returned value will be
+  # dependent upon whether the sha256 C extension is in use or not.
+  #
+  # seconds - the number of seconds that the V3 keystrech function should execute
+  #
+  # returns an iteration count value
 
 } ; # end proc pwsafe::int::calculateKeyStrechForDelay
 
 proc pwsafe::int::keyStretchMsDelay { iter } {
 
-	set salt [ pwsafe::int::randomString 32 ]
-	set start [ clock milliseconds ]
-	set junk 0 ; # used as the "progress variable" for computeStretchedKey
-	pwsafe::int::computeStretchedKey $salt "The quick brown fox jumped over the lazy dog." $iter junk
-	return [ expr { [ clock milliseconds ] - $start } ]
+  set salt [ pwsafe::int::randomString 32 ]
+  set start [ clock milliseconds ]
+  set junk 0 ; # used as the "progress variable" for computeStretchedKey
+  pwsafe::int::computeStretchedKey $salt "The quick brown fox jumped over the lazy dog." $iter junk
+  return [ expr { [ clock milliseconds ] - $start } ]
 
-	#ruff
-	#
-	# Computes the time in milliseconds to perform a V3 keystretch using
-	# iter iterations
-	#
-	# iter - the number of iterations for the V3 keystretch algorithm
-	#
-	# returns a time value in milliseconds
+  #ruff
+  #
+  # Computes the time in milliseconds to perform a V3 keystretch using
+  # iter iterations
+  #
+  # iter - the number of iterations for the V3 keystretch algorithm
+  #
+  # returns a time value in milliseconds
 
 } ; # end pwsafe::int::keyStretchMsDelay
 
@@ -307,14 +317,14 @@ proc pwsafe::int::randomString {length} {
     # Use ISAAC PRNG, if present
     #
     if {[namespace exists ::isaac]} {
-	for {set i 0} {$i < $length} {incr i} {
-	    set rand [::isaac::rand]
-	    lappend randomOctets [expr {127-int($rand*256.)}]
-	}
+  for {set i 0} {$i < $length} {incr i} {
+      set rand [::isaac::rand]
+      lappend randomOctets [expr {127-int($rand*256.)}]
+  }
     } else {
-	for {set i 0} {$i < $length} {incr i} {
-	    lappend randomOctets [expr {127-int(rand()*256.)}]
-	}
+  for {set i 0} {$i < $length} {incr i} {
+      lappend randomOctets [expr {127-int(rand()*256.)}]
+  }
     }
     return [binary format c* $randomOctets]
 }
@@ -325,13 +335,13 @@ proc pwsafe::int::randomString {length} {
 
 proc pwsafe::int::randomizeVar {args} {
     foreach var $args {
-	uplevel 1 "set $var \[pwsafe::int::randomString \[string length \$$var\]\]"
+  uplevel 1 "set $var \[pwsafe::int::randomString \[string length \$$var\]\]"
     }
 }
 
 # tool for testing purposes
 
 proc hex { str } {
-	binary scan $str H* hex
-	return $hex			 
-} 
+  binary scan $str H* hex
+  return $hex
+}
