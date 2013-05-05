@@ -337,9 +337,9 @@ itcl::class pwsafe::v3::reader {
 					  error "Failure to scan correct number of fields from history header."
 					}
 
-          if { ! [ string is boolean -strict $active ] } {
-            error "Active field from history record is not a valid boolean value."
-          }
+					if { ! [ string is boolean -strict $active ] } {
+						error "Active field from history record is not a valid boolean value."
+					}
 
 					set history [ dict create active $active maxsize $maxsize ]
 
@@ -829,7 +829,7 @@ itcl::class pwsafe::v3::writer {
 							}
 
 							# header
-						  set output [ format "%1d%2x%2x" [ expr { $active ? 0 : 1 } ] \
+						  set output [ format "%1d%2x%2x" [ expr { $active ? 1 : 0 } ] \
 						                                  $maxsize \
 						                                  [ llength $passwords ] ]
 
