@@ -5,29 +5,37 @@
 #
 
 namespace eval pwsafe {}
-namespace eval pwsafe::int {}
+namespace eval pwsafe::int {
+
+  # The following variable points to the name of the variable which holds
+  # the value of the percent calculation for procedure computeStretchedKey.
+  # If the percentVarName is empty then computeStretchedKey will work
+  # quietly without a percent link
+
+  variable percentVarName ""
+}
 
 variable pwsafe::int::sha1isz_K {
-    0x5A827999 0x5A827999 0x5A827999 0x5A827999
-    0x5A827999 0x5A827999 0x5A827999 0x5A827999
-    0x5A827999 0x5A827999 0x5A827999 0x5A827999
-    0x5A827999 0x5A827999 0x5A827999 0x5A827999
-    0x5A827999 0x5A827999 0x5A827999 0x5A827999
-    0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
-    0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
-    0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
-    0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
-    0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
-    0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
-    0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
-    0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
-    0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
-    0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
-    0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
-    0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
-    0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
-    0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
-    0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
+  0x5A827999 0x5A827999 0x5A827999 0x5A827999
+  0x5A827999 0x5A827999 0x5A827999 0x5A827999
+  0x5A827999 0x5A827999 0x5A827999 0x5A827999
+  0x5A827999 0x5A827999 0x5A827999 0x5A827999
+  0x5A827999 0x5A827999 0x5A827999 0x5A827999
+  0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
+  0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
+  0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
+  0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
+  0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1 0x6ED9EBA1
+  0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
+  0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
+  0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
+  0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
+  0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC 0x8F1BBCDC
+  0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
+  0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
+  0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
+  0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
+  0xCA62C1D6 0xCA62C1D6 0xCA62C1D6 0xCA62C1D6
 }
 
 #
@@ -222,17 +230,12 @@ proc pwsafe::int::computeHRND {RND password} {
 # number of iterations that is stored in the file.
 #
 
-proc pwsafe::int::computeStretchedKey {salt password iterations pvar_in} {
+proc pwsafe::int::computeStretchedKey {salt password iterations dummy} {
+  set pvar_name $::pwsafe::int::percentVarName
 
   if { $gorilla::extension(stretchkey) } {
-puts "pure C: iterations=$iterations passwd=[hex $password], salt=[hex $salt]"
-    set res [computeStretchedKey_c $password$salt $iterations 2048 "::gorilla::progress::values(.openDialog)"]
-    # puts "pvar=$::p"
-    return $res
+    return [computeStretchedKey_c $password$salt $iterations 2048 $pvar_name]
   }
-
-  upvar $pvar_in pvar
-puts "Tcl: iterations=$iterations password=[hex $password], salt=[hex $salt] len=[string length $salt]"
 
   set st [sha2::SHA256Init]
 # puts "salt [hex $salt]\npassword $password iterations $iterations"
@@ -246,14 +249,13 @@ puts "Tcl: iterations=$iterations password=[hex $password], salt=[hex $salt] len
     for {set i 0} {$i < 256} {incr i} {
       set Xi [sha2::sha256 -bin $Xi]
     }
-    set pvar [ expr { 100 * $j * 256 / $iterations } ]
+    set $pvar_name [ expr { 100 * $j * 256 / $iterations } ]
   }
   set remain [ expr {$iterations - ($j * 256) } ]
   for {set i 0} {$i < $remain} {incr i} {
     set Xi [sha2::sha256 -bin $Xi]
   }
-  set pvar 100
-# puts "pvar=$pvar"
+  set $pvar_name 100
   return $Xi
 }
 

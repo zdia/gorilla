@@ -1,0 +1,14 @@
+# perform the test with tclkit-macosx
+# In 8.5.13 there will be a bus error
+# after the last font configure
+
+package require Tk
+font configure TkDefaultFont -size 10
+ttk::label .status -relief sunken
+menu .mbar
+menu .mbar.apple
+.mbar add cascade -menu .mbar.apple
+.mbar.apple add command -label hello
+. configure -menu .mbar
+font configure TkDefaultFont -size 12./unit-tests/testdb.psafe3
+

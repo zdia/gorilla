@@ -121,7 +121,7 @@ proc load-extension { path extension } {
   }
 
   set lib [ file join $path [string tolower $os-$machine] $extension[ info sharedlibextension ] ]
-puts "lib: $lib"
+# puts "lib: $lib"
   if { [ catch { load $lib } ] } {
     # puts stderr "Using Tcl code only"
     return 0
@@ -312,10 +312,7 @@ set ::gorilla::hasDownloadsFile [ file exists [ file join $::gorilla::Dir downlo
 # ----------------------------------------------------------------------
 
 array set gorilla::extension [list stretchkey 0 sha256c 0 twofish 0]
-
 set gorilla::extension(stretchkey) [load-extension [file join $::gorilla::Dir tcllib sha256c] stretchkey]
-puts "sha256c=$gorilla::extension(stretchkey)"
-# exit
 
 #
 # ----------------------------------------------------------------------
@@ -1507,9 +1504,11 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
       gorilla::InitPRNG [join $::gorilla::collectedTicks -] ;# much better seed now
 
       set password [$aframe.pw.pw get]
-      set pvar [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
-# puts "init progressBar with pvar=[set $pvar]"
-puts "init progressBar with pvar=$pvar"
+      set pwsafe::int::percentVarName [ ::gorilla::progress init -win $aframe.info -message [ mc "Opening ... %d %%" ] -max 200 ]
+      # in order not to smash the actual internal percentvar handling
+      # we feed it with junk
+      # Todo: refactor the pwsafe code in relation to the percentvar
+      set pvar junk
 
 #set a [ clock milliseconds ]
       if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \

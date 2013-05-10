@@ -62,7 +62,6 @@ int StretchKeyObjCmd(ClientData clientData, Tcl_Interp *interp,
   }
 
   pvarName = Tcl_GetStringFromObj(objv[4], &size);
-printf("pvarName=%s\n", pvarName);
 
   if ( Tcl_LinkVar(interp, pvarName,  (char *)&pvar, TCL_LINK_INT) ) {
     Tcl_SetResult(interp, "Error: could not link passed variable", TCL_VOLATILE);

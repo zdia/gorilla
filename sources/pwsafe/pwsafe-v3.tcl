@@ -389,9 +389,9 @@ itcl::class pwsafe::v3::reader {
   $db configure -keyStretchingIterations $iter
 
   set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp]
-puts "hskey=  [hex $hskey]"
+# puts "hskey=  [hex $hskey]"
   set myhskey [sha2::sha256 -bin $myskey]
-puts "myhskey=[hex $myhskey]"
+# puts "myhskey=[hex $myhskey]"
   if {![string equal $hskey $myhskey]} {
       pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
       error [ mc "wrong password" ]
