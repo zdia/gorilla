@@ -311,7 +311,10 @@ set ::gorilla::hasDownloadsFile [ file exists [ file join $::gorilla::Dir downlo
 # load acceleration extensions
 # ----------------------------------------------------------------------
 
-array set gorilla::extension [list stretchkey 0 sha256c 0 twofish 0]
+array set gorilla::extension [list sha256c 0 stretchkey 0 twofish 0]
+set gorilla::extension(sha256c) [load-extension [file join $::gorilla::Dir tcllib sha256c] sha256c]
+# sha256.tcl checks later on by a simple "package require" command if the extension is loaded.
+# This is hereby granted.
 set gorilla::extension(stretchkey) [load-extension [file join $::gorilla::Dir tcllib sha256c] stretchkey]
 
 #
@@ -6887,8 +6890,11 @@ proc gorilla::About {} {
     lappend ctr [ ttk::label $w.contrib6 -text "\u2022 [ mc "Spanish translation by %s" "Juan Roldan Ruiz" ]" {*}$stdopts ]
     lappend ctr [ ttk::label $w.contrib7 -text "\u2022 [ mc "Portuguese translation by %s" "Daniel Bruno" ]" {*}$stdopts ]
 
-    set I [ expr { [ info exists ::sha2::accel(critcl) ] && $::sha2::accel(critcl) ? "C" : "Tcl" } ]
-    ttk::label $w.exten -text [ mc "Using %s sha256 extension." $I ] {*}$stdopts
+    set accelerations ""
+    foreach extension [array names gorilla::extension] {
+      if { $gorilla::extension($extension) } { append accelerations " $extension" }
+    }
+    ttk::label $w.exten -text [ mc "Used C extensions:%s." $accelerations ] {*}$stdopts
 
     ttk::frame $w.buttons
     ttk::button $w.buttons.license -text [mc License] -command gorilla::License
