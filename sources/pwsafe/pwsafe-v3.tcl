@@ -49,7 +49,6 @@ itcl::class pwsafe::v3::reader {
   #
   # first block contains field length and type
   #
-
   set encryptedFirstBlock [$source read 16]
 
   if {$encryptedFirstBlock == "PWS3-EOFPWS3-EOF"} {
@@ -124,16 +123,16 @@ itcl::class pwsafe::v3::reader {
 
   pwsafe::int::randomizeVar decryptedData
   return [list $fieldType $fieldData]
-    }
+    } ;# end proc readField
 
     protected method readHeaderFields {} {
+
   #
   # Read header fields.
   #
 
   while {![$source eof]} {
       set field [readField]
-
       set fieldType [lindex $field 0]
       set fieldValue [lindex $field 1]
 
@@ -389,9 +388,7 @@ itcl::class pwsafe::v3::reader {
   $db configure -keyStretchingIterations $iter
 
   set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp]
-# puts "hskey=  [hex $hskey]"
   set myhskey [sha2::sha256 -bin $myskey]
-# puts "myhskey=[hex $myhskey]"
   if {![string equal $hskey $myhskey]} {
       pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
       error [ mc "wrong password" ]
@@ -406,12 +403,10 @@ itcl::class pwsafe::v3::reader {
 
   set hdrEngine [itwofish::ecb \#auto $myskey]
   pwsafe::int::randomizeVar myskey
-
   #
   # Decrypt the real key from b1 and b2, and the key L that is
   # used to calculate the HMAC
   #
-
   set key [$hdrEngine decryptBlock $b1]
   append key [$hdrEngine decryptBlock $b2]
   pwsafe::int::randomizeVar b1 b2
@@ -804,6 +799,7 @@ itcl::class pwsafe::v3::writer {
   set b2 [$hdrEngine encryptBlock $k2]
   set b3 [$hdrEngine encryptBlock $h1]
   set b4 [$hdrEngine encryptBlock $h2]
+
   ::itcl::delete object $hdrEngine
 
   $sink write $b1

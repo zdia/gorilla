@@ -6,10 +6,10 @@
 # This is an implementation of the secure hash algorithms specified in the
 # FIPS 180-2 document.
 #
-# This implementation permits incremental updating of the hash and 
+# This implementation permits incremental updating of the hash and
 # provides support for external compiled implementations using critcl.
 #
-# This implementation permits incremental updating of the hash and 
+# This implementation permits incremental updating of the hash and
 # provides support for external compiled implementations either using
 # critcl (sha256c).
 #
@@ -64,7 +64,7 @@ namespace eval ::sha2 {
                    0x90befffa 0xa4506ceb 0xbef9a3f7 0xc67178f2 \
                   ]
     }
-    
+
 }
 
 # -------------------------------------------------------------------------
@@ -72,11 +72,11 @@ namespace eval ::sha2 {
 
 # LoadAccelerator --
 #
-#	This package can make use of a number of compiled extensions to
-#	accelerate the digest computation. This procedure manages the
-#	use of these extensions within the package. During normal usage
-#	this should not be called, but the test package manipulates the
-#	list of enabled accelerators.
+# This package can make use of a number of compiled extensions to
+# accelerate the digest computation. This procedure manages the
+# use of these extensions within the package. During normal usage
+# this should not be called, but the test package manipulates the
+# list of enabled accelerators.
 #
 proc ::sha2::LoadAccelerator {name} {
     variable accel
@@ -103,36 +103,36 @@ proc ::sha2::LoadAccelerator {name} {
 
 # ::sha2::Implementations --
 #
-#	Determines which implementations are
-#	present, i.e. loaded.
+# Determines which implementations are
+# present, i.e. loaded.
 #
 # Arguments:
-#	None.
+# None.
 #
 # Results:
-#	A list of implementation keys.
+# A list of implementation keys.
 
 proc ::sha2::Implementations {} {
     variable accel
     set res {}
     foreach n [array names accel] {
-	if {!$accel($n)} continue
-	lappend res $n
+  if {!$accel($n)} continue
+  lappend res $n
     }
     return $res
 }
 
 # ::sha2::KnownImplementations --
 #
-#	Determines which implementations are known
-#	as possible implementations.
+# Determines which implementations are known
+# as possible implementations.
 #
 # Arguments:
-#	None.
+# None.
 #
 # Results:
-#	A list of implementation keys. In the order
-#	of preference, most prefered first.
+# A list of implementation keys. In the order
+# of preference, most prefered first.
 
 proc ::sha2::KnownImplementations {} {
     return {critcl tcl}
@@ -140,36 +140,36 @@ proc ::sha2::KnownImplementations {} {
 
 proc ::sha2::Names {} {
     return {
-	critcl   {tcllibc based}
-	tcl      {pure Tcl}
+  critcl   {tcllibc based}
+  tcl      {pure Tcl}
     }
 }
 
 # ::sha2::SwitchTo --
 #
-#	Activates a loaded named implementation.
+# Activates a loaded named implementation.
 #
 # Arguments:
-#	key	Name of the implementation to activate.
+# key Name of the implementation to activate.
 #
 # Results:
-#	None.
+# None.
 
 proc ::sha2::SwitchTo {key} {
     variable accel
     variable loaded
 
     if {[string equal $key $loaded]} {
-	# No change, nothing to do.
-	return
+  # No change, nothing to do.
+  return
     } elseif {![string equal $key ""]} {
-	# Validate the target implementation of the switch.
+  # Validate the target implementation of the switch.
 
-	if {![info exists accel($key)]} {
-	    return -code error "Unable to activate unknown implementation \"$key\""
-	} elseif {![info exists accel($key)] || !$accel($key)} {
-	    return -code error "Unable to activate missing implementation \"$key\""
-	}
+  if {![info exists accel($key)]} {
+      return -code error "Unable to activate unknown implementation \"$key\""
+  } elseif {![info exists accel($key)] || !$accel($key)} {
+      return -code error "Unable to activate missing implementation \"$key\""
+  }
     }
 
     # Deactivate the previous implementation, if there was any.
@@ -212,6 +212,7 @@ proc ::sha2::SwitchTo {key} {
 #
 
 proc ::sha2::SHA256Init-tcl {} {
+  puts "init-tcl"
     variable uid
     set token [namespace current]::[incr uid]
     upvar #0 $token tok
@@ -238,6 +239,7 @@ proc ::sha2::SHA256Init-critcl {} {
 
     # FIPS 180-2: 5.3.2 Setting the initial hash value
     set tok(sha256c) [sha256c_init256]
+puts " tok(sha256c)=$tok(sha256c)"
     return $token
 }
 
@@ -245,7 +247,7 @@ proc ::sha2::SHA256Init-critcl {} {
 #
 #   This is called to add more data into the hash. You may call this
 #   as many times as you require. Note that passing in "ABC" is equivalent
-#   to passing these letters in as separate calls -- hence this proc 
+#   to passing these letters in as separate calls -- hence this proc
 #   permits hashing of chunked data
 #
 #   If we have a C-based implementation available, then we will use
@@ -289,7 +291,7 @@ proc ::sha2::SHA256Update-critcl {token data} {
 proc ::sha2::SHA256Final-tcl {token} {
     upvar #0 $token state
     SHA256Penultimate $token
-    
+
     # Output
     set r [bytes $state(A)][bytes $state(B)][bytes $state(C)][bytes $state(D)][bytes $state(E)][bytes $state(F)][bytes $state(G)][bytes $state(H)]
     unset state
@@ -369,7 +371,7 @@ interp alias {} ::sha2::SHA224Update {} ::sha2::SHA256Update
 proc ::sha2::SHA224Final-tcl {token} {
     upvar #0 $token state
     SHA256Penultimate $token
-    
+
     # Output
     set r [bytes $state(A)][bytes $state(B)][bytes $state(C)][bytes $state(D)][bytes $state(E)][bytes $state(F)][bytes $state(G)]
     unset state
@@ -421,7 +423,7 @@ proc ::sha2::HMACInit {K} {
 
     set tok [SHA256Init]
     SHA256Update $tok $Ki;                 # initialize with the inner pad
-    
+
     # preserve the Ko value for the final stage.
     # FRINK: nocheck
     set [subst $tok](Ko) $Ko
@@ -468,7 +470,7 @@ set ::sha2::SHA256Transform_body {
         set W [lrange $blocks $i [expr {$i+15}]]
 
         # FIPS 180-2: 6.2.2 (1) Prepare the message schedule
-        # For t = 16 to 64 
+        # For t = 16 to 64
         #   let Wt = (sigma1(Wt-2) + Wt-7 + sigma0(Wt-15) + Wt-16)
         set t2  13
         set t7   8
@@ -480,7 +482,7 @@ set ::sha2::SHA256Transform_body {
                                  + [sigma0 [lindex $W [incr t15]]] \
                                  + [lindex $W [incr t16]]}]
         }
-        
+
         # FIPS 180-2: 6.2.2 (2) Initialise the working variables
         set A $state(A)
         set B $state(B)
@@ -499,7 +501,7 @@ set ::sha2::SHA256Transform_body {
         #   a = T1 + T2
         #
         for {set t 0} {$t < 64} {incr t} {
-            set T1 [expr {($H + [SIGMA1 $E] + [Ch $E $F $G] 
+            set T1 [expr {($H + [SIGMA1 $E] + [Ch $E $F $G]
                           + [lindex $K $t] + [lindex $W $t]) & 0xffffffff}]
             set T2 [expr {([SIGMA0 $A] + [Maj $A $B $C]) & 0xffffffff}]
             set H $G
@@ -629,7 +631,7 @@ proc ::sha2::SHA256Transform {token msg} $::sha2::SHA256Transform_body
 
 # Convert a integer value into a binary string in big-endian order.
 proc ::sha2::byte {n v} {expr {((0xFF << (8 * $n)) & $v) >> (8 * $n)}}
-proc ::sha2::bytes {v} { 
+proc ::sha2::bytes {v} {
     #format %c%c%c%c [byte 3 $v] [byte 2 $v] [byte 1 $v] [byte 0 $v]
     format %c%c%c%c \
         [expr {((0xFF000000 & $v) >> 24) & 0xFF}] \
@@ -663,12 +665,12 @@ proc ::sha2::Pop {varname {nth 0}} {
 #
 proc ::sha2::Chunk {token channel {chunksize 4096}} {
     upvar #0 $token state
-    
+
     if {[eof $channel]} {
         fileevent $channel readable {}
         set state(reading) 0
     }
-        
+
     SHA256Update $token [read $channel $chunksize]
 }
 
@@ -731,7 +733,7 @@ proc ::sha2::_sha256 {ver args} {
             close $opts(-channel)
         }
     }
-    
+
     if {$opts(-hex)} {
         set r [Hex $r]
     }
@@ -807,7 +809,7 @@ proc ::sha2::hmac {args} {
             close $opts(-channel)
         }
     }
-    
+
     if {$opts(-hex)} {
         set r [Hex $r]
     }
@@ -820,10 +822,10 @@ proc ::sha2::hmac {args} {
 namespace eval ::sha2 {
     variable e {}
     foreach e [KnownImplementations] {
-	if {[LoadAccelerator $e]} {
-	    SwitchTo $e
-	    break
-	}
+  if {[LoadAccelerator $e]} {
+      SwitchTo $e
+      break
+  }
     }
     unset e
 }

@@ -293,6 +293,19 @@ set auto_path [ list $::gorilla::Dir [ file join $::gorilla::Dir tcllib ] {*}$au
 # Initialize the Tcl modules system to look into modules/ directory
 ::tcl::tm::add [ file join $::gorilla::Dir modules ]
 
+# ----------------------------------------------------------------------
+# load acceleration extensions
+# ----------------------------------------------------------------------
+
+array set gorilla::extension [list sha256c 0 stretchkey 0 twofish 0]
+set gorilla::extension(sha256c) [load-extension [file join $::gorilla::Dir tcllib sha256c] sha256c]
+set gorilla::extension(stretchkey) [load-extension [file join $::gorilla::Dir tcllib sha256c] stretchkey]
+set gorilla::extension(twofish) [load-extension [file join $::gorilla::Dir twofish] twofish]
+
+# ----------------------------------------------------------------------
+# load packages and modules
+# ----------------------------------------------------------------------
+
 foreach package {Itcl pwsafe tooltip PWGprogress} {
   load-package $package
 } ; unset package
@@ -306,16 +319,6 @@ catch {package require uuid}
 
 # Detect whether or not the file containing download sites exists
 set ::gorilla::hasDownloadsFile [ file exists [ file join $::gorilla::Dir downloads.txt ] ]
-
-# ----------------------------------------------------------------------
-# load acceleration extensions
-# ----------------------------------------------------------------------
-
-array set gorilla::extension [list sha256c 0 stretchkey 0 twofish 0]
-set gorilla::extension(sha256c) [load-extension [file join $::gorilla::Dir tcllib sha256c] sha256c]
-# sha256.tcl checks later on by a simple "package require" command if the extension is loaded.
-# This is hereby granted.
-set gorilla::extension(stretchkey) [load-extension [file join $::gorilla::Dir tcllib sha256c] stretchkey]
 
 #
 # ----------------------------------------------------------------------
