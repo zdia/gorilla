@@ -341,6 +341,7 @@ proc gorilla::Init {} {
   set ::gorilla::overridePasswordPolicy 0
   set ::gorilla::isPRNGInitialized 0
   set ::gorilla::activeSelection 0
+  set ::gorilla::timeOfSelection 0
   catch {unset ::gorilla::dirName}
   catch {unset ::gorilla::fileName}
   catch {unset ::gorilla::db}
@@ -6651,14 +6652,21 @@ proc gorilla::ChangePassword {} {
 #
 
 proc gorilla::XSelectionHandler {offset maxChars} {
+  set data ""
+  set curTime [clock clicks -milliseconds]
+
   switch -- $::gorilla::activeSelection {
     0 {
       set data ""
     }
     1 {
       set data [gorilla::GetSelectedUsername]
-      if { $::gorilla::preference(gorillaAutocopy) } {
-        after idle { after 200 { ::gorilla::CopyToClipboard Password } }
+
+      #to avoid having Klipper be recognized as a user pasting a username
+      if {[expr $curTime - $::gorilla::timeOfSelection] > 200} {
+        if { $::gorilla::preference(gorillaAutocopy) } {
+          after idle { after 200 { ::gorilla::CopyToClipboard Password } }
+        }
       }
     }
     2 {
@@ -6719,6 +6727,7 @@ proc gorilla::CopyToClipboard { what {mult 1} } {
         # pastes, they will receive the data they
         # expect
 
+        set ::gorilla::timeOfSelection [clock clicks -milliseconds]
         foreach sel { PRIMARY CLIPBOARD } {
           selection clear -selection $sel
           selection own   -selection $sel .
