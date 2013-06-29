@@ -5108,6 +5108,8 @@ proc gorilla::LockDatabase {} {
   }
 
   wm title $top "Password Gorilla"
+  wm iconname $top "Gorilla"
+  wm iconphoto $top $::gorilla::images(application)
   $aframe.title configure -text  [ ::gorilla::LockDirtyMessage ]
 
   # and setup a pair of variable write traces to toggle the title text
