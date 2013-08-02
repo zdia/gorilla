@@ -50,6 +50,7 @@ itcl::class pwsafe::v3::reader {
   # first block contains field length and type
   #
   set encryptedFirstBlock [$source read 16]
+# puts "encryptedFirstBlock=[hex $encryptedFirstBlock]"
 
   if {$encryptedFirstBlock == "PWS3-EOFPWS3-EOF"} {
       # EOF marker
@@ -63,9 +64,9 @@ itcl::class pwsafe::v3::reader {
   if {[string length $encryptedFirstBlock] != 16} {
       error [ mc "less than 16 bytes remaining for first block" ]
   }
-
-  set decryptedFirstBlock [$engine decrypt $encryptedFirstBlock]
-
+# puts "pswsafe::v3::reader using engine=[namespace current]::$engine"
+  set decryptedFirstBlock [[namespace current]::$engine decrypt $encryptedFirstBlock]
+# puts "decryptedFirstBlock=[hex $decryptedFirstBlock]"
   if {[binary scan $decryptedFirstBlock ic fieldLength fieldType] != 2} {
       error [ mc "oops" ]
   }
@@ -139,7 +140,7 @@ itcl::class pwsafe::v3::reader {
       if {$fieldType == -1} {
     break
       }
-
+puts "hmacEngine = $hmacEngine"
       sha2::HMACUpdate $hmacEngine $fieldValue
 
       #
@@ -304,6 +305,7 @@ itcl::class pwsafe::v3::reader {
     }
 
     public method readFile {{percentvar ""}} {
+puts "method readFile"
   if {$used} {
       error [ mc "this object can not be reused" ]
   }
@@ -386,14 +388,17 @@ itcl::class pwsafe::v3::reader {
   }
 
   $db configure -keyStretchingIterations $iter
-
+# puts "calling computeStretchedKey ... with Password=[hex [$db getPassword]]"
   set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp]
+puts "myskey=[hex $myskey] iter=$iter"
   set myhskey [sha2::sha256 -bin $myskey]
+puts "hskey=[hex $hskey] iter=$iter"
+puts "myhskey=[hex $myhskey]"
   if {![string equal $hskey $myhskey]} {
       pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
       error [ mc "wrong password" ]
   }
-
+# exit
   pwsafe::int::randomizeVar salt hskey myhskey
 
   #
@@ -413,9 +418,10 @@ itcl::class pwsafe::v3::reader {
 
   set hmacKey [$hdrEngine decryptBlock $b3]
   append hmacKey [$hdrEngine decryptBlock $b4]
+puts "hmacKey=[hex $hmacKey]"
+
   set hmacEngine [sha2::HMACInit $hmacKey]
   pwsafe::int::randomizeVar b3 b4 hmacKey
-
   itcl::delete object $hdrEngine
 
   #
@@ -423,6 +429,7 @@ itcl::class pwsafe::v3::reader {
   #
 
   set engine [itwofish::cbc \#auto $key $iv]
+puts "decryption engine = $engine, iv = [hex $iv]"
   pwsafe::int::randomizeVar key iv
 
   #
@@ -430,6 +437,7 @@ itcl::class pwsafe::v3::reader {
   #
 
   if {[catch {
+puts "+++ break"
       readHeaderFields
       readAllFields $pcvp
   } oops]} {
@@ -443,9 +451,11 @@ itcl::class pwsafe::v3::reader {
   #
   # Read and validate HMAC
   #
-
+puts "hmacEngine=$hmacEngine"
   set hmac [$source read 32]
   set myHmac [sha2::HMACFinal $hmacEngine]
+puts "hmac [hex $hmac]"
+puts "myHmac [hex $myHmac]"
 
   if {![string equal $hmac $myHmac]} {
       set dbWarnings [$db cget -warningsDuringOpen]

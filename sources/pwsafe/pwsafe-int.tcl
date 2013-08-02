@@ -231,19 +231,23 @@ proc pwsafe::int::computeHRND {RND password} {
 #
 
 proc pwsafe::int::computeStretchedKey {salt password iterations dummy} {
+puts "computeStretchedKey: password=$password"
+
   set pvar_name $::pwsafe::int::percentVarName
 
+
   if { $gorilla::extension(stretchkey) } {
+puts "C tretchkey enabled"
     return [computeStretchedKey_c $password$salt $iterations 2048 $pvar_name]
   }
 
   set st [sha2::SHA256Init]
-# puts "salt [hex $salt]\npassword $password iterations $iterations"
+# puts "salt [hex $salt]\npassword=$password iterations=$iterations"
     sha2::SHA256Update $st $password
 # puts "sha2::Hex [sha2::Hex $st]"
     sha2::SHA256Update $st $salt
     set Xi [sha2::SHA256Final $st]
-# puts "Xi [hex $Xi]"
+# puts ">>> Xi [hex $Xi]"
   set blocks [ expr { $iterations / 256 } ]
   for {set j 0} {$j < $blocks} {incr j} {
     for {set i 0} {$i < 256} {incr i} {
@@ -256,6 +260,7 @@ proc pwsafe::int::computeStretchedKey {salt password iterations dummy} {
     set Xi [sha2::sha256 -bin $Xi]
   }
   set $pvar_name 100
+puts ">>> Xi [hex $Xi]"
   return $Xi
 }
 

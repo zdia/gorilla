@@ -11,6 +11,7 @@ if { $gorilla::extension(twofish) == 1 } {
 
   itcl::class itwofish::ecb {
     constructor {key} { twofish_c init $this ecb $key } {}
+    # destructor { twofish_c delete $this }
     public method encryptBlock {block} { return [twofish_c encrypt $this $block] }
     public method decryptBlock {block} { return [twofish_c decrypt $this $block] }
   }

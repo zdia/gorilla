@@ -399,7 +399,7 @@ proc ::sha2::SHA224Final-critcl {token} {
 #    added into the algorithm
 #
 proc ::sha2::HMACInit {K} {
-
+puts "new: K=$K"
     # Key K is adjusted to be 64 bytes long. If K is larger, then use
     # the SHA1 digest of K and pad this instead.
     set len [string length $K]

@@ -5,6 +5,7 @@ package require iblowfish
 package require itwofish
 
 #
+#
 # ----------------------------------------------------------------------
 # This file contains the public API for the pwsafe package
 # ----------------------------------------------------------------------
@@ -34,6 +35,7 @@ proc pwsafe::createFromStream {stream password version {percentvar ""}} {
   set reader [namespace current]::[pwsafe::v2::reader #auto $db $stream]
     }
 
+puts "readFile engine = $reader"
     if {[catch {$reader readFile $pcvp} oops]} {
   set origErrorInfo $::errorInfo
   itcl::delete object $reader
