@@ -299,7 +299,7 @@ set auto_path [ list $::gorilla::Dir [ file join $::gorilla::Dir tcllib ] {*}$au
 
 array set gorilla::extension [list sha256c 0 stretchkey 0 twofish 0]
 set gorilla::extension(sha256c) [load-extension [file join $::gorilla::Dir tcllib sha256c] sha256c]
-# set gorilla::extension(stretchkey) [load-extension [file join $::gorilla::Dir tcllib sha256c] stretchkey]
+set gorilla::extension(stretchkey) [load-extension [file join $::gorilla::Dir tcllib sha256c] stretchkey]
 set gorilla::extension(twofish) [load-extension [file join $::gorilla::Dir twofish] twofish]
 
 # ----------------------------------------------------------------------

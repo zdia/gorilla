@@ -235,7 +235,6 @@ proc pwsafe::int::computeStretchedKey {salt password iterations dummy} {
   set pvar_name $::pwsafe::int::percentVarName
 
   if { $gorilla::extension(stretchkey) } {
-puts "C tretchkey enabled"
     return [computeStretchedKey_c $password$salt $iterations 2048 $pvar_name]
   }
 
