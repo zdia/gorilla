@@ -246,21 +246,18 @@ itcl::class pwsafe::db {
     }
 
     private method decryptField {encryptedMsg} {
-# puts "pwsafe-db decryptField: encryptedMsg=[hex $encryptedMsg]"
-# puts "encryptedMsg=$encryptedMsg"
-  set eml [string length $encryptedMsg]
-  set blocks [expr {$eml/16}]
-  set decryptedMsg ""
-  for {set i 0} {$i < $blocks} {incr i} {
-      append decryptedMsg [$engine decryptBlock \
-        [string range $encryptedMsg [expr {16*$i}] [expr {16*$i+15}]]]
-  }
-  binary scan $decryptedMsg @4I msgLen
-  set res [string range $decryptedMsg 8 [expr {7+$msgLen}]]
-  # pwsafe::int::randomizeVar decryptedMsg
-# puts "pwsafe-db decryptField: engine=$engine message=[hex $encryptedMsg] result=$res"
+      set eml [string length $encryptedMsg]
+      set blocks [expr {$eml/16}]
+      set decryptedMsg ""
+      for {set i 0} {$i < $blocks} {incr i} {
+          append decryptedMsg [$engine decryptBlock \
+            [string range $encryptedMsg [expr {16*$i}] [expr {16*$i+15}]]]
+      }
+      binary scan $decryptedMsg @4I msgLen
+      set res [string range $decryptedMsg 8 [expr {7+$msgLen}]]
+      pwsafe::int::randomizeVar decryptedMsg
 
-  return $res
+      return $res
     }
 
     #
@@ -268,22 +265,18 @@ itcl::class pwsafe::db {
     #
 
     public method getPassword {} {
-# if { $password eq "" } {
-  # puts "no password"
-# }
-# puts "password [hex $password]"
-  return [decryptField $password]
+      return [decryptField $password]
     }
 
     public method checkPassword {oldPassword} {
-  if {![string equal $oldPassword [decryptField $password]]} {
-      return 0
-  }
-  return 1
+      if {![string equal $oldPassword [decryptField $password]]} {
+          return 0
+      }
+      return 1
     }
 
     public method setPassword {newPassword} {
-  set password [encryptField $newPassword]
+      set password [encryptField $newPassword]
     }
 
     #

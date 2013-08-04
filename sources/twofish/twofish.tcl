@@ -11,7 +11,7 @@ if { $gorilla::extension(twofish) == 1 } {
 
   itcl::class itwofish::ecb {
     constructor {key} { twofish_c init $this ecb $key } {}
-    # destructor { twofish_c delete $this }
+    destructor { twofish_c delete $this }
     public method encryptBlock {block} { return [twofish_c encrypt $this $block] }
     public method decryptBlock {block} { return [twofish_c decrypt $this $block] }
   }
@@ -22,6 +22,7 @@ if { $gorilla::extension(twofish) == 1 } {
   # Frank creates separate encryption and decryption engines in pwsafe-v3.tcl
 
     constructor {key iv} { twofish_c init $this cbc $key $iv }
+    destructor { twofish_c delete $this }
     public method encrypt {message} { return [twofish_c encrypt $this $message] }
     public method decrypt {message} { return [twofish_c decrypt $this $message] }
   }

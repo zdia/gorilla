@@ -133,44 +133,43 @@ itcl::class pwsafe::v3::reader {
   #
 
   while {![$source eof]} {
-      set field [readField]
-      set fieldType [lindex $field 0]
-      set fieldValue [lindex $field 1]
+    set field [readField]
+    set fieldType [lindex $field 0]
+    set fieldValue [lindex $field 1]
 
-      if {$fieldType == -1} {
-    break
-      }
-puts "hmacEngine = $hmacEngine"
-      sha2::HMACUpdate $hmacEngine $fieldValue
-
-      #
-      # Format the header's field type, if necessary
-      #
-
-      switch -- $fieldType {
-    0 {
-        #
-        # Version
-        #
-
-        binary scan $fieldValue cc minor major
-        set fieldValue [list $major $minor]
+    if {$fieldType == -1} {
+      break
     }
-    1 {
-        #
-        # UUID
-        #
+    sha2::HMACUpdate $hmacEngine $fieldValue
 
-        binary scan $fieldValue H* tmp
-        set fieldValue [string range $tmp 0 7]
-        append fieldValue "-" [string range $tmp 8 11]
-        append fieldValue "-" [string range $tmp 12 15]
-        append fieldValue "-" [string range $tmp 16 19]
-        append fieldValue "-" [string range $tmp 20 31]
-    }
+    #
+    # Format the header's field type, if necessary
+    #
+
+    switch -- $fieldType {
+      0 {
+          #
+          # Version
+          #
+
+          binary scan $fieldValue cc minor major
+          set fieldValue [list $major $minor]
       }
+      1 {
+          #
+          # UUID
+          #
 
-      $db setHeaderField $fieldType $fieldValue
+          binary scan $fieldValue H* tmp
+          set fieldValue [string range $tmp 0 7]
+          append fieldValue "-" [string range $tmp 8 11]
+          append fieldValue "-" [string range $tmp 12 15]
+          append fieldValue "-" [string range $tmp 16 19]
+          append fieldValue "-" [string range $tmp 20 31]
+      }
+    }
+
+    $db setHeaderField $fieldType $fieldValue
   }
 
   #
@@ -305,19 +304,18 @@ puts "hmacEngine = $hmacEngine"
     }
 
     public method readFile {{percentvar ""}} {
-puts "method readFile"
-  if {$used} {
-      error [ mc "this object can not be reused" ]
-  }
+      if {$used} {
+          error [ mc "this object can not be reused" ]
+      }
 
-  set used 1
+      set used 1
 
-  if {$percentvar != ""} {
-      upvar $percentvar pcv
-      set pcvp "pcv"
-  } else {
-      set pcvp ""
-  }
+      if {$percentvar != ""} {
+          upvar $percentvar pcv
+          set pcvp "pcv"
+      } else {
+          set pcvp ""
+      }
 
   #
   # The file is laid out as follows:
@@ -373,32 +371,32 @@ puts "method readFile"
   #
 
   if {[binary scan $biter i iter] != 1} {
-      error [ mc "Failed to scan key stretch iteration count from binary data." ]
+    error [ mc "Failed to scan key stretch iteration count from binary data." ]
   }
 
   if {$iter < 2048} {
-      #
-      # Low security. Warn.
-      #
+    #
+    # Low security. Warn.
+    #
 
-      set dbWarnings [$db cget -warningsDuringOpen]
-      lappend dbWarnings "File only uses low-security $iter iterations\
-    for key stretching; at least 2048 recommended."
-      $db configure -warningsDuringOpen $dbWarnings
+    set dbWarnings [$db cget -warningsDuringOpen]
+    lappend dbWarnings "File only uses low-security $iter iterations\
+  for key stretching; at least 2048 recommended."
+    $db configure -warningsDuringOpen $dbWarnings
   }
 
   $db configure -keyStretchingIterations $iter
 # puts "calling computeStretchedKey ... with Password=[hex [$db getPassword]]"
   set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp]
-puts "myskey=[hex $myskey] iter=$iter"
+# puts "myskey=[hex $myskey] iter=$iter"
   set myhskey [sha2::sha256 -bin $myskey]
-puts "hskey=[hex $hskey] iter=$iter"
-puts "myhskey=[hex $myhskey]"
+# puts "hskey=[hex $hskey] iter=$iter"
+# puts "myhskey=[hex $myhskey]"
   if {![string equal $hskey $myhskey]} {
-      pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
-      error [ mc "wrong password" ]
+    pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
+    error [ mc "wrong password" ]
   }
-# exit
+
   pwsafe::int::randomizeVar salt hskey myhskey
 
   #
@@ -418,7 +416,6 @@ puts "myhskey=[hex $myhskey]"
 
   set hmacKey [$hdrEngine decryptBlock $b3]
   append hmacKey [$hdrEngine decryptBlock $b4]
-puts "hmacKey=[hex $hmacKey]"
 
   set hmacEngine [sha2::HMACInit $hmacKey]
   pwsafe::int::randomizeVar b3 b4 hmacKey
@@ -429,7 +426,6 @@ puts "hmacKey=[hex $hmacKey]"
   #
 
   set engine [itwofish::cbc \#auto $key $iv]
-puts "decryption engine = $engine, iv = [hex $iv]"
   pwsafe::int::randomizeVar key iv
 
   #
@@ -437,7 +433,6 @@ puts "decryption engine = $engine, iv = [hex $iv]"
   #
 
   if {[catch {
-puts "+++ break"
       readHeaderFields
       readAllFields $pcvp
   } oops]} {
@@ -451,11 +446,10 @@ puts "+++ break"
   #
   # Read and validate HMAC
   #
-puts "hmacEngine=$hmacEngine"
   set hmac [$source read 32]
   set myHmac [sha2::HMACFinal $hmacEngine]
-puts "hmac [hex $hmac]"
-puts "myHmac [hex $myHmac]"
+# puts "hmac [hex $hmac]"
+# puts "myHmac [hex $myHmac]"
 
   if {![string equal $hmac $myHmac]} {
       set dbWarnings [$db cget -warningsDuringOpen]

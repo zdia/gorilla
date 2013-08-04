@@ -20,31 +20,30 @@ namespace eval pwsafe {}
 #
 
 proc pwsafe::createFromStream {stream password version {percentvar ""}} {
-    if {$percentvar != ""} {
-  upvar $percentvar pcv
-  set pcvp "pcv"
-    } else {
-  set pcvp ""
-    }
+  if {$percentvar != ""} {
+    upvar $percentvar pcv
+    set pcvp "pcv"
+  } else {
+    set pcvp ""
+  }
 
-    set db [namespace current]::[pwsafe::db #auto $password]
+  set db [namespace current]::[pwsafe::db #auto $password]
 
-    if {$version == 3} {
-  set reader [namespace current]::[pwsafe::v3::reader #auto $db $stream]
-    } else {
-  set reader [namespace current]::[pwsafe::v2::reader #auto $db $stream]
-    }
+  if {$version == 3} {
+    set reader [namespace current]::[pwsafe::v3::reader #auto $db $stream]
+  } else {
+    set reader [namespace current]::[pwsafe::v2::reader #auto $db $stream]
+  }
 
-puts "readFile engine = $reader"
-    if {[catch {$reader readFile $pcvp} oops]} {
-  set origErrorInfo $::errorInfo
-  itcl::delete object $reader
-  itcl::delete object $db
-  error $oops $origErrorInfo
-    }
-
+  if {[catch {$reader readFile $pcvp} oops]} {
+    set origErrorInfo $::errorInfo
     itcl::delete object $reader
-    return $db
+    itcl::delete object $db
+    error $oops $origErrorInfo
+  }
+
+  itcl::delete object $reader
+  return $db
 }
 
 #

@@ -231,10 +231,8 @@ proc pwsafe::int::computeHRND {RND password} {
 #
 
 proc pwsafe::int::computeStretchedKey {salt password iterations dummy} {
-puts "computeStretchedKey: password=$password"
 
   set pvar_name $::pwsafe::int::percentVarName
-
 
   if { $gorilla::extension(stretchkey) } {
 puts "C tretchkey enabled"
@@ -260,7 +258,6 @@ puts "C tretchkey enabled"
     set Xi [sha2::sha256 -bin $Xi]
   }
   set $pvar_name 100
-puts ">>> Xi [hex $Xi]"
   return $Xi
 }
 
