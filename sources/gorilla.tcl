@@ -1963,13 +1963,34 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0} 
 
+		# Use a ttk::notebook as a "panes" manager (http://wiki.tcl.tk/20057)
+		# Two "panes": 1) standard PW entries 2) password history table
+		ttk::style theme settings default {
+			ttk::style layout Plain.TNotebook.Tab null
+		}
+
+		set pane [ ttk::notebook $top.pane -style Plain.TNotebook ]
+
+		# because of the 2 pane layout, the entry and label widgets
+		# need to be contained in a frame instead of directly in
+		# $top - use a Tk frame because it is borderless by default
+
+		set pane1 [ ::tk::frame $top.pane1 ]
+		set pane2 [ ::tk::frame $top.pane2 ]
+		$pane add $pane1 -sticky news
+		$pane add $pane2 -sticky news
+		$pane select $pane1
+		grid $pane -sticky news
+
+		# begin --- contents of pane 1
+
 		foreach {child label w} [ list group    [ mc Group    ] combobox \
 		                               title    [ mc Title    ] entry    \
 		                               url      [ mc URL      ] entry    \
 		                               user     [ mc Username ] entry    \
 		                               password [ mc Password ] entry  ] {
-			grid [ make-label $top $label ] \
-			     [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
+			grid [ make-label $pane1 $label ] \
+			     [ set widget($child) [ ttk::$w $pane1.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 					-sticky news -pady 5
 		} ; # end foreach {child label}
 
@@ -1983,29 +2004,33 @@ namespace eval ::gorilla::LoginDialog {
 		# because the text widget plus scrollbar needs to fit into the single
 		# column holding all the other ttk::entries in the outer grid
 		
-		set textframe [ ttk::frame $top.e-notes-f ]
+		set textframe [ ttk::frame $pane1.e-notes-f ]
 		set widget(notes) [ set ${pvns}::notes [ text $textframe.e-notes -width 40 -height 5 -wrap word -yscrollcommand [ list $textframe.vsb set ] ] ]
 		grid $widget(notes) [ scrollbar $textframe.vsb -command [ list $widget(notes) yview ] ] -sticky news
 		grid rowconfigure $textframe $widget(notes) -weight 1
 		grid columnconfigure $textframe $widget(notes) -weight 1
 
-		grid [ make-label $top [mc Notes] ] \
+		grid [ make-label $pane1 [mc Notes] ] \
 		     $textframe \
 		     -sticky news -pady 5
 
-		grid rowconfigure    $top $textframe -weight 1
-		grid columnconfigure $top $textframe -weight 1
+		grid rowconfigure    $pane1 $textframe -weight 1
+		grid columnconfigure $pane1 $textframe -weight 1
 
 		set lastChangeList [list last-pass-change [mc "Last Password Change"] last-modified [mc "Last Modified"] ]
 		
 		foreach {child label} $lastChangeList {
-			grid [ make-label $top $label ] \
-			     [ ttk::label $top.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
+			grid [ make-label $pane1 $label ] \
+			     [ ttk::label $pane1.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
 			     -sticky news -pady 5
 		}
 
+		# end --- contents of pane 1
+
 		# bias the lengths of the labels to a slightly larger size than the average
 		ttk::style configure Wrapping.TLabel -wraplength [ + 40 [ wrap-measure ] ]
+
+		# begin - setup the button frame 
 
 		set bf  [ ttk::frame $top.bf  ]	; # button frame
 		set frt [ ttk::frame $bf.top ]	; # frame right - top
@@ -2017,17 +2042,21 @@ namespace eval ::gorilla::LoginDialog {
 		pack $frt -side top -pady 20
 
 		set frb [ ttk::frame $bf.pws ] ; # frame right - bottom
+
+		ttk::button $frb.pane-control -text [ mc "Show History" ] -width 16 ; # pane control button
+
 		set widget(showhide) [ ttk::button $frb.show -width 16 -text [ mc "Show Password" ] -command [ list namespace inscope $pvns ShowPassword ] ]
 
 		ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ]
-		ttk::checkbutton $frb.override -text [ mc "Override Password Policy" ] -variable ${pvns}::overridePasswordPolicy 
-			# -justify left
+		ttk::checkbutton $frb.override -text [ mc "Override Password Policy" ] -variable ${pvns}::overridePasswordPolicy
 
 		set ${pvns}::overridePasswordPolicy 0
 
-		pack $frb.show $frb.gen $frb.override -side top -padx 10 -pady 5
-
+		pack $frb.show $frb.gen $frb.override $frb.pane-control -side top -padx 10 -pady 5
+    
 		pack $frb -side top -pady 20
+
+		# end - setup the button frame
 
 		grid $bf -row 0 -column 2 -rowspan 8 -sticky news
 
@@ -2068,7 +2097,50 @@ namespace eval ::gorilla::LoginDialog {
 
 		} ; # end foreach item,label 
 
+		# end - setup password policy pane
+		
+		# begin - setup password history pane
+		
+		set widget(history) [ ttk::treeview $pane2.history \
+		    -style gorilla.Treeview \
+		    -columns {Date Password} \
+		    -selectmode browse -show headings \
+		    -yscrollcommand [ list $pane2.vsb set ] ]
+		ttk::scrollbar $pane2.vsb -orient vertical \
+		    -command [ list $widget(history) yview ]
+
+		bind $pane2.history <Configure> [ list ::apply { {w} {
+		  $w column Date -width [ expr { 20 + [ font measure TkDefaultFont -displayof $w "8888-88-88 88:88:88" ] } ]
+		} } %W ]
+		    
+		grid $widget(history) $pane2.vsb -sticky news
+		grid rowconfigure    $pane2 0 -weight 1
+		grid columnconfigure $pane2 0 -weight 1
+
+		$widget(history) heading Date     -text [ mc "Date Changed" ]
+		$widget(history) heading Password -text [ mc "Password" ]
+		$widget(history) column  Date     -stretch false
+		$widget(history) column  Password -stretch true
+
+		$widget(history) insert {} end -values {"8888-88-88 88:88:88" "This that and something else"}
+		
+		# end - setup password history pane
+		
 		ttk::style configure Wrapping.TCheckbutton -wraplength [ wrap-measure ]
+
+		# Configure the pane-control button to toggle display of the
+		# two panes and to update its own text at the same time 
+
+		$frb.pane-control configure -command [ list ::apply { 
+		  {button notebook pane1 pane2} {
+                  if { [ $button cget -text ] eq [ mc "Show History" ] } {
+                    $button configure -text [ mc "Hide History" ]
+                    $notebook select $pane2
+                  } else {
+                    $button configure -text [ mc "Show History" ]
+                    $notebook select $pane1
+                  }
+                } } $frb.pane-control $pane $pane1 $pane2 ]
 
 
 		# force geometry calculations to happen - the ppf frame map/unmap code
@@ -2080,6 +2152,8 @@ namespace eval ::gorilla::LoginDialog {
 		# internal widgets
 
 		wm minsize $top [ winfo reqwidth $top ] [ winfo reqheight $top ]
+
+		array set ${pvns}::widget [ array get widget ]
 
 		# Now build the callback procs that will handle this window's gui
 		# interactions with the user
@@ -2319,7 +2393,8 @@ namespace eval ::gorilla::LoginDialog {
 				variable overridePasswordPolicy 0
 				variable PassPolicy 
 				array set PassPolicy [ GetDefaultPasswordPolicy ]
-
+				variable widget
+				
 				foreach item { group title url user password } {
 					variable $item
 					set $item [ dbget $item $in_rn ]
@@ -2342,6 +2417,14 @@ namespace eval ::gorilla::LoginDialog {
 				set rn $in_rn
 				
 				HidePassword
+				
+				puts stderr "PLD: history='[ dbget history $in_rn ]'"
+				if { 0 != [ dict size [ set history [ dbget history $in_rn ] ] ] } {
+				  foreach item [ dict get $history passwords ] {
+				    lassign $item numdate oldpass
+				    $widget(history) insert {} end -values [ list [ clock format $numdate -format "%Y-%m-%d %H:%M:%S" ] $oldpass ]
+				  }
+				}
 
 			} ; # end proc PopulateLoginDialog
 
@@ -2374,7 +2457,8 @@ namespace eval ::gorilla::LoginDialog {
 				set history [ dbget history $rn ]
 
 				if { $history eq "" } {
-					set history [ dict create active 1 passwords [ list ] ]
+					##### FIXME ##### - Maxsize should come from a config option
+					set history [ dict create active 1 maxsize 255 passwords [ list ] ]
 				}
 
 				foreach element [ list {*}$varlist notes ] {
