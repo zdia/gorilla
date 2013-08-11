@@ -7,6 +7,7 @@ alias: TOC
 	-- [Organization Into Groups]
 	--- [Moving Groups and/or Logins]
 	-- [Logins]
+	--- [Saving Edits/Changes]
 	-- [Preferences]
 	--- [General Preferences]
 	--- [Database Default Preferences]
@@ -38,6 +39,7 @@ alias: Overview
  - [Organization Into Groups]
  -- [Moving Groups and/or Logins]
  - [Logins]
+ -- [Saving Edits/Changes]
  - [Preferences]
  -- [General Preferences]
  -- [Database Default Preferences]
@@ -260,6 +262,23 @@ password length should be an even number.
 The default password policy for the current database can be set using
 the ''Password Policy'' dialog from the ''Security'' menu.
 
+-------------------
+title: Saving Edits/Changes
+
+The password editing window shown for both ''Add Login'' and ''Edit Login''
+operates upon a temporary copy of the data for a password record.  No
+changes are made to the master database as an immediate result of changes
+made to the fields in the editing window.  Only after the ''Ok'' button is
+pressed will the contents of the fields of the edit window be stored into
+the master database (overwriting existing data if the operation is an edit). 
+If an existing password entry is opened for editing, and it is desired to
+discard the changes made, pressing the ''Cancel'' button will discard the
+changes and leave the master database unchanged.
+
+Note that a side-effect of this operation of the editing window is that the
+''Auto-save'' feature will not activate until the ''Ok'' button is
+depressed.  This provides some small security against accidential changes to
+a password record being saved into the master database unintentionally.
 
 -------------------
 title: Preferences
