@@ -343,7 +343,6 @@ proc gorilla::Init {} {
   set ::gorilla::dirty 0
   set ::gorilla::overridePasswordPolicy 0
   set ::gorilla::isPRNGInitialized 0
-  set ::gorilla::activeSelection 0
   set ::gorilla::timeOfSelection 0
   catch {unset ::gorilla::dirName}
   catch {unset ::gorilla::fileName}
@@ -710,14 +709,6 @@ proc gorilla::InitGui {} {
     bind . <$meta-o> "after 150 [ bind . <$meta-o> ]"
   }
 
-
-  #
-  # Handler for the X Selection
-  #
-
-  selection handle -selection PRIMARY   . gorilla::XSelectionHandler
-  selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
-
   #
   # Handler for the WM_DELETE_WINDOW event, which is sent when the
   # user asks the window manager to destroy the application
@@ -912,7 +903,7 @@ proc gorilla::TreeNodeSelect {node} {
   focus $::gorilla::widgets(tree)
   $::gorilla::widgets(tree) selection set $node
   $::gorilla::widgets(tree) see $node
-  set ::gorilla::activeSelection 0
+  CopyToClipboard ClearSelection
 }
 
 # proc gorilla::TreeNodeSelectionChanged {widget nodes} {
@@ -4921,7 +4912,7 @@ proc gorilla::ClearClipboard {} {
     }
   }
 
-  set ::gorilla::activeSelection 0
+  CopyToClipboard ClearSelection
   set ::gorilla::status [mc "Clipboard cleared."]
   catch {unset ::gorilla::clipboardClearId}
 }
@@ -6652,175 +6643,255 @@ proc gorilla::ChangePassword {} {
 }
 
 # ----------------------------------------------------------------------
-# X Selection Handler
+# Namespace ensemble "object" to handle the details of copying data to the Clipboard
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::XSelectionHandler {offset maxChars} {
-  set data ""
-  set curTime [clock clicks -milliseconds]
+namespace eval gorilla::CopyToClipboard {
 
-  switch -- $::gorilla::activeSelection {
-    0 {
-      set data ""
+  namespace path { ::gorilla }
+
+  variable activeSelection 0
+  # used to support "STRING" copy type for X11 clipboard callbacks
+  variable activeSelectionData ""
+
+  #
+  # Handler for the X Selection
+  #
+
+  if { [ tk windowingsystem ] eq "x11" } {
+    selection handle -selection PRIMARY   . [ namespace code XSelectionHandler ]
+    selection handle -selection CLIPBOARD . [ namespace code XSelectionHandler ]
+  }
+
+  # -------------- #
+  # public methods #
+  # -------------- #
+ 
+  proc Username { {mult 1} } {
+    variable activeSelection Username
+    finish $mult
+  }
+  namespace export Username
+
+  # --------------------------------------------------------------------
+ 
+  proc Password { {mult 1} } {
+    variable activeSelection Password
+    finish $mult
+  }
+  namespace export Password
+
+  # --------------------------------------------------------------------
+
+  proc String { data what {mult 1} } {
+    variable activeSelection String
+    variable activeSelectionData $data
+    finish $mult $what
+  }
+  namespace export String
+
+  # --------------------------------------------------------------------
+ 
+  proc URL { {mult 1} } {
+    variable activeSelection URL
+    finish $mult
+  }
+  namespace export URL
+
+  # --------------------------------------------------------------------
+ 
+  proc ClearSelection {} {
+    variable activeSelection None
+    variable activeSelectionData ""
+    clipboard clear
+  }
+  namespace export ClearSelection
+
+  # --------------- #
+  # private methods #
+  # --------------- #
+
+  proc finish { mult {what ""} } {
+
+    # Finishes a CopyToClipBoard operation
+    #
+    # mult - Clipboard clear time multiplication factor, optional, defaults to 1
+    #
+    # Consolidates all of the copy to clipboard management code into a single
+    # proc.
+    variable activeSelection
+
+    ArrangeIdleTimeout
+
+    set item [ GetSelected$activeSelection ]
+    if { $what eq "" } {
+      set what $activeSelection
     }
-    1 {
-      set data [gorilla::GetSelectedUsername]
 
-      #to avoid having Klipper be recognized as a user pasting a username
-      if {[expr $curTime - $::gorilla::timeOfSelection] > 200} {
+    if { $item == "" } {
+      set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] [ mc $what ] ]
+    } else {
+      switch -exact -- [ tk windowingsystem ] {
+        aqua    -
+        win32   { 
+          # win32 and aqua only support "clipboard"
+          clipboard clear
+          clipboard append -- [ ::gorilla::GetSelected$activeSelection ]
+        }
+        x11     -
+        default {
+          # x11 supports PRIMARY and CLIPBOARD x11 style clipboards
+          # returns data for both PRIMARY and CLIPBOARD so that no matter how
+          # a user pastes, they will receive the data they expect
+
+          foreach sel { PRIMARY CLIPBOARD } {
+            selection clear -selection $sel
+            selection own   -selection $sel .
+          } ; # end foreach sel 
+
+        }
+      }
+
+      ArrangeToClearClipboard $mult
+      set ::gorilla::status [ mc "Copied %s to clipboard." [ mc $what ] ]
+      
+    } ; # end if item == ""
+
+  } ; # end proc finish
+
+  # ----------------------------------------------------------------------
+  # X Selection Handler
+  # ----------------------------------------------------------------------
+  #
+
+  proc XSelectionHandler {offset maxChars} {
+    variable activeSelection
+    variable activeSelectionData
+
+    switch -exact -- $activeSelection {
+      None {
+        set data ""
+      }
+      Username {
+        set data [ GetSelectedUsername ]
         if { $::gorilla::preference(gorillaAutocopy) } {
           after idle { after 200 { ::gorilla::CopyToClipboard Password } }
         }
       }
-    }
-    2 {
-      set data [gorilla::GetSelectedPassword]
-    }
-    3 {
-      set data [gorilla::GetSelectedURL]
-    }
-    default {
-      set data ""
-    }
-  }
-
-  return [string range $data $offset [expr {$offset+$maxChars-1}]]
-}
-
-# ----------------------------------------------------------------------
-# Copy data to the Clipboard
-# ----------------------------------------------------------------------
-#
-
-proc gorilla::CopyToClipboard { what {mult 1} } {
-
-  # Copies a data value to the clipboard
-  #
-  # what - One of "URL" "Username" or "Password"
-  # mult - Clipboard clear time multiplication factor, optional, defaults to 1
-  #
-  # Consolidates all of the copy to clipboard management code into a
-  # single proc.
-
-  switch -exact -- $what {
-    Username { set ::gorilla::activeSelection 1 }
-    Password { set ::gorilla::activeSelection 2 }
-    URL      { set ::gorilla::activeSelection 3 }
-    default  { error [mc "gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'" [mc $what]] }
-  }
-
-  ArrangeIdleTimeout
-
-  set item [ gorilla::GetSelected$what ]
-
-  if {$item == ""} {
-    set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] [ mc $what ] ]
-  } else {
-    switch -exact -- [ tk windowingsystem ] {
-      aqua    -
-      win32   { # win32 and aqua only support "clipboard"
-        clipboard clear
-        clipboard append -- [ ::gorilla::GetSelected$what ]
+      Password {
+        set data [ GetSelectedPassword ]
       }
-      x11     -
-      default { # x11 supports PRIMARY and
-          # CLIPBOARD x11 style clipboards
-
-        # setup to return data for both PRIMARY and
-        # CLIPBOARD so that no matter how a user
-        # pastes, they will receive the data they
-        # expect
-
-        set ::gorilla::timeOfSelection [clock clicks -milliseconds]
-        foreach sel { PRIMARY CLIPBOARD } {
-          selection clear -selection $sel
-          selection own   -selection $sel .
-        } ; # end foreach sel
-
+      URL {
+        set data [ GetSelectedURL ]
+      }
+      String {
+        set data $activeSelectionData
+      }
+      default {
+        set data ""
       }
     }
 
-    ArrangeToClearClipboard $mult
-    set ::gorilla::status [ mc "Copied %s to clipboard." [ mc $what ] ]
-
-  } ; # end if item == ""
-
-} ; # end proc gorilla::CopyToClipboard
-
-# ----------------------------------------------------------------------
-# Helper procs to get various items from selected db records
-# ----------------------------------------------------------------------
-#
-
-proc gorilla::GetSelectedURL {} {
-  if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
-    return
+    return [string range $data $offset [expr {$offset+$maxChars-1}]]
   }
 
-  #
-  # Password Safe v3 has a dedicated URL field.
-  #
+  # --------------------------------------------------------------------
 
-  if {[$::gorilla::db existsField $rn 13]} {
-    return [ ::gorilla::dbget url $rn ]
-  }
-
-  #
-  # Password Safe v2 kept the URL in the "Notes" field.
-  #
-
-  if {![$::gorilla::db existsField $rn 5]} {
-    return
-  }
-
-  set notes [ ::gorilla::dbget notes $rn ]
-  if {[set index [string first "url:" $notes]] != -1} {
-    incr index 4
-    while {$index < [string length $notes] && \
-      [string is space [string index $notes $index]]} {
-      incr index
+  proc GetSelectedURL {} {
+    if { [ catch { set rn [ gorilla::GetSelectedRecord ] } ] } {
+      return
     }
-    if {[string index $notes $index] == "\""} {
-      incr index
-      set URL ""
-      while {$index < [string length $notes]} {
-        set c [string index $notes $index]
-        if {$c == "\\"} {
-          append URL [string index $notes [incr index]]
-        } elseif {$c == "\""} {
-          break
-        } else {
-          append URL $c
-        }
+
+    #
+    # Password Safe v3 has a dedicated URL field.
+    #
+
+    if { [ $::gorilla::db existsField $rn 13 ] } {
+      return [ ::gorilla::dbget url $rn ]
+    }
+
+    #
+    # Password Safe v2 kept the URL in the "Notes" field.
+    #
+
+    if { ! [ $::gorilla::db existsField $rn 5 ] } {
+      return
+    }
+
+    set notes [ ::gorilla::dbget notes $rn ]
+    if { [ set index [ string first "url:" $notes ] ] != -1 } {
+      incr index 4
+      while { $index < [ string length $notes ] && \
+        [ string is space [ string index $notes $index ] ] } {
         incr index
       }
-    } else {
-      if {![regexp -start $index -- {\s*(\S+)} $notes dummy URL]} {
+      if { [ string index $notes $index ] == "\"" } {
+        incr index
         set URL ""
+        while { $index < [ string length $notes ] } {
+          set c [ string index $notes $index ]
+          if { $c == "\\" } {
+            append URL [ string index $notes [ incr index ] ]
+          } elseif { $c == "\"" } {
+            break
+          } else {
+            append URL $c
+          }
+          incr index
+        }
+      } else {
+        if { ! [ regexp -start $index -- {\s*(\S+)} $notes dummy URL ] } {
+          set URL ""
+        }
       }
+    } elseif { ! [ regexp -nocase -- {http(s)?://\S*} $notes URL ] } {
+      set URL ""
     }
-  } elseif {![regexp -nocase -- {http(s)?://\S*} $notes URL]} {
-    set URL ""
+
+    return $URL
+  } ; # end GetSelectedURL
+
+  # --------------------------------------------------------------------
+
+  proc GetSelectedPassword {} {
+    # Retreive the password of the selected item in the treeview
+    if {[catch {set rn [gorilla::GetSelectedRecord]} err]} {
+      return
+    }
+    if {![$::gorilla::db existsField $rn 6]} {
+      return
+    }
+ 
+    return [ ::gorilla::dbget password $rn ]
+  } ; # end GetSelectedPassword
+ 
+  # --------------------------------------------------------------------
+
+  proc GetSelectedUsername {} {
+    # Retreive the username of the selected item in the treeview
+    if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
+      return
+    }
+
+    if {![$::gorilla::db existsField $rn 6]} {
+      return
+    }
+
+    return [ ::gorilla::dbget user $rn ]
   }
 
-  return $URL
-}
+  # --------------------------------------------------------------------
 
-
-# ----------------------------------------------------------------------
-
-proc gorilla::GetSelectedPassword {} {
-  # Retreive the password of the selected item in the treeview
-  if {[catch {set rn [gorilla::GetSelectedRecord]} err]} {
-    return
+  proc GetSelectedString {} {
+    # Retreive the String stored in activeSelectionData
+    variable activeSelectionData
+    return $activeSelectionData
   }
-  if {![$::gorilla::db existsField $rn 6]} {
-    return
-  }
+ 
+  namespace ensemble create
 
-  return [ ::gorilla::dbget password $rn ]
-}
+} ; # end namespace eval gorilla::CopyToClipboard
 
 # ----------------------------------------------------------------------
 
@@ -6840,18 +6911,6 @@ proc gorilla::GetSelectedRecord {} {
   return $rn
 }
 
-proc gorilla::GetSelectedUsername {} {
-  # Retreive the username of the selected item in the treeview
-  if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
-    return
-  }
-
-  if {![$::gorilla::db existsField $rn 6]} {
-    return
-  }
-
-  return [ ::gorilla::dbget user $rn ]
-}
 
 # ----------------------------------------------------------------------
 # Miscellaneous
