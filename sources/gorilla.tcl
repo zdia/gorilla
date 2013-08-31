@@ -7450,8 +7450,6 @@ proc gorilla::CheckDefaultExtension {name extension} {
 proc gorilla::ViewLogin {} {
   ArrangeIdleTimeout
 
-  # proc gorilla::GetRnFromSelectedNode
-
   lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn
 
   if {$type == "Group" || $type == "Root"} {
@@ -7482,98 +7480,91 @@ proc gorilla::ViewEntry {rn} {
 
   set top .view$seq
 
-  if {[info exists ::gorilla::toplevel($top)]} {
+  toplevel $top -class "Gorilla"
+  wm title $top [ mc "View Login" ]
+  set ::gorilla::toplevel($top) $top
+  wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
 
-    wm deiconify $top
+  # now create infoframe and populate it
 
-  } else {
+  set infoframe [ ttk::frame $top.if -padding {5 5} ]
 
-    toplevel $top -class "Gorilla"
-    wm title $top [ mc "View Login" ]
-    set ::gorilla::toplevel($top) $top
-    wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
+  foreach {child childname} { group Group title Title url URL
+          user Username pass Password
+          lpc {Last Password Change}
+          mod {Last Modified}
+          uuid UUID } {
 
-    # now create infoframe and populate it
+    ttk::label $infoframe.${child}L -text [mc ${childname}]:
+    ttk::label $infoframe.${child}E -width 40 -background white
 
-    set infoframe [ ttk::frame $top.if -padding {5 5} ]
+    grid $infoframe.${child}L $infoframe.${child}E - -sticky ew -pady 5
 
-    foreach {child childname} { group Group title Title url URL
-            user Username pass Password
-            lpc {Last Password Change}
-            mod {Last Modified}
-            uuid UUID } {
-
-      ttk::label $infoframe.${child}L -text [mc ${childname}]:
-      ttk::label $infoframe.${child}E -width 40 -background white
-
-      grid $infoframe.${child}L $infoframe.${child}E -sticky ew -pady 5
-
-    }
-
-    ttk::label $infoframe.notesL -text [mc Notes]:
-    ttk::label $infoframe.notesE -width 40 -background white -anchor nw -justify left
-
-    # automatic word wrap width adjustment of the notes widget
-    # based upon window width
-
-    bind $infoframe.notesE <Configure> "$infoframe.notesE configure -wraplength \[ expr \[ winfo width $infoframe.notesE \] - 2 \]"
-
-    # the minus 2 in the bind command above is to work around
-    # bug # 3049971 in the ttk::label implementation in tk 8.5.5
-    # where if the wraplength is equal to the window width, or
-    # one less than the widow width, then certain pixel widths
-    # result in no word wrapping at all, see
-    # https://sourceforge.net/tracker/index.php?func=detail&aid=3049971&group_id=11464&atid=111464
-
-    grid $infoframe.notesL $infoframe.notesE -sticky news -pady 5
-
-    grid columnconfigure $infoframe 1 -weight 1
-    grid rowconfigure $infoframe $infoframe.notesE -weight 1
-
-    $infoframe.groupE configure -text [ ::gorilla::dbget group            $rn ]
-    $infoframe.titleE configure -text [ ::gorilla::dbget title            $rn ]
-    $infoframe.userE  configure -text [ ::gorilla::dbget user             $rn ]
-    $infoframe.notesE configure -text [ ::gorilla::dbget notes            $rn ]
-    $infoframe.passE  configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
-    $infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ]
-    $infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
-    $infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
-    $infoframe.uuidE  configure -text [ ::gorilla::dbget uuid             $rn ]
-
-    # now create button frame and populate it
-
-    set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
-
-    ttk::button $buttonframe.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
-    ttk::button $buttonframe.showpassw -text [mc "Show Password"] \
-      -command [ list ::gorilla::ViewEntryShowPWHelper $buttonframe.showpassw $infoframe.passE $rn ]
-
-    pack $buttonframe.showpassw -side top -fill x
-    pack $buttonframe.close -side top -fill x -pady 5
-
-    grid $infoframe $buttonframe -sticky news
-    grid columnconfigure $top 0 -weight 1
-    grid rowconfigure    $top 0 -weight 1
   }
+
+  # notes box is now a Tk text widget (so that select+copy operates properly)
+
+  ttk::label $infoframe.notesL -text [mc Notes]:
+  text $infoframe.notesE -width 40 -height 10 -background white -wrap word \
+    -yscrollcommand [ list $infoframe.vscroll set ]
+  ttk::scrollbar $infoframe.vscroll -orient vertical \
+    -command [ list $infoframe.notesE yview ]
+
+  grid $infoframe.notesL $infoframe.notesE $infoframe.vscroll -sticky news -pady 5
+
+  grid columnconfigure $infoframe 1 -weight 1
+  grid rowconfigure $infoframe $infoframe.notesE -weight 1
+
+  $infoframe.groupE configure -text [ ::gorilla::dbget group            $rn             ]
+  $infoframe.titleE configure -text [ ::gorilla::dbget title            $rn             ]
+  $infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
+  $infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
+  $infoframe.uuidE  configure -text [ ::gorilla::dbget uuid             $rn             ]
+
+  # capture password/userid/url for use in double-click bindings below
+  $infoframe.passE  configure -text [ string repeat "*" [ string length [ set pass [ ::gorilla::dbget password $rn ] ] ] ]
+  $infoframe.userE  configure -text [ set uid [ ::gorilla::dbget user $rn ] ]
+  $infoframe.urlE   configure -text [ set url [ ::gorilla::dbget url  $rn ] ]
+
+  $infoframe.notesE insert end [ ::gorilla::dbget notes $rn ]
+  $infoframe.notesE configure -state disabled
+
+  # now create button frame and populate it
+
+  set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
+
+  ttk::button $buttonframe.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
+  ttk::button $buttonframe.showpassw -text [mc "Show Password"] \
+    -command [ list ::apply { { button entry rn } {
+      if { [ $button cget -text ] eq [ mc "Show Password" ] } {
+        $entry configure -text [ ::gorilla::dbget password $rn ]
+        $button configure -text [ mc "Hide Password" ]
+      } else {
+        $entry configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
+        $button configure -text [ mc "Show Password" ]
+      }
+    } } $buttonframe.showpassw $infoframe.passE $rn ]
+
+  pack $buttonframe.showpassw -side top -fill x
+  pack $buttonframe.close -side top -fill x -pady 5
+
+  grid $infoframe $buttonframe -sticky news
+  grid columnconfigure $top 0 -weight 1
+  grid rowconfigure    $top 0 -weight 1
+
+  # bindings to make view dialog "active" upon a limited number of double-clicks
+
+  set lambda { {win what value} {
+    ::gorilla::CopyToClipboard String $value $what
+  } }
+  bind $infoframe.userL <Double-Button-1> [ list ::apply $lambda $infoframe.userE Username $uid  ]
+  bind $infoframe.userE <Double-Button-1> [ list ::apply $lambda $infoframe.userE Username $uid  ]
+  bind $infoframe.passL <Double-Button-1> [ list ::apply $lambda $infoframe.passE Password $pass ]
+  bind $infoframe.passE <Double-Button-1> [ list ::apply $lambda $infoframe.passE Password $pass ]
+  bind $infoframe.urlL  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
+  bind $infoframe.urlE  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
 
 } ; # end proc gorilla::ViewEntry
-
-#
-# ----------------------------------------------------------------------
-# A helper proc to make the show password button an actual toggle button
-# ----------------------------------------------------------------------
-#
-
-proc gorilla::ViewEntryShowPWHelper { button entry rn } {
-  if { [ $button cget -text ] eq [ mc "Show Password" ] } {
-    $entry configure -text [ ::gorilla::dbget password $rn ]
-    $button configure -text [ mc "Hide Password" ]
-  } else {
-    $entry configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
-    $button configure -text [ mc "Show Password" ]
-  }
-
-} ; # end proc gorilla::ViewEntryShowPWHelper
 
 #
 # ----------------------------------------------------------------------
