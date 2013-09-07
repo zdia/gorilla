@@ -6737,13 +6737,18 @@ namespace eval gorilla::CopyToClipboard {
         win32   { 
           # win32 and aqua only support "clipboard"
           clipboard clear
-          clipboard append -- [ ::gorilla::GetSelected$activeSelection ]
+          clipboard append -- [ GetSelected$activeSelection ]
         }
         x11     -
         default {
           # x11 supports PRIMARY and CLIPBOARD x11 style clipboards
           # returns data for both PRIMARY and CLIPBOARD so that no matter how
           # a user pastes, they will receive the data they expect
+
+          # performing a clipboard clear/append cycle under X11 is likely
+          # superflorious - if so it will do no harm
+          clipboard clear
+          clipboard append -- [ GetSelected$activeSelection ]
 
           foreach sel { PRIMARY CLIPBOARD } {
             selection clear -selection $sel
