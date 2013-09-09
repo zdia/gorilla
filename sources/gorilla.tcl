@@ -6704,7 +6704,6 @@ namespace eval gorilla::CopyToClipboard {
   proc ClearSelection {} {
     variable activeSelection None
     variable activeSelectionData ""
-    clipboard clear
   }
   namespace export ClearSelection
 
@@ -7568,6 +7567,39 @@ proc gorilla::ViewEntry {rn} {
   bind $infoframe.passE <Double-Button-1> [ list ::apply $lambda $infoframe.passE Password $pass ]
   bind $infoframe.urlL  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
   bind $infoframe.urlE  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
+
+  # Set up bindings to simulate an X11 style copy-upon-select for the notes
+  # text widget, and to also include PWGorilla's normal clearing of the
+  # clipboard after a time delay.
+
+  # This was tricky to get working correctly because the <<Selection>> event
+  # fires for any change to the selection, no matter how small.  For a mouse
+  # drag there will be one event for each character added/removed from the
+  # selection.  The event also fires when the selection is removed.
+
+  # The code below attempts to only fire itself if the selection exists, and
+  # attempts to only fire once by rescheduling itself to fire 250ms after
+  # each incoming <<Selection>> event.  For a rapid fire sequence of events
+  # this means it will fire 250ms after the last event arrives.
+
+  # It consists of an anonymous proc attached to the <<Selection>> event on
+  # the notes text widget which itself builds an anonymous proc to attach to
+  # a delayed after event.
+
+  bind $infoframe.notesE <<Selection>> [ list ::apply { {win} {
+    if {![ catch { $win get sel.first sel.last } ]} {
+      set lambda [ list ::apply { {win} {
+        if { ! [ catch {set data [ $win get sel.first sel.last ]} ] } {
+          # remove the sel tag range to prevent double activation
+          $win tag remove sel 0.0 end
+          ::gorilla::CopyToClipboard String $data [ mc Note ]
+          ::gorilla::ArrangeToClearClipboard
+        }
+      } } $win ]
+      after cancel $lambda
+      after 250 $lambda
+    }
+  } } %W ]
 
 } ; # end proc gorilla::ViewEntry
 
