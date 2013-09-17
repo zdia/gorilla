@@ -7510,7 +7510,8 @@ proc gorilla::ViewEntry {rn} {
 
   ttk::label $infoframe.notesL -text [mc Notes]:
   text $infoframe.notesE -width 40 -height 10 -background white -wrap word \
-    -yscrollcommand [ list $infoframe.vscroll set ]
+    -yscrollcommand [ list $infoframe.vscroll set ] \
+    -exportselection false
   ttk::scrollbar $infoframe.vscroll -orient vertical \
     -command [ list $infoframe.notesE yview ]
 
@@ -7590,8 +7591,6 @@ proc gorilla::ViewEntry {rn} {
     if {![ catch { $win get sel.first sel.last } ]} {
       set lambda [ list ::apply { {win} {
         if { ! [ catch {set data [ $win get sel.first sel.last ]} ] } {
-          # remove the sel tag range to prevent double activation
-          $win tag remove sel 0.0 end
           ::gorilla::CopyToClipboard String $data [ mc Note ]
           ::gorilla::ArrangeToClearClipboard
         }
