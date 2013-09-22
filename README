@@ -1,10 +1,10 @@
 
 # Password Gorilla, a password database manager
 # Copyright (c) 2005-2009 Frank Pilhofer
-# Copyright (c) 2010-2012 Zbigniew Diaczyszyn
-# Copyright (c) 2010-2012 Richard Ellis
+# Copyright (c) 2010-2013 Zbigniew Diaczyszyn
+# Copyright (c) 2010-2013 Richard Ellis
 #
-# The original version 1.4.7 was modified for use with wish8.5, 
+# The original version 1.4.7 was modified for use with wish8.5,
 # the new ttk-expansion and the msgcat localization facility.
 #
 # Email: z_dot_dia_at_gmx_dot_de
@@ -27,6 +27,6 @@
 # with this program; if not, write to the Free Software Foundation 51
 # Franklin Street, Suite 500 Boston, MA 02110-1335
 #
-# For detailed information about "Password Gorilla" see 
+# For detailed information about "Password Gorilla" see
 #
 # https://github.com/zdia/gorilla/wiki
