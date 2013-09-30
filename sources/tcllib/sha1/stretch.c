@@ -12,12 +12,13 @@
  *
  * gcc -shared -fPIC -DRUNTIME_ENDIAN -Wall -I ~/Programme/Active-Tcl-8.5/include/ -o stretchkey.so stretch.c sha256.c
  *
- * optimized:
- * gcc -shared -O9 -fomit-frame-pointer -funroll-loops -fschedule-insns2 \
-    -fexpensive-optimizations -fPIC -DRUNTIME_ENDIAN -Wall \
-    -I ~/Programme/Active-Tcl-8.5/include/ \
-    -o stretchkey.so stretch.c sha256.c
+ * actually (30.09.2013) optimized with:
  *
+ * gcc -Wall -shared -fPIC O9 -fomit-frame-pointer -funroll-loops -fschedule-insns2 \
+    -fexpensive-optimizations -DRUNTIME_ENDIAN -DUSE_TCL_STUBS \
+		-I ~/Programme/Active-Tcl-8.5/include/ -o stretchkey.so stretch.c sha256.c \
+		-L ~/Programme/Active-Tcl-8.5/lib/ -ltclstub8.5
+
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
