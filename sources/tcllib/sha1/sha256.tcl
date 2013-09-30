@@ -212,7 +212,6 @@ proc ::sha2::SwitchTo {key} {
 #
 
 proc ::sha2::SHA256Init-tcl {} {
-  puts "init-tcl"
     variable uid
     set token [namespace current]::[incr uid]
     upvar #0 $token tok
@@ -239,7 +238,6 @@ proc ::sha2::SHA256Init-critcl {} {
 
     # FIPS 180-2: 5.3.2 Setting the initial hash value
     set tok(sha256c) [sha256c_init256]
-puts " tok(sha256c)=$tok(sha256c)"
     return $token
 }
 
@@ -399,7 +397,6 @@ proc ::sha2::SHA224Final-critcl {token} {
 #    added into the algorithm
 #
 proc ::sha2::HMACInit {K} {
-puts "new: K=$K"
     # Key K is adjusted to be 64 bytes long. If K is larger, then use
     # the SHA1 digest of K and pad this instead.
     set len [string length $K]
