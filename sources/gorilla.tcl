@@ -121,9 +121,9 @@ proc load-extension { path extension } {
   }
 
   set lib [ file join $path [string tolower $os-$machine] $extension[ info sharedlibextension ] ]
-	# puts "lib: $lib"
-  if { [ catch { load $lib $extension} ] } {
-    puts stderr "lib: $lib - Using Tcl code only"
+	puts "lib: $lib"
+  if { [ catch { load $lib $extension} oops] } {
+    puts stderr "lib: $lib - Using Tcl code only <$oops>"
     return 0
   }
 
