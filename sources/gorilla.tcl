@@ -112,7 +112,7 @@ proc load-extension { path extension } {
   # regularize machine name for ix86 variants
   switch -glob -- $machine {
     intel -
-    i*86* { set machine x86 }
+    i*86* { set machine ix86 }
   }
 
   # regularize os name for Windows variants
@@ -121,9 +121,9 @@ proc load-extension { path extension } {
   }
 
   set lib [ file join $path [string tolower $os-$machine] $extension[ info sharedlibextension ] ]
-	puts "lib: $lib"
-  if { [ catch { load $lib $extension} oops] } {
-    puts stderr "lib: $lib - Using Tcl code only <$oops>"
+	# puts "lib: $lib"
+  if { [ catch { load $lib $extension} ] } {
+    # puts stderr "lib: $lib - Using Tcl code only <$oops>"
     return 0
   }
 
