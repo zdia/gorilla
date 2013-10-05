@@ -722,14 +722,18 @@ stands for Control, S- stands for Shift, and M- stands for Meta):
  | C-d		Delete character to right of cursor
  | C-k		Delete all characters to right of cursor
 
-For the notes box only:
+'''For the notes box only:'''
 
- | M-Backspace 	Delete word to left of cursor
+ | M-Backspace		Delete word to left of cursor
  | M-Delete 		Delete word to left of cursor
  | M-d 		Delete word to right of cursor
  | M-w		Copy selection to clipboard
  | C-w 		Cuts selection to clipboard
  | C-y		Inserts clipboard at cursor position
+
+'''For the master password entry box:'''
+
+ | C-Backspace		Delete all text
 
 -------------------
 title: The "V3" Database Format

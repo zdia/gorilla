@@ -1354,7 +1354,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
     ttk::entry $aframe.pw.pw -width 40 -show "*"
     bind $aframe.pw.pw <KeyPress> "+::gorilla::CollectTicks"
     bind $aframe.pw.pw <KeyRelease> "+::gorilla::CollectTicks"
-    bind $aframe.pw.pw <Control-BackSpace> { %W delete 0 end }
+    bind $aframe.pw.pw <[ expr { [tk windowingsystem] == "aqua" ? "Command" : "Control" } ]-BackSpace> { %W delete 0 end }
 
     pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
 
@@ -5096,6 +5096,7 @@ proc gorilla::LockDatabase {} {
     pack $aframe.info -side bottom -fill x -expand yes
 
     bind $aframe.mitte.pw.pw <Return> "set ::gorilla::lockedMutex 1"
+    bind $aframe.mitte.pw.pw <[ expr { [tk windowingsystem] == "aqua" ? "Command" : "Control" } ]-BackSpace> { %W delete 0 end }
     bind $aframe.mitte.buts.b1 <Return> "set ::gorilla::lockedMutex 1"
     bind $aframe.mitte.buts.b2 <Return> "set ::gorilla::lockedMutex 2"
 
