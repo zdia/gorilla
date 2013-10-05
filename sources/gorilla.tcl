@@ -1354,6 +1354,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
     ttk::entry $aframe.pw.pw -width 40 -show "*"
     bind $aframe.pw.pw <KeyPress> "+::gorilla::CollectTicks"
     bind $aframe.pw.pw <KeyRelease> "+::gorilla::CollectTicks"
+    bind $aframe.pw.pw <Control-BackSpace> { %W delete 0 end }
 
     pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
 
