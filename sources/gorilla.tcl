@@ -345,6 +345,12 @@ proc gorilla::Init {} {
   set ::gorilla::isPRNGInitialized 0
   set ::gorilla::activeSelection 0
   set ::gorilla::timeOfSelection 0
+  set ::gorilla::currentSafeHMAC "" ; # empty string is a "flag" for NULL
+  # this trace is for development/debugging
+  trace add variable ::gorilla::currentSafeHMAC write \
+    [ list ::apply { {args} {
+      puts stderr "write to ::gorilla::currentSafeHMAC args=$args\n\t'[ string range $::gorilla::currentSafeHMAC 0 15]'\n\t'[ binary scan [ string range $::gorilla::currentSafeHMAC 16 end ] H* z ; set z ]' "
+    } } ]
   catch {unset ::gorilla::dirName}
   catch {unset ::gorilla::fileName}
   catch {unset ::gorilla::db}
@@ -1307,6 +1313,29 @@ proc gorilla::New {} {
   UpdateMenu
 }
 
+proc gorilla::getSafeHMAC { filename } {
+  # Opens file named by parameter 'filename' and returns the last 48 bytes
+  # of the file - which corresponds to the PWSafe V3 EOF block and the whole
+  # file SHA256 HMAC
+
+  # The EOF block is being caputured because I have plans to utilize it for
+  # detecting non-pwsafe files and displaying a "The file 'x' does not
+  # appear to be a password safe format file" message.
+  
+  set fd [ open $filename {RDONLY BINARY} ]
+
+  seek $fd -48 end ; # 48 bytes to capture EOF flag (16) + HMAC (32) at file
+                     # tail
+
+  set result [ read $fd ]
+  close $fd
+
+  puts stderr "getSafeHMAC: read [ string length $result ] bytes of data"
+
+  return $result
+  
+} ; # end gorilla::getSafeHMAC
+
 # ----------------------------------------------------------------------
 # Open a database file; used by "Open" and "Merge"
 # ----------------------------------------------------------------------
@@ -1316,9 +1345,6 @@ proc gorilla::DestroyOpenDatabaseDialog {} {
   set ::gorilla::guimutex 2
 }
 
-;# proc gorilla::OpenDatabase {title defaultFile} {}
-
-# proc gorilla::OpenDatabase {title {defaultFile ""}} {
 proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
   ArrangeIdleTimeout
@@ -1484,10 +1510,11 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
       # open succeeds then we have read access.  If it fails, we don't have
       # access of some form.
 
-      # If the open succeeds, immediately close the file because the open is
-      # just a test for access.
+      # Also use the open operation to capture the HMAC at the end of the
+      # file to use to detect if another PWGorilla saves to the file during
+      # the time we have it open.
 
-      if { [ catch { close [ open $fileName RDONLY ] } ] } {
+      if { [ catch { set ::gorilla::currentSafeHMAC [ getSafeHMAC $fileName ] } ] } {
         # also generate a more meaningful error message
         if { [ file exists $fileName ] } {
           set error_message [ mc "The password database %s can not be read." $nativeName ]
@@ -1499,7 +1526,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
           -message $error_message
         continue
       }
-
+      
       $aframe.info configure -text [mc "Please be patient. Verifying password ..."]
 
       set myOldCursor [$top cget -cursor]
@@ -1738,7 +1765,8 @@ proc gorilla::Open {{defaultFile ""}} {
   AddAllRecordsToTree
   UpdateMenu
   return "Open"
-}
+
+} ; # end gorilla::Open
 
 #
 # ----------------------------------------------------------------------
