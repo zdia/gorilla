@@ -33,7 +33,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 package provide app-gorilla 1.0
 
 namespace eval ::gorilla {
-  variable Version {$Revision: 1.5.3.7 $}
+  variable Version "1.5.3.7"
 
   # find the location of the install directory even when "executing" a symlink
   # pointing to the gorilla.tcl file
@@ -1368,11 +1368,14 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
     pack $but1 $but2 $but3 -side left -pady 10 -padx 5 -expand 1
 
     set sep [ttk::separator $aframe.sep -orient horizontal]
+		set vlabel [ ttk::label $aframe.vlabel -text "Password Gorilla Version $::gorilla::Version" -font {sans 9 italic} ]
 
-    grid $aframe.file -row 0 -column 0 -columnspan 2 -sticky we
-    grid $aframe.pw $aframe.buts -pady 10
     grid $sep -sticky we -columnspan 2 -pady 5
-    grid $aframe.info -row 3 -column 0 -columnspan 2 -pady 5 -sticky we
+		grid $aframe.file -columnspan 2 -sticky we
+		grid $aframe.pw $vlabel      -sticky e -pady 5
+		grid ^          $aframe.buts -pady 5
+ 		grid $sep -sticky we -columnspan 2 -pady 5
+		grid $aframe.info -columnspan 2 -pady 5 -sticky we
     grid configure $aframe.pw  -sticky w
     grid configure $aframe.buts  -sticky nse
 
@@ -6237,11 +6240,7 @@ proc gorilla::SavePreferencesToRegistry {} {
 
   set key {HKEY_CURRENT_USER\Software\FPX\Password Gorilla}
 
-  if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
-    set revision "<unknown>"
-  }
-
-  registry set $key revision $revision sz
+  registry set $key revision $::gorilla::Version sz
 
   #
   # Note: findInText omitted on purpose. It might contain a password.
@@ -6332,11 +6331,7 @@ proc gorilla::SavePreferencesToRCFile {} {
     return 0
   }
 
-  if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
-    set revision "<unknown>"
-  }
-
-  puts $f "revision=$revision"
+  puts $f "revision=$::gorilla::Version"
 
   #
   # Note: findThisText omitted on purpose. It might contain a password.
@@ -6408,10 +6403,6 @@ proc gorilla::LoadPreferencesFromRegistry {} {
     return 0
   }
 
-  if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
-    set revision "<unmatchable>"
-  }
-
   if {[llength [registry values $key revision]] == 1} {
     set prefsRevision [registry get $key revision]
   } else {
@@ -6466,7 +6457,7 @@ proc gorilla::LoadPreferencesFromRegistry {} {
   # about window geometries, as they might have changed.
   #
 
-  if {![string equal $revision $prefsRevision]} {
+  if {![string equal $::gorilla::Version $prefsRevision]} {
     foreach geo [array names ::gorilla::preference geometry,*] {
       unset ::gorilla::preference($geo)
     }
@@ -6503,7 +6494,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 
   } ; # end if info exists ::gorilla::preference(rc)
 
-  if { ! [ regexp {Revision: ([0-9.]+)} $::gorilla::Version -> revision ] } {
+  if { $::gorilla::Version eq "" } {
     set revision "<unmatchable>"
   }
 
@@ -6590,7 +6581,7 @@ proc gorilla::LoadPreferencesFromRCFile {} {
   # about window geometries, as they might have changed.
   #
 
-  if {![string equal $revision $prefsRevision]} {
+  if {![string equal $::gorilla::Version $prefsRevision]} {
     foreach geo [array names ::gorilla::preference geometry,*] {
       unset ::gorilla::preference($geo)
     }
@@ -6881,13 +6872,9 @@ proc gorilla::About {} {
 
     set w .about.mainframe
 
-    if {![regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy revision]} {
-      set revision "<unknown>"
-    }
-
     ttk::frame $w -padding {10 10}
     ttk::label $w.image -image $::gorilla::images(splash)
-    ttk::label $w.title -text "[ mc "Password Gorilla" ] $revision" \
+    ttk::label $w.title -text "[ mc "Password Gorilla" ] $::gorilla::Version" \
       -font {sans 16 bold} -padding {10 10}
     ttk::label $w.description -text [ mc "Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database" ] -wraplength 350 -padding {10 0}
     ttk::label $w.copyright \
@@ -8477,9 +8464,7 @@ proc gorilla::versionIsNewer { server } {
   # format is: n.n.n(...)
   # returns 1 if server version is newer otherwise 0
 
-  regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy version
-
-  set localList [split $version .]
+  set localList [split $::gorilla::Version .]
   set serverList [split $server .]
 
   foreach remote $serverList local $localList {
@@ -8689,7 +8674,7 @@ proc gorilla::versionLookup {} {
     return
   }
 
-  set message "[ mc "You are running version %s." [ regexp {Revision: ([0-9.]+)} $::gorilla::Version dummy actual ; set actual ] ]\n\n"
+  set message "[ mc "You are running version %s." $::gorilla::Version]\n\n"
 
   append message "[mc "There is a new version %s for %s." $version $platform]"
   append message "\n\n[mc "Shall I download the new version?"]"
