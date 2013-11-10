@@ -13,6 +13,10 @@
  * gcc -Wall -shared -fPIC -I ~/Programme/Active-Tcl-8.5/include/ -o twofish.so twofish2tcl.c
  *   -DUSE_TCL_STUBS
  *
+ * gcc -Wall -shared -fPIC -DUSE_TCL_STUBS -I
+ * ~/Programme/Active-Tcl-8.5/include/ -o twofish.so twofish2tcl.c \
+ * -L ~/Programme/Active-Tcl-8.5/lib/ -ltclstub8.5
+ *
  * Drew Csillag's recommended flags are: -O3 -fomit-frame-pointer
  *
  * License for the Twofish source code:
@@ -440,15 +444,15 @@ void toHex(BYTE *hex, char *buf, int lim) {
 
 }
 
-void fromHex( const char *pos, BYTE text[], int lim)
-{
-  int count;
-
-  for(count = 0; count < lim; count++) {
-    sscanf(pos, "%2hhx", &text[count]);
-    pos += 2;
-  }
-}
+// void fromHex( const char *pos, BYTE text[], int lim)
+// {
+  // int count;
+//
+  // for(count = 0; count < lim; count++) {
+    // sscanf(pos, "%2hhx", &text[count]);
+    // pos += 2;
+  // }
+// }
 
 void Itest(int n) {
     BYTE ct[16], nct[16], k1[16], k2[16], k[32];
@@ -496,8 +500,6 @@ int TwofishObjCmd(ClientData clientData, Tcl_Interp *interp,
 
 {
   uint32_t *S;
-  // static uint32_t K[40];
-  // static uint32_t QF[4][256];
   int k;
   int i;
   BYTE *buf;
@@ -512,7 +514,7 @@ int TwofishObjCmd(ClientData clientData, Tcl_Interp *interp,
   TWOFISH_CTX *mp;
 
   static const char *subcommands[] = {
-    "init", "encrypt", "decrypt", NULL };
+    "init", "encrypt", "decrypt", "delete", NULL };
 
   static const char *cipherMode[] = {
     "ecb", "cbc", NULL };
@@ -526,12 +528,14 @@ int TwofishObjCmd(ClientData clientData, Tcl_Interp *interp,
   static cmdDefinition definitions[] = {
     {"init engine mode key ?iv?", 5, 6},
     {"encrypt engine data", 4, 4},
-    {"decrypt engine data", 4, 4}
+    {"decrypt engine data", 4, 4},
+    {"delete engine", 3, 3}
   };
 
   #define TWOFISH_init 0
   #define TWOFISH_encrypt 1
   #define TWOFISH_decrypt 2
+  #define TWOFISH_delete 3
 
   /* parse the Tcl command line for options */
   if (objc < 2) {
@@ -581,9 +585,8 @@ int TwofishObjCmd(ClientData clientData, Tcl_Interp *interp,
       // new is set to 1 if a new entry was created and 0 if there was already an entry for key.
       entryPtr = Tcl_CreateHashEntry( &engines, Tcl_GetString(objv[2]), &new );
 
-// if (new == 1) then
-      Tcl_SetHashValue(entryPtr, mp);
-//  free ctx memory: ckfree ((TWOFISH_CTX *)mp);
+      if (new == 1) { Tcl_SetHashValue(entryPtr, mp); }
+
       switch (mode) {
         case CBC: {
           if (objc < 6) {
@@ -733,6 +736,27 @@ int TwofishObjCmd(ClientData clientData, Tcl_Interp *interp,
 
       return TCL_OK;
     }
+
+  /****************************************************************/
+    case TWOFISH_delete: {
+  /****************************************************************/
+
+      // Tcl command: twofish_c delete $engine
+
+      entryPtr = Tcl_FindHashEntry(&engines, Tcl_GetString(objv[2]));
+
+      if (entryPtr == NULL) {
+        Tcl_SetObjResult(interp, Tcl_ObjPrintf("Error: encryption engine handle %s not found.", Tcl_GetString(objv[2])));
+        return TCL_ERROR;
+      }
+
+      mp = Tcl_GetHashValue(entryPtr);
+      ckfree ((char *)mp);
+      Tcl_DeleteHashEntry(entryPtr);
+
+      return TCL_OK;
+    }
+
   }
 
   return TCL_OK;
