@@ -2110,7 +2110,7 @@ namespace eval ::gorilla::LoginDialog {
 		    -command [ list $widget(history) yview ]
 
 		bind $pane2.history <Configure> [ list ::apply { {w} {
-		  $w column Date -width [ expr { 20 + [ font measure TkDefaultFont -displayof $w "8888-88-88 88:88:88" ] } ]
+			$w column Date -width [ expr { 20 + [ font measure TkDefaultFont -displayof $w "8888-88-88 88:88:88" ] } ]
 		} } %W ]
 		    
 		grid $widget(history) $pane2.vsb -sticky news
@@ -2122,7 +2122,7 @@ namespace eval ::gorilla::LoginDialog {
 		$widget(history) column  Date     -stretch false
 		$widget(history) column  Password -stretch true
 
-		$widget(history) insert {} end -values {"8888-88-88 88:88:88" "This that and something else"}
+		#$widget(history) insert {} end -values {"8888-88-88 88:88:88" "This that and something else"}
 		
 		# end - setup password history pane
 		
@@ -2141,7 +2141,6 @@ namespace eval ::gorilla::LoginDialog {
                     $notebook select $pane1
                   }
                 } } $frb.pane-control $pane $pane1 $pane2 ]
-
 
 		# force geometry calculations to happen - the ppf frame map/unmap code
 		# depends on this having been run now
@@ -2419,8 +2418,14 @@ namespace eval ::gorilla::LoginDialog {
 				HidePassword
 				
 				puts stderr "PLD: history='[ dbget history $in_rn ]'"
+
+				$widget(history) delete [ $widget(history) children {} ]
+
+				# note - the history list is appended to as new entries are added,
+				# so reversing the list before display results in a newest first
+				# display order.
 				if { 0 != [ dict size [ set history [ dbget history $in_rn ] ] ] } {
-				  foreach item [ dict get $history passwords ] {
+				  foreach item [ lreverse [ dict get $history passwords ] ] {
 				    lassign $item numdate oldpass
 				    $widget(history) insert {} end -values [ list [ clock format $numdate -format "%Y-%m-%d %H:%M:%S" ] $oldpass ]
 				  }
