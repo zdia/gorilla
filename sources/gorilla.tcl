@@ -2110,8 +2110,7 @@ namespace eval ::gorilla::LoginDialog {
 		
 		set widget(history) [ ttk::treeview $pane2.history \
 		    -style gorilla.Treeview \
-		    -columns {Date Password} \
-		    -selectmode browse -show headings \
+		    -columns {Date Password} -show headings \
 		    -yscrollcommand [ list $pane2.vsb set ] ]
 		ttk::scrollbar $pane2.vsb -orient vertical \
 		    -command [ list $widget(history) yview ]
@@ -2119,8 +2118,56 @@ namespace eval ::gorilla::LoginDialog {
 		bind $pane2.history <Configure> [ list ::apply { {w} {
 			$w column Date -width [ expr { 20 + [ font measure TkDefaultFont -displayof $w "8888-88-88 88:88:88" ] } ]
 		} } %W ]
-		    
+
+		# small frame below the password history treeview widget for extra
+		# controls
+		set f [ ttk::frame $pane2.bf ]
+		ttk::label $f.withdolbl -text [ mc "With selected do:" ]
+		set widget(hist-delete) [ \
+		  ttk::button $f.hdel   -text [ mc Delete ] -state disabled ]
+		set widget(hist-revert) [ \
+		  ttk::button $f.revert -text [ mc Revert ] -state disabled ]
+		set widget(historyactive) [ \
+		  ttk::checkbutton $f.active -text [ mc "History Active" ] \
+		      -variable ${pvns}::historyactive ]
+		ttk::label $f.maxlbl -text [ mc "Max saved:" ]
+		set widget(maxhistory) [ \
+		  ttk::spinbox $f.maxnum -from 0 -to 255 -increment 1 -width 4 \
+		      -textvariable ${pvns}::maxhistory \
+		      -validate key \
+		      -validatecommand [ list ::apply {
+		        {newval}
+		        { 
+		          if { $newval == "" } { return 1 }
+		          expr { [ string is integer $newval ] 
+		              && ( $newval >= 0 )
+		              && ( $newval <= 255 )
+		               }
+		        } } %P ] ]
+
+		bind $widget(history) <<TreeviewSelect>> [ list ::apply { 
+			{hist del-b revert-b}
+			{ set num [ llength [ $hist selection ] ]
+				${del-b}    configure -state [ expr { $num >  0 ? "active" : "disabled" } ]
+				${revert-b} configure -state [ expr { $num == 1 ? "active" : "disabled" } ]
+			}
+			} $widget(history) $widget(hist-delete) $widget(hist-revert) ]
+
+		# arrange the button frame
+		grid $f.withdolbl $widget(hist-delete) $widget(hist-revert) \
+		     [ ttk::separator $f.sep1 -orient vertical ] \
+		     $f.active \
+		     [ ttk::separator $f.sep2 -orient vertical ] \
+		     $f.maxlbl $f.maxnum -sticky ns
+		grid configure $widget(hist-delete) -padx {2m 2m}
+		grid configure $f.sep1 -padx {2m 2m}
+		grid configure $f.sep2 -padx {2m 2m}
+		grid rowconfigure    $f 0 -weight 1
+		grid columnconfigure $f {0 1 2 3 4 5} -weight 1
+
+		# arrange the main history pane
 		grid $widget(history) $pane2.vsb -sticky news
+		grid $f - -sticky news
 		grid rowconfigure    $pane2 0 -weight 1
 		grid columnconfigure $pane2 0 -weight 1
 
@@ -2404,6 +2451,8 @@ namespace eval ::gorilla::LoginDialog {
 				variable PassPolicy 
 				array set PassPolicy [ GetDefaultPasswordPolicy ]
 				variable widget
+				variable maxhistory
+				variable historyactive
 				
 				foreach item { group title url user password } {
 					variable $item
@@ -2427,19 +2476,23 @@ namespace eval ::gorilla::LoginDialog {
 				set rn $in_rn
 				
 				HidePassword
-				
-				puts stderr "PLD: history='[ dbget history $in_rn ]'"
 
-				$widget(history) delete [ $widget(history) children {} ]
+				show-hist-dict [ dbget history $in_rn ]
+
+				-m:history- delete [ $widget(history) children {} ]
+				-m:hist-delete- configure -state disabled
+				-m:hist-revert- configure -state disabled
 
 				# note - the history list is appended to as new entries are added,
 				# so reversing the list before display results in a newest first
 				# display order.
 				if { 0 != [ dict size [ set history [ dbget history $in_rn ] ] ] } {
-				  foreach item [ lreverse [ dict get $history passwords ] ] {
-				    lassign $item numdate oldpass
-				    $widget(history) insert {} end -values [ list [ clock format $numdate -format "%Y-%m-%d %H:%M:%S" ] $oldpass ]
-				  }
+					set historyactive [ dict get $history active ]
+					set maxhistory    [ dict get $history maxsize ]
+				 	foreach item [ lreverse [ dict get $history passwords ] ] {
+						lassign $item numdate oldpass
+						-m:history- insert {} end -values [ list [ clock format $numdate -format "%Y-%m-%d %H:%M:%S" ] $oldpass ]
+					}
 				}
 
 			} ; # end proc PopulateLoginDialog
@@ -2456,7 +2509,7 @@ namespace eval ::gorilla::LoginDialog {
 
 				set varlist { group title user password url }
 				
-				foreach var $varlist {
+				foreach var [ concat $varlist history historyactive maxhistory ] {
 					variable $var
 				}
 
@@ -2517,7 +2570,23 @@ namespace eval ::gorilla::LoginDialog {
 					}
 
 				} ; # end foreach element
-				
+
+				# now handle history adjustments
+				show-hist-dict $history PopulateRecord-B4
+				if { [ dict get $history active ] ne $historyactive } {
+				  puts stderr "History active differs, toggling"
+				  dict set history active $historyactive
+				  set modified 1
+				  dbset history $rn $history
+				}
+				if { [ dict get $history maxsize ] ne $maxhistory } {
+				  puts stderr "History max differs, setting to new"
+				  dict set history maxsize $maxhistory
+				  set modified 1
+				  dbset history $rn $history
+				}
+				show-hist-dict $history PopulateRecord-AF
+
 				if { $modified } {
 					dbset last-modified $rn $now
 				}
@@ -2530,12 +2599,10 @@ namespace eval ::gorilla::LoginDialog {
 
 			proc Ok { } {
 
-				variable title
-				variable group
-				variable rn
-				variable treenode
-				variable url
-				variable user
+				foreach var { title group rn treenode url user historyactive
+				              maxhistory } {
+					variable $var
+				}
         
 				if { 0 == [ string length [ string trim $title ] ] } {
 					# use url, if none use username
@@ -2552,7 +2619,7 @@ namespace eval ::gorilla::LoginDialog {
 				}
 
 				if { [ catch { ::pwsafe::db::splitGroup $group } ] } {
-					feedback [ mc "This login's group name is not valid." ] $pvns
+					feedback [ mc "This login's group name is not valid." ] [ namespace current ]
 					return
 				}
 
@@ -2562,11 +2629,9 @@ namespace eval ::gorilla::LoginDialog {
 					set modified [ PopulateRecord $rn ]
 				}
 
-				# Once the database has been updated, the
-				# dialog window is no longer necessary. 
-				# Withdrawing it now prevents a flash of
-				# random data in the entries if a user has
-				# "auto-save-on-change" turned on.
+				# Once the database has been updated, the dialog window is no longer
+				# necessary.  Withdrawing it now prevents a flash of random data in
+				# the entries if a user has "auto-save-on-change" turned on.
 				
 				[ namespace parent ]::DestroyLoginDialog -m:top-
 
@@ -8909,3 +8974,7 @@ if { $::gorilla::DEBUG(TCLTEST) } {
 	set argv ""
 	source [file join $::gorilla::Dir .. unit-tests RunAllTests.tcl]
 }
+
+proc gorilla::show-hist-dict { hist {where ""} } {
+  puts stderr "$where: hist dict: '$hist'"
+}				
