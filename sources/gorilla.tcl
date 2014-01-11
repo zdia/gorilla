@@ -1839,7 +1839,13 @@ namespace eval ::gorilla::LoginDialog {
 		if { $top ne "" } {
 
 			set pvns [ get-pvns-from-toplevel $top ]
-
+			namespace inscope $pvns {
+				# toggle to normal password view pane if history pane is currently
+				# visible
+				if { [ mc "Hide History" ] eq [ $widget(history-toggle) cget -text ] } {
+					$widget(history-toggle) invoke
+				}
+			}
 			wm deiconify $top
 
 		} else {
@@ -2043,16 +2049,17 @@ namespace eval ::gorilla::LoginDialog {
 
 		set frb [ ttk::frame $bf.pws ] ; # frame right - bottom
 
-		ttk::button $frb.pane-control -text [ mc "Show History" ] -width 16 ; # pane control button
+		# hitory pane control button
+		set widget(history-toggle) [ \
+		  ttk::button $frb.pane-control -text [ mc "Show History" ] -width 16 ]
 
 		set widget(showhide) [ ttk::button $frb.show -width 16 -text [ mc "Show Password" ] -command [ list namespace inscope $pvns ShowPassword ] ]
-
 		set widget(genpass)  [ ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ] ]
 		ttk::checkbutton $frb.override -text [ mc "Override Password Policy" ] -variable ${pvns}::overridePasswordPolicy
 
 		set ${pvns}::overridePasswordPolicy 0
 
-		pack $widget(showhide) $widget(genpass) $frb.override $frb.pane-control -side top -padx 10 -pady 5
+		pack $widget(showhide) $widget(genpass) $frb.override $widget(history-toggle) -side top -padx 10 -pady 5
     
 		pack $frb -side top -pady 20
 
@@ -2128,10 +2135,10 @@ namespace eval ::gorilla::LoginDialog {
 		
 		ttk::style configure Wrapping.TCheckbutton -wraplength [ wrap-measure ]
 
-		# Configure the pane-control button to toggle display of the
-		# two panes and to update its own text at the same time 
+		# Configure the history-toggle button to toggle display of the two panes
+		# and to update its own text at the same time
 
-		$frb.pane-control configure -command [ list ::apply { 
+		$widget(history-toggle) configure -command [ list ::apply { 
 		  {button notebook pane1 pane2 showhide genpass} {
                   if { [ $button cget -text ] eq [ mc "Show History" ] } {
                     $button configure -text [ mc "Hide History" ]
@@ -2144,7 +2151,7 @@ namespace eval ::gorilla::LoginDialog {
                     $showhide configure -state active
                     $genpass  configure -state active
                   }
-                } } $frb.pane-control $pane $pane1 $pane2 $widget(showhide) $widget(genpass) ]
+                } } $widget(history-toggle) $pane $pane1 $pane2 $widget(showhide) $widget(genpass) ]
 
 		# force geometry calculations to happen - the ppf frame map/unmap code
 		# depends on this having been run now
