@@ -345,6 +345,8 @@ proc gorilla::Init {} {
   set ::gorilla::isPRNGInitialized 0
   set ::gorilla::activeSelection 0
   set ::gorilla::timeOfSelection 0
+  set ::gorilla::fileHMAC "" ; # empty string is a "flag" for NULL
+    
   catch {unset ::gorilla::dirName}
   catch {unset ::gorilla::fileName}
   catch {unset ::gorilla::db}
@@ -1307,6 +1309,27 @@ proc gorilla::New {} {
   UpdateMenu
 }
 
+proc gorilla::getFileHMAC { filename } {
+  # Opens file named by parameter 'filename' and returns the last 48 bytes
+  # of the file - which corresponds to the PWSafe V3 EOF block and the whole
+  # file SHA256 HMAC
+
+  # The EOF block is being caputured because I have plans to utilize it for
+  # detecting non-pwsafe files and displaying a "The file 'x' does not
+  # appear to be a password safe format file" message.
+  
+  set fd [ open $filename {RDONLY BINARY} ]
+
+  seek $fd -48 end ; # 48 bytes to capture EOF flag (16) + HMAC (32) at file
+                     # tail
+
+  set result [ read $fd ]
+  close $fd
+
+  return $result
+  
+} ; # end gorilla::getFileHMAC
+
 # ----------------------------------------------------------------------
 # Open a database file; used by "Open" and "Merge"
 # ----------------------------------------------------------------------
@@ -1316,9 +1339,6 @@ proc gorilla::DestroyOpenDatabaseDialog {} {
   set ::gorilla::guimutex 2
 }
 
-;# proc gorilla::OpenDatabase {title defaultFile} {}
-
-# proc gorilla::OpenDatabase {title {defaultFile ""}} {
 proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
   ArrangeIdleTimeout
@@ -1487,10 +1507,11 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
       # open succeeds then we have read access.  If it fails, we don't have
       # access of some form.
 
-      # If the open succeeds, immediately close the file because the open is
-      # just a test for access.
+      # Also use the open operation to capture the HMAC at the end of the
+      # file to use to detect if another PWGorilla saves to the file during
+      # the time we have it open.
 
-      if { [ catch { close [ open $fileName RDONLY ] } ] } {
+      if { [ catch { set ::gorilla::fileHMAC [ getFileHMAC $fileName ] } ] } {
         # also generate a more meaningful error message
         if { [ file exists $fileName ] } {
           set error_message [ mc "The password database %s can not be read." $nativeName ]
@@ -1502,7 +1523,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
           -message $error_message
         continue
       }
-
+      
       $aframe.info configure -text [mc "Please be patient. Verifying password ..."]
 
       set myOldCursor [$top cget -cursor]
@@ -1741,7 +1762,8 @@ proc gorilla::Open {{defaultFile ""}} {
   AddAllRecordsToTree
   UpdateMenu
   return "Open"
-}
+
+} ; # end gorilla::Open
 
 #
 # ----------------------------------------------------------------------
@@ -4385,6 +4407,33 @@ proc gorilla::Save {} {
 
   # don't need the open file descriptor once out of the while loop
   close $fd
+  
+  # Check to see if another process somewhere has overwritten the save file
+  # while we have had it open.  If yes, warn user that they may lose data if
+  # they continue with the save.
+
+  if { 0 < [ string length $::gorilla::fileHMAC ] } {
+    set newHMAC [ getFileHMAC $::gorilla::fileName ]
+    if { $newHMAC ne $::gorilla::fileHMAC } {
+      # build up the message in small pieces
+      append message [ mc "Another application has modified file:" ] \n\n 
+      append message $::gorilla::fileName \n
+      append message [ mc "The file was last modified at: %s" [ clock format [ file mtime $::gorilla::fileName ] -format "%Y-%m-%d %H:%M:%S" ] ] \n\n
+      append message [ mc "Continuing with a save will overwrite any new data\nthat has been added to the file by the other application." ] \n\n
+      append message [ mc "You may want to abort and perform a 'merge' with the\nfile first to avoid losing data." ] \n\n
+      append message [ mc "What would you like to do?:" ]
+      set res [ tk_dialog .shared-warning [ mc "Shared file conflict" ] \
+        $message warning 1 \
+        [ mc "Overwrite the file.\n(destructive)" ] \
+        [ mc "Abort without saving" ] ]
+      if { $res == 1 } {
+        set ::gorilla::status [ mc "Password database save ABORTED." ]
+        return GORILLA_OK
+      }
+    }
+  } else {
+    puts stderr "Error, a database file is open but there is no cached fileHMAC value - this should not happen."
+  }
 
   set myOldCursor [. cget -cursor]
   . configure -cursor watch
@@ -4431,6 +4480,8 @@ proc gorilla::Save {} {
   }
 
   ::gorilla::progress finished .status
+
+  set ::gorilla::fileHMAC [ getFileHMAC $::gorilla::fileName ]
 
   # The actual data are saved. Now take care of a backup file
 
