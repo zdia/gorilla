@@ -2047,12 +2047,12 @@ namespace eval ::gorilla::LoginDialog {
 
 		set widget(showhide) [ ttk::button $frb.show -width 16 -text [ mc "Show Password" ] -command [ list namespace inscope $pvns ShowPassword ] ]
 
-		ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ]
+		set widget(genpass)  [ ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ] ]
 		ttk::checkbutton $frb.override -text [ mc "Override Password Policy" ] -variable ${pvns}::overridePasswordPolicy
 
 		set ${pvns}::overridePasswordPolicy 0
 
-		pack $frb.show $frb.gen $frb.override $frb.pane-control -side top -padx 10 -pady 5
+		pack $widget(showhide) $widget(genpass) $frb.override $frb.pane-control -side top -padx 10 -pady 5
     
 		pack $frb -side top -pady 20
 
@@ -2132,15 +2132,19 @@ namespace eval ::gorilla::LoginDialog {
 		# two panes and to update its own text at the same time 
 
 		$frb.pane-control configure -command [ list ::apply { 
-		  {button notebook pane1 pane2} {
+		  {button notebook pane1 pane2 showhide genpass} {
                   if { [ $button cget -text ] eq [ mc "Show History" ] } {
                     $button configure -text [ mc "Hide History" ]
                     $notebook select $pane2
+                    $showhide configure -state disabled
+                    $genpass  configure -state disabled
                   } else {
                     $button configure -text [ mc "Show History" ]
                     $notebook select $pane1
+                    $showhide configure -state active
+                    $genpass  configure -state active
                   }
-                } } $frb.pane-control $pane $pane1 $pane2 ]
+                } } $frb.pane-control $pane $pane1 $pane2 $widget(showhide) $widget(genpass) ]
 
 		# force geometry calculations to happen - the ppf frame map/unmap code
 		# depends on this having been run now
