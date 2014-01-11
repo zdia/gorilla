@@ -346,18 +346,7 @@ proc gorilla::Init {} {
   set ::gorilla::activeSelection 0
   set ::gorilla::timeOfSelection 0
   set ::gorilla::fileHMAC "" ; # empty string is a "flag" for NULL
-  # this trace is for development/debugging
-  trace add variable ::gorilla::fileHMAC write \
-    [ list ::apply { {args} {
-      puts stderr "write to ::gorilla::fileHMAC args=$args\n\t'[ string range $::gorilla::fileHMAC 0 15]'\n\t'[ binary scan [ string range $::gorilla::fileHMAC 16 end ] H* z ; set z ]' "
-      catch { puts "frame -2 [ info frame -2 ]" }
-      catch { puts "frame -3 [ info frame -3 ]" }
-      catch { puts "level -1 [ info level -1 ]" }
-      catch { puts "level -2 [ info level -2 ]" }
-      catch { puts "level -3 [ info level -3 ]" }
-      
-      
-    } } ]
+    
   catch {unset ::gorilla::dirName}
   catch {unset ::gorilla::fileName}
   catch {unset ::gorilla::db}
@@ -1336,8 +1325,6 @@ proc gorilla::getFileHMAC { filename } {
 
   set result [ read $fd ]
   close $fd
-
-  puts stderr "getFileHMAC: read [ string length $result ] bytes of data"
 
   return $result
   
@@ -4419,8 +4406,8 @@ proc gorilla::Save {} {
   close $fd
   
   # Check to see if another process somewhere has overwritten the save file
-  # while we have had it open.  If yes, warn user they may lose data if they
-  # continue with the save.
+  # while we have had it open.  If yes, warn user that they may lose data if
+  # they continue with the save.
 
   if { 0 < [ string length $::gorilla::fileHMAC ] } {
     set newHMAC [ getFileHMAC $::gorilla::fileName ]
