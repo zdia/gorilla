@@ -2530,6 +2530,22 @@ namespace eval ::gorilla::LoginDialog {
 					set history [ dict create active 1 maxsize 255 passwords [ list ] ]
 				}
 
+				# handle stage 1 history update first (so "active" value is set correctly)
+				show-hist-dict $history PopulateRecord-B4
+				if { [ dict get $history active ] ne $historyactive } {
+				  puts stderr "History active differs, toggling"
+				  dict set history active $historyactive
+				  set modified 1
+				  dbset history $rn $history
+				}
+				if { [ dict get $history maxsize ] ne $maxhistory } {
+				  puts stderr "History max differs, setting to new"
+				  dict set history maxsize $maxhistory
+				  set modified 1
+				  dbset history $rn $history
+				}
+				show-hist-dict $history PopulateRecord-AF
+
 				foreach element [ list {*}$varlist notes ] {
 
 					if { $element ne "notes" } {
@@ -2570,22 +2586,6 @@ namespace eval ::gorilla::LoginDialog {
 					}
 
 				} ; # end foreach element
-
-				# now handle history adjustments
-				show-hist-dict $history PopulateRecord-B4
-				if { [ dict get $history active ] ne $historyactive } {
-				  puts stderr "History active differs, toggling"
-				  dict set history active $historyactive
-				  set modified 1
-				  dbset history $rn $history
-				}
-				if { [ dict get $history maxsize ] ne $maxhistory } {
-				  puts stderr "History max differs, setting to new"
-				  dict set history maxsize $maxhistory
-				  set modified 1
-				  dbset history $rn $history
-				}
-				show-hist-dict $history PopulateRecord-AF
 
 				if { $modified } {
 					dbset last-modified $rn $now
