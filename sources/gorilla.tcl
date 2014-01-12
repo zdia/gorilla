@@ -2049,18 +2049,22 @@ namespace eval ::gorilla::LoginDialog {
 
 		set frb [ ttk::frame $bf.pws ] ; # frame right - bottom
 
-		# hitory pane control button
-		set widget(history-toggle) [ \
-		  ttk::button $frb.pane-control -text [ mc "Show History" ] -width 16 ]
-
 		set widget(showhide) [ ttk::button $frb.show -width 16 -text [ mc "Show Password" ] -command [ list namespace inscope $pvns ShowPassword ] ]
 		set widget(genpass)  [ ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ] ]
 		ttk::checkbutton $frb.override -text [ mc "Override Password Policy" ] -variable ${pvns}::overridePasswordPolicy
 
 		set ${pvns}::overridePasswordPolicy 0
 
-		pack $widget(showhide) $widget(genpass) $frb.override $widget(history-toggle) -side top -padx 10 -pady 5
-    
+		# hitory pane controls
+		set widget(history-toggle) [ \
+		  ttk::button $frb.pane-control -text [ mc "Show History" ] -width 16 ]
+
+		set widget(history-active) [ \
+		  ttk::checkbutton $frb.active -text [ mc "Log Password Changes" ] \
+		      -variable ${pvns}::historyactive ]
+
+		pack $widget(showhide) $widget(genpass) $frb.override $widget(history-toggle) $widget(history-active) -side top -padx 10 -pady 5
+
 		pack $frb -side top -pady 20
 
 		# end - setup the button frame
@@ -2126,11 +2130,21 @@ namespace eval ::gorilla::LoginDialog {
 		set widget(hist-delete) [ \
 		  ttk::button $f.hdel   -text [ mc Delete ] -state disabled ]
 		set widget(hist-revert) [ \
-		  ttk::button $f.revert -text [ mc Revert ] -state disabled ]
-		set widget(historyactive) [ \
-		  ttk::checkbutton $f.active -text [ mc "History Active" ] \
-		      -variable ${pvns}::historyactive ]
+		  ttk::button $f.revert -text [ mc Revert ] -state disabled \
+		      -command [ list ::apply { \
+		                 {password history} \
+		                 { if { [ llength [ $history selection ] ] != 1 } { puts "returning" ; return }
+		                   puts "hist sel [ $history selection ]"
+		                   set id [ $history selection ]
+		                   puts [ $history set $id Password ]
+		                   $password delete 0 end
+		                   $password insert end [ $history set $id Password ]
+		                 } } $widget(password) $widget(history) ]
+		                 
+		  ]
+
 		ttk::label $f.maxlbl -text [ mc "Max saved:" ]
+
 		set widget(maxhistory) [ \
 		  ttk::spinbox $f.maxnum -from 0 -to 255 -increment 1 -width 4 \
 		      -textvariable ${pvns}::maxhistory \
@@ -2156,12 +2170,9 @@ namespace eval ::gorilla::LoginDialog {
 		# arrange the button frame
 		grid $f.withdolbl $widget(hist-delete) $widget(hist-revert) \
 		     [ ttk::separator $f.sep1 -orient vertical ] \
-		     $f.active \
-		     [ ttk::separator $f.sep2 -orient vertical ] \
 		     $f.maxlbl $f.maxnum -sticky ns
 		grid configure $widget(hist-delete) -padx {2m 2m}
 		grid configure $f.sep1 -padx {2m 2m}
-		grid configure $f.sep2 -padx {2m 2m}
 		grid rowconfigure    $f 0 -weight 1
 		grid columnconfigure $f {0 1 2 3 4 5} -weight 1
 
