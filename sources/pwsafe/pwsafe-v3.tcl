@@ -341,7 +341,7 @@ itcl::class pwsafe::v3::reader {
 						error "Active field from history record is not a valid boolean value."
 					}
 
-					set history [ dict create active $active maxsize $maxsize ]
+					set history [ dict create active $active maxsize $maxsize passwords [ list ] ]
 
 					# now scan "currentsize" number of records
 					set cursor 5

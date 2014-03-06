@@ -2462,8 +2462,8 @@ namespace eval ::gorilla::LoginDialog {
 				variable PassPolicy 
 				array set PassPolicy [ GetDefaultPasswordPolicy ]
 				variable widget
-				variable maxhistory
-				variable historyactive
+				variable maxhistory 255  ; # these will come from prefs eventually
+				variable historyactive 1 ; # these will come from prefs eventually
 				
 				foreach item { group title url user password } {
 					variable $item
@@ -2534,12 +2534,8 @@ namespace eval ::gorilla::LoginDialog {
 					}                              
 				}
 
-				set history [ dbget history $rn ]
-
-				if { $history eq "" } {
-					##### FIXME ##### - Maxsize should come from a config option
-					set history [ dict create active 1 maxsize 255 passwords [ list ] ]
-				}
+				##### FIXME ##### - Maxsize default should come from a config option
+				set history [ dbget history $rn [ dict create active 1 maxsize 255 passwords [ list ] ] ]
 
 				# handle stage 1 history update first (so "active" value is set correctly)
 				show-hist-dict $history PopulateRecord-B4
