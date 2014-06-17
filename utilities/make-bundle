@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# A script to create MacOS X application bundle install bundle from the
+# Password Gorilla source tree from github.
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation 51
+# Franklin Street, Suite 500 Boston, MA 02110-1335
+#
+# See LICENCE.txt in ../sources/ for the full licence text.
+#
+# ----------------------------------------------------------------------
+
+# This script is written for GNU Bash - you have been warned.
+
+YOUR_NAME="Vladimir Timofeev"
+YOUR_EMAIL="vovkasm@gmail.com"
+
+DATE=$(date)
+YEAR=$(date +%Y)
+
+WISH_APP=/System/Library/Frameworks/Tk.framework/Versions/8.5/Resources/Wish.app
+
+#set -x # for development
+
+set -e # exit on any errors - NOTE - does not clean up after itself
+
+script_reldir=`dirname $0`
+root_reldir="$script_reldir/.."
+pushd $root_reldir > /dev/null
+ROOT=`pwd`
+popd > /dev/null
+
+GORILLA_DIR=$ROOT/sources
+DEST=$ROOT/Gorilla.app
+GORILLA_VERSION=$(grep "variable Version " $GORILLA_DIR/gorilla.tcl | perl -ne '/Version "([\d.]+)"/ && print $1')
+
+echo "Full path = $ROOT"
+echo "Version = $GORILLA_VERSION"
+
+# ----------------------------------------------------------------------
+
+function error() {
+  echo -e $@
+  exit 1
+}
+
+# ----------------------------------------------------------------------
+
+# check for output dir
+if [ -d $DEST ] ; then
+    rm -rf $DEST
+fi
+
+cp -R $WISH_APP $DEST
+rm -rf $DEST/Contents/_CodeSignature
+rm -rf $DEST/Contents/Resources/Wish.icns
+rm -rf $DEST/Contents/Resources/Wish.sdef
+mkdir -p $DEST/Contents/Resources/Scripts
+cp -R $GORILLA_DIR/* $DEST/Contents/Resources/Scripts/
+cp $ROOT/utilities/osx/AppMain.tcl $DEST/Contents/Resources/Scripts/
+sed -e "s/%VERSION%/$GORILLA_VERSION/g" $ROOT/utilities/osx/Info.plist > $DEST/Contents/Info.plist
+cp $ROOT/utilities/pics/gorilla.icns $DEST/Contents/Resources/Gorilla.icns
+
+echo normal exit
