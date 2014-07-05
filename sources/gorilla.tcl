@@ -4951,6 +4951,9 @@ proc gorilla::Exit {} {
   if {[info exists ::gorilla::clipboardClearId]} {
     after cancel $::gorilla::clipboardClearId
     ClearClipboard
+    # Must flush the Tk event queue before exiting.  Otherwise the clipboard
+    # (on MacOS or Windows) does not get cleared.
+    update
   }
 
   #
