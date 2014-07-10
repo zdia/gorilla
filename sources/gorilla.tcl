@@ -4781,7 +4781,6 @@ proc gorilla::AddRecordToTree {rn} {
     -image $::gorilla::images(login) \
     -text $title \
     -values [list Login $rn]
- puts "values: [list Login $rn]"
     # -drawcross never
   return $nodename
 }
