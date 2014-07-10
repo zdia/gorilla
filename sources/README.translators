@@ -1,7 +1,23 @@
 How to translate Gorilla and the Help documentation?
 
-In the folder "utilities/gettext", respectively "utilities/help2po" 
+In the folder "utilities/gettext", respectively "utilities/help2po"
 you will find the template file "help.pot". You can edit this file
 and save it according to your target language as <lang>.po
 
+The order of the the variable strings can be marked by numbers which
+indicate the position of the variable: %<position_nr>$<string_type>
+
+When you see a line like the following in your po editor
+(I recommend Poedit):
+
+  Hello %1$s, your new password %2$s will be read at %3$s
+
+you are free to translate it with putting a string expression to a more
+appropriate place in the line, e.g. for a German translation:
+
+	Um %3$s wird das Passwort %2$s zur Verfügung stehen
+
+Depending to the content of the variables the output will something like:
+
+  Um 21:15h wird das Passwort qwerty zur Verfügung stehen, Sam
 

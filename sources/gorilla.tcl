@@ -346,7 +346,7 @@ proc gorilla::Init {} {
   set ::gorilla::activeSelection 0
   set ::gorilla::timeOfSelection 0
   set ::gorilla::fileHMAC "" ; # empty string is a "flag" for NULL
-    
+
   catch {unset ::gorilla::dirName}
   catch {unset ::gorilla::fileName}
   catch {unset ::gorilla::db}
@@ -1317,7 +1317,7 @@ proc gorilla::getFileHMAC { filename } {
   # The EOF block is being caputured because I have plans to utilize it for
   # detecting non-pwsafe files and displaying a "The file 'x' does not
   # appear to be a password safe format file" message.
-  
+
   set fd [ open $filename {RDONLY BINARY} ]
 
   seek $fd -48 end ; # 48 bytes to capture EOF flag (16) + HMAC (32) at file
@@ -1327,7 +1327,7 @@ proc gorilla::getFileHMAC { filename } {
   close $fd
 
   return $result
-  
+
 } ; # end gorilla::getFileHMAC
 
 # ----------------------------------------------------------------------
@@ -1523,7 +1523,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
           -message $error_message
         continue
       }
-      
+
       $aframe.info configure -text [mc "Please be patient. Verifying password ..."]
 
       set myOldCursor [$top cget -cursor]
@@ -4407,7 +4407,7 @@ proc gorilla::Save {} {
 
   # don't need the open file descriptor once out of the while loop
   close $fd
-  
+
   # Check to see if another process somewhere has overwritten the save file
   # while we have had it open.  If yes, warn user that they may lose data if
   # they continue with the save.
@@ -4416,7 +4416,7 @@ proc gorilla::Save {} {
     set newHMAC [ getFileHMAC $::gorilla::fileName ]
     if { $newHMAC ne $::gorilla::fileHMAC } {
       # build up the message in small pieces
-      append message [ mc "Another application has modified file:" ] \n\n 
+      append message [ mc "Another application has modified file:" ] \n\n
       append message $::gorilla::fileName \n
       append message [ mc "The file was last modified at: %s" [ clock format [ file mtime $::gorilla::fileName ] -format "%Y-%m-%d %H:%M:%S" ] ] \n\n
       append message [ mc "Continuing with a save will overwrite any new data\nthat has been added to the file by the other application." ] \n\n
@@ -4741,14 +4741,14 @@ proc gorilla::AddAllRecordsToTree {} {
 
 proc gorilla::AddRecordToTree {rn} {
   set groupName [ ::gorilla::dbget group $rn ]
-
   set parentNode [AddGroupToTree $groupName]
 
-  set title [ ::gorilla::dbget title $rn ]
+	# we check if there is an unexpected zero-byte string delimiter
+  set title [ string trimright [::gorilla::dbget title $rn] \0x00 ]
 
   if { ( [ ::gorilla::dbget user $rn ] ne "" ) &&
        ( ! $::gorilla::preference(hideLogins) ) } {
-    append title " \[" [ ::gorilla::dbget user $rn ] "\]"
+    append title " \[" [ string trimright [::gorilla::dbget user $rn] \0x00 ] "\]"
   }
 
   #
@@ -4781,6 +4781,7 @@ proc gorilla::AddRecordToTree {rn} {
     -image $::gorilla::images(login) \
     -text $title \
     -values [list Login $rn]
+ puts "values: [list Login $rn]"
     # -drawcross never
   return $nodename
 }
@@ -4794,6 +4795,8 @@ proc gorilla::AddGroupToTree {groupName} {
     set parentNode "RootNode"
     set partialGroups [list]
     foreach group [pwsafe::db::splitGroup $groupName] {
+			# we check if there is an unexpected zero-byte string delimiter
+			set group [ string trimright $group \0x00 ]
       lappend partialGroups $group
       set partialGroupName [pwsafe::db::concatGroups $partialGroups]
       if {[info exists ::gorilla::groupNodes($partialGroupName)]} {
