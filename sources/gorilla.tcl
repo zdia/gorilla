@@ -343,7 +343,6 @@ proc gorilla::Init {} {
   set ::gorilla::dirty 0
   set ::gorilla::overridePasswordPolicy 0
   set ::gorilla::isPRNGInitialized 0
-  set ::gorilla::activeSelection 0
   set ::gorilla::timeOfSelection 0
   set ::gorilla::fileHMAC "" ; # empty string is a "flag" for NULL
 
@@ -712,14 +711,6 @@ proc gorilla::InitGui {} {
     bind . <$meta-o> "after 150 [ bind . <$meta-o> ]"
   }
 
-
-  #
-  # Handler for the X Selection
-  #
-
-  selection handle -selection PRIMARY   . gorilla::XSelectionHandler
-  selection handle -selection CLIPBOARD . gorilla::XSelectionHandler
-
   #
   # Handler for the WM_DELETE_WINDOW event, which is sent when the
   # user asks the window manager to destroy the application
@@ -914,7 +905,7 @@ proc gorilla::TreeNodeSelect {node} {
   focus $::gorilla::widgets(tree)
   $::gorilla::widgets(tree) selection set $node
   $::gorilla::widgets(tree) see $node
-  set ::gorilla::activeSelection 0
+  CopyToClipboard ClearSelection
 }
 
 # proc gorilla::TreeNodeSelectionChanged {widget nodes} {
@@ -4981,7 +4972,7 @@ proc gorilla::ClearClipboard {} {
     }
   }
 
-  set ::gorilla::activeSelection 0
+  CopyToClipboard ClearSelection
   set ::gorilla::status [mc "Clipboard cleared."]
   catch {unset ::gorilla::clipboardClearId}
 }
@@ -6701,175 +6692,259 @@ proc gorilla::ChangePassword {} {
 }
 
 # ----------------------------------------------------------------------
-# X Selection Handler
+# Namespace ensemble "object" to handle the details of copying data to the Clipboard
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::XSelectionHandler {offset maxChars} {
-  set data ""
-  set curTime [clock clicks -milliseconds]
+namespace eval gorilla::CopyToClipboard {
 
-  switch -- $::gorilla::activeSelection {
-    0 {
-      set data ""
+  namespace path { ::gorilla }
+
+  variable activeSelection 0
+  # used to support "STRING" copy type for X11 clipboard callbacks
+  variable activeSelectionData ""
+
+  #
+  # Handler for the X Selection
+  #
+
+  if { [ tk windowingsystem ] eq "x11" } {
+    selection handle -selection PRIMARY   . [ namespace code XSelectionHandler ]
+    selection handle -selection CLIPBOARD . [ namespace code XSelectionHandler ]
+  }
+
+  # -------------- #
+  # public methods #
+  # -------------- #
+ 
+  proc Username { {mult 1} } {
+    variable activeSelection Username
+    finish $mult
+  }
+  namespace export Username
+
+  # --------------------------------------------------------------------
+ 
+  proc Password { {mult 1} } {
+    variable activeSelection Password
+    finish $mult
+  }
+  namespace export Password
+
+  # --------------------------------------------------------------------
+
+  proc String { data what {mult 1} } {
+    variable activeSelection String
+    variable activeSelectionData $data
+    finish $mult $what
+  }
+  namespace export String
+
+  # --------------------------------------------------------------------
+ 
+  proc URL { {mult 1} } {
+    variable activeSelection URL
+    finish $mult
+  }
+  namespace export URL
+
+  # --------------------------------------------------------------------
+ 
+  proc ClearSelection {} {
+    variable activeSelection None
+    variable activeSelectionData ""
+  }
+  namespace export ClearSelection
+
+  # --------------- #
+  # private methods #
+  # --------------- #
+
+  proc finish { mult {what ""} } {
+
+    # Finishes a CopyToClipBoard operation
+    #
+    # mult - Clipboard clear time multiplication factor, optional, defaults to 1
+    #
+    # Consolidates all of the copy to clipboard management code into a single
+    # proc.
+    variable activeSelection
+
+    ArrangeIdleTimeout
+
+    set item [ GetSelected$activeSelection ]
+    if { $what eq "" } {
+      set what $activeSelection
     }
-    1 {
-      set data [gorilla::GetSelectedUsername]
 
-      #to avoid having Klipper be recognized as a user pasting a username
-      if {[expr $curTime - $::gorilla::timeOfSelection] > 200} {
+    if { $item == "" } {
+      set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] [ mc $what ] ]
+    } else {
+      switch -exact -- [ tk windowingsystem ] {
+        aqua    -
+        win32   { 
+          # win32 and aqua only support "clipboard"
+          clipboard clear
+          clipboard append -- [ GetSelected$activeSelection ]
+        }
+        x11     -
+        default {
+          # x11 supports PRIMARY and CLIPBOARD x11 style clipboards
+          # returns data for both PRIMARY and CLIPBOARD so that no matter how
+          # a user pastes, they will receive the data they expect
+
+          # performing a clipboard clear/append cycle under X11 is likely
+          # superflorious - if so it will do no harm
+          clipboard clear
+          clipboard append -- [ GetSelected$activeSelection ]
+
+          foreach sel { PRIMARY CLIPBOARD } {
+            selection clear -selection $sel
+            selection own   -selection $sel .
+          } ; # end foreach sel 
+
+        }
+      }
+
+      ArrangeToClearClipboard $mult
+      set ::gorilla::status [ mc "Copied %s to clipboard." [ mc $what ] ]
+      
+    } ; # end if item == ""
+
+  } ; # end proc finish
+
+  # ----------------------------------------------------------------------
+  # X Selection Handler
+  # ----------------------------------------------------------------------
+  #
+
+  proc XSelectionHandler {offset maxChars} {
+    variable activeSelection
+    variable activeSelectionData
+
+    switch -exact -- $activeSelection {
+      None {
+        set data ""
+      }
+      Username {
+        set data [ GetSelectedUsername ]
         if { $::gorilla::preference(gorillaAutocopy) } {
           after idle { after 200 { ::gorilla::CopyToClipboard Password } }
         }
       }
-    }
-    2 {
-      set data [gorilla::GetSelectedPassword]
-    }
-    3 {
-      set data [gorilla::GetSelectedURL]
-    }
-    default {
-      set data ""
-    }
-  }
-
-  return [string range $data $offset [expr {$offset+$maxChars-1}]]
-}
-
-# ----------------------------------------------------------------------
-# Copy data to the Clipboard
-# ----------------------------------------------------------------------
-#
-
-proc gorilla::CopyToClipboard { what {mult 1} } {
-
-  # Copies a data value to the clipboard
-  #
-  # what - One of "URL" "Username" or "Password"
-  # mult - Clipboard clear time multiplication factor, optional, defaults to 1
-  #
-  # Consolidates all of the copy to clipboard management code into a
-  # single proc.
-
-  switch -exact -- $what {
-    Username { set ::gorilla::activeSelection 1 }
-    Password { set ::gorilla::activeSelection 2 }
-    URL      { set ::gorilla::activeSelection 3 }
-    default  { error [mc "gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'" [mc $what]] }
-  }
-
-  ArrangeIdleTimeout
-
-  set item [ gorilla::GetSelected$what ]
-
-  if {$item == ""} {
-    set ::gorilla::status [ mc "Can not copy %s to clipboard: no %s defined." [ mc $what ] [ mc $what ] ]
-  } else {
-    switch -exact -- [ tk windowingsystem ] {
-      aqua    -
-      win32   { # win32 and aqua only support "clipboard"
-        clipboard clear
-        clipboard append -- [ ::gorilla::GetSelected$what ]
+      Password {
+        set data [ GetSelectedPassword ]
       }
-      x11     -
-      default { # x11 supports PRIMARY and
-          # CLIPBOARD x11 style clipboards
-
-        # setup to return data for both PRIMARY and
-        # CLIPBOARD so that no matter how a user
-        # pastes, they will receive the data they
-        # expect
-
-        set ::gorilla::timeOfSelection [clock clicks -milliseconds]
-        foreach sel { PRIMARY CLIPBOARD } {
-          selection clear -selection $sel
-          selection own   -selection $sel .
-        } ; # end foreach sel
-
+      URL {
+        set data [ GetSelectedURL ]
+      }
+      String {
+        set data $activeSelectionData
+      }
+      default {
+        set data ""
       }
     }
 
-    ArrangeToClearClipboard $mult
-    set ::gorilla::status [ mc "Copied %s to clipboard." [ mc $what ] ]
-
-  } ; # end if item == ""
-
-} ; # end proc gorilla::CopyToClipboard
-
-# ----------------------------------------------------------------------
-# Helper procs to get various items from selected db records
-# ----------------------------------------------------------------------
-#
-
-proc gorilla::GetSelectedURL {} {
-  if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
-    return
+    return [string range $data $offset [expr {$offset+$maxChars-1}]]
   }
 
-  #
-  # Password Safe v3 has a dedicated URL field.
-  #
+  # --------------------------------------------------------------------
 
-  if {[$::gorilla::db existsField $rn 13]} {
-    return [ ::gorilla::dbget url $rn ]
-  }
-
-  #
-  # Password Safe v2 kept the URL in the "Notes" field.
-  #
-
-  if {![$::gorilla::db existsField $rn 5]} {
-    return
-  }
-
-  set notes [ ::gorilla::dbget notes $rn ]
-  if {[set index [string first "url:" $notes]] != -1} {
-    incr index 4
-    while {$index < [string length $notes] && \
-      [string is space [string index $notes $index]]} {
-      incr index
+  proc GetSelectedURL {} {
+    if { [ catch { set rn [ gorilla::GetSelectedRecord ] } ] } {
+      return
     }
-    if {[string index $notes $index] == "\""} {
-      incr index
-      set URL ""
-      while {$index < [string length $notes]} {
-        set c [string index $notes $index]
-        if {$c == "\\"} {
-          append URL [string index $notes [incr index]]
-        } elseif {$c == "\""} {
-          break
-        } else {
-          append URL $c
-        }
+
+    #
+    # Password Safe v3 has a dedicated URL field.
+    #
+
+    if { [ $::gorilla::db existsField $rn 13 ] } {
+      return [ ::gorilla::dbget url $rn ]
+    }
+
+    #
+    # Password Safe v2 kept the URL in the "Notes" field.
+    #
+
+    if { ! [ $::gorilla::db existsField $rn 5 ] } {
+      return
+    }
+
+    set notes [ ::gorilla::dbget notes $rn ]
+    if { [ set index [ string first "url:" $notes ] ] != -1 } {
+      incr index 4
+      while { $index < [ string length $notes ] && \
+        [ string is space [ string index $notes $index ] ] } {
         incr index
       }
-    } else {
-      if {![regexp -start $index -- {\s*(\S+)} $notes dummy URL]} {
+      if { [ string index $notes $index ] == "\"" } {
+        incr index
         set URL ""
+        while { $index < [ string length $notes ] } {
+          set c [ string index $notes $index ]
+          if { $c == "\\" } {
+            append URL [ string index $notes [ incr index ] ]
+          } elseif { $c == "\"" } {
+            break
+          } else {
+            append URL $c
+          }
+          incr index
+        }
+      } else {
+        if { ! [ regexp -start $index -- {\s*(\S+)} $notes dummy URL ] } {
+          set URL ""
+        }
       }
+    } elseif { ! [ regexp -nocase -- {http(s)?://\S*} $notes URL ] } {
+      set URL ""
     }
-  } elseif {![regexp -nocase -- {http(s)?://\S*} $notes URL]} {
-    set URL ""
+
+    return $URL
+  } ; # end GetSelectedURL
+
+  # --------------------------------------------------------------------
+
+  proc GetSelectedPassword {} {
+    # Retreive the password of the selected item in the treeview
+    if {[catch {set rn [gorilla::GetSelectedRecord]} err]} {
+      return
+    }
+    if {![$::gorilla::db existsField $rn 6]} {
+      return
+    }
+ 
+    return [ ::gorilla::dbget password $rn ]
+  } ; # end GetSelectedPassword
+ 
+  # --------------------------------------------------------------------
+
+  proc GetSelectedUsername {} {
+    # Retreive the username of the selected item in the treeview
+    if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
+      return
+    }
+
+    if {![$::gorilla::db existsField $rn 6]} {
+      return
+    }
+
+    return [ ::gorilla::dbget user $rn ]
   }
 
-  return $URL
-}
+  # --------------------------------------------------------------------
 
-
-# ----------------------------------------------------------------------
-
-proc gorilla::GetSelectedPassword {} {
-  # Retreive the password of the selected item in the treeview
-  if {[catch {set rn [gorilla::GetSelectedRecord]} err]} {
-    return
+  proc GetSelectedString {} {
+    # Retreive the String stored in activeSelectionData
+    variable activeSelectionData
+    return $activeSelectionData
   }
-  if {![$::gorilla::db existsField $rn 6]} {
-    return
-  }
+ 
+  namespace ensemble create
 
-  return [ ::gorilla::dbget password $rn ]
-}
+} ; # end namespace eval gorilla::CopyToClipboard
 
 # ----------------------------------------------------------------------
 
@@ -6889,18 +6964,6 @@ proc gorilla::GetSelectedRecord {} {
   return $rn
 }
 
-proc gorilla::GetSelectedUsername {} {
-  # Retreive the username of the selected item in the treeview
-  if {[catch {set rn [gorilla::GetSelectedRecord]}]} {
-    return
-  }
-
-  if {![$::gorilla::db existsField $rn 6]} {
-    return
-  }
-
-  return [ ::gorilla::dbget user $rn ]
-}
 
 # ----------------------------------------------------------------------
 # Miscellaneous
@@ -7436,8 +7499,6 @@ proc gorilla::CheckDefaultExtension {name extension} {
 proc gorilla::ViewLogin {} {
   ArrangeIdleTimeout
 
-  # proc gorilla::GetRnFromSelectedNode
-
   lassign [ ::gorilla::get-selected-tree-data RETURN ] node type rn
 
   if {$type == "Group" || $type == "Root"} {
@@ -7468,98 +7529,123 @@ proc gorilla::ViewEntry {rn} {
 
   set top .view$seq
 
-  if {[info exists ::gorilla::toplevel($top)]} {
+  toplevel $top -class "Gorilla"
+  wm title $top [ mc "View Login" ]
+  set ::gorilla::toplevel($top) $top
+  wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
 
-    wm deiconify $top
+  # now create infoframe and populate it
 
-  } else {
+  set infoframe [ ttk::frame $top.if -padding {5 5} ]
 
-    toplevel $top -class "Gorilla"
-    wm title $top [ mc "View Login" ]
-    set ::gorilla::toplevel($top) $top
-    wm protocol $top WM_DELETE_WINDOW "gorilla::DestroyDialog $top"
+  foreach {child childname} { group Group title Title url URL
+          user Username pass Password
+          lpc {Last Password Change}
+          mod {Last Modified}
+          uuid UUID } {
 
-    # now create infoframe and populate it
+    ttk::label $infoframe.${child}L -text [mc ${childname}]:
+    ttk::label $infoframe.${child}E -width 40 -background white
 
-    set infoframe [ ttk::frame $top.if -padding {5 5} ]
+    grid $infoframe.${child}L $infoframe.${child}E - -sticky ew -pady 5
 
-    foreach {child childname} { group Group title Title url URL
-            user Username pass Password
-            lpc {Last Password Change}
-            mod {Last Modified}
-            uuid UUID } {
-
-      ttk::label $infoframe.${child}L -text [mc ${childname}]:
-      ttk::label $infoframe.${child}E -width 40 -background white
-
-      grid $infoframe.${child}L $infoframe.${child}E -sticky ew -pady 5
-
-    }
-
-    ttk::label $infoframe.notesL -text [mc Notes]:
-    ttk::label $infoframe.notesE -width 40 -background white -anchor nw -justify left
-
-    # automatic word wrap width adjustment of the notes widget
-    # based upon window width
-
-    bind $infoframe.notesE <Configure> "$infoframe.notesE configure -wraplength \[ expr \[ winfo width $infoframe.notesE \] - 2 \]"
-
-    # the minus 2 in the bind command above is to work around
-    # bug # 3049971 in the ttk::label implementation in tk 8.5.5
-    # where if the wraplength is equal to the window width, or
-    # one less than the widow width, then certain pixel widths
-    # result in no word wrapping at all, see
-    # https://sourceforge.net/tracker/index.php?func=detail&aid=3049971&group_id=11464&atid=111464
-
-    grid $infoframe.notesL $infoframe.notesE -sticky news -pady 5
-
-    grid columnconfigure $infoframe 1 -weight 1
-    grid rowconfigure $infoframe $infoframe.notesE -weight 1
-
-    $infoframe.groupE configure -text [ ::gorilla::dbget group            $rn ]
-    $infoframe.titleE configure -text [ ::gorilla::dbget title            $rn ]
-    $infoframe.userE  configure -text [ ::gorilla::dbget user             $rn ]
-    $infoframe.notesE configure -text [ ::gorilla::dbget notes            $rn ]
-    $infoframe.passE  configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
-    $infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ]
-    $infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
-    $infoframe.urlE   configure -text [ ::gorilla::dbget url              $rn ]
-    $infoframe.uuidE  configure -text [ ::gorilla::dbget uuid             $rn ]
-
-    # now create button frame and populate it
-
-    set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
-
-    ttk::button $buttonframe.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
-    ttk::button $buttonframe.showpassw -text [mc "Show Password"] \
-      -command [ list ::gorilla::ViewEntryShowPWHelper $buttonframe.showpassw $infoframe.passE $rn ]
-
-    pack $buttonframe.showpassw -side top -fill x
-    pack $buttonframe.close -side top -fill x -pady 5
-
-    grid $infoframe $buttonframe -sticky news
-    grid columnconfigure $top 0 -weight 1
-    grid rowconfigure    $top 0 -weight 1
   }
+
+  # notes box is now a Tk text widget (so that select+copy operates properly)
+
+  ttk::label $infoframe.notesL -text [mc Notes]:
+  text $infoframe.notesE -width 40 -height 10 -background white -wrap word \
+    -yscrollcommand [ list $infoframe.vscroll set ] \
+    -exportselection false
+  ttk::scrollbar $infoframe.vscroll -orient vertical \
+    -command [ list $infoframe.notesE yview ]
+
+  grid $infoframe.notesL $infoframe.notesE $infoframe.vscroll -sticky news -pady 5
+
+  grid columnconfigure $infoframe 1 -weight 1
+  grid rowconfigure $infoframe $infoframe.notesE -weight 1
+
+  $infoframe.groupE configure -text [ ::gorilla::dbget group            $rn             ]
+  $infoframe.titleE configure -text [ ::gorilla::dbget title            $rn             ]
+  $infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
+  $infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
+  $infoframe.uuidE  configure -text [ ::gorilla::dbget uuid             $rn             ]
+
+  # capture password/userid/url for use in double-click bindings below
+  $infoframe.passE  configure -text [ string repeat "*" [ string length [ set pass [ ::gorilla::dbget password $rn ] ] ] ]
+  $infoframe.userE  configure -text [ set uid [ ::gorilla::dbget user $rn ] ]
+  $infoframe.urlE   configure -text [ set url [ ::gorilla::dbget url  $rn ] ]
+
+  $infoframe.notesE insert end [ ::gorilla::dbget notes $rn ]
+  $infoframe.notesE configure -state disabled
+
+  # now create button frame and populate it
+
+  set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
+
+  ttk::button $buttonframe.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
+  ttk::button $buttonframe.showpassw -text [mc "Show Password"] \
+    -command [ list ::apply { { button entry rn } {
+      if { [ $button cget -text ] eq [ mc "Show Password" ] } {
+        $entry configure -text [ ::gorilla::dbget password $rn ]
+        $button configure -text [ mc "Hide Password" ]
+      } else {
+        $entry configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
+        $button configure -text [ mc "Show Password" ]
+      }
+    } } $buttonframe.showpassw $infoframe.passE $rn ]
+
+  pack $buttonframe.showpassw -side top -fill x
+  pack $buttonframe.close -side top -fill x -pady 5
+
+  grid $infoframe $buttonframe -sticky news
+  grid columnconfigure $top 0 -weight 1
+  grid rowconfigure    $top 0 -weight 1
+
+  # bindings to make view dialog "active" upon a limited number of double-clicks
+
+  set lambda { {win what value} {
+    ::gorilla::CopyToClipboard String $value $what
+  } }
+  bind $infoframe.userL <Double-Button-1> [ list ::apply $lambda $infoframe.userE Username $uid  ]
+  bind $infoframe.userE <Double-Button-1> [ list ::apply $lambda $infoframe.userE Username $uid  ]
+  bind $infoframe.passL <Double-Button-1> [ list ::apply $lambda $infoframe.passE Password $pass ]
+  bind $infoframe.passE <Double-Button-1> [ list ::apply $lambda $infoframe.passE Password $pass ]
+  bind $infoframe.urlL  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
+  bind $infoframe.urlE  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
+
+  # Set up bindings to simulate an X11 style copy-upon-select for the notes
+  # text widget, and to also include PWGorilla's normal clearing of the
+  # clipboard after a time delay.
+
+  # This was tricky to get working correctly because the <<Selection>> event
+  # fires for any change to the selection, no matter how small.  For a mouse
+  # drag there will be one event for each character added/removed from the
+  # selection.  The event also fires when the selection is removed.
+
+  # The code below attempts to only fire itself if the selection exists, and
+  # attempts to only fire once by rescheduling itself to fire 250ms after
+  # each incoming <<Selection>> event.  For a rapid fire sequence of events
+  # this means it will fire 250ms after the last event arrives.
+
+  # It consists of an anonymous proc attached to the <<Selection>> event on
+  # the notes text widget which itself builds an anonymous proc to attach to
+  # a delayed after event.
+
+  bind $infoframe.notesE <<Selection>> [ list ::apply { {win} {
+    if {![ catch { $win get sel.first sel.last } ]} {
+      set lambda [ list ::apply { {win} {
+        if { ! [ catch {set data [ $win get sel.first sel.last ]} ] } {
+          ::gorilla::CopyToClipboard String $data [ mc Note ]
+          ::gorilla::ArrangeToClearClipboard
+        }
+      } } $win ]
+      after cancel $lambda
+      after 250 $lambda
+    }
+  } } %W ]
 
 } ; # end proc gorilla::ViewEntry
-
-#
-# ----------------------------------------------------------------------
-# A helper proc to make the show password button an actual toggle button
-# ----------------------------------------------------------------------
-#
-
-proc gorilla::ViewEntryShowPWHelper { button entry rn } {
-  if { [ $button cget -text ] eq [ mc "Show Password" ] } {
-    $entry configure -text [ ::gorilla::dbget password $rn ]
-    $button configure -text [ mc "Hide Password" ]
-  } else {
-    $entry configure -text [ string repeat "*" [ string length [ ::gorilla::dbget password $rn ] ] ]
-    $button configure -text [ mc "Show Password" ]
-  }
-
-} ; # end proc gorilla::ViewEntryShowPWHelper
 
 #
 # ----------------------------------------------------------------------
