@@ -326,6 +326,27 @@ dialogs, should you find the default sizes inconvenient. If this option is
 enabled, Password Gorilla will remember the size of dialog boxes across
 restarts.
 
+'''Also remember dialog positions'''
+
+ | This setting, which is only available if the '''Remember sizes of dialog
+boxes''' preference is enabled, will cause Password Gorilla, when it exits,
+to additionally save the screen positions of the windows affected by the
+'''Remember sizes of dialog boxes''' preference.  Upon next restart it will
+attempt to restore both the size and position of those windows.
+
+ | '''Note:''' Restoring both sizes and positions of windows is dependent
+upon the underlying operating system and window manager actually performing
+the requested operation.  Under at least Linux/X11 it is possible to
+configure the window manager to ignore requests from applications for
+sizing/positioning and instead have the window manager enforce its own
+size/position upon the application.  Therefore it is possible depending upon
+the system within which Password Gorilla is executing to override both of
+these options and prevent Password Gorilla from restoring the sizes and/or
+positions of its windows.  In this situation the only solution is to change
+the underlying system configuration to allow Password Gorilla to set window
+sizes and positions.  Such configuration changes are well beyond the scope
+of this help document.
+
 '''Use Gorilla auto-copy'''
 
  | If this option is selected then Password Gorilla will automatically copy

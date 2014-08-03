@@ -401,6 +401,7 @@ proc gorilla::Init {} {
     lruSize                { 10      { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
     lru                    { {}      { {value} { file exists $value } }                                                   }
     rememberGeometries     { 1       { {value} { string is boolean $value } }                                             }
+    rememberPositionAlso   { 1       { {value} { string is boolean $value } }                                             }
     saveImmediatelyDefault { 0       { {value} { string is boolean $value } }                                             }
     timeStampBackup        { 0       { {value} { string is boolean $value } }                                             }
     unicodeSupport         { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
@@ -1170,7 +1171,8 @@ proc gorilla::TryResizeFromPreference {top} {
   if {![info exists ::gorilla::preference(geometry,$top)]} {
     return
   }
-  if {[scan $::gorilla::preference(geometry,$top) "%dx%d" width height] != 2} {
+  if { ([scan $::gorilla::preference(geometry,$top) "%dx%d" width height] != 2)
+    && ([scan $::gorilla::preference(geometry,$top) "%dx%d+%d+%d" width height x y] != 4)} {
     unset ::gorilla::preference(geometry,$top)
     return
   }
@@ -1179,7 +1181,16 @@ proc gorilla::TryResizeFromPreference {top} {
     unset ::gorilla::preference(geometry,$top)
     return
   }
-  wm geometry $top ${width}x${height}
+  if {[ info exists x ]} {
+    if { ($x < 0)
+      || ($x > [ winfo screenwidth . ])
+      || ($y < 0)
+      || ($y > [ winfo screenheight . ]) } {
+      unset ::gorilla::preference(geometry,$top)
+      return
+    }
+  }
+  wm geometry $top $::gorilla::preference(geometry,$top)
 }
 
 proc gorilla::CollectTicks {} {
@@ -1338,8 +1349,6 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
   if {![info exists ::gorilla::toplevel($top)]} {
     toplevel $top -class "Gorilla"
 
-    # TryResizeFromPreference $top
-
     set aframe [ttk::frame $top.right -padding [list 10 5]]
 
     if {$::gorilla::preference(gorillaIcon)} {
@@ -1406,6 +1415,8 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
     set aframe $top.right
     wm deiconify $top
   }
+
+  TryResizeFromPreference $top
 
   wm title $top $title
   wm iconphoto $top $::gorilla::images(application)
@@ -5984,8 +5995,25 @@ proc gorilla::PreferencesDialog {} {
 
     ttk::checkbutton $gpf.bu -text [mc "Backup database on save"] \
       -variable ::gorilla::prefTemp(keepBackupFile)
+
     ttk::checkbutton $gpf.geo -text [mc "Remember sizes of dialog boxes"] \
       -variable ::gorilla::prefTemp(rememberGeometries)
+    ttk::checkbutton $gpf.geo2 -text [mc "Also remember dialog positions"] \
+      -variable ::gorilla::prefTemp(rememberPositionAlso)
+
+    ::tooltip::tooltip $gpf.geo2 [ mc "This option requires the\n\"%s\"\noption be enabled." [ mc "Also remember dialog positions" ] ]
+
+    # add an anonymous proc onto a trace to toggle the state of the geo2
+    # checkbox based upon the state of the geo checkbox
+    trace add variable ::gorilla::prefTemp(rememberGeometries) write [ list ::apply {
+      {w var element cmd} { # cmd is not used
+        switch -- [ set ${var}($element) ] {
+          0 { set ::gorilla::prefTemp(rememberPositionAlso) 0
+              $w configure -state disabled }
+          1 { $w configure -state normal }
+        }
+    } } $gpf.geo2 ]
+
     ttk::checkbutton $gpf.gac -text [ mc "Use Gorilla auto-copy" ] \
       -variable ::gorilla::prefTemp(gorillaAutocopy)
     if { $::tcl_platform(platform) eq "x11" } {
@@ -5993,7 +6021,9 @@ proc gorilla::PreferencesDialog {} {
     } else {
       ::tooltip::tooltip $gpf.gac [ mc "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." ]
     }
-    pack $gpf.bu $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
+
+    pack $gpf.bu $gpf.geo $gpf.geo2 $gpf.gac -side top -anchor w -padx 10 -pady 5
+    pack configure $gpf.geo2 -padx {1c 5} ; # Indent geo2 under geo
 
 
 
@@ -6311,6 +6341,7 @@ proc gorilla::SavePreferencesToRegistry {} {
     keepBackupFile dword \
     lruSize dword \
     rememberGeometries dword \
+    rememberPositionAlso dword \
     saveImmediatelyDefault dword \
     unicodeSupport dword} {
     if {[info exists ::gorilla::preference($pref)]} {
@@ -6337,8 +6368,13 @@ proc gorilla::SavePreferencesToRegistry {} {
   if {![info exists ::gorilla::preference(rememberGeometries)] || \
     $::gorilla::preference(rememberGeometries)} {
     foreach top [array names ::gorilla::toplevel] {
-      if {[scan [wm geometry $top] "%dx%d" width height] == 2} {
-        registry set $key "geometry,$top" "${width}x${height}"
+      if { [ info exists ::gorilla::preference(rememberPositionAlso) ]
+        && $::gorilla::preference(rememberPositionAlso) } {
+          registry set $key "geometry,$top" [ wm geometry $top ]
+      } else {
+        if {[scan [wm geometry $top] "%dx%d" width height] == 2} {
+          registry set $key "geometry,$top" "${width}x${height}"
+        }
       }
     }
   } elseif {[info exists ::gorilla::preference(rememberGeometries)] && \
@@ -6407,8 +6443,13 @@ proc gorilla::SavePreferencesToRCFile {} {
 
   if {$::gorilla::preference(rememberGeometries)} {
     foreach top [array names ::gorilla::toplevel] {
-      if {[scan [wm geometry $top] "%dx%d" width height] == 2} {
-        puts $f "geometry,$top=${width}x${height}"
+      if { [ info exists ::gorilla::preference(rememberPositionAlso) ]
+        && $::gorilla::preference(rememberPositionAlso) } {
+        puts $f "geometry,$top=[ wm geometry $top ]"
+      } else {
+        if {[scan [wm geometry $top] "%dx%d" width height] == 2} {
+          puts $f "geometry,$top=${width}x${height}"
+        }
       }
     }
   }
@@ -6493,8 +6534,11 @@ proc gorilla::LoadPreferencesFromRegistry {} {
       $::gorilla::preference(rememberGeometries)} {
     foreach value [registry values $key geometry,*] {
       set data [registry get $key $value]
-      if {[scan $data "%dx%d" width height] == 2} {
-        set ::gorilla::preference($value) "${width}x${height}"
+      # mild error checking - verify that the value matches the expected
+      # pattern before using it
+      if { ([scan $data "%dx%d" width height] == 2)
+        || ([scan $data "%dx%d+%d+%d" width height x y] == 4) } {
+        set ::gorilla::preference($value) $data
       }
     }
   }
@@ -6581,8 +6625,9 @@ proc gorilla::LoadPreferencesFromRCFile {} {
       }
 
       geometry,* {
-        if {[scan $value "%dx%d" width height] == 2} {
-          set ::gorilla::preference($pref) "${width}x${height}"
+        if { ([scan $value "%dx%d" width height] == 2)
+          || ([scan $value "%dx%d+%d+%d" width height x y] == 4) } {
+          set ::gorilla::preference($pref) $value
         }
       }
 
