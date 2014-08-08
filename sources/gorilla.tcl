@@ -5259,7 +5259,6 @@ proc gorilla::LockDatabase {} {
   set ::gorilla::status [mc "Welcome back."]
 
   set ::gorilla::isLocked 0
-  wm withdraw .
   wm deiconify .
   raise .
   ArrangeIdleTimeout
