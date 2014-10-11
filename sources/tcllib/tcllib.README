@@ -1,11 +1,11 @@
 The items in this directory (tcllib), exclusive of this file itself, are
-copied from the tcllib distribution.  These items are covered by the licence
-granted by the included "tcllib.licence.terms" found in the same directory
-with this file.
+copied from the tcllib (or tklib) distributions.  These items are covered by
+the licence granted by the included "tcllib.licence.terms" or
+"tklib.licence.terms" found in the same directory with this file.
 
-This is a subset of the full tcllib distribution.  See
-http://tcllib.sourceforge.net/ for further information or to obtain a full
-tcllib distribution.
+This is a subset of the full tcllib/tklib distribution.  See
+http://tcllib.sourceforge.net/ or http://www.tcl.tk/software/tklib/ for
+further information or to obtain a full tcllib/tklib distribution.
 
 The only difference between the files in this directory and the tcllib
 distribution is that the sha1 package has been processed through critcl to
@@ -14,5 +14,5 @@ in feature of tcllib if critcl is available.
 
 This subset is included here as part of the Password Gorilla distribution so
 that Password Gorilla will have required tcllib modules available on all
-systems, even those without Tcl and/or tcllib installed.
+systems, even those without Tcl and/or tcllib/tklib installed.
 

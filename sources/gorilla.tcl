@@ -306,7 +306,7 @@ set gorilla::extension(twofish) [load-extension [file join $::gorilla::Dir twofi
 # load packages and modules
 # ----------------------------------------------------------------------
 
-foreach package {Itcl pwsafe tooltip PWGprogress} {
+foreach package {Itcl pwsafe tooltip PWGprogress autoscroll} {
   load-package $package
 } ; unset package
 
@@ -8242,21 +8242,65 @@ proc ::gorilla::conflict-dialog { conflict_list } {
       continue
     }
 
-    set container [ ttk::frame ${tabs}.tab[ incr seq ] ]
+    # build out a scrollable frame using a canvas widget
+    set scroll_container [ ttk::frame ${tabs}.scroll_container[ incr seq ] ]
+
+    set canvas     [ canvas ${scroll_container}.canvas \
+                            -yscrollcommand [ list ${scroll_container}.vsb set ] \
+                            -xscrollcommand [ list ${scroll_container}.hsb set ] \
+                            -background [ dict get [ ttk::style map TNotebook.Tab -background ] selected ] \
+                            -borderwidth 0 ]
+
+    set vsb [ ttk::scrollbar ${scroll_container}.vsb -orient vertical \
+                             -command [ list $canvas yview ] ]
+    set hsb [ ttk::scrollbar ${scroll_container}.hsb -orient horizontal \
+                             -command [ list $canvas xview ] ]
+
+    autoscroll::autoscroll $vsb
+    autoscroll::autoscroll $hsb
+
+    # setup the canvas scroll region in a <Configure> binding so we don't
+    # have to concern ourselves with calling update
+    bind $canvas <Configure> { %W configure -scrollregion [ %W bbox all ] }
+
+    grid $canvas $vsb -sticky news
+    grid $hsb         -sticky news
+    grid rowconfigure    $scroll_container 0 -weight 1
+    grid columnconfigure $scroll_container 0 -weight 1
+
+    # this frame holds all of the controls - it will be placed in the canvas
+    # so it can be scrolled - it must also be a child of the canvas so that
+    # it will be clipped for display by the canvas itself
+
+    set container [ ttk::frame ${canvas}.contents ]
     set ns ::merger::$container
     namespace eval $ns { }
 
     # remove the namespace when the container is deleted
     trace add command $container delete [ list ::apply [ list args  [ list namespace delete $ns ] ] ]
 
-    $tabs insert end $container -sticky news -text [ mc "Conflict %d" $seq ] -padding { 2m 2m 2m 0m }
+    # put the widget container onto the canvas
+    $canvas create window 0 0 -anchor nw -window $container
+
+    # and add the container of the canvas to the tab
+    $tabs insert end $scroll_container -sticky news -text [ mc "Conflict %d" $seq ] -padding { 2m 2m 2m 0m }
+
+    # <Configure> binding to change the size the canvas to match the size of
+    # the container it is holding
+
+    bind $container <Configure> [ list ::apply { {win canvas} {
+      $canvas configure -width  [ winfo width $win ] \
+                        -height [ winfo height $win ]
+    } } $container $canvas ]
 
     # build out the actual "difference" view widgets within the container frame
-
     set merge_widgets [ ::gorilla::build-merge-widgets $container $ns $current_dbidx $merged_dbidx ]
 
-    # now build a button frame to hold the control buttons for this tab
-    set bf [ ::ttk::frame ${container}.buttonf ]
+    # now build a button frame to hold the control buttons for this tab -
+    # these two are gridded on the bottom of the scroll_frame container so
+    # they are always visible
+
+    set bf [ ::ttk::frame $scroll_container.buttonf ]
 
     grid [ ::ttk::button $bf.save   -text [ mc "Combine and Save" ] -state disabled ] \
          [ ::ttk::button $bf.reset  -text [ mc "Reset Values"     ] ] \
@@ -8267,9 +8311,10 @@ proc ::gorilla::conflict-dialog { conflict_list } {
     $bf.reset  configure -command [ list ${ns}::reset-widgets ]
     $bf.ignore configure -command [ list ::gorilla::merge-destroy $container $tabs ]
 
-    set feedback [ ::ttk::label $container.feedback -text "" -relief sunken -padding {1m 1m 1m 1m} ]
+    set feedback [ ::ttk::label $scroll_container.feedback -text "" -relief sunken -padding {1m 1m 1m 1m} ]
 
-    pack $feedback $bf -side bottom -pady {0m 2m} -fill x
+    grid $bf       - -sticky news -pady {2m 2m}
+    grid $feedback - -sticky news -pady {0m 2m}
 
     # Build a custom proc to handle setting the feedback message plus
     # managing an after event to clear the message after twenty seconds
@@ -8317,11 +8362,19 @@ proc ::gorilla::conflict-dialog { conflict_list } {
     return
   }
 
-  # prevent the window from shrinking spontaneously when the taller tabs are
-  # closed
-  after 2000 [ subst -nocommands {catch {wm minsize $top [ winfo width $top ] [ winfo height $top ]} } ]
-
   wm deiconify $top
+
+  # setup a maxsize setting on the $top container - adding the scroll bar
+  # width/heights is so that if one shrinks the window, it will later be
+  # possible to expand it sufficiently to make the scrollbars unmap
+
+  after idle [ list after 50 [ list ::apply { {top vsb hsb} {
+    set width  [ expr { min( [ winfo width  $top ]+[ winfo reqwidth  $vsb ],
+                             [ winfo screenwidth  $top ] ) } ]
+    set height [ expr { min( [ winfo height $top ]+[ winfo reqheight $hsb ],
+                             [ winfo screenheight $top ] ) } ]
+    wm maxsize $top $width $height
+  } } $top $vsb $hsb ] ]
 
 } ; # end proc ::gorilla::conflict-dialog
 
