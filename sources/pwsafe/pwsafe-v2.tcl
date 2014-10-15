@@ -355,6 +355,12 @@ itcl::class pwsafe::v2::reader {
 	set hrnd [$source read 20]
 	set salt [$source read 20]
 	set ip [$source read 8]
+	
+	# The above four values will also serve as the "file changed"
+	# notification data, as they are the closest to the overall file
+	# HMAC in the V3 files.
+	
+	$db configure -fileAuthHMAC $rnd$hrnd$salt$ip
 
 	if {[string length $rnd] != 8 || \
 		[string length $hrnd] != 20 || \
@@ -673,6 +679,11 @@ itcl::class pwsafe::v2::writer {
 	$sink write $hrnd
 	$sink write $salt
 	$sink write $ip
+
+	# As the above four values are also used to detect file changes by
+	# external writers, update the saved file-id value here.
+
+	$db configure -fileAuthHMAC $rnd$hrnd$salt$ip
 
 	pwsafe::int::randomizeVar rnd hrnd
 	

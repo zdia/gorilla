@@ -4366,26 +4366,34 @@ proc gorilla::Save {} {
 
   } ; # end while gorilla::fileName read-only
 
-  # now use the open file descriptor to check the V3 HMAC
+  # also use the open file descriptor to read the V2 change bytes/V3 HMAC value
+
+  # the V2 db object has no header field 0
+
   if { [ $::gorilla::db hasHeaderField 0 ] } {
     if { 3 == [ lindex [ $::gorilla::db getHeaderField 0 ] 0 ] } {
+      # Version 3 - last 32 bytes are the magic tag
       seek $fd -32 end
-      set current_V3_HMAC [ read $fd ]
-    }
-  }
+      set current_HMAC [ read $fd ]
+    } 
+  } else {
+    # Version 2 - first 56 bytes are the magic tag
+    seek $fd 0
+    set current_HMAC [ read $fd 56 ]
+  } ; # end if db hasHeaderField 0
   
   # No longer need the open file descriptor
   close $fd
 
-  # Check to see if another process somewhere has overwritten the save file
-  # while we have had it open.  If yes, warn user that they may lose data if
-  # they continue with the save.
+  # Check to see if another process somewhere has overwritten the file while
+  # we have had it open.  If yes, warn user that they may lose data if they
+  # continue with the save.
 
-  if { [ info exists current_V3_HMAC ] } {
+  if { [ info exists current_HMAC ] } {
     if { 0 == [ string length [ $::gorilla::db cget -fileAuthHMAC ] ] } {
-      puts stderr "Error, a V3 database file is open but there is no cached fileHMAC value - this should not happen."
+      puts stderr "Error, a database file is open but there is no cached fileHMAC value - this should not happen."
     } else {
-      if { $current_V3_HMAC ne [ $::gorilla::db cget -fileAuthHMAC ] } {
+      if { $current_HMAC ne [ $::gorilla::db cget -fileAuthHMAC ] } {
         # build up the message in small pieces
         append message [ mc "Another application has modified file:" ] \n\n
         append message $::gorilla::fileName \n
@@ -4403,7 +4411,7 @@ proc gorilla::Save {} {
         }
       } ; # end if HMAC does not match
     } ; # end if have a stored HMAC
-  } ; # end if exists current_V3_HMAC
+  } ; # end if exists current_HMAC
   
   set myOldCursor [. cget -cursor]
   . configure -cursor watch
