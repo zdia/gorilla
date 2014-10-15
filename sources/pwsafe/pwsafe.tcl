@@ -35,11 +35,10 @@ proc pwsafe::createFromStream {stream password version {percentvar ""}} {
     set reader [namespace current]::[pwsafe::v2::reader #auto $db $stream]
   }
 
-  if {[catch {$reader readFile $pcvp} oops]} {
-    set origErrorInfo $::errorInfo
+  if {[catch {$reader readFile $pcvp} result oops]} {
     itcl::delete object $reader
     itcl::delete object $db
-    error $oops $origErrorInfo
+    return -options $oops
   }
 
   itcl::delete object $reader
@@ -64,8 +63,9 @@ proc pwsafe::createFromFile {fileName password {percentvar ""}} {
   set size -1
     }
 
-    set file [open $fileName "r"]
-    fconfigure $file -translation binary
+    if { [ catch { open $fileName {RDONLY BINARY} } file oops ] } {
+      return -options $oops
+    }
 
     #
     # Check if the file begins with the Password Save 3.x "PWS3" magic.
@@ -82,17 +82,16 @@ proc pwsafe::createFromFile {fileName password {percentvar ""}} {
       } else {
         set db [pwsafe::createFromStream $stream $password 2 $pcvp]
       }
-                } oops]} {
-      set origErrorInfo $::errorInfo
+                } result oops]} {
       itcl::delete object $stream
       catch {close $file}
-      error $oops $origErrorInfo
+      return -options $oops
     }
     itcl::delete object $stream
 
-    if {[catch {close $file} oops]} {
+    if {[catch {close $file} result oops]} {
   itcl::delete object $db
-  error $oops
+      return -options $oops
     }
 
     return $db
@@ -124,10 +123,9 @@ proc pwsafe::createFromString {data password {percentvar ""}} {
   } else {
       set db [pwsafe::createFromStream $stream $password 2 $pcvp]
   }
-    } oops]} {
-  set origErrorInfo $::errorInfo
+    } result oops]} {
   itcl::delete object $stream
-  error $oops $origErrorInfo
+    return -options $oops
     }
 
     itcl::delete object $stream
@@ -168,16 +166,15 @@ proc pwsafe::writeToFile {db fileName version {percentvar ""}} {
     } elseif {$version == 2} {
   set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
     } else {
-  error [ mc "invalid version %s" $version ]
+      return -code error -errorcode [ list GORILLA BADVERSION [ mc "invalid version %s" $version ] ]
     }
 
-    if {[catch {$writer writeFile $pcvp} oops]} {
-  set origErrorInfo $::errorInfo
+    if {[catch {$writer writeFile $pcvp} result oops]} {
   itcl::delete object $writer
   itcl::delete object $stream
   catch {close $file}
   catch {file delete $tmpFileName}
-  error $oops $origErrorInfo
+      return -options $oops
     }
 
   itcl::delete object $writer
@@ -214,15 +211,14 @@ proc pwsafe::writeToString {db version {percentvar ""}} {
     } elseif {$version == 2} {
   set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
     } else {
-  error [ mc "invalid version %s" $version ]
+      return -code error -errorcode [ list GORILLA BADVERSION [ mc "invalid version %s" $version ] ]
     }
 
-    if {[catch {$writer writeFile $pcvp} oops]} {
-  set origErrorInfo $::errorInfo
+    if {[catch {$writer writeFile $pcvp} result oops]} {
   itcl::delete object $writer
   itcl::delete object $stream
   catch {close $file}
-  error $oops $origErrorInfo
+      return -options $oops
     }
 
     set result [$stream cget -data]

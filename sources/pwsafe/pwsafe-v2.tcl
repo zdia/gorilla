@@ -49,14 +49,15 @@ itcl::class pwsafe::v2::reader {
 	    return [list]
 	}
 	if {[string length $encryptedLength] != 8} {
-	    error [ mc "less than 8 bytes remaining for length field" ]
+	    return -code error -errorcode [ list GORILLA BADCONTENT [ mc "less than 8 bytes remaining for length field" ] ]
 	}
 	set fixedEncryptedLength [pwsafe::int::genderbender $encryptedLength]
 	set decryptedLength [$engine decrypt $fixedEncryptedLength]
 	set fixedDecryptedLength [pwsafe::int::genderbender $decryptedLength]
 
 	if {[binary scan $fixedDecryptedLength ic fieldLength fieldType] != 2} {
-	    error [ mc "oops" ]
+	    # FIXME - pick a better message than "oops" here
+	    return -code error -errorcode [ list GORILLA BADCONTENT [ mc "oops" ] ]
 	}
 
 	#
@@ -64,7 +65,7 @@ itcl::class pwsafe::v2::reader {
 	#
 
 	if {$fieldLength < 0 || $fieldLength > 65536} {
-	    error [ mc "field length %d looks insane" $fieldLength ]
+	    return -code error -errorcode [ list GORILLA BADCONTENT [ mc "field length %d looks insane" $fieldLength ] ]
 	}
 
 	#
@@ -86,7 +87,7 @@ itcl::class pwsafe::v2::reader {
 	set encryptedData [$source read $dataLength]
 
 	if {[string length $encryptedData] != $dataLength} {
-	    error [ mc "out of data" ]
+	    return -code error -errorcode [ list GORILLA BADCONTENT [ mc "out of data" ] ]
 	}
 
 	set fixedEncryptedData [pwsafe::int::genderbender $encryptedData]
@@ -173,7 +174,7 @@ itcl::class pwsafe::v2::reader {
 			$db setFieldValue $recordnumber 4 [lindex $titleAndUser 1]
 		    }
 		} else {
-		    error [ mc "V1 name field looks suspect" ]
+		    return -code error -errorcode [ list GORILLA BADCONTENT [ mc "V1 name field looks suspect" ] ]
 		}
 
 		$db setFieldValue $recordnumber 6 [lindex $passField 1]
@@ -325,7 +326,7 @@ itcl::class pwsafe::v2::reader {
 
     public method readFile {{percentvar ""}} {
 	if {$used} {
-	    error [ mc "this object can not be reused" ]
+	    return -code error -errorcode [ list GORILLA ONLYONCE [ mc "this object can not be reused" ] ]
 	}
 
 	set used 1
@@ -360,7 +361,7 @@ itcl::class pwsafe::v2::reader {
 		[string length $salt] != 20 || \
 		[string length $ip] != 8} {
 	    pwsafe::int::randomizeVar rnd hrnd salt ip
-	    error [ mc "end of file while reading header" ]
+	    return -code error -errorcode [ list GORILLA BADCONTENT [ mc "end of file while reading header" ] ]
 	}
 
 	#
@@ -370,7 +371,7 @@ itcl::class pwsafe::v2::reader {
 	set myhrnd [pwsafe::int::computeHRND $rnd [$db getPassword]]
 	if {![string equal $hrnd $myhrnd]} {
 	    pwsafe::int::randomizeVar rnd salt ip myhrnd
-	    error [ mc "wrong password" ]
+	    return -code error -errorcode [ list GORILLA BADPASS [ mc "wrong password" ] ]
 	}
 
 	pwsafe::int::randomizeVar rnd hrnd myhrnd
@@ -484,7 +485,8 @@ itcl::class pwsafe::v2::writer {
 
 	set l [string length $data]
 	if {[expr {$l%8}] != 0} {
-	    error [ mc "oops" ]
+	    # FIXME - pick a better message than "oops" here
+	    return -code error -errorcode [ list GORILLA BADCONTENT [ mc "oops" ] ]
 	}
 
 	#
@@ -637,7 +639,7 @@ itcl::class pwsafe::v2::writer {
 
     public method writeFile {{percentvar ""}} {
 	if {$used} {
-	    error [ mc "this object can not be reused" ]
+	    return -code error -errorcode [ list GORILLA ONLYONCE [ mc "this object can not be reused" ] ]
 	}
 
 	set used 1

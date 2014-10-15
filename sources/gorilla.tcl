@@ -1534,21 +1534,29 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
       set pvar junk
 
 #set a [ clock milliseconds ]
-      if { [ catch { set newdb [ pwsafe::createFromFile $fileName $password \
-             $pvar ] } oops ] } {
+      if { [ catch { pwsafe::createFromFile $fileName $password $pvar } newdb oops ] } {
         pwsafe::int::randomizeVar password
         ::gorilla::progress finished $aframe.info
         . configure -cursor $dotOldCursor
         $top configure -cursor $myOldCursor
 
+        switch -- [ lindex [ dict get $oops -errorcode ] 1 ] {
+          ENOENT { set error_message [ mc "The password database does not exist."  ] } 
+          EACCES { set error_message [ mc "Permission to read the password database was denied." ] }
+          BADPASS -
+          BADCONTENT -
+          BADVERSION { set error_message [ lindex [ dict get $oops -errorcode ] 2 ] }
+          default { set error_message $oops }
+        }
+
         tk_messageBox -parent $top -type ok -icon error -default ok \
           -title [mc "Error Opening Database"] \
-          -message [mc "Can not open password database \"%s\": %s" $nativeName $oops]
+          -message [ mc "Can not open password database \"%s\":\n$error_message" $nativeName ]
         $aframe.info configure -text $info
         $aframe.pw.pw delete 0 end
         focus $aframe.pw.pw
         continue
-      }
+      } ; # end catch pwsafe::createFromFile
 #set b [ clock milliseconds ]
 #puts stderr "elapsed open time: [ expr { $b - $a } ]ms"
     # all seems well
