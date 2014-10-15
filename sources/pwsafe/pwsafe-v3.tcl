@@ -457,6 +457,9 @@ itcl::class pwsafe::v3::reader {
       lappend dbWarnings "Database authentication failed. File may\
     have been tampered with."
       $db configure -warningsDuringOpen $dbWarnings
+  } else {
+    # only store the HMAC when the authentication passes
+    $db configure -fileAuthHMAC $hmac
   }
 
   pwsafe::int::randomizeVar hmac myHmac
@@ -849,7 +852,10 @@ itcl::class pwsafe::v3::writer {
   # Write HMAC
   #
 
-  $sink write [sha2::HMACFinal $hmacEngine]
+  $sink write [ set temp_HMAC [sha2::HMACFinal $hmacEngine] ]
+
+  # update the file HMAC stored in the db object with the newly stored HMAC value
+  $db configure -fileAuthHMAC $temp_HMAC
 
   itcl::delete object $engine
   set engine ""

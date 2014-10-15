@@ -204,6 +204,12 @@ itcl::class pwsafe::db {
 
     public variable warningsDuringOpen
 
+    # Storage for the overall DB HMAC that was found during open - used to
+    # detect changes to the database by a different process while it is open
+    # in this process
+
+    public variable fileAuthHMAC ""
+
     #
     # constructor
     #
