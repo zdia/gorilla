@@ -341,6 +341,8 @@ proc gorilla::Init {} {
 		gorillaAutocopy        { 0       { {value} { string is boolean $value } }                                             }
 		gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
 		hideLogins             { 0       { {value} { string is boolean $value } }                                             }
+		historyActive          { 1       { {value} { string is boolean $value } }                                             }
+		historyMaxSize         { 255     { {value} { expr { ( [ string is integer -strict $value ] ) && ( $value >= 0 ) } } } }
 		iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
 		idleTimeoutDefault     { 5       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		keepBackupFile         { 0       { {value} { string is boolean $value } }                                             }
@@ -2462,8 +2464,8 @@ namespace eval ::gorilla::LoginDialog {
 				variable PassPolicy 
 				array set PassPolicy [ GetDefaultPasswordPolicy ]
 				variable widget
-				variable maxhistory 255  ; # these will come from prefs eventually
-				variable historyactive 1 ; # these will come from prefs eventually
+				variable maxhistory    $::gorilla::preference(historyMaxSize)
+				variable historyactive $::gorilla::preference(historyActive)
 				
 				foreach item { group title url user password } {
 					variable $item
@@ -2488,7 +2490,7 @@ namespace eval ::gorilla::LoginDialog {
 				
 				HidePassword
 
-				show-hist-dict [ dbget history $in_rn ]
+				#show-hist-dict [ dbget history $in_rn ]
 
 				-m:history- delete [ $widget(history) children {} ]
 				-m:hist-delete- configure -state disabled
@@ -2534,11 +2536,13 @@ namespace eval ::gorilla::LoginDialog {
 					}                              
 				}
 
-				##### FIXME ##### - Maxsize default should come from a config option
-				set history [ dbget history $rn [ dict create active 1 maxsize 255 passwords [ list ] ] ]
+				set history [ dbget history $rn [ dict create \
+				        active    $::gorilla::preference(historyActive) \
+				        maxsize   $::gorilla::preference(historyMaxSize) \
+				        passwords [ list ] ] ]
 
 				# handle stage 1 history update first (so "active" value is set correctly)
-				show-hist-dict $history PopulateRecord-B4
+				#show-hist-dict $history PopulateRecord-B4
 				if { [ dict get $history active ] ne $historyactive } {
 				  puts stderr "History active differs, toggling"
 				  dict set history active $historyactive
@@ -2551,7 +2555,7 @@ namespace eval ::gorilla::LoginDialog {
 				  set modified 1
 				  dbset history $rn $history
 				}
-				show-hist-dict $history PopulateRecord-AF
+				#show-hist-dict $history PopulateRecord-AF
 
 				foreach element [ list {*}$varlist notes ] {
 
@@ -6264,6 +6268,50 @@ proc gorilla::PreferencesDialog {} {
 		grid $subframe        -sticky new -pady { 2m 2m }
 
 		#
+		# Sixth NoteBook tab: History settings
+		#
+
+		$top.nb add [ set hist [ ttk::frame $top.nb.history \
+			-padding [ list 10 0 ] ] ] -text [ mc "History" ] \
+			-sticky news
+
+		ttk::checkbutton $hist.onoff \
+			-variable ::gorilla::prefTemp(historyActive) \
+			-text [ mc "Save history of password changes" ]
+		set temp [ mc "Default saved entries per password record:" ]
+		ttk::label $hist.maxlabel -text $temp
+		ttk::spinbox $hist.max -from 0.0 -to 255.0 -increment 1.0 -width 4 \
+			-textvariable ::gorilla::prefTemp(historyMaxSize) \
+			-validate key \
+			-validatecommand [ list ::apply { {newval} {
+				if { $newval eq "" } { return 1 }
+				expr { [ string is integer -strict $newval ]
+				    && ( $newval >= 0 )
+				    && ( $newval <= 255 ) }
+			} } %P ]
+		ttk::label $hist.limitlabel -text [ mc "(limit=255)" ]
+		ttk::separator $hist.separator -orient horizontal
+
+		set    temp2 [ mc "These settings affect the default values given to new password records and to existing records with no history entries." ] 
+		append temp2 \n\n [ mc "To change the settings for an existing password record with history entries, please edit the login record." ]
+		append temp2 \n\n [ mc "The history feature is only available with PasswordSafe version 3 format files." ]
+
+		ttk::label $hist.description \
+			-text $temp2
+
+		# set the descriptive and warning labels to wordwrap at the
+		# width of the checkbox text
+		$hist.description configure -wrap [ font measure TkDefaultFont $temp ]
+
+		grid $hist.onoff       -                -sticky w -pady {5m 0 } -padx {2m 2m}
+		grid $hist.maxlabel    -                -sticky w -pady {5m 0 } -padx {2m 2m}
+		grid $hist.max         $hist.limitlabel -sticky w -pady {0  5m} -padx {2m 2m}
+		grid $hist.separator   -                -sticky news 
+		grid $hist.description -                -sticky w -pady {5m  5m} -padx {2m 2m}
+
+		grid columnconfigure $hist 1 -weight 1 
+
+		#
 		# End of NoteBook tabs
 		#
 
@@ -6324,6 +6372,11 @@ proc gorilla::PreferencesDialog {} {
 
 	if {$gorilla::guimutex != 1} {
 		return
+	}
+
+	# Do not let an empty historyMaxSave value leak out of the dialog
+	if { "" eq $::gorilla::prefTemp(historyMaxSize) } {
+	  set ::gorilla::prefTemp(historyMaxSize) $::gorilla::preference(historyMaxSize)
 	}
 
 	# copy the temporary preferences back into the global preferences
@@ -8982,6 +9035,6 @@ if { $::gorilla::DEBUG(TCLTEST) } {
 	source [file join $::gorilla::Dir .. unit-tests RunAllTests.tcl]
 }
 
-proc gorilla::show-hist-dict { hist {where ""} } {
-  puts stderr "$where: hist dict: '$hist'"
-}				
+#proc gorilla::show-hist-dict { hist {where ""} } {
+#  puts stderr "$where: hist dict: '$hist'"
+#}				
