@@ -274,6 +274,11 @@ itcl::class pwsafe::v2::reader {
 		    if {$isUTF8} {
 			set fieldValue [encoding convertfrom utf-8 $fieldValue]
 		    }
+		    # It seems that at least one Android PasswordSafe app programmer has
+		    # misunderstood the format of text entries and programmed their app
+		    # to write raw C strings (including the C terminating null) into the
+		    # text fields.  Strip the null byte when it is present.
+		    set fieldValue [ string trimright $fieldValue \x00 ]
 		}
 		5 {
 		    #
@@ -285,6 +290,8 @@ itcl::class pwsafe::v2::reader {
 		    }
 
 		    set fieldValue [string map {\r\n \n} $fieldValue]
+		    # see C null terminator comment above
+		    set fieldValue [ string trimright $fieldValue \x00 ]
 		}
 		7 -
 		8 -

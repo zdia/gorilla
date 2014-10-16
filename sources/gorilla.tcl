@@ -4719,12 +4719,11 @@ proc gorilla::AddRecordToTree {rn} {
   set groupName [ ::gorilla::dbget group $rn ]
   set parentNode [AddGroupToTree $groupName]
 
-	# we check if there is an unexpected zero-byte string delimiter
-  set title [ string trimright [::gorilla::dbget title $rn] \0x00 ]
+  set title [::gorilla::dbget title $rn]
 
   if { ( [ ::gorilla::dbget user $rn ] ne "" ) &&
        ( ! $::gorilla::preference(hideLogins) ) } {
-    append title " \[" [ string trimright [::gorilla::dbget user $rn] \0x00 ] "\]"
+    append title " \[" [::gorilla::dbget user $rn] "\]"
   }
 
   #
@@ -4770,8 +4769,6 @@ proc gorilla::AddGroupToTree {groupName} {
     set parentNode "RootNode"
     set partialGroups [list]
     foreach group [pwsafe::db::splitGroup $groupName] {
-			# we check if there is an unexpected zero-byte string delimiter
-			set group [ string trimright $group \0x00 ]
       lappend partialGroups $group
       set partialGroupName [pwsafe::db::concatGroups $partialGroups]
       if {[info exists ::gorilla::groupNodes($partialGroupName)]} {
