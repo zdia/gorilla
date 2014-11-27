@@ -8,9 +8,6 @@ exec tclsh8.5 "$0" ${1+"$@"}
 # ----------------------------------------------------------------------
 #
 # Copyright (c) 2005-2009 Frank Pilhofer
-# Copyright (c) 2010-2013 Richard Ellis and Zbigniew Diaczyszyn
-#
-# Version 1.5.3.7 tested with ActiveState's Tcl/Tk 8.5.13.0
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,7 +30,7 @@ exec tclsh8.5 "$0" ${1+"$@"}
 package provide app-gorilla 1.0
 
 namespace eval ::gorilla {
-  variable Version "1.5.3.7"
+  variable Version "1.5.3.8"
 
   # find the location of the install directory even when "executing" a symlink
   # pointing to the gorilla.tcl file
@@ -6697,7 +6694,7 @@ namespace eval gorilla::CopyToClipboard {
   # -------------- #
   # public methods #
   # -------------- #
- 
+
   proc Username { {mult 1} } {
     variable activeSelection Username
     finish $mult
@@ -6705,7 +6702,7 @@ namespace eval gorilla::CopyToClipboard {
   namespace export Username
 
   # --------------------------------------------------------------------
- 
+
   proc Password { {mult 1} } {
     variable activeSelection Password
     finish $mult
@@ -6722,7 +6719,7 @@ namespace eval gorilla::CopyToClipboard {
   namespace export String
 
   # --------------------------------------------------------------------
- 
+
   proc URL { {mult 1} } {
     variable activeSelection URL
     finish $mult
@@ -6730,7 +6727,7 @@ namespace eval gorilla::CopyToClipboard {
   namespace export URL
 
   # --------------------------------------------------------------------
- 
+
   proc ClearSelection {} {
     variable activeSelection None
     variable activeSelectionData ""
@@ -6763,7 +6760,7 @@ namespace eval gorilla::CopyToClipboard {
     } else {
       switch -exact -- [ tk windowingsystem ] {
         aqua    -
-        win32   { 
+        win32   {
           # win32 and aqua only support "clipboard"
           clipboard clear
           clipboard append -- [ GetSelected$activeSelection ]
@@ -6782,14 +6779,14 @@ namespace eval gorilla::CopyToClipboard {
           foreach sel { PRIMARY CLIPBOARD } {
             selection clear -selection $sel
             selection own   -selection $sel .
-          } ; # end foreach sel 
+          } ; # end foreach sel
 
         }
       }
 
       ArrangeToClearClipboard $mult
       set ::gorilla::status [ mc "Copied %s to clipboard." [ mc $what ] ]
-      
+
     } ; # end if item == ""
 
   } ; # end proc finish
@@ -6896,10 +6893,10 @@ namespace eval gorilla::CopyToClipboard {
     if {![$::gorilla::db existsField $rn 6]} {
       return
     }
- 
+
     return [ ::gorilla::dbget password $rn ]
   } ; # end GetSelectedPassword
- 
+
   # --------------------------------------------------------------------
 
   proc GetSelectedUsername {} {
@@ -6922,7 +6919,7 @@ namespace eval gorilla::CopyToClipboard {
     variable activeSelectionData
     return $activeSelectionData
   }
- 
+
   namespace ensemble create
 
 } ; # end namespace eval gorilla::CopyToClipboard
@@ -7548,7 +7545,7 @@ proc gorilla::ViewEntry {rn} {
 
   $infoframe.groupE configure -text [ ::gorilla::dbget group            $rn             ]
   $infoframe.titleE configure -text [ ::gorilla::dbget title            $rn             ]
-  $infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ] 
+  $infoframe.lpcE   configure -text [ ::gorilla::dbget last-pass-change $rn "<unknown>" ]
   $infoframe.modE   configure -text [ ::gorilla::dbget last-modified    $rn "<unknown>" ]
   $infoframe.uuidE  configure -text [ ::gorilla::dbget uuid             $rn             ]
 
@@ -7617,7 +7614,7 @@ proc gorilla::ViewEntry {rn} {
     if {![ catch { $win get sel.first sel.last } ]} {
       set lambda [ list ::apply { {win} {
         if { ! [ catch {set data [ $win get sel.first sel.last ]} ] } {
-          ::gorilla::CopyToClipboard String $data [ mc Note ]
+          ::gorilla::CopyToClipboard String $data [ mc Notes ]
           ::gorilla::ArrangeToClearClipboard
         }
       } } $win ]
