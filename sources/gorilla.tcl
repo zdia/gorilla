@@ -1504,7 +1504,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
         tk_messageBox -parent $top -type ok -icon error -default ok \
           -title [mc "Error Opening Database"] \
-          -message [ mc "Can not open password database \"%s\":\n$error_message" $nativeName ]
+          -message [ mc "Can not open password database \"%s\":\n%s" $error_message $nativeName ]
         $aframe.info configure -text $info
         $aframe.pw.pw delete 0 end
         focus $aframe.pw.pw
