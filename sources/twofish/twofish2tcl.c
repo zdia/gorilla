@@ -52,6 +52,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <alloca.h>
 #include "tables.h"
 
 #define u32 uint32_t
@@ -650,6 +651,7 @@ int TwofishObjCmd(ClientData clientData, Tcl_Interp *interp,
       }
 
       buf = Tcl_GetByteArrayFromObj(objPtr, &len);
+      Tcl_InvalidateStringRep(objPtr);
 
       if (len%16) {
         Tcl_SetResult(interp, "Encrypt error: input length must be a multiple of 16 bytes.", TCL_VOLATILE);
@@ -698,6 +700,7 @@ int TwofishObjCmd(ClientData clientData, Tcl_Interp *interp,
       }
 
       buf = Tcl_GetByteArrayFromObj(objPtr, &len);
+      Tcl_InvalidateStringRep(objPtr);
 
       if (len%16) {
         Tcl_SetResult(interp, "Error: bad data length, must be a multiple of 16 bytes.", TCL_VOLATILE);

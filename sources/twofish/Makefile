@@ -46,7 +46,7 @@ twofish2tcl.o: twofish2tcl.c tables.h Makefile
 	$(CC) $(CFLAGS) -o twofish2tcl.o -c twofish2tcl.c
 
 twofish2tcl.so: twofish2tcl.o
-	$(CC) $(LDFLAGS) -o twofish2tcl.so twofish2tcl.o
+	$(CC) -o twofish2tcl.so twofish2tcl.o $(LDFLAGS)
 
 .PHONY: clean
 clean:
