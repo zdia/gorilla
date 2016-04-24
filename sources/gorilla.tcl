@@ -4445,6 +4445,11 @@ proc gorilla::Save {} {
 
   ::gorilla::progress finished .status
 
+  set ::gorilla::dirty 0
+  $::gorilla::widgets(tree) item "RootNode" -tags black
+
+  UpdateMenu
+
   # The actual data are saved. Now take care of a backup file
 
   set message [ gorilla::SaveBackup $::gorilla::fileName ]
@@ -4456,11 +4461,6 @@ proc gorilla::Save {} {
   }
 
   . configure -cursor $myOldCursor
-
-  set ::gorilla::dirty 0
-  $::gorilla::widgets(tree) item "RootNode" -tags black
-
-  UpdateMenu
 
   # attempt to restore cached file permissions under unix
   if-platform? unix {
@@ -4684,7 +4684,7 @@ proc gorilla::SaveBackup { filename } {
     file copy -force -- $filename $backupFile
     } oops]} {
     set backupNativeName [file nativename $backupFileName]
-    return $errorType [ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]
+    return [list $errorType [ mc "Failed to make backup copy of password\ndatabase as %s: \n%s" $backupNativeName $oops ]]
   }
 
   return GORILLA_OK
