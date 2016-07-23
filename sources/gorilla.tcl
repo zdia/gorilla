@@ -4450,16 +4450,6 @@ proc gorilla::Save {} {
 
   UpdateMenu
 
-  # The actual data are saved. Now take care of a backup file
-
-  set message [ gorilla::SaveBackup $::gorilla::fileName ]
-
-  if { $message ne "GORILLA_OK" } {
-    . configure -cursor $myOldCursor
-    gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-    return GORILLA_SAVEBACKUPERROR
-  }
-
   . configure -cursor $myOldCursor
 
   # attempt to restore cached file permissions under unix
@@ -4483,8 +4473,9 @@ proc gorilla::Save {} {
       set ::gorilla::status [mc "Password database saved with backup copy." ]
       return GORILLA_OK
     }
+  } else {
+    set ::gorilla::status [mc "Password database saved."]
   }
-  set ::gorilla::status [mc "Password database saved."]
 
   return GORILLA_OK
 }
@@ -4557,16 +4548,7 @@ proc gorilla::SaveAs {} {
 
   ::gorilla::progress finished .status
 
-  # The actual data are saved. Now take care of a backup file
-
   set ::gorilla::fileName $fileName
-  set message [ gorilla::SaveBackup $::gorilla::fileName ]
-
-  if { $message ne "GORILLA_OK" } {
-    . configure -cursor $myOldCursor
-    gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-    return GORILLA_SAVEBACKUPERROR
-  }
 
   # clean up
 
@@ -4576,12 +4558,6 @@ proc gorilla::SaveAs {} {
 
   wm title . "Password Gorilla - $nativeName"
   $::gorilla::widgets(tree) item "RootNode" -text $nativeName
-
-  if {$::gorilla::preference(keepBackupFile)} {
-    set ::gorilla::status [mc "Password database saved with backup copy" ]
-  } else {
-    set ::gorilla::status [mc "Password database saved."]
-  }
 
   # Add file to LRU preference
 
@@ -4607,8 +4583,9 @@ proc gorilla::SaveAs {} {
       set ::gorilla::status [mc "Password database saved with backup copy." ]
       return GORILLA_OK
     }
+  } else {
+    set ::gorilla::status [mc "Password database saved."]
   }
-  set ::gorilla::status [mc "Password database saved."]
 
   return GORILLA_OK
 
