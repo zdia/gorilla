@@ -293,6 +293,13 @@ when a database is open.
 title: General Preferences
 alias: General
 
+'''When double clicking a login'''
+  
+ | Configures what to do when you double-click on a login. The options are
+to copy the login's password to the clipboard, to open the login for
+editing, to open the login for viewing, to launch a browser directed to the
+URL stored in the login, or to do nothing.
+
 '''Clear clipboard after <nn> seconds'''
 
  | If this value is set to a non-zero value, the system clipboard is
@@ -307,17 +314,27 @@ used database file names. If set to zero, Password Gorilla will not remember
 database file names at all. The current list of file names in the most
 recently used list can be cleared with the button next to this option.
 
-'''When double clicking a login'''
-  
- | Configures what to do when you double-click on a login. The options are
-to copy the login's password to the clipboard, to open the login for
-editing, or to do neither.
-
 '''Backup database on save'''
 
- | If enabled, then a backup file of the password database is made whenever
-the database is saved. The backup file is located in the same directory and
-has the same name as the database itself, but with the ''.bak'' extension.
+ | If enabled, then a backup copy of the password database is made whenever
+the database is saved. The backup copy is located in the same directory
+(unless a path is set in the ''Backup path:'' entry described below) and
+has the same name as the database itself, but with the ''.bak'' extension
+(unless the ''Time stamp backup'' option below is enabled).
+
+'''Time stamp backup'''
+
+ | If enabled, and if the above ''Backup database on save'' option is also
+enabled, then the saved backup file will have an ISO-8601 style timestamp
+inserted into the filename instead of simply being named with a ''.bak''
+extension.
+
+'''Backup path:'''
+
+ | If a directory is configured in this entry, then backup files created by
+the ''Backup database on save'' option will be stored in the directory set
+here instead of in the directory where the opened PasswordSafe file is
+located.
 
 '''Remember sizes of dialog boxes'''
 
@@ -440,16 +457,6 @@ both Password Gorilla and Password Safe, the latter will not read accented
 characters correctly. (The database will open, but non-ASCII characters will
 not show up correctly.) This option has no effect if your database uses only
 ASCII characters.
-
-'''Timestamp Backup'''
-
- | If the option ''Auto-Save'' is enabled then the copy can be saved with
-a timestamp in the chosen backup directory. The timestamp format is: YYYY-mm-dd-hh-mm-ss
-
-'''Backup Path'''
-
- | If no backup path is entered then the backup copy has the suffix ".bak" and is
-put into the same directory as the Password database itself.
 
 '''V3 key stretching iterations'''
 
