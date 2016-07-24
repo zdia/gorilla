@@ -7150,24 +7150,26 @@ proc gorilla::Find {} {
     pack $top.text -side top -expand yes -fill x -pady 5
     pack $top.find -side left -expand yes -fill x -padx 20 -pady 5
 
-    bind $top.text.e <Return> "::gorilla::RunFind"
-
-
     # if any then all checked
     # $top.find.case state selected
 
     bind $top.text.e <Return> "::gorilla::RunFind"
+    bind $top <Escape> ::gorilla::CloseFindDialog
 
     set ::gorilla::toplevel($top) $top
 
     wm attributes $top -topmost 1
-    focus $top.text.e
     update idletasks
     wm protocol $top WM_DELETE_WINDOW gorilla::CloseFindDialog
 
   } else {
     wm deiconify $top
     # Dialog_Wait
+  }
+
+  focus $top.text.e
+  if {! [$top.text.e selection present]} {
+    $top.text.e selection range 0 end
   }
 
   #
