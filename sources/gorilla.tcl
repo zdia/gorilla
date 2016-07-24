@@ -937,6 +937,9 @@ proc gorilla::TreeNodeDouble {node} {
       editLogin {
         gorilla::EditLogin
       }
+      viewLogin {
+        gorilla::ViewLogin
+      }
       launchBrowser {
         ::gorilla::LaunchBrowser [ ::gorilla::GetSelectedRecord ]
       }
@@ -5896,13 +5899,16 @@ proc gorilla::PreferencesDialog {} {
     ttk::radiobutton $gpf.dca.ed -text [mc "Edit Login"] \
       -variable ::gorilla::prefTemp(doubleClickAction) \
       -value "editLogin"
+    ttk::radiobutton $gpf.dca.vi -text [mc "View Login"] \
+      -variable ::gorilla::prefTemp(doubleClickAction) \
+      -value "viewLogin"
     ttk::radiobutton $gpf.dca.lb -text [mc "Launch Browser directed to URL"] \
       -variable ::gorilla::prefTemp(doubleClickAction) \
       -value "launchBrowser"
     ttk::radiobutton $gpf.dca.nop -text [mc "Do nothing"] \
       -variable ::gorilla::prefTemp(doubleClickAction) \
       -value "nothing"
-    pack $gpf.dca.cp $gpf.dca.ed $gpf.dca.lb $gpf.dca.nop -side top -anchor w -pady 3
+    pack $gpf.dca.cp $gpf.dca.ed $gpf.dca.vi $gpf.dca.lb $gpf.dca.nop -side top -anchor w -pady 3
     pack $gpf.dca -side top -padx 10 -pady 5 -fill x -expand yes
 
     ttk::frame $gpf.cc -padding [list 8 5]
