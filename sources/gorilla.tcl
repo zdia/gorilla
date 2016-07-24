@@ -5934,6 +5934,20 @@ proc gorilla::PreferencesDialog {} {
 
     ttk::checkbutton $gpf.bu -text [mc "Backup database on save"] \
       -variable ::gorilla::prefTemp(keepBackupFile)
+    ttk::checkbutton $gpf.ts -text [mc "Time stamp backup"] \
+      -variable ::gorilla::prefTemp(timeStampBackup)
+
+    ttk::frame $gpf.bakpath
+    ttk::entry $gpf.bakpath.e -textvariable ::gorilla::prefTemp(backupPath)
+    ttk::label $gpf.bakpath.l -text [mc "Backup path:"]
+    ttk::button $gpf.bakpath.b -image $::gorilla::images(browse) \
+      -command { eval set ::gorilla::prefTemp(backupPath) \
+        [tk_chooseDirectory -initialdir $::gorilla::prefTemp(backupPath) \
+        -title [mc "Choose a directory"] ] }
+    pack $gpf.bakpath.l -side left
+    pack $gpf.bakpath.e -side left -padx 3 -expand 1 -fill x
+    pack $gpf.bakpath.b -side left -padx 3
+
     ttk::checkbutton $gpf.geo -text [mc "Remember sizes of dialog boxes"] \
       -variable ::gorilla::prefTemp(rememberGeometries)
     ttk::checkbutton $gpf.gac -text [ mc "Use Gorilla auto-copy" ] \
@@ -5943,7 +5957,7 @@ proc gorilla::PreferencesDialog {} {
     } else {
       ::tooltip::tooltip $gpf.gac [ mc "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." ]
     }
-    pack $gpf.bu $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
+    pack $gpf.bu $gpf.ts $gpf.bakpath $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
 
 
 
@@ -5970,22 +5984,9 @@ proc gorilla::PreferencesDialog {} {
       -onvalue 3 -offvalue 2
     ttk::checkbutton $dpf.uni -text [mc "V2 Unicode support"] \
       -variable ::gorilla::prefTemp(unicodeSupport)
-    ttk::checkbutton $dpf.ts -text [mc "Time stamp backup"] \
-      -variable ::gorilla::prefTemp(timeStampBackup)
 
-    ttk::frame $dpf.bakpath
-# puts $::gorilla::prefTemp(backupPath)
-    ttk::entry $dpf.bakpath.e -textvariable ::gorilla::prefTemp(backupPath)
-    ttk::label $dpf.bakpath.l -text [mc "Backup path:"]
-    ttk::button $dpf.bakpath.b -image $::gorilla::images(browse) \
-      -command { eval set ::gorilla::prefTemp(backupPath) \
-        [tk_chooseDirectory -initialdir $::gorilla::prefTemp(backupPath) \
-        -title [mc "Choose a directory"] ] }
-    pack $dpf.bakpath.l -side left
-    pack $dpf.bakpath.e -side left -padx 3 -expand 1 -fill x
-    pack $dpf.bakpath.b -side left -padx 3
 
-    pack $dpf.si $dpf.ver $dpf.uni $dpf.ts $dpf.bakpath -side top -anchor w -pady 3 -padx 10 -fill x
+    pack $dpf.si $dpf.ver $dpf.uni -side top -anchor w -pady 3 -padx 10 -fill x
 
     ttk::label $dpf.note -justify center -anchor w -wraplen 300 \
       -text [mc "Note: these defaults will be applied to new databases. To change a setting for an existing database, go to \"Customize\" in the \"Security\" menu."]
