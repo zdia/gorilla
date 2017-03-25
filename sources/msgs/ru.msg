@@ -110,7 +110,7 @@ Cancel Отмена
 {Show Password} Показать
 {Generate Password} Сгенерировать
 {Override Password Policy} {Перекрыть политику}
-{Password Length} {Длинна пароля}
+{Password Length} {Длина пароля}
 {Hide Password} Скрыть
 {Password policy settings invalid.} {Некорректные настройки политики паролей.}
 <unknown> <неизвестно>
@@ -407,9 +407,9 @@ Normally this should not happen.} {Не получается найти неис
 {record %d does not exist} {запись %d не существует}
 {record %d does not have field %s} {запись %d не имеет поля %s}
 {no header field %s} {нет поля заголовка %s}
-{less than 8 bytes remaining for length field} {под длинну поля осталось менее 8-ми байт}
+{less than 8 bytes remaining for length field} {под длину поля осталось менее 8-ми байт}
 oops упс
-{field length %d looks insane} {длинна поля %d выглядит дико}
+{field length %d looks insane} {длина поля %d выглядит дико}
 {out of data} {нет данных}
 {V1 name field looks suspect} {поле V1 выглядит подозрительно}
 {this object can not be reused} {этот объект не может быть использован повторно}
