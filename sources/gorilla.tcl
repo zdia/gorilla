@@ -4657,7 +4657,7 @@ proc gorilla::AddRecordToTree {rn} {
 		}
 
 		set childName [$::gorilla::widgets(tree) item $childNode -text]
-		if {[string compare $title $childName] < 0} {
+		if {[string compare -nocase $title $childName] < 0} {
 			break
 		}
 	}
@@ -4704,7 +4704,7 @@ proc gorilla::AddGroupToTree {groupName} {
 					}
 
 					set childName [$::gorilla::widgets(tree) item $childNode -text]
-					if {[string compare $group $childName] < 0} {
+					if {[string compare -nocase $group $childName] < 0} {
 						break
 					}
 				}
