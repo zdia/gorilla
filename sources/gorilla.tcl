@@ -3397,7 +3397,7 @@ proc gorilla::Export {} {
         -type yesno -icon warning -default no \
         -title [mc "Export Security Warning"] \
         -message [mc "You are about to export the password\
-        database to a plain-text file. The file will\
+        database to a plain-text (CSV) file. The file will\
         not be encrypted or password-protected. Anybody\
         with access can read the file, and learn your\
         user names and passwords. Make sure to store the\
@@ -3415,12 +3415,11 @@ proc gorilla::Export {} {
   } else {
     set types {
       {{CSV Files} {.csv}}
-      {{Text Files} {.txt}}
       {{All Files} *}
     }
 
     set fileName [ tk_getSaveFile -parent . \
-      -title [ mc "Export password database as text ..." ] \
+      -title [ mc "Export password database as CSV ..." ] \
       -defaultextension ".csv" \
       -filetypes $types \
       -initialdir $::gorilla::dirName ]

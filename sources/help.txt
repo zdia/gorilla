@@ -387,7 +387,7 @@ discussion of [Database Preferences] below.
 title: Export Preferences
 
 Export preferences apply to the exporting of a password database to a
-plain-text file.
+plain-text (CSV) file.
 
 '''Include password field'''
 
