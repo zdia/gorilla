@@ -26,10 +26,18 @@ itcl::class pwsafe::db {
     # Password Modification Time  8         time_t
     # Last Access Time            9         time_t
     # Password Lifetime           10        time_t       [4]
-    # Password Policy             11        4 bytes      [5]
+	# *RESERVED*                  11        4 bytes      [5]
     # Last Mod. time              12        time_t
     # URL                         13        Text
     # Autotype                    14        Text
+	# Password History            15        Text         [8]
+	# Password Policy             16        Text         [9]
+	# Password Expiry Interval    17        2 bytes      [10]
+	# Run Command                 18        Text
+	# Double-Click Action         19        2 bytes
+	# EMail address               20        Text
+	# Protected Entry             21        1 byte       [11]
+	# Own symbols for password    22        Text         [12]
     #
     # [2] The "Group" is meant to support displaying the entries in a
     # tree-like manner. Groups can be heirarchical, with elements separated
@@ -38,10 +46,31 @@ itcl::class pwsafe::db {
     # prepended to them. A backslash entered by the user will have another
     # backslash prepended.
     #
-    # [4] Password lifetime is in seconds, and a value of zero means
-    # "forever".
+	# [4] Password lifetime is in seconds from the epoch, and a value of
+	# zero means "forever".
     #
-    # [5] Unused so far
+	# [5] See the PasswordSave formatV3.txt file for details
+	#
+	# [6] Time that any field in record was last modified.
+	#
+	# [7] Windows PasswordSafe has hooks into the Win32 API to inject
+	# keystrokes into a running application.  Password Gorilla has no way to
+	# perform this feat using standard Tcl/Tk functions.  This field holds
+	# the text to be "typed" by PasswordSafe for that function.
+	#
+	# [8] Optional field which stores the last few creation times and
+	# passwords for a record.  See PasswordSafe foramtV3.txt file for
+	# details of the field encoding.
+	#
+	# [9] Per password policy settings - see formatV3.txt for details.
+	#
+	# [10] Length (in days) from create date for password to be valid.
+	#
+	# [11] Absent or zero means unprotected.  Non zero means protected.
+	# Sets an entry to be read-only until this field is reset.
+	#
+	# [12] Per entry character set from which to generate random passwords
+	# for this entry.
     #
     # Not all records use all fields. pwsafe-2.05 only seems to use the
     # UUID, Group, Title, Username, Nodes and Password fields. I have
@@ -668,13 +697,6 @@ itcl::class pwsafe::db {
       error [ mc "record %d does not have field %s" $rn $field ]
   }
 
-  if {$field == 2 || $field == 3 || $field == 4 || \
-    $field == 5 || $field == 6} {
-      # text fields
-      return [encoding convertfrom utf-8 \
-      [decryptField $records($rn,$field)]]
-  }
-
   return [decryptField $records($rn,$field)]
     }
 
@@ -687,15 +709,8 @@ itcl::class pwsafe::db {
       error [ mc "record %d does not exist" $rn ]
   }
 
-  if {$field == 2 || $field == 3 || $field == 4 || \
-    $field == 5 || $field == 6} {
-      # text fields
-      set records($rn,$field) [encryptField \
-           [encoding convertto utf-8 $value]]
-  } else {
       set records($rn,$field) [encryptField $value]
   }
-    }
 
     #
     # Unset the value of a field. Deletes the record if this was the

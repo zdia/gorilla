@@ -382,6 +382,8 @@ proc gorilla::Init {} {
     gorillaAutocopy        { 0       { {value} { string is boolean $value } }                                             }
     gorillaIcon            { 0       { {value} { string is boolean $value } }                                             }
     hideLogins             { 0       { {value} { string is boolean $value } }                                             }
+		historyActive          { 1       { {value} { string is boolean $value } }                                             }
+		historyMaxSize         { 255     { {value} { expr { ( [ string is integer -strict $value ] ) && ( $value >= 0 ) } } } }
     iconifyOnAutolock      { 0       { {value} { string is boolean $value } }                                             }
     idleTimeoutDefault     { 5       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
     keepBackupFile         { 0       { {value} { string is boolean $value } }                                             }
@@ -1867,7 +1869,13 @@ namespace eval ::gorilla::LoginDialog {
     if { $top ne "" } {
 
       set pvns [ get-pvns-from-toplevel $top ]
-
+			namespace inscope $pvns {
+				# toggle to normal password view pane if history pane is currently
+				# visible
+				if { [ mc "Hide History" ] eq [ $widget(history-toggle) cget -text ] } {
+					$widget(history-toggle) invoke
+				}
+			}
       wm deiconify $top
 
     } else {
@@ -1991,13 +1999,34 @@ namespace eval ::gorilla::LoginDialog {
 
     ttk::style configure Wrapping.TLabel -wraplength {} -anchor e -justify right -padding {10 0 5 0}
 
+		# Use a ttk::notebook as a "panes" manager (http://wiki.tcl.tk/20057)
+		# Two "panes": 1) standard PW entries 2) password history table
+		ttk::style theme settings default {
+			ttk::style layout Plain.TNotebook.Tab null
+		}
+
+		set pane [ ttk::notebook $top.pane -style Plain.TNotebook ]
+
+		# because of the 2 pane layout, the entry and label widgets
+		# need to be contained in a frame instead of directly in
+		# $top - use a Tk frame because it is borderless by default
+
+		set pane1 [ ::tk::frame $top.pane1 ]
+		set pane2 [ ::tk::frame $top.pane2 ]
+		$pane add $pane1 -sticky news
+		$pane add $pane2 -sticky news
+		$pane select $pane1
+		grid $pane -sticky news
+
+		# begin --- contents of pane 1
+
     foreach {child label w} [ list group    [ mc Group    ] combobox \
                                    title    [ mc Title    ] entry    \
                                    url      [ mc URL      ] entry    \
                                    user     [ mc Username ] entry    \
                                    password [ mc Password ] entry  ] {
-      grid [ make-label $top $label ] \
-           [ set widget($child) [ ttk::$w $top.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
+			grid [ make-label $pane1 $label ] \
+			     [ set widget($child) [ ttk::$w $pane1.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
           -sticky news -pady 5
     } ; # end foreach {child label}
 
@@ -2011,29 +2040,33 @@ namespace eval ::gorilla::LoginDialog {
     # because the text widget plus scrollbar needs to fit into the single
     # column holding all the other ttk::entries in the outer grid
 
-    set textframe [ ttk::frame $top.e-notes-f ]
+		set textframe [ ttk::frame $pane1.e-notes-f ]
     set widget(notes) [ set ${pvns}::notes [ text $textframe.e-notes -width 40 -height 5 -wrap word -yscrollcommand [ list $textframe.vsb set ] ] ]
     grid $widget(notes) [ scrollbar $textframe.vsb -command [ list $widget(notes) yview ] ] -sticky news
     grid rowconfigure $textframe $widget(notes) -weight 1
     grid columnconfigure $textframe $widget(notes) -weight 1
 
-    grid [ make-label $top [mc Notes] ] \
+		grid [ make-label $pane1 [mc Notes] ] \
          $textframe \
          -sticky news -pady 5
 
-    grid rowconfigure    $top $textframe -weight 1
-    grid columnconfigure $top $textframe -weight 1
+		grid rowconfigure    $pane1 $textframe -weight 1
+		grid columnconfigure $pane1 $textframe -weight 1
 
     set lastChangeList [list last-pass-change [mc "Last Password Change"] last-modified [mc "Last Modified"] ]
 
     foreach {child label} $lastChangeList {
-      grid [ make-label $top $label ] \
-           [ ttk::label $top.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
+			grid [ make-label $pane1 $label ] \
+			     [ ttk::label $pane1.e-$child -textvariable ${pvns}::$child -width 40 -anchor w ] \
            -sticky news -pady 5
     }
 
+		# end --- contents of pane 1
+
     # bias the lengths of the labels to a slightly larger size than the average
     ttk::style configure Wrapping.TLabel -wraplength [ + 40 [ wrap-measure ] ]
+
+		# begin - setup the button frame 
 
     set bf  [ ttk::frame $top.bf  ] ; # button frame
     set frt [ ttk::frame $bf.top ]  ; # frame right - top
@@ -2045,17 +2078,26 @@ namespace eval ::gorilla::LoginDialog {
     pack $frt -side top -pady 20
 
     set frb [ ttk::frame $bf.pws ] ; # frame right - bottom
-    set widget(showhide) [ ttk::button $frb.show -width 16 -text [ mc "Show Password" ] -command [ list namespace inscope $pvns ShowPassword ] ]
 
-    ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ]
+		set widget(showhide) [ ttk::button $frb.show -width 16 -text [ mc "Show Password" ] -command [ list namespace inscope $pvns ShowPassword ] ]
+		set widget(genpass)  [ ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ] ]
     ttk::checkbutton $frb.override -text [ mc "Override Password Policy" ] -variable ${pvns}::overridePasswordPolicy
-      # -justify left
 
     set ${pvns}::overridePasswordPolicy 0
 
-    pack $frb.show $frb.gen $frb.override -side top -padx 10 -pady 5
+		# hitory pane controls
+		set widget(history-toggle) [ \
+		  ttk::button $frb.pane-control -text [ mc "Show History" ] -width 16 ]
+
+		set widget(history-active) [ \
+		  ttk::checkbutton $frb.active -text [ mc "Log Password Changes" ] \
+		      -variable ${pvns}::historyactive ]
+
+		pack $widget(showhide) $widget(genpass) $frb.override $widget(history-toggle) $widget(history-active) -side top -padx 10 -pady 5
 
     pack $frb -side top -pady 20
+
+		# end - setup the button frame
 
     grid $bf -row 0 -column 2 -rowspan 8 -sticky news
 
@@ -2096,8 +2138,108 @@ namespace eval ::gorilla::LoginDialog {
 
     } ; # end foreach item,label
 
+		# end - setup password policy pane
+		
+		# begin - setup password history pane
+		
+		set widget(history) [ ttk::treeview $pane2.history \
+		    -style gorilla.Treeview \
+		    -columns {Date Password} -show headings \
+		    -yscrollcommand [ list $pane2.vsb set ] ]
+		ttk::scrollbar $pane2.vsb -orient vertical \
+		    -command [ list $widget(history) yview ]
+
+		bind $pane2.history <Configure> [ list ::apply { {w} {
+			$w column Date -width [ expr { 20 + [ font measure TkDefaultFont -displayof $w "8888-88-88 88:88:88" ] } ]
+		} } %W ]
+
+		# small frame below the password history treeview widget for extra
+		# controls
+		set f [ ttk::frame $pane2.bf ]
+		ttk::label $f.withdolbl -text [ mc "With selected do:" ]
+		set widget(hist-delete) [ \
+		  ttk::button $f.hdel   -text [ mc Delete ] -state disabled ]
+		set widget(hist-revert) [ \
+		  ttk::button $f.revert -text [ mc Revert ] -state disabled \
+		      -command [ list ::apply { \
+		                 {password history} \
+		                 { if { [ llength [ $history selection ] ] != 1 } { puts "returning" ; return }
+		                   puts "hist sel [ $history selection ]"
+		                   set id [ $history selection ]
+		                   puts [ $history set $id Password ]
+		                   $password delete 0 end
+		                   $password insert end [ $history set $id Password ]
+		                 } } $widget(password) $widget(history) ]
+		                 
+		  ]
+
+		ttk::label $f.maxlbl -text [ mc "Max saved:" ]
+
+		set widget(maxhistory) [ \
+		  ttk::spinbox $f.maxnum -from 0 -to 255 -increment 1 -width 4 \
+		      -textvariable ${pvns}::maxhistory \
+		      -validate key \
+		      -validatecommand [ list ::apply {
+		        {newval}
+		        { 
+		          if { $newval == "" } { return 1 }
+		          expr { [ string is integer $newval ] 
+		              && ( $newval >= 0 )
+		              && ( $newval <= 255 )
+		               }
+		        } } %P ] ]
+
+		bind $widget(history) <<TreeviewSelect>> [ list ::apply { 
+			{hist del-b revert-b}
+			{ set num [ llength [ $hist selection ] ]
+				${del-b}    configure -state [ expr { $num >  0 ? "active" : "disabled" } ]
+				${revert-b} configure -state [ expr { $num == 1 ? "active" : "disabled" } ]
+			}
+			} $widget(history) $widget(hist-delete) $widget(hist-revert) ]
+
+		# arrange the button frame
+		grid $f.withdolbl $widget(hist-delete) $widget(hist-revert) \
+		     [ ttk::separator $f.sep1 -orient vertical ] \
+		     $f.maxlbl $f.maxnum -sticky ns
+		grid configure $widget(hist-delete) -padx {2m 2m}
+		grid configure $f.sep1 -padx {2m 2m}
+		grid rowconfigure    $f 0 -weight 1
+		grid columnconfigure $f {0 1 2 3 4 5} -weight 1
+
+		# arrange the main history pane
+		grid $widget(history) $pane2.vsb -sticky news
+		grid $f - -sticky news
+		grid rowconfigure    $pane2 0 -weight 1
+		grid columnconfigure $pane2 0 -weight 1
+
+		$widget(history) heading Date     -text [ mc "Date Changed" ]
+		$widget(history) heading Password -text [ mc "Password" ]
+		$widget(history) column  Date     -stretch false
+		$widget(history) column  Password -stretch true
+
+		#$widget(history) insert {} end -values {"8888-88-88 88:88:88" "This that and something else"}
+		
+		# end - setup password history pane
+		
     ttk::style configure Wrapping.TCheckbutton -wraplength [ wrap-measure ]
 
+		# Configure the history-toggle button to toggle display of the two panes
+		# and to update its own text at the same time
+
+		$widget(history-toggle) configure -command [ list ::apply { 
+		  {button notebook pane1 pane2 showhide genpass} {
+                  if { [ $button cget -text ] eq [ mc "Show History" ] } {
+                    $button configure -text [ mc "Hide History" ]
+                    $notebook select $pane2
+                    $showhide configure -state disabled
+                    $genpass  configure -state disabled
+                  } else {
+                    $button configure -text [ mc "Show History" ]
+                    $notebook select $pane1
+                    $showhide configure -state active
+                    $genpass  configure -state active
+                  }
+                } } $widget(history-toggle) $pane $pane1 $pane2 $widget(showhide) $widget(genpass) ]
 
     # force geometry calculations to happen - the ppf frame map/unmap code
     # depends on this having been run now
@@ -2108,6 +2250,8 @@ namespace eval ::gorilla::LoginDialog {
     # internal widgets
 
     wm minsize $top [ winfo reqwidth $top ] [ winfo reqheight $top ]
+
+		array set ${pvns}::widget [ array get widget ]
 
     # Now build the callback procs that will handle this window's gui
     # interactions with the user
@@ -2347,6 +2491,9 @@ namespace eval ::gorilla::LoginDialog {
         variable overridePasswordPolicy 0
         variable PassPolicy
         array set PassPolicy [ GetDefaultPasswordPolicy ]
+				variable widget
+				variable maxhistory    $::gorilla::preference(historyMaxSize)
+				variable historyactive $::gorilla::preference(historyActive)
 
         foreach item { group title url user password } {
           variable $item
@@ -2371,6 +2518,24 @@ namespace eval ::gorilla::LoginDialog {
 
         HidePassword
 
+				#show-hist-dict [ dbget history $in_rn ]
+
+				-m:history- delete [ $widget(history) children {} ]
+				-m:hist-delete- configure -state disabled
+				-m:hist-revert- configure -state disabled
+
+				# note - the history list is appended to as new entries are added,
+				# so reversing the list before display results in a newest first
+				# display order.
+				if { 0 != [ dict size [ set history [ dbget history $in_rn ] ] ] } {
+					set historyactive [ dict get $history active ]
+					set maxhistory    [ dict get $history maxsize ]
+				 	foreach item [ lreverse [ dict get $history passwords ] ] {
+						lassign $item numdate oldpass
+						-m:history- insert {} end -values [ list [ clock format $numdate -format "%Y-%m-%d %H:%M:%S" ] $oldpass ]
+					}
+				}
+
       } ; # end proc PopulateLoginDialog
 
     # = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
@@ -2385,12 +2550,40 @@ namespace eval ::gorilla::LoginDialog {
 
         set varlist { group title user password url }
 
-        foreach var $varlist {
+				foreach var [ concat $varlist history historyactive maxhistory ] {
           variable $var
         }
 
         set modified 0
         set now [clock seconds]
+
+				if { [ dbget uuid $rn ] eq "" } {
+					if { ! [ catch { package present uuid } ] } {
+						dbset uuid $rn [uuid::uuid generate]
+						set modified 1
+					}                              
+				}
+
+				set history [ dbget history $rn [ dict create \
+				        active    $::gorilla::preference(historyActive) \
+				        maxsize   $::gorilla::preference(historyMaxSize) \
+				        passwords [ list ] ] ]
+
+				# handle stage 1 history update first (so "active" value is set correctly)
+				#show-hist-dict $history PopulateRecord-B4
+				if { [ dict get $history active ] ne $historyactive } {
+				  puts stderr "History active differs, toggling"
+				  dict set history active $historyactive
+				  set modified 1
+				  dbset history $rn $history
+				}
+				if { [ dict get $history maxsize ] ne $maxhistory } {
+				  puts stderr "History max differs, setting to new"
+				  dict set history maxsize $maxhistory
+				  set modified 1
+				  dbset history $rn $history
+				}
+				#show-hist-dict $history PopulateRecord-AF
 
         foreach element [ list {*}$varlist notes ] {
 
@@ -2412,6 +2605,12 @@ namespace eval ::gorilla::LoginDialog {
 
               if { $element eq "password" } {
                 dbset last-pass-change $rn $now
+
+								if { [ dict get $history active ] && ( $old_value ne "" ) } {
+									dict lappend history passwords [ list $now $old_value ]
+									dbset history $rn $history
+								}
+
               } ; # end if element eq password
 
             } ; # end if new_value eq ""
@@ -2442,12 +2641,10 @@ namespace eval ::gorilla::LoginDialog {
 
       proc Ok { } {
 
-        variable title
-        variable group
-        variable rn
-        variable treenode
-        variable url
-        variable user
+				foreach var { title group rn treenode url user historyactive
+				              maxhistory } {
+					variable $var
+				}
 
         if { 0 == [ string length [ string trim $title ] ] } {
           # use url, if none use username
@@ -2464,7 +2661,7 @@ namespace eval ::gorilla::LoginDialog {
         }
 
         if { [ catch { ::pwsafe::db::splitGroup $group } ] } {
-          feedback [ mc "This login's group name is not valid." ] $pvns
+					feedback [ mc "This login's group name is not valid." ] [ namespace current ]
           return
         }
 
@@ -2474,11 +2671,9 @@ namespace eval ::gorilla::LoginDialog {
           set modified [ PopulateRecord $rn ]
         }
 
-        # Once the database has been updated, the
-        # dialog window is no longer necessary.
-        # Withdrawing it now prevents a flash of
-        # random data in the entries if a user has
-        # "auto-save-on-change" turned on.
+				# Once the database has been updated, the dialog window is no longer
+				# necessary.  Withdrawing it now prevents a flash of random data in
+				# the entries if a user has "auto-save-on-change" turned on.
 
         [ namespace parent ]::DestroyLoginDialog -m:top-
 
@@ -6137,6 +6332,50 @@ proc gorilla::PreferencesDialog {} {
     grid $subframe        -sticky new -pady { 2m 2m }
 
     #
+		# Sixth NoteBook tab: History settings
+		#
+
+		$top.nb add [ set hist [ ttk::frame $top.nb.history \
+			-padding [ list 10 0 ] ] ] -text [ mc "History" ] \
+			-sticky news
+
+		ttk::checkbutton $hist.onoff \
+			-variable ::gorilla::prefTemp(historyActive) \
+			-text [ mc "Save history of password changes" ]
+		set temp [ mc "Default saved entries per password record:" ]
+		ttk::label $hist.maxlabel -text $temp
+		ttk::spinbox $hist.max -from 0.0 -to 255.0 -increment 1.0 -width 4 \
+			-textvariable ::gorilla::prefTemp(historyMaxSize) \
+			-validate key \
+			-validatecommand [ list ::apply { {newval} {
+				if { $newval eq "" } { return 1 }
+				expr { [ string is integer -strict $newval ]
+				    && ( $newval >= 0 )
+				    && ( $newval <= 255 ) }
+			} } %P ]
+		ttk::label $hist.limitlabel -text [ mc "(limit=255)" ]
+		ttk::separator $hist.separator -orient horizontal
+
+		set    temp2 [ mc "These settings affect the default values given to new password records and to existing records with no history entries." ] 
+		append temp2 \n\n [ mc "To change the settings for an existing password record with history entries, please edit the login record." ]
+		append temp2 \n\n [ mc "The history feature is only available with PasswordSafe version 3 format files." ]
+
+		ttk::label $hist.description \
+			-text $temp2
+
+		# set the descriptive and warning labels to wordwrap at the
+		# width of the checkbox text
+		$hist.description configure -wrap [ font measure TkDefaultFont $temp ]
+
+		grid $hist.onoff       -                -sticky w -pady {5m 0 } -padx {2m 2m}
+		grid $hist.maxlabel    -                -sticky w -pady {5m 0 } -padx {2m 2m}
+		grid $hist.max         $hist.limitlabel -sticky w -pady {0  5m} -padx {2m 2m}
+		grid $hist.separator   -                -sticky news 
+		grid $hist.description -                -sticky w -pady {5m  5m} -padx {2m 2m}
+
+		grid columnconfigure $hist 1 -weight 1 
+
+		#
     # End of NoteBook tabs
     #
 
@@ -6198,6 +6437,11 @@ proc gorilla::PreferencesDialog {} {
   if {$gorilla::guimutex != 1} {
     return
   }
+
+	# Do not let an empty historyMaxSave value leak out of the dialog
+	if { "" eq $::gorilla::prefTemp(historyMaxSize) } {
+	  set ::gorilla::prefTemp(historyMaxSize) $::gorilla::preference(historyMaxSize)
+	}
 
   # copy the temporary preferences back into the global preferences
   # array
@@ -7734,12 +7978,12 @@ namespace eval ::gorilla::dbget {
         # enumerating them.
 
   foreach {procname recnum} [ list  uuid 1  group 2  title 3  user 4 username 4 \
-          notes 5  password 6  url 13 ] {
+					notes 5  password 6  url 13 history 15 ] {
 
     proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
       get-record %recnum $rn $default
     } ]
-
+		namespace export $procname
   } ; # end foreach procname,recnum
 
         foreach {procname recnum} [ list  create-time 7  last-pass-change 8  last-access 9 \
@@ -7748,10 +7992,8 @@ namespace eval ::gorilla::dbget {
     proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
       get-date-record %recnum $rn $default
     } ]
-
+		namespace export $procname
   } ; # end foreach procname,recnum
-
-  namespace export uuid group title user username notes password url create-time last-pass-change last-access lifetime last-modified
 
   # get-record -> a helper proc for the ensemble that hides in one place all
   # the complexity of checking for a records/fields existance and returning
@@ -7816,12 +8058,12 @@ namespace eval ::gorilla::dbset {
           notes 5  password 6  create-time 7 \
           last-pass-change 8   last-access 9 \
                 lifetime 10          last-modified 12 \
-                url 13 ] {
+					url 13 history 15 ] {
 
     proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
       $::gorilla::db setFieldValue $rn %fieldnum $value
-
     } ]
+		namespace export $procname
 
   } ; # end foreach procname,fieldnum
 
@@ -7831,10 +8073,8 @@ namespace eval ::gorilla::dbset {
     proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
       $::gorilla::db setFieldValue $rn %fieldnum [ clock scan $value -format "%Y-%m-%d %H:%M:%S" ]
     } ]
-
+		namespace export $procname
   } ; # end foreach procname,fieldnum
-
-  namespace export uuid group title user username notes password url create-time last-pass-change last-access lifetime last-modified
 
     namespace ensemble create
 
@@ -7857,15 +8097,13 @@ namespace eval ::gorilla::dbunset {
           notes 5  password 6  create-time 7 \
           last-pass-change 8   last-access 9 \
                 lifetime 10          last-modified 12 \
-                url 13 ] {
+					url 13 history 15 ] {
 
     proc $procname { rn } [ string map [ list %fieldnum $fieldnum ] {
       $::gorilla::db unsetFieldValue $rn %fieldnum
     } ]
-
+		namespace export $procname
   } ; # end foreach procname,fieldnum
-
-  namespace export uuid group title user notes password url create-time last-pass-change last-access lifetime last-modified
 
     namespace ensemble create
 
@@ -9087,3 +9325,7 @@ if { $::gorilla::DEBUG(TCLTEST) } {
   set argv ""
   source [file join $::gorilla::Dir .. unit-tests RunAllTests.tcl]
 }
+
+#proc gorilla::show-hist-dict { hist {where ""} } {
+#  puts stderr "$where: hist dict: '$hist'"
+#}				
