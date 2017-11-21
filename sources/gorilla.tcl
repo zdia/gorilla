@@ -6877,7 +6877,7 @@ namespace eval gorilla::CopyToClipboard {
       return
     }
 
-    if {![$::gorilla::db existsField $rn 6]} {
+    if {![$::gorilla::db existsField $rn 4]} {
       return
     }
 
