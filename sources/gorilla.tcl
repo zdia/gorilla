@@ -1,6 +1,6 @@
 #! /bin/sh
 # the next line restarts using wish \
-exec tclsh8.5 "$0" ${1+"$@"}
+exec tclsh "$0" ${1+"$@"}
 
 #
 # ----------------------------------------------------------------------
@@ -26,6 +26,8 @@ exec tclsh8.5 "$0" ${1+"$@"}
 #
 # For further information and contact see https:/github.com/zdia/gorilla
 #
+
+package require Tcl 8.5-
 
 package provide app-gorilla 1.0
 
