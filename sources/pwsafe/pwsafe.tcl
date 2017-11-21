@@ -20,29 +20,29 @@ namespace eval pwsafe {}
 #
 
 proc pwsafe::createFromStream {stream password version {percentvar ""}} {
-  if {$percentvar != ""} {
-    upvar $percentvar pcv
-    set pcvp "pcv"
-  } else {
-    set pcvp ""
-  }
+	if {$percentvar != ""} {
+		upvar $percentvar pcv
+		set pcvp "pcv"
+	} else {
+		set pcvp ""
+	}
 
-  set db [namespace current]::[pwsafe::db #auto $password]
+	set db [namespace current]::[pwsafe::db #auto $password]
 
-  if {$version == 3} {
-    set reader [namespace current]::[pwsafe::v3::reader #auto $db $stream]
-  } else {
-    set reader [namespace current]::[pwsafe::v2::reader #auto $db $stream]
-  }
+	if {$version == 3} {
+		set reader [namespace current]::[pwsafe::v3::reader #auto $db $stream]
+	} else {
+		set reader [namespace current]::[pwsafe::v2::reader #auto $db $stream]
+	}
 
-  if {[catch {$reader readFile $pcvp} result oops]} {
-    itcl::delete object $reader
-    itcl::delete object $db
-    return -options $oops
-  }
+	if {[catch {$reader readFile $pcvp} result oops]} {
+		itcl::delete object $reader
+		itcl::delete object $db
+		return -options $oops
+	}
 
-  itcl::delete object $reader
-  return $db
+	itcl::delete object $reader
+	return $db
 }
 
 #
@@ -52,49 +52,49 @@ proc pwsafe::createFromStream {stream password version {percentvar ""}} {
 #
 
 proc pwsafe::createFromFile {fileName password {percentvar ""}} {
-    if {$percentvar != ""} {
-  upvar $percentvar pcv
-  set pcvp "pcv"
-    } else {
-  set pcvp ""
-    }
+	if {$percentvar != ""} {
+		upvar $percentvar pcv
+		set pcvp "pcv"
+	} else {
+		set pcvp ""
+	}
 
-    if {[catch {set size [file size $fileName]}]} {
-  set size -1
-    }
+	if {[catch {set size [file size $fileName]}]} {
+		set size -1
+	}
 
-    if { [ catch { open $fileName {RDONLY BINARY} } file oops ] } {
-      return -options $oops
-    }
+	if { [ catch { open $fileName {RDONLY BINARY} } file oops ] } {
+		return -options $oops
+	}
 
-    #
-    # Check if the file begins with the Password Save 3.x "PWS3" magic.
-    #
+	#
+	# Check if the file begins with the Password Save 3.x "PWS3" magic.
+	#
 
-    set magic [::read $file 4]
-    ::seek $file 0
+	set magic [::read $file 4]
+	::seek $file 0
 
-    set stream [namespace current]::[pwsafe::io::streamreader #auto $file $size]
+	set stream [namespace current]::[pwsafe::io::streamreader #auto $file $size]
 
-    if {[catch {
-      if {[string equal $magic "PWS3"]} {
-        set db [pwsafe::createFromStream $stream $password 3 $pcvp]
-      } else {
-        set db [pwsafe::createFromStream $stream $password 2 $pcvp]
-      }
-                } result oops]} {
-      itcl::delete object $stream
-      catch {close $file}
-      return -options $oops
-    }
-    itcl::delete object $stream
+	if {[catch {
+		if {[string equal $magic "PWS3"]} {
+			set db [pwsafe::createFromStream $stream $password 3 $pcvp]
+		} else {
+			set db [pwsafe::createFromStream $stream $password 2 $pcvp]
+		}
+	} result oops]} {
+		itcl::delete object $stream
+		catch {close $file}
+		return -options $oops
+	}
+	itcl::delete object $stream
 
-    if {[catch {close $file} result oops]} {
-  itcl::delete object $db
-      return -options $oops
-    }
+	if {[catch {close $file} result oops]} {
+		itcl::delete object $db
+		return -options $oops
+	}
 
-    return $db
+	return $db
 }
 
 #
@@ -104,32 +104,32 @@ proc pwsafe::createFromFile {fileName password {percentvar ""}} {
 #
 
 proc pwsafe::createFromString {data password {percentvar ""}} {
-    if {$percentvar != ""} {
-  upvar $percentvar pcv
-  set pcvp "pcv"
-    } else {
-  set pcvp ""
-    }
+	if {$percentvar != ""} {
+		upvar $percentvar pcv
+		set pcvp "pcv"
+	} else {
+		set pcvp ""
+	}
 
-    #
-    # Check if the string begins with the Password Save 3.x "PWS3" magic.
-    #
+	#
+	# Check if the string begins with the Password Save 3.x "PWS3" magic.
+	#
 
-    set stream [namespace current]::[pwsafe::io::stringreader #auto $data]
+	set stream [namespace current]::[pwsafe::io::stringreader #auto $data]
 
-    if {[catch {
-  if {[string equal -length 4 $data "PWS3"]} {
-      set db [pwsafe::createFromStream $stream $password 3 $pcvp]
-  } else {
-      set db [pwsafe::createFromStream $stream $password 2 $pcvp]
-  }
-    } result oops]} {
-  itcl::delete object $stream
-    return -options $oops
-    }
+	if {[catch {
+		if {[string equal -length 4 $data "PWS3"]} {
+			set db [pwsafe::createFromStream $stream $password 3 $pcvp]
+		} else {
+			set db [pwsafe::createFromStream $stream $password 2 $pcvp]
+		}
+	} result oops]} {
+		itcl::delete object $stream
+		return -options $oops
+	}
 
-    itcl::delete object $stream
-    return $db
+	itcl::delete object $stream
+	return $db
 }
 
 #
@@ -139,53 +139,53 @@ proc pwsafe::createFromString {data password {percentvar ""}} {
 #
 
 proc pwsafe::writeToFile {db fileName version {percentvar ""}} {
-    if {$percentvar != ""} {
-  upvar $percentvar pcv
-  set pcvp "pcv"
-    } else {
-  set pcvp ""
-    }
+	if {$percentvar != ""} {
+		upvar $percentvar pcv
+		set pcvp "pcv"
+	} else {
+		set pcvp ""
+	}
 
-    #
-    # Write to a temporary file first, then make sure that the
-    # real destination file does not exist (delete if it does),
-    # then rename the file. This way, the existing database is
-    # not lost, if something goes wrong.
-    #
+	#
+	# Write to a temporary file first, then make sure that the
+	# real destination file does not exist (delete if it does),
+	# then rename the file. This way, the existing database is
+	# not lost, if something goes wrong.
+	#
 
-    set tmpFileName $fileName
-    append tmpFileName ".tmp"
+	set tmpFileName $fileName
+	append tmpFileName ".tmp"
 
-    set file [open $tmpFileName "w"]
-    fconfigure $file -translation binary
+	set file [open $tmpFileName "w"]
+	fconfigure $file -translation binary
 
-    set stream [namespace current]::[pwsafe::io::streamwriter #auto $file]
+	set stream [namespace current]::[pwsafe::io::streamwriter #auto $file]
 
-    if {$version == 3} {
-  set writer [namespace current]::[pwsafe::v3::writer #auto $db $stream]
-    } elseif {$version == 2} {
-  set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
-    } else {
-      return -code error -errorcode [ list GORILLA BADVERSION [ mc "invalid version %s" $version ] ]
-    }
+	if {$version == 3} {
+		set writer [namespace current]::[pwsafe::v3::writer #auto $db $stream]
+	} elseif {$version == 2} {
+		set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
+	} else {
+		return -code error -errorcode [ list GORILLA BADVERSION [ mc "invalid version %s" $version ] ]
+	}
 
-    if {[catch {$writer writeFile $pcvp} result oops]} {
-  itcl::delete object $writer
-  itcl::delete object $stream
-  catch {close $file}
-  catch {file delete $tmpFileName}
-      return -options $oops
-    }
+	if {[catch {$writer writeFile $pcvp} result oops]} {
+		itcl::delete object $writer
+		itcl::delete object $stream
+		catch {close $file}
+		catch {file delete $tmpFileName}
+		return -options $oops
+	}
 
-  itcl::delete object $writer
-  itcl::delete object $stream
-  close $file
+	itcl::delete object $writer
+	itcl::delete object $stream
+	close $file
 
-  #
-  # Done writing to temporary file.
-  #
+	#
+	# Done writing to temporary file.
+	#
 
-  file rename -force -- $tmpFileName $fileName
+	file rename -force -- $tmpFileName $fileName
 
 } ; # end proc pwsafe::writeToFile
 
@@ -196,35 +196,35 @@ proc pwsafe::writeToFile {db fileName version {percentvar ""}} {
 #
 
 proc pwsafe::writeToString {db version {percentvar ""}} {
-    if {$percentvar != ""} {
-  upvar $percentvar pcv
-  set pcvp "pcv"
-    } else {
-  set pcvp ""
-    }
+	if {$percentvar != ""} {
+		upvar $percentvar pcv
+		set pcvp "pcv"
+	} else {
+		set pcvp ""
+	}
 
 
-    set stream [namespace current]::[pwsafe::io::stringwriter #auto]
+	set stream [namespace current]::[pwsafe::io::stringwriter #auto]
 
-    if {$version == 3} {
-  set writer [namespace current]::[pwsafe::v3::writer #auto $db $stream]
-    } elseif {$version == 2} {
-  set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
-    } else {
-      return -code error -errorcode [ list GORILLA BADVERSION [ mc "invalid version %s" $version ] ]
-    }
+	if {$version == 3} {
+		set writer [namespace current]::[pwsafe::v3::writer #auto $db $stream]
+	} elseif {$version == 2} {
+		set writer [namespace current]::[pwsafe::v2::writer #auto $db $stream]
+	} else {
+		return -code error -errorcode [ list GORILLA BADVERSION [ mc "invalid version %s" $version ] ]
+	}
 
-    if {[catch {$writer writeFile $pcvp} result oops]} {
-  itcl::delete object $writer
-  itcl::delete object $stream
-  catch {close $file}
-      return -options $oops
-    }
+	if {[catch {$writer writeFile $pcvp} result oops]} {
+		itcl::delete object $writer
+		itcl::delete object $stream
+		catch {close $file}
+		return -options $oops
+	}
 
-    set result [$stream cget -data]
-    itcl::delete object $writer
-    itcl::delete object $stream
-    return $result
+	set result [$stream cget -data]
+	itcl::delete object $writer
+	itcl::delete object $stream
+	return $result
 }
 
 #
@@ -234,9 +234,9 @@ proc pwsafe::writeToString {db version {percentvar ""}} {
 #
 
 proc pwsafe::dumpAllRecords {db out} {
-    foreach rn [$db getAllRecordNumbers] {
-  pwsafe::io::dumpRecord $db $out $rn
-    }
+	foreach rn [$db getAllRecordNumbers] {
+		pwsafe::io::dumpRecord $db $out $rn
+	}
 }
 
 #
