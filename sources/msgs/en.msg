@@ -9,7 +9,6 @@
 #
 # Project-Id-Version: PACKAGE VERSION
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2013-01-14 19:38+0100
 # PO-Revision-Date: 2011-06-15 09:10+0100
 # Last-Translator: zdia <z.dia@gmx.de>
 # Language-Team: LANGUAGE <LL@li.org>
@@ -110,8 +109,6 @@ Parent: Parent:
 {Group name unchanged.} {Group name unchanged.}
 {Group renamed.} {Group renamed.}
 {Export Security Warning} {Export Security Warning}
-{You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?}
-{Export password database as text ...} {Export password database as text ...}
 {Error Exporting Database} {Error Exporting Database}
 {Failed to export password database to} {Failed to export password database to}
 {Exporting ...} {Exporting ...}
@@ -154,7 +151,6 @@ Close Close
 {Save password database ...} {Save password database ...}
 {Error Saving Database} {Error Saving Database}
 {Failed to save password database as "%s": %s} {Failed to save password database as "%s": %s}
-{Password database saved with backup copy} {Password database saved with backup copy}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.}
 {Clipboard cleared.} {Clipboard cleared.}
 {Enter the Master Password.} {Enter the Master Password.}
@@ -190,6 +186,9 @@ Remember Remember
 {database names} {database names}
 Clear Clear
 {Backup database on save} {Backup database on save}
+{Time stamp backup} {Time stamp backup}
+{Backup path:} {Backup path:}
+{Choose a directory} {Choose a directory}
 {Remember sizes of dialog boxes} {Remember sizes of dialog boxes}
 {Use Gorilla auto-copy} {Use Gorilla auto-copy}
 {Automatically copy password associated
@@ -203,9 +202,6 @@ See the help system for details.} {This option does not function on
 Windows(TM) or MacOS(TM) platforms.
 See the help system for details.}
 Defaults Defaults
-{Time stamp backup} {Time stamp backup}
-{Backup path:} {Backup path:}
-{Choose a directory} {Choose a directory}
 {Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.}
 {Include password field} {Include password field}
 {Include "Notes" field} {Include "Notes" field}
