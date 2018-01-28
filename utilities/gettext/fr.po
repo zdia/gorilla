@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Gorilla 1.5.3.6.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-01-28 11:18-0500\n"
-"PO-Revision-Date: 2013-01-31 10:24-0500\n"
+"PO-Revision-Date: 2018-01-28 15:17-0500\n"
 "Last-Translator: Alexandre Raymond <alexandre.j.raymond@gmail.com>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -17,6 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 2.0.4\n"
 
 #: ../../sources/gorilla.tcl:256
 #, tcl-format
@@ -327,27 +328,25 @@ msgid "Opening ... %d %%"
 msgstr "Ouverture... %d %%"
 
 #: ../../sources/gorilla.tcl:1497
-#, fuzzy
 msgid "The password database does not exist."
-msgstr "La base de données d'identifiants %s n'existe pas."
+msgstr "La base de données d'identifiants n'existe pas."
 
 #: ../../sources/gorilla.tcl:1498
-#, fuzzy
 msgid "Permission to read the password database was denied."
-msgstr ""
-"Échec de l'enregistrement de la base de données d'identifiants dans\n"
-"%s: %s"
+msgstr "Échec de l'enregistrement de la base de données d'identifiants."
 
 #: ../../sources/gorilla.tcl:1506
 msgid "Error Opening Database"
 msgstr "Erreur lors de l'ouverture de la base de données"
 
 #: ../../sources/gorilla.tcl:1507
-#, fuzzy, tcl-format
+#, tcl-format
 msgid ""
 "Can not open password database \"%s\":\n"
 "%s"
-msgstr "Impossible d'ouvrir la base de données \"%s\": %s"
+msgstr ""
+"Impossible d'ouvrir la base de données \"%s\":\n"
+"%s"
 
 #: ../../sources/gorilla.tcl:1525
 msgid "Browse for a password database ..."
@@ -376,9 +375,8 @@ msgid "Password database %s loaded."
 msgstr "La base de données d'identifiants %s a été chargée."
 
 #: ../../sources/gorilla.tcl:1877 ../../sources/gorilla.tcl:2234
-#, fuzzy
 msgid "Hide History"
-msgstr "Historique"
+msgstr "Cacher l'historique"
 
 #: ../../sources/gorilla.tcl:1890
 msgid "Add/Edit/View Login"
@@ -442,14 +440,12 @@ msgstr "Outrepasser politique de mots de passe"
 
 #: ../../sources/gorilla.tcl:2092 ../../sources/gorilla.tcl:2233
 #: ../../sources/gorilla.tcl:2239
-#, fuzzy
 msgid "Show History"
-msgstr "Historique"
+msgstr "Afficher l'historique"
 
 #: ../../sources/gorilla.tcl:2095
-#, fuzzy
 msgid "Log Password Changes"
-msgstr "Dernière modification du mot de passe"
+msgstr "Conserver l'historique des mots de passe"
 
 #: ../../sources/gorilla.tcl:2118 ../../sources/gorilla.tcl:5654
 #: ../../sources/gorilla.tcl:5711
@@ -458,25 +454,23 @@ msgstr "Longueur du mot de passe"
 
 #: ../../sources/gorilla.tcl:2161
 msgid "With selected do:"
-msgstr ""
+msgstr "Faire avec la sélection:"
 
 #: ../../sources/gorilla.tcl:2163
-#, fuzzy
 msgid "Delete"
-msgstr "Supprimer la connexion"
+msgstr "Supprimer"
 
 #: ../../sources/gorilla.tcl:2165
 msgid "Revert"
-msgstr ""
+msgstr "Réutiliser"
 
 #: ../../sources/gorilla.tcl:2178
 msgid "Max saved:"
-msgstr ""
+msgstr "Max sauvegardés:"
 
 #: ../../sources/gorilla.tcl:2217
-#, fuzzy
 msgid "Date Changed"
-msgstr "Annuler"
+msgstr "Date de modification"
 
 #: ../../sources/gorilla.tcl:2420 ../../sources/gorilla.tcl:7789
 msgid "Hide Password"
@@ -647,7 +641,6 @@ msgid "Export Security Warning"
 msgstr "Avertissement de sécurité sur l'export"
 
 #: ../../sources/gorilla.tcl:3596
-#, fuzzy
 msgid ""
 "You are about to export the password database to a plain-text (CSV) file. "
 "The file will not be encrypted or password-protected. Anybody with access "
@@ -662,9 +655,8 @@ msgstr ""
 "continuer? "
 
 #: ../../sources/gorilla.tcl:3619
-#, fuzzy
 msgid "Export password database as CSV ..."
-msgstr "Exporter la base de données de mots de passe dans un fichier texte..."
+msgstr "Exporter la base de données de mots de passe dans un fichier CSV..."
 
 #: ../../sources/gorilla.tcl:3640
 msgid "Error Exporting Database"
@@ -858,7 +850,7 @@ msgstr ""
 #: ../../sources/gorilla.tcl:4542
 #, tcl-format
 msgid "Unknown issue while testing write access to file %s"
-msgstr ""
+msgstr "Problème inconnu lors du test d'écriture au fichier %s"
 
 #: ../../sources/gorilla.tcl:4546
 msgid "Warning: Read-only password file"
@@ -866,47 +858,52 @@ msgstr "Attention: la base de données d'identifiants est en mode lecture-seule"
 
 #: ../../sources/gorilla.tcl:4583
 msgid "Another application has modified file:"
-msgstr ""
+msgstr "Une autre application a modifié le fichier:"
 
 #: ../../sources/gorilla.tcl:4585
 #, tcl-format
 msgid "The file was last modified at: %s"
-msgstr ""
+msgstr "Fichier modifié la dernière fois: %s"
 
 #: ../../sources/gorilla.tcl:4586
 msgid ""
 "Continuing with a save will overwrite any new data\n"
 "that has been added to the file by the other application."
 msgstr ""
+"Continuer la sauvegarde écrasera toute nouvelle donnée\n"
+"qui a été ajoutée au fichier par une autre application."
 
 #: ../../sources/gorilla.tcl:4587
 msgid ""
 "You may want to abort and perform a 'merge' with the\n"
 "file first to avoid losing data."
 msgstr ""
+"Vous pourriez vouloir annuler et faire une 'fusion' avec le\n"
+"fichier d'abord pour éviter de perdre des données."
 
 #: ../../sources/gorilla.tcl:4588
 msgid "What would you like to do?:"
-msgstr ""
+msgstr "Que voudriez-vous faire?:"
 
 #: ../../sources/gorilla.tcl:4589
 msgid "Shared file conflict"
-msgstr ""
+msgstr "Conflit dans le fichier partagé"
 
 #: ../../sources/gorilla.tcl:4591
 msgid ""
 "Overwrite the file.\n"
 "(destructive)"
 msgstr ""
+"Écraser le fichier.\n"
+"(destructif)"
 
 #: ../../sources/gorilla.tcl:4592
 msgid "Abort without saving"
-msgstr ""
+msgstr "Annuler sans sauvegarder"
 
 #: ../../sources/gorilla.tcl:4594
-#, fuzzy
 msgid "Password database save ABORTED."
-msgstr "Base de données d'identifiants sauvegardée."
+msgstr "Sauvegarde de la base de données d'identifiants ANNULÉE."
 
 #: ../../sources/gorilla.tcl:4630 ../../sources/gorilla.tcl:4736
 #, tcl-format
@@ -1002,21 +999,22 @@ msgid "Clipboard cleared."
 msgstr "Presse-papier vidé."
 
 #: ../../sources/gorilla.tcl:5232
-#, fuzzy
 msgid "Database not saved!"
-msgstr "Base de données verrouillée"
+msgstr "Base de données non sauvegardée!"
 
 #: ../../sources/gorilla.tcl:5233
 msgid "This database has not been saved. Do you want to save it now?"
 msgstr ""
+"Cette base de données n'a pas été sauvegardée. Voulez-vous la sauvegarder "
+"maintenant?"
 
 #: ../../sources/gorilla.tcl:5234
 msgid "Yes"
-msgstr ""
+msgstr "Oui"
 
 #: ../../sources/gorilla.tcl:5234
 msgid "No"
-msgstr ""
+msgstr "Non"
 
 #: ../../sources/gorilla.tcl:5324
 msgid "Enter the Master Password."
@@ -1363,35 +1361,41 @@ msgid "History"
 msgstr "Historique"
 
 #: ../../sources/gorilla.tcl:6346
-#, fuzzy
 msgid "Save history of password changes"
-msgstr "Mot de passe maître modifié."
+msgstr "Sauvegarder l'historique des modifications de mots de passe"
 
 #: ../../sources/gorilla.tcl:6347
 msgid "Default saved entries per password record:"
-msgstr ""
+msgstr "Nombre d'entrées sauvegardées par identifiant:"
 
 #: ../../sources/gorilla.tcl:6358
 msgid "(limit=255)"
-msgstr ""
+msgstr "(limite=255)"
 
 #: ../../sources/gorilla.tcl:6361
 msgid ""
 "These settings affect the default values given to new password records and "
 "to existing records with no history entries."
 msgstr ""
+"Ces paramètres affectent les valeurs par défaut utilisées pour créer de "
+"nouveaux identifiants et des identifiants existants sans historique de mots "
+"de passe."
 
 #: ../../sources/gorilla.tcl:6362
 msgid ""
 "To change the settings for an existing password record with history entries, "
 "please edit the login record."
 msgstr ""
+"Pour changer les paramètres d'un identifiant avec des mots de passe "
+"historiques, veuillez modifier l'identifiant."
 
 #: ../../sources/gorilla.tcl:6363
 msgid ""
 "The history feature is only available with PasswordSafe version 3 format "
 "files."
 msgstr ""
+"L'historique n'est disponible que pour les fichiers au format PasswordSafe "
+"version 3"
 
 #: ../../sources/gorilla.tcl:6427
 msgid "History deleted. After a restart the list will be empty."
@@ -1502,7 +1506,7 @@ msgstr "Traduction portugaise par %s"
 #: ../../sources/gorilla.tcl:7215
 #, tcl-format
 msgid "Used C extensions:%s."
-msgstr ""
+msgstr "Extensions C utilisées: %s"
 
 #: ../../sources/gorilla.tcl:7232
 msgid "About Password Gorilla"
