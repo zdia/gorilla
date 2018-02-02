@@ -2049,8 +2049,7 @@ namespace eval ::gorilla::LoginDialog {
 		grid columnconfigure $textframe $widget(notes) -weight 1
 
 		grid [ make-label $pane1 [mc Notes] ] \
-		$textframe \
-		-sticky news -pady 5
+			$textframe -sticky news -pady 5
 
 		grid rowconfigure    $pane1 $textframe -weight 1
 		grid columnconfigure $pane1 $textframe -weight 1
@@ -2089,11 +2088,11 @@ namespace eval ::gorilla::LoginDialog {
 
 		# hitory pane controls
 		set widget(history-toggle) [ \
-		ttk::button $frb.pane-control -text [ mc "Show History" ] -width 16 ]
+			ttk::button $frb.pane-control -text [mc "Show History"] -width 16]
 
 		set widget(history-active) [ \
-		ttk::checkbutton $frb.active -text [ mc "Log Password Changes" ] \
-		-variable ${pvns}::historyactive ]
+		ttk::checkbutton $frb.active -text [mc "Log Password Changes"] \
+			-variable ${pvns}::historyactive]
 
 		pack $widget(showhide) $widget(genpass) $frb.override $widget(history-toggle) $widget(history-active) -side top -padx 10 -pady 5
 
@@ -2108,7 +2107,6 @@ namespace eval ::gorilla::LoginDialog {
 
 		set ${pvns}::feedbacktimer -1 ; # to keep track of "after" id value
 
-
 		# create, but do not make visible yet, a pane for overriding password
 		# policy settings
 
@@ -2117,8 +2115,8 @@ namespace eval ::gorilla::LoginDialog {
 		set plf [ ttk::frame $ppf.plen -padding [ list 0 10 0 0 ] ] ; # ppf -> Pass Length Frame
 		ttk::label $plf.l -text [ mc "Password Length" ]
 		spinbox $plf.s -from 1 -to 999 -increment 1 \
-		-width 4 -justify right \
-		-textvariable ${pvns}::PassPolicy(length)
+			-width 4 -justify right \
+			-textvariable ${pvns}::PassPolicy(length)
 		pack $plf.l -side left
 		pack $plf.s -side left -padx 10
 
@@ -2133,8 +2131,8 @@ namespace eval ::gorilla::LoginDialog {
 		easytoread   {Use easy to read characters only (e.g. no "0" or "O")} ] {
 
 			ttk::checkbutton $ppf.$item -text [ wrap-measure [ mc $label ] ] \
-			-variable ${pvns}::PassPolicy($item) \
-			-style Wrapping.TCheckbutton
+				-variable ${pvns}::PassPolicy($item) \
+				-style Wrapping.TCheckbutton
 
 			pack $ppf.$item -anchor w -side top -padx 10 -pady 3
 
@@ -2144,123 +2142,116 @@ namespace eval ::gorilla::LoginDialog {
 
 		# begin - setup password history pane
 
-		set widget(history) [ ttk::treeview $pane2.history \
-		-style gorilla.Treeview \
-		-columns {Date Password} -show headings \
-		-yscrollcommand [ list $pane2.vsb set ] ]
+		set widget(history) [ttk::treeview $pane2.history \
+			-style gorilla.Treeview \
+			-columns {Date Password} -show headings \
+			-yscrollcommand [list $pane2.vsb set]]
 		ttk::scrollbar $pane2.vsb -orient vertical \
-		-command [ list $widget(history) yview ]
+			-command [list $widget(history) yview]
 
-		bind $pane2.history <Configure> [ list ::apply { {w} {
-			$w column Date -width [ expr { 20 + [ font measure TkDefaultFont -displayof $w "8888-88-88 88:88:88" ] } ]
-		} } %W ]
+		bind $pane2.history <Configure> [list ::apply { {w} {
+			$w column Date -width [expr {20 + [font measure TkDefaultFont -displayof $w "8888-88-88 88:88:88"]}]
+		} } %W]
 
 		# small frame below the password history treeview widget for extra
 		# controls
 		set f [ ttk::frame $pane2.bf ]
-		ttk::label $f.withdolbl -text [ mc "With selected do:" ]
+		ttk::label $f.withdolbl -text [mc "With selected do:"]
 		set widget(hist-delete) [ \
-		ttk::button $f.hdel   -text [ mc Delete ] -state disabled ]
+			ttk::button $f.hdel   -text [mc Delete] -state disabled]
 		set widget(hist-revert) [ \
-		ttk::button $f.revert -text [ mc Revert ] -state disabled \
-		-command [ list ::apply { \
-		{password history} \
-		{ if { [ llength [ $history selection ] ] != 1 } { puts "returning" ; return }
-		puts "hist sel [ $history selection ]"
-		set id [ $history selection ]
-		puts [ $history set $id Password ]
-		$password delete 0 end
-		$password insert end [ $history set $id Password ]
-	} } $widget(password) $widget(history) ]
+			ttk::button $f.revert -text [mc Revert] -state disabled \
+				-command [list ::apply { {password history} { 
+					if {[llength [$history selection]] != 1} { return }
+					set id [$history selection]
+					$password delete 0 end
+					$password insert end [$history set $id Password]
+				} } $widget(password) $widget(history)]
 
-	]
+		]
 
-	ttk::label $f.maxlbl -text [ mc "Max saved:" ]
+		ttk::label $f.maxlbl -text [ mc "Max saved:" ]
 
-	set widget(maxhistory) [ \
-	ttk::spinbox $f.maxnum -from 0 -to 255 -increment 1 -width 4 \
-	-textvariable ${pvns}::maxhistory \
-	-validate key \
-	-validatecommand [ list ::apply {
-		{newval}
-		{
-			if { $newval == "" } { return 1 }
-			expr { [ string is integer $newval ]
-			&& ( $newval >= 0 )
-			&& ( $newval <= 255 )
-		}
-	} } %P ] ]
+		set widget(maxhistory) [ \
+			ttk::spinbox $f.maxnum -from 0 -to 255 -increment 1 -width 4 \
+				-textvariable ${pvns}::maxhistory \
+				-validate key \
+				-validatecommand [list ::apply { {newval} {
+					if { $newval == "" } { return 1 }
+					expr {[string is integer $newval]
+						&& ( $newval >= 0 )
+						&& ( $newval <= 255 )
+					}
+				} } %P]]
 
-	bind $widget(history) <<TreeviewSelect>> [ list ::apply {
-		{hist del-b revert-b}
-		{ set num [ llength [ $hist selection ] ]
-		${del-b}    configure -state [ expr { $num >  0 ? "active" : "disabled" } ]
-		${revert-b} configure -state [ expr { $num == 1 ? "active" : "disabled" } ]
-	}
-} $widget(history) $widget(hist-delete) $widget(hist-revert) ]
+		bind $widget(history) <<TreeviewSelect>> [list ::apply { {hist del-b revert-b} {
+				set num [llength [$hist selection]]
+				${del-b}    configure -state [expr {$num >  0 ? "active" : "disabled"}]
+				${revert-b} configure -state [expr {$num == 1 ? "active" : "disabled"}]
+			}
+			} $widget(history) $widget(hist-delete) $widget(hist-revert)]
 
-# arrange the button frame
-grid $f.withdolbl $widget(hist-delete) $widget(hist-revert) \
-[ ttk::separator $f.sep1 -orient vertical ] \
-$f.maxlbl $f.maxnum -sticky ns
-grid configure $widget(hist-delete) -padx {2m 2m}
-grid configure $f.sep1 -padx {2m 2m}
-grid rowconfigure    $f 0 -weight 1
-grid columnconfigure $f {0 1 2 3 4 5} -weight 1
+		# arrange the button frame
+		grid $f.withdolbl $widget(hist-delete) $widget(hist-revert) \
+			[ ttk::separator $f.sep1 -orient vertical ] \
+			$f.maxlbl $f.maxnum -sticky ns
+		grid configure $widget(hist-delete) -padx {2m 2m}
+		grid configure $f.sep1 -padx {2m 2m}
+		grid rowconfigure    $f 0 -weight 1
+		grid columnconfigure $f {0 1 2 3 4 5} -weight 1
 
-# arrange the main history pane
-grid $widget(history) $pane2.vsb -sticky news
-grid $f - -sticky news
-grid rowconfigure    $pane2 0 -weight 1
-grid columnconfigure $pane2 0 -weight 1
+		# arrange the main history pane
+		grid $widget(history) $pane2.vsb -sticky news
+		grid $f - -sticky news
+		grid rowconfigure    $pane2 0 -weight 1
+		grid columnconfigure $pane2 0 -weight 1
 
-$widget(history) heading Date     -text [ mc "Date Changed" ]
-$widget(history) heading Password -text [ mc "Password" ]
-$widget(history) column  Date     -stretch false
-$widget(history) column  Password -stretch true
+		$widget(history) heading Date     -text [ mc "Date Changed" ]
+		$widget(history) heading Password -text [ mc "Password" ]
+		$widget(history) column  Date     -stretch false
+		$widget(history) column  Password -stretch true
 
-#$widget(history) insert {} end -values {"8888-88-88 88:88:88" "This that and something else"}
+		# end - setup password history pane
 
-# end - setup password history pane
+		ttk::style configure Wrapping.TCheckbutton -wraplength [ wrap-measure ]
 
-ttk::style configure Wrapping.TCheckbutton -wraplength [ wrap-measure ]
+		# Configure the history-toggle button to toggle display of the two panes
+		# and to update its own text at the same time
 
-# Configure the history-toggle button to toggle display of the two panes
-# and to update its own text at the same time
+		$widget(history-toggle) configure -command [ list ::apply {
+			{button notebook pane1 pane2 showhide genpass} {
+				if {[$button cget -text] eq [mc "Show History"]} {
+					$button configure -text [mc "Hide History"]
+					$notebook select $pane2
+					$showhide configure -state disabled
+					$genpass  configure -state disabled
+				} else {
+					$button configure -text [mc "Show History"]
+					$notebook select $pane1
+					$showhide configure -state active
+					$genpass  configure -state active
+				}
+			} } $widget(history-toggle) $pane $pane1 $pane2 \
+			    $widget(showhide) $widget(genpass)]
 
-$widget(history-toggle) configure -command [ list ::apply {
-	{button notebook pane1 pane2 showhide genpass} {
-		if { [ $button cget -text ] eq [ mc "Show History" ] } {
-			$button configure -text [ mc "Hide History" ]
-			$notebook select $pane2
-			$showhide configure -state disabled
-			$genpass  configure -state disabled
-		} else {
-			$button configure -text [ mc "Show History" ]
-			$notebook select $pane1
-			$showhide configure -state active
-			$genpass  configure -state active
-		}
-	} } $widget(history-toggle) $pane $pane1 $pane2 $widget(showhide) $widget(genpass) ]
+		# force geometry calculations to happen - the ppf frame map/unmap code
+		# depends on this having been run now
 
-	# force geometry calculations to happen - the ppf frame map/unmap code
-	# depends on this having been run now
+		update idletasks
 
-	update idletasks
+		# do not allow resize smaller than the native requested size of the
+		# internal widgets
 
-	# do not allow resize smaller than the native requested size of the
-	# internal widgets
+		wm minsize $top [ winfo reqwidth $top ] [ winfo reqheight $top ]
 
-	wm minsize $top [ winfo reqwidth $top ] [ winfo reqheight $top ]
+		array set ${pvns}::widget [ array get widget ]
 
-	array set ${pvns}::widget [ array get widget ]
+		# Now build the callback procs that will handle this window's gui
+		# interactions with the user
 
-	# Now build the callback procs that will handle this window's gui
-	# interactions with the user
+		build-gui-callbacks $pvns [ array get widget ]
 
-	build-gui-callbacks $pvns [ array get widget ]
-
-} ; # end proc buildLoginDialog
+	} ; # end proc buildLoginDialog
 
 # -----------------------------------------------------------------------------
 
