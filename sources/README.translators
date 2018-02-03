@@ -21,3 +21,14 @@ Depending to the content of the variables the output will something like:
 
   Um 21:15h wird das Passwort qwerty zur Verfügung stehen, Sam
 
+------------------------------------------------------------------------
+
+To regenerate new POT/PO files after modifications to source files:
+- run 'utilities/gettext/make-new-master-po-files'
+- copy resulting files in /tmp to utilities/gettext/
+
+Then, add missing translations to utilities/gettext/*.po
+
+Finally, regenerate the msg files used by tcl:
+- run 'utilities/rebuild-msg-files -f'
+

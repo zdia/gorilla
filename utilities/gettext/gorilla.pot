@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-01-14 19:38+0100\n"
+"POT-Creation-Date: 2018-01-28 11:18-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,12 +17,12 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../sources/gorilla.tcl:216
+#: ../../sources/gorilla.tcl:256
 #, tcl-format
 msgid "Need %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:217
+#: ../../sources/gorilla.tcl:257
 #, tcl-format
 msgid ""
 "The Password Gorilla requires the \"%s\" package. This seems to be an "
@@ -32,283 +32,280 @@ msgid ""
 "Error message: %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:370 ../../sources/gorilla.tcl:9079
+#: ../../sources/gorilla.tcl:422 ../../sources/gorilla.tcl:9324
 msgid "Welcome to the Password Gorilla."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:440
+#: ../../sources/gorilla.tcl:492
 msgid "File"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:440 ../../sources/gorilla.tcl:1267
+#: ../../sources/gorilla.tcl:492 ../../sources/gorilla.tcl:1352
 msgid "New"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:441
+#: ../../sources/gorilla.tcl:493
 msgid "Open"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:442
+#: ../../sources/gorilla.tcl:494
 msgid "Merge"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:443
+#: ../../sources/gorilla.tcl:495
 msgid "Save"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:444
+#: ../../sources/gorilla.tcl:496
 msgid "Save As"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:446 ../../sources/gorilla.tcl:5873
+#: ../../sources/gorilla.tcl:498 ../../sources/gorilla.tcl:6196
 msgid "Export"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:447
+#: ../../sources/gorilla.tcl:499
 msgid "Import"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:449 ../../sources/gorilla.tcl:5759
+#: ../../sources/gorilla.tcl:501 ../../sources/gorilla.tcl:6078
 msgid "Preferences"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:451 ../../sources/gorilla.tcl:1265
-#: ../../sources/gorilla.tcl:4971
+#: ../../sources/gorilla.tcl:503 ../../sources/gorilla.tcl:1350
+#: ../../sources/gorilla.tcl:5282
 msgid "Exit"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:454
+#: ../../sources/gorilla.tcl:506
 msgid "Edit"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:454
+#: ../../sources/gorilla.tcl:506
 msgid "Copy Username"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:455
+#: ../../sources/gorilla.tcl:507
 msgid "Copy Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:456
+#: ../../sources/gorilla.tcl:508
 msgid "Copy URL"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:458
+#: ../../sources/gorilla.tcl:510
 msgid "Clear Clipboard"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:460 ../../sources/gorilla.tcl:6949
+#: ../../sources/gorilla.tcl:512 ../../sources/gorilla.tcl:7355
+#: ../../sources/gorilla.tcl:7388
 msgid "Find"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:461
+#: ../../sources/gorilla.tcl:513
 msgid "Find next"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:464 ../../sources/gorilla.tcl:2534
+#: ../../sources/gorilla.tcl:516 ../../sources/gorilla.tcl:2803
 msgid "Login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:464 ../../sources/gorilla.tcl:906
-#: ../../sources/gorilla.tcl:989
+#: ../../sources/gorilla.tcl:516 ../../sources/gorilla.tcl:993
+#: ../../sources/gorilla.tcl:1076
 msgid "Add Login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:465 ../../sources/gorilla.tcl:992
-#: ../../sources/gorilla.tcl:5776
+#: ../../sources/gorilla.tcl:517 ../../sources/gorilla.tcl:1079
+#: ../../sources/gorilla.tcl:6095
 msgid "Edit Login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:466 ../../sources/gorilla.tcl:995
-#: ../../sources/gorilla.tcl:7650
+#: ../../sources/gorilla.tcl:518 ../../sources/gorilla.tcl:1082
+#: ../../sources/gorilla.tcl:6098 ../../sources/gorilla.tcl:7731
 msgid "View Login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:467 ../../sources/gorilla.tcl:1003
-#: ../../sources/gorilla.tcl:2692
+#: ../../sources/gorilla.tcl:519 ../../sources/gorilla.tcl:1090
+#: ../../sources/gorilla.tcl:2961
 msgid "Delete Login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:468
+#: ../../sources/gorilla.tcl:520
 msgid "Move Login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:470
+#: ../../sources/gorilla.tcl:522
 msgid "Add Group"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:471 ../../sources/gorilla.tcl:909
+#: ../../sources/gorilla.tcl:523 ../../sources/gorilla.tcl:996
 msgid "Add Subgroup"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:472 ../../sources/gorilla.tcl:912
-#: ../../sources/gorilla.tcl:3128
+#: ../../sources/gorilla.tcl:524 ../../sources/gorilla.tcl:999
+#: ../../sources/gorilla.tcl:3397
 msgid "Rename Group"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:473
+#: ../../sources/gorilla.tcl:525
 msgid "Move Group"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:474 ../../sources/gorilla.tcl:916
-#: ../../sources/gorilla.tcl:3046
+#: ../../sources/gorilla.tcl:526 ../../sources/gorilla.tcl:1003
+#: ../../sources/gorilla.tcl:3315
 msgid "Delete Group"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:477
+#: ../../sources/gorilla.tcl:529
 msgid "Security"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:477
+#: ../../sources/gorilla.tcl:529 ../../sources/gorilla.tcl:5615
 msgid "Password Policy"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:478
+#: ../../sources/gorilla.tcl:530
 msgid "Customize"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:480
+#: ../../sources/gorilla.tcl:532
 msgid "Change Master Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:482
+#: ../../sources/gorilla.tcl:534
 msgid "Lock now"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:485 ../../sources/viewhelp.tcl:181
+#: ../../sources/gorilla.tcl:537 ../../sources/viewhelp.tcl:181
 msgid "Help"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:486 ../../sources/gorilla.tcl:6779
+#: ../../sources/gorilla.tcl:538 ../../sources/gorilla.tcl:7218
 msgid "License"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:487
+#: ../../sources/gorilla.tcl:539
 msgid "Look for Update"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:489 ../../sources/gorilla.tcl:524
+#: ../../sources/gorilla.tcl:541 ../../sources/gorilla.tcl:576
 msgid "About"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:976
+#: ../../sources/gorilla.tcl:1063
 msgid "Open URL"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:979
+#: ../../sources/gorilla.tcl:1066
 msgid "Copy Username to Clipboard"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:982
+#: ../../sources/gorilla.tcl:1069
 msgid "Copy Password to Clipboard"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:985
+#: ../../sources/gorilla.tcl:1072
 msgid "Copy URL to Clipboard"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:999
+#: ../../sources/gorilla.tcl:1086
 msgid "Move Login to:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1108 ../../sources/gorilla.tcl:1565
-#: ../../sources/gorilla.tcl:4759
+#: ../../sources/gorilla.tcl:1195 ../../sources/gorilla.tcl:1643
+#: ../../sources/gorilla.tcl:5057
 msgid "Save changes?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1109
+#: ../../sources/gorilla.tcl:1196
 msgid ""
 "The current password database is modified. Do you want to save the current "
 "database before creating the new database?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1138
+#: ../../sources/gorilla.tcl:1225
 msgid "New Database: Choose Master Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1151
+#: ../../sources/gorilla.tcl:1238
 msgid "Password Gorilla - <New Database>"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1197 ../../sources/gorilla.tcl:5015
+#: ../../sources/gorilla.tcl:1284 ../../sources/gorilla.tcl:5334
 msgid "<New Database>"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1200
+#: ../../sources/gorilla.tcl:1287
 msgid "Add logins using <Add Login> in the <Login> menu."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1246 ../../sources/gorilla.tcl:4955
+#: ../../sources/gorilla.tcl:1330 ../../sources/gorilla.tcl:5266
 msgid "Database:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1255 ../../sources/gorilla.tcl:4961
+#: ../../sources/gorilla.tcl:1339 ../../sources/gorilla.tcl:5272
 msgid "Password:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1263 ../../sources/gorilla.tcl:1966
-#: ../../sources/gorilla.tcl:2796 ../../sources/gorilla.tcl:3151
-#: ../../sources/gorilla.tcl:4969 ../../sources/gorilla.tcl:5151
-#: ../../sources/gorilla.tcl:5420 ../../sources/gorilla.tcl:5661
-#: ../../sources/gorilla.tcl:6029
+#: ../../sources/gorilla.tcl:1348 ../../sources/gorilla.tcl:2076
+#: ../../sources/gorilla.tcl:3065 ../../sources/gorilla.tcl:3420
+#: ../../sources/gorilla.tcl:5280 ../../sources/gorilla.tcl:5470
+#: ../../sources/gorilla.tcl:5739 ../../sources/gorilla.tcl:5980
+#: ../../sources/gorilla.tcl:6396
 msgid "OK"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1308
+#: ../../sources/gorilla.tcl:1396
 msgid ""
 "Select a database, and enter its password. Click \"New\" to create a new "
 "database."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1311
+#: ../../sources/gorilla.tcl:1399
 msgid "Select a database, and enter its password."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1378
+#: ../../sources/gorilla.tcl:1466
 msgid "No File"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1379
+#: ../../sources/gorilla.tcl:1467
 msgid "Please select a password database."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1394
-#, tcl-format
-msgid "The password database %s can not be read."
-msgstr ""
-
-#: ../../sources/gorilla.tcl:1396
-#, tcl-format
-msgid "The password database %s does not exist."
-msgstr ""
-
-#: ../../sources/gorilla.tcl:1399
-msgid "Error Accessing File"
-msgstr ""
-
-#: ../../sources/gorilla.tcl:1404
+#: ../../sources/gorilla.tcl:1471
 msgid "Please be patient. Verifying password ..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1416
+#: ../../sources/gorilla.tcl:1483
 #, tcl-format
 msgid "Opening ... %d %%"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1428
+#: ../../sources/gorilla.tcl:1497
+msgid "The password database does not exist."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:1498
+msgid "Permission to read the password database was denied."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:1506
 msgid "Error Opening Database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1429
+#: ../../sources/gorilla.tcl:1507
 #, tcl-format
-msgid "Can not open password database \"%s\": %s"
+msgid ""
+"Can not open password database \"%s\":\n"
+"%s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1447
+#: ../../sources/gorilla.tcl:1525
 msgid "Browse for a password database ..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1566
+#: ../../sources/gorilla.tcl:1644
 msgid ""
 "The current password database is modified. Do you want to save the "
 "database?\n"
@@ -317,495 +314,572 @@ msgid ""
 " \"Cancel\" returns to the main menu."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1594
+#: ../../sources/gorilla.tcl:1672
 msgid "Open Password Database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1616
+#: ../../sources/gorilla.tcl:1694
 #, tcl-format
 msgid "Password database %s loaded."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1805
+#: ../../sources/gorilla.tcl:1877 ../../sources/gorilla.tcl:2234
+msgid "Hide History"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:1890
 msgid "Add/Edit/View Login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1919 ../../sources/gorilla.tcl:2538
+#: ../../sources/gorilla.tcl:2025 ../../sources/gorilla.tcl:2807
 msgid "Group"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1920 ../../sources/gorilla.tcl:6928
+#: ../../sources/gorilla.tcl:2026 ../../sources/gorilla.tcl:7367
 msgid "Title"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1921 ../../sources/gorilla.tcl:6936
+#: ../../sources/gorilla.tcl:2027 ../../sources/gorilla.tcl:7375
 msgid "URL"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1922 ../../sources/gorilla.tcl:6930
+#: ../../sources/gorilla.tcl:2028 ../../sources/gorilla.tcl:7369
 msgid "Username"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1923 ../../sources/gorilla.tcl:6932
+#: ../../sources/gorilla.tcl:2029 ../../sources/gorilla.tcl:2218
+#: ../../sources/gorilla.tcl:7371
 msgid "Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1945 ../../sources/gorilla.tcl:6934
-#: ../../sources/gorilla.tcl:7671
+#: ../../sources/gorilla.tcl:2051 ../../sources/gorilla.tcl:7373
+#: ../../sources/gorilla.tcl:7754 ../../sources/gorilla.tcl:7837
 msgid "Notes"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1952
+#: ../../sources/gorilla.tcl:2058
 msgid "Last Password Change"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1952
+#: ../../sources/gorilla.tcl:2058
 msgid "Last Modified"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1967 ../../sources/gorilla.tcl:2570
-#: ../../sources/gorilla.tcl:2798 ../../sources/gorilla.tcl:3153
-#: ../../sources/gorilla.tcl:5153 ../../sources/gorilla.tcl:5365
-#: ../../sources/gorilla.tcl:5422 ../../sources/gorilla.tcl:5663
-#: ../../sources/gorilla.tcl:6031 ../../sources/gorilla.tcl:8910
+#: ../../sources/gorilla.tcl:2077 ../../sources/gorilla.tcl:2839
+#: ../../sources/gorilla.tcl:3067 ../../sources/gorilla.tcl:3422
+#: ../../sources/gorilla.tcl:5472 ../../sources/gorilla.tcl:5684
+#: ../../sources/gorilla.tcl:5741 ../../sources/gorilla.tcl:5982
+#: ../../sources/gorilla.tcl:6398 ../../sources/gorilla.tcl:9071
 msgid "Cancel"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1973 ../../sources/gorilla.tcl:2206
-#: ../../sources/gorilla.tcl:7706 ../../sources/gorilla.tcl:7726
-#: ../../sources/gorilla.tcl:7731
+#: ../../sources/gorilla.tcl:2084 ../../sources/gorilla.tcl:2427
+#: ../../sources/gorilla.tcl:7785 ../../sources/gorilla.tcl:7787
+#: ../../sources/gorilla.tcl:7792
 msgid "Show Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1975
+#: ../../sources/gorilla.tcl:2085
 msgid "Generate Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1976
+#: ../../sources/gorilla.tcl:2086
 msgid "Override Password Policy"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:1999 ../../sources/gorilla.tcl:5335
-#: ../../sources/gorilla.tcl:5392
+#: ../../sources/gorilla.tcl:2092 ../../sources/gorilla.tcl:2233
+#: ../../sources/gorilla.tcl:2239
+msgid "Show History"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:2095
+msgid "Log Password Changes"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:2118 ../../sources/gorilla.tcl:5654
+#: ../../sources/gorilla.tcl:5711
 msgid "Password Length"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2199 ../../sources/gorilla.tcl:7728
+#: ../../sources/gorilla.tcl:2161
+msgid "With selected do:"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:2163
+msgid "Delete"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:2165
+msgid "Revert"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:2178
+msgid "Max saved:"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:2217
+msgid "Date Changed"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:2420 ../../sources/gorilla.tcl:7789
 msgid "Hide Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2224
+#: ../../sources/gorilla.tcl:2445
 msgid "Password policy settings invalid."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2290
+#: ../../sources/gorilla.tcl:2514
 msgid "<unknown>"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2386
+#: ../../sources/gorilla.tcl:2657
 msgid "This login must have a title, url or username."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2395
+#: ../../sources/gorilla.tcl:2666
 msgid "This login's group name is not valid."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2416
+#: ../../sources/gorilla.tcl:2685
 msgid "New login added."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2423
+#: ../../sources/gorilla.tcl:2692
 msgid "Login modified."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2446
+#: ../../sources/gorilla.tcl:2715
 msgid "Group entries may be renamed, not edited."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2551
+#: ../../sources/gorilla.tcl:2820
 #, tcl-format
 msgid "Move %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2556
+#: ../../sources/gorilla.tcl:2825
 msgid "Destination Group with format <Group.Subgroup> :"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2630 ../../sources/gorilla.tcl:2644
-#: ../../sources/gorilla.tcl:2847 ../../sources/gorilla.tcl:2861
-#: ../../sources/gorilla.tcl:3198 ../../sources/gorilla.tcl:3208
+#: ../../sources/gorilla.tcl:2899 ../../sources/gorilla.tcl:2913
+#: ../../sources/gorilla.tcl:3116 ../../sources/gorilla.tcl:3130
+#: ../../sources/gorilla.tcl:3467 ../../sources/gorilla.tcl:3477
 msgid "Invalid Group Name"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2631 ../../sources/gorilla.tcl:2848
-#: ../../sources/gorilla.tcl:3199
+#: ../../sources/gorilla.tcl:2900 ../../sources/gorilla.tcl:3117
+#: ../../sources/gorilla.tcl:3468
 msgid "The group name can not be empty."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2645
+#: ../../sources/gorilla.tcl:2914
 msgid "The name of the parent group is invalid."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2661
+#: ../../sources/gorilla.tcl:2930
 #, tcl-format
 msgid "Moving of %s canceled."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2669
+#: ../../sources/gorilla.tcl:2938
 #, tcl-format
 msgid "%s moved."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2693
+#: ../../sources/gorilla.tcl:2962
 msgid "Are you sure that you want to delete this login?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2702
+#: ../../sources/gorilla.tcl:2971
 msgid "Login deleted."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2770 ../../sources/gorilla.tcl:5289
-#: ../../sources/gorilla.tcl:6498
+#: ../../sources/gorilla.tcl:3039 ../../sources/gorilla.tcl:5608
+#: ../../sources/gorilla.tcl:6858
 msgid "No Database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2771 ../../sources/gorilla.tcl:5290
+#: ../../sources/gorilla.tcl:3040 ../../sources/gorilla.tcl:5609
 msgid "Please create a new database, or open an existing database first."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2781
+#: ../../sources/gorilla.tcl:3050
 msgid "Add a new Group"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2783 ../../sources/gorilla.tcl:3136
+#: ../../sources/gorilla.tcl:3052 ../../sources/gorilla.tcl:3405
 msgid "Parent:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2789
+#: ../../sources/gorilla.tcl:3058
 msgid "New Group Name:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2878
+#: ../../sources/gorilla.tcl:3147
 msgid "Addition of group canceled."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2895
+#: ../../sources/gorilla.tcl:3164
 msgid "New group added."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2919
+#: ../../sources/gorilla.tcl:3188
 msgid "Root Node Can Not Be Moved"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2920
+#: ../../sources/gorilla.tcl:3189
 msgid "The root node can not be moved."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2973 ../../sources/gorilla.tcl:3269
+#: ../../sources/gorilla.tcl:3242 ../../sources/gorilla.tcl:3538
 msgid "Can Not Move Node"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:2974 ../../sources/gorilla.tcl:3270
+#: ../../sources/gorilla.tcl:3243 ../../sources/gorilla.tcl:3539
 msgid "Can not move a group to a subgroup of itself."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3034
+#: ../../sources/gorilla.tcl:3303
 msgid "Can Not Delete Root"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3035
+#: ../../sources/gorilla.tcl:3304
 msgid "The root node can not be deleted."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3047
+#: ../../sources/gorilla.tcl:3316
 msgid "Are you sure that you want to delete group and all its contents?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3057
+#: ../../sources/gorilla.tcl:3326
 msgid "Group deleted."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3103
+#: ../../sources/gorilla.tcl:3372
 msgid "Can Not Rename Root"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3104
+#: ../../sources/gorilla.tcl:3373
 msgid "The root node can not be renamed."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3141
+#: ../../sources/gorilla.tcl:3410
 msgid "Name"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3209
+#: ../../sources/gorilla.tcl:3478
 msgid "The name of the group's parent node is invalid."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3237
+#: ../../sources/gorilla.tcl:3506
 msgid "Group name unchanged."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3305
+#: ../../sources/gorilla.tcl:3574
 msgid "Group renamed."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3326
+#: ../../sources/gorilla.tcl:3595
 msgid "Export Security Warning"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3327
+#: ../../sources/gorilla.tcl:3596
 msgid ""
-"You are about to export the password database to a plain-text file. The file "
-"will not be encrypted or password-protected. Anybody with access can read "
-"the file, and learn your user names and passwords. Make sure to store the "
-"file in a secure location. Do you want to continue?"
+"You are about to export the password database to a plain-text (CSV) file. "
+"The file will not be encrypted or password-protected. Anybody with access "
+"can read the file, and learn your user names and passwords. Make sure to "
+"store the file in a secure location. Do you want to continue?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3351
-msgid "Export password database as text ..."
+#: ../../sources/gorilla.tcl:3619
+msgid "Export password database as CSV ..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3372
+#: ../../sources/gorilla.tcl:3640
 msgid "Error Exporting Database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3373
+#: ../../sources/gorilla.tcl:3641
 msgid "Failed to export password database to"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3379
+#: ../../sources/gorilla.tcl:3647
 msgid "Exporting ..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3426
+#: ../../sources/gorilla.tcl:3694
 msgid "Database exported."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3452
+#: ../../sources/gorilla.tcl:3720
 msgid "Import CSV datafile"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3463
+#: ../../sources/gorilla.tcl:3731
 msgid "Error opening import CSV file"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3464
+#: ../../sources/gorilla.tcl:3732
 msgid "Could not access file "
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3486
+#: ../../sources/gorilla.tcl:3754
 msgid "Error parsing CSV file"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3487
+#: ../../sources/gorilla.tcl:3755
 msgid "Error parsing first line of CSV file, unable to continue."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3498
+#: ../../sources/gorilla.tcl:3766
 msgid "Error, nothing to import."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3499
+#: ../../sources/gorilla.tcl:3767
 msgid ""
 "No valid import data was found.  Please see\n"
 "the help for details on how to format import\n"
 "CSV data files for Password Gorilla."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3518
+#: ../../sources/gorilla.tcl:3786
 msgid "Error, undefined data columns"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3519
+#: ../../sources/gorilla.tcl:3787
 msgid ""
 "The following data items are not recognized as import data items.\n"
 "Unable to continue."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3650
+#: ../../sources/gorilla.tcl:3917
 msgid ""
 "Some records from the CSV file were not imported.\n"
 "Do you wish to save a log of skipped records?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3651
+#: ../../sources/gorilla.tcl:3918
 msgid "Some records skipped during import"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3653
+#: ../../sources/gorilla.tcl:3920
 msgid "Enter a file into which to save the log"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3666
+#: ../../sources/gorilla.tcl:3933
 msgid "record(s) successfully imported."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3771
+#: ../../sources/gorilla.tcl:4038
 msgid "Merge Password Database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3781
+#: ../../sources/gorilla.tcl:4048
 msgid "Merging"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:3797
+#: ../../sources/gorilla.tcl:4064
 #, tcl-format
 msgid "Merging (%d %% done)"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4021
+#: ../../sources/gorilla.tcl:4288
 #, tcl-format
 msgid "Conflict for login %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4023 ../../sources/gorilla.tcl:4043
-#: ../../sources/gorilla.tcl:4052
+#: ../../sources/gorilla.tcl:4290 ../../sources/gorilla.tcl:4310
+#: ../../sources/gorilla.tcl:4319
 #, tcl-format
 msgid "(in group %s)"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4025
+#: ../../sources/gorilla.tcl:4292
 #, tcl-format
 msgid "%s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4041
+#: ../../sources/gorilla.tcl:4308
 #, tcl-format
 msgid "Added login %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4050
+#: ../../sources/gorilla.tcl:4317
 #, tcl-format
 msgid "Identical login %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4071
+#: ../../sources/gorilla.tcl:4338
 msgid "login"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4071
+#: ../../sources/gorilla.tcl:4338
 msgid "logins"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4073
+#: ../../sources/gorilla.tcl:4340
 msgid "conflict"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4073
+#: ../../sources/gorilla.tcl:4340
 msgid "conflicts"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4069
+#: ../../sources/gorilla.tcl:4336
 #, tcl-format
 msgid ""
 "Merged %s;\n"
 "%d %s, %d identical, %d added, %d %s."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4100
+#: ../../sources/gorilla.tcl:4367
 msgid "Merge Results"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4101
+#: ../../sources/gorilla.tcl:4368
 msgid "Do you want to view a detailed report?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4129
+#: ../../sources/gorilla.tcl:4396
 msgid "Resolve Conflicts"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4148 ../../sources/gorilla.tcl:6780
-#: ../../sources/gorilla.tcl:6853 ../../sources/gorilla.tcl:6951
-#: ../../sources/gorilla.tcl:7705 ../../sources/viewhelp.tcl:189
+#: ../../sources/gorilla.tcl:4415 ../../sources/gorilla.tcl:7219
+#: ../../sources/gorilla.tcl:7292 ../../sources/gorilla.tcl:7390
+#: ../../sources/gorilla.tcl:7784 ../../sources/viewhelp.tcl:189
 msgid "Close"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4180
+#: ../../sources/gorilla.tcl:4447
 msgid "Conflicts"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4270
+#: ../../sources/gorilla.tcl:4539
 msgid "Warning: Can not save to"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4270
+#: ../../sources/gorilla.tcl:4539
 msgid "because the file permissions are set for read-only access."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4271
+#: ../../sources/gorilla.tcl:4540
 msgid ""
 "Please change the file permissions to read-write and hit 'Retry' or hit "
 "'Cancel' and use 'File'->'Save As' to save into a different file."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4273
+#: ../../sources/gorilla.tcl:4542
+#, tcl-format
+msgid "Unknown issue while testing write access to file %s"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4546
 msgid "Warning: Read-only password file"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4313 ../../sources/gorilla.tcl:4428
+#: ../../sources/gorilla.tcl:4583
+msgid "Another application has modified file:"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4585
+#, tcl-format
+msgid "The file was last modified at: %s"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4586
+msgid ""
+"Continuing with a save will overwrite any new data\n"
+"that has been added to the file by the other application."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4587
+msgid ""
+"You may want to abort and perform a 'merge' with the\n"
+"file first to avoid losing data."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4588
+msgid "What would you like to do?:"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4589
+msgid "Shared file conflict"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4591
+msgid ""
+"Overwrite the file.\n"
+"(destructive)"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4592
+msgid "Abort without saving"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4594
+msgid "Password database save ABORTED."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:4630 ../../sources/gorilla.tcl:4736
 #, tcl-format
 msgid "Saving ... %d %%"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4323 ../../sources/gorilla.tcl:4530
+#: ../../sources/gorilla.tcl:4640 ../../sources/gorilla.tcl:4825
 msgid "Error Saving Backup of Database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4324
+#: ../../sources/gorilla.tcl:4641
 #, tcl-format
 msgid ""
 "Failed to save password database as\n"
 "%s: %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4365 ../../sources/gorilla.tcl:4489
+#: ../../sources/gorilla.tcl:4672 ../../sources/gorilla.tcl:4782
 msgid "Password database saved with backup copy."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4369 ../../sources/gorilla.tcl:4465
-#: ../../sources/gorilla.tcl:4493
+#: ../../sources/gorilla.tcl:4676 ../../sources/gorilla.tcl:4786
 msgid "Password database saved."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4384
+#: ../../sources/gorilla.tcl:4692
 msgid "Nothing To Save"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4385
+#: ../../sources/gorilla.tcl:4693
 msgid "No password database to save."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4414
+#: ../../sources/gorilla.tcl:4722
 msgid "Save password database ..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4434
+#: ../../sources/gorilla.tcl:4742
 msgid "Error Saving Database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4435
+#: ../../sources/gorilla.tcl:4743
 #, tcl-format
 msgid "Failed to save password database as \"%s\": %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4463
-msgid "Password database saved with backup copy"
-msgstr ""
-
-#: ../../sources/gorilla.tcl:4554 ../../sources/gorilla.tcl:8806
+#: ../../sources/gorilla.tcl:4849 ../../sources/gorilla.tcl:8967
 msgid ""
 "No valid directory. - \n"
 "Please define a valid backup directory\n"
 "in the Preferences menu."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4556
+#: ../../sources/gorilla.tcl:4851
 msgid ""
 "Unknown file. - \n"
 "Please select a valid database filename."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4568
+#: ../../sources/gorilla.tcl:4863
 #, tcl-format
 msgid ""
 "Failed to make backup copy of password\n"
@@ -813,306 +887,322 @@ msgid ""
 "%s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4760
+#: ../../sources/gorilla.tcl:5058
 msgid ""
 "The current password database is modified. Do you want to save the database? "
 "<Yes> saves the database and exits. <No> discards all changes and exits. "
 "<Cancel> returns to the main menu."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:4819
+#: ../../sources/gorilla.tcl:5120
 msgid "Clipboard cleared."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5005
+#: ../../sources/gorilla.tcl:5232
+msgid "Database not saved!"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:5233
+msgid "This database has not been saved. Do you want to save it now?"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:5234
+msgid "Yes"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:5234
+msgid "No"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:5324
 msgid "Enter the Master Password."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5028
+#: ../../sources/gorilla.tcl:5347
 #, tcl-format
 msgid "error: %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5047 ../../sources/gorilla.tcl:6510
+#: ../../sources/gorilla.tcl:5366 ../../sources/gorilla.tcl:6870
 msgid "Wrong Password"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5048 ../../sources/gorilla.tcl:6511
+#: ../../sources/gorilla.tcl:5367 ../../sources/gorilla.tcl:6871
 msgid "That password is not correct."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5083
+#: ../../sources/gorilla.tcl:5403
 msgid "Welcome back."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5097
+#: ../../sources/gorilla.tcl:5416
 msgid "Database Locked (with unsaved changes)"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5099
+#: ../../sources/gorilla.tcl:5418
 msgid "Database Locked"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5139
+#: ../../sources/gorilla.tcl:5458
 msgid "Confirm:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5209
+#: ../../sources/gorilla.tcl:5528
 msgid "Passwords Do Not Match"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5210
+#: ../../sources/gorilla.tcl:5529
 msgid "The confirmed password does not match."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5300
+#: ../../sources/gorilla.tcl:5619
 msgid "Password policy changed."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5343 ../../sources/gorilla.tcl:5400
+#: ../../sources/gorilla.tcl:5662 ../../sources/gorilla.tcl:5719
 msgid "Use lowercase letters"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5345 ../../sources/gorilla.tcl:5402
+#: ../../sources/gorilla.tcl:5664 ../../sources/gorilla.tcl:5721
 msgid "Use UPPERCASE letters"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5347 ../../sources/gorilla.tcl:5404
+#: ../../sources/gorilla.tcl:5666 ../../sources/gorilla.tcl:5723
 msgid "Use digits"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5349 ../../sources/gorilla.tcl:5406
+#: ../../sources/gorilla.tcl:5668 ../../sources/gorilla.tcl:5725
 msgid "Use hexadecimal digits"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5351 ../../sources/gorilla.tcl:5408
+#: ../../sources/gorilla.tcl:5670 ../../sources/gorilla.tcl:5727
 msgid "Use symbols (%, $, @, #, etc.)"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5354 ../../sources/gorilla.tcl:5411
+#: ../../sources/gorilla.tcl:5673 ../../sources/gorilla.tcl:5730
 msgid "Use easy to read characters only (e.g. no \"0\" or \"O\")"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5587
+#: ../../sources/gorilla.tcl:5906
 msgid "Database Preferences"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5591 ../../sources/gorilla.tcl:5832
+#: ../../sources/gorilla.tcl:5910 ../../sources/gorilla.tcl:6168
 msgid "Lock when idle after"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5595 ../../sources/gorilla.tcl:5836
+#: ../../sources/gorilla.tcl:5914 ../../sources/gorilla.tcl:6172
 msgid "minutes (0=never)"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5599 ../../sources/gorilla.tcl:5840
+#: ../../sources/gorilla.tcl:5918 ../../sources/gorilla.tcl:6176
 msgid "Auto-save database immediately when changed"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5603 ../../sources/gorilla.tcl:5842
+#: ../../sources/gorilla.tcl:5922 ../../sources/gorilla.tcl:6178
 msgid "Use Password Safe 3 format"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5608 ../../sources/gorilla.tcl:5845
+#: ../../sources/gorilla.tcl:5927 ../../sources/gorilla.tcl:6181
 msgid "V2 Unicode support"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5618
+#: ../../sources/gorilla.tcl:5937
 msgid "V3 key stretching iterations"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5624
+#: ../../sources/gorilla.tcl:5943
 msgid "Calculate delay time"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5627
+#: ../../sources/gorilla.tcl:5946
 #, tcl-format
 msgid "Default: %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5628 ../../sources/gorilla.tcl:5634
-#: ../../sources/gorilla.tcl:5646 ../../sources/gorilla.tcl:5651
+#: ../../sources/gorilla.tcl:5947 ../../sources/gorilla.tcl:5953
+#: ../../sources/gorilla.tcl:5965 ../../sources/gorilla.tcl:5970
 msgid "Calculate"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5629 ../../sources/gorilla.tcl:5648
+#: ../../sources/gorilla.tcl:5948 ../../sources/gorilla.tcl:5967
 msgid "Calculating"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5640
+#: ../../sources/gorilla.tcl:5959
 msgid "Calculate iterations"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5643
+#: ../../sources/gorilla.tcl:5962
 msgid "Delay for"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5645
+#: ../../sources/gorilla.tcl:5964
 msgid "sec(s)"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5769
+#: ../../sources/gorilla.tcl:6088
 msgid "General"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5771
+#: ../../sources/gorilla.tcl:6090
 msgid "When double clicking a login ..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5773
+#: ../../sources/gorilla.tcl:6092
 msgid "Copy password to clipboard"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5779
+#: ../../sources/gorilla.tcl:6101
 msgid "Launch Browser directed to URL"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5782
+#: ../../sources/gorilla.tcl:6104
 msgid "Do nothing"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5789
+#: ../../sources/gorilla.tcl:6111
 msgid "Clear clipboard after"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5793
+#: ../../sources/gorilla.tcl:6115
 msgid "seconds (0=never)"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5798
+#: ../../sources/gorilla.tcl:6120
 msgid "Remember"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5802
+#: ../../sources/gorilla.tcl:6124
 msgid "database names"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5803
+#: ../../sources/gorilla.tcl:6125
 msgid "Clear"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5809
+#: ../../sources/gorilla.tcl:6131
 msgid "Backup database on save"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5811
+#: ../../sources/gorilla.tcl:6133
+msgid "Time stamp backup"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6138
+msgid "Backup path:"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6142
+msgid "Choose a directory"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6147
 msgid "Remember sizes of dialog boxes"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5813
+#: ../../sources/gorilla.tcl:6149
 msgid "Use Gorilla auto-copy"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5816
+#: ../../sources/gorilla.tcl:6152
 msgid ""
 "Automatically copy password associated\n"
 "with login to clipboard after pasting\n"
 "of user-name."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5818
+#: ../../sources/gorilla.tcl:6154
 msgid ""
 "This option does not function on\n"
 "Windows(TM) or MacOS(TM) platforms.\n"
 "See the help system for details."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5829
+#: ../../sources/gorilla.tcl:6165
 msgid "Defaults"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5847
-msgid "Time stamp backup"
-msgstr ""
-
-#: ../../sources/gorilla.tcl:5853
-msgid "Backup path:"
-msgstr ""
-
-#: ../../sources/gorilla.tcl:5857
-msgid "Choose a directory"
-msgstr ""
-
-#: ../../sources/gorilla.tcl:5865
+#: ../../sources/gorilla.tcl:6188
 msgid ""
 "Note: these defaults will be applied to new databases. To change a setting "
 "for an existing database, go to \"Customize\" in the \"Security\" menu."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5875
+#: ../../sources/gorilla.tcl:6198
 msgid "Include password field"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5877
+#: ../../sources/gorilla.tcl:6200
 msgid "Include \"Notes\" field"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5881
+#: ../../sources/gorilla.tcl:6204
 msgid "Field separator"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5890
+#: ../../sources/gorilla.tcl:6213
 msgid "Show security warning"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5910
+#: ../../sources/gorilla.tcl:6233
 msgid "Display"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5913
+#: ../../sources/gorilla.tcl:6236
 msgid "Language:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5930
+#: ../../sources/gorilla.tcl:6253
 msgid "Size"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5957
+#: ../../sources/gorilla.tcl:6280
 msgid "Show Gorilla Icon"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5964
+#: ../../sources/gorilla.tcl:6287
 msgid "Iconify upon auto-lock"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5971
+#: ../../sources/gorilla.tcl:6294
 msgid "Hide login name in tree view"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5973
+#: ../../sources/gorilla.tcl:6296
 msgid ""
 "This option takes effect after exiting\n"
 "and restarting of Password Gorilla"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5979
+#: ../../sources/gorilla.tcl:6302
 msgid "Browser"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5980
+#: ../../sources/gorilla.tcl:6303
 msgid "Browser executable to launch (required):"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5982
+#: ../../sources/gorilla.tcl:6305
 msgid "Command line parameter (if any) to pass (optional):"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5984
+#: ../../sources/gorilla.tcl:6307
 msgid "Find Browser"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5986
+#: ../../sources/gorilla.tcl:6309
 msgid ""
 "If a command line parameter is provided, it must contain the character "
 "sequence: %url%. This sequence will be replaced with the actual URL during "
 "launch. See the help system for details."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5990
+#: ../../sources/gorilla.tcl:6313
 msgid "Also copy username to clipboard"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5991
+#: ../../sources/gorilla.tcl:6314
 msgid ""
 "When selected the username\n"
 "from the login entry will also\n"
@@ -1120,7 +1210,7 @@ msgid ""
 "when opening a browser."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:5995
+#: ../../sources/gorilla.tcl:6318
 msgid ""
 "Determines how Password\n"
 "Gorilla handles clearing the\n"
@@ -1131,286 +1221,314 @@ msgid ""
 "See Help for details."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6001
+#: ../../sources/gorilla.tcl:6324
 msgid "Clipboard autoclear multiplier"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6060
+#: ../../sources/gorilla.tcl:6341 ../../sources/viewhelp.tcl:118
+#: ../../sources/viewhelp.tcl:424 ../../sources/viewhelp.tcl:448
+msgid "History"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6346
+msgid "Save history of password changes"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6347
+msgid "Default saved entries per password record:"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6358
+msgid "(limit=255)"
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6361
+msgid ""
+"These settings affect the default values given to new password records and "
+"to existing records with no history entries."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6362
+msgid ""
+"To change the settings for an existing password record with history entries, "
+"please edit the login record."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6363
+msgid ""
+"The history feature is only available with PasswordSafe version 3 format "
+"files."
+msgstr ""
+
+#: ../../sources/gorilla.tcl:6427
 msgid "History deleted. After a restart the list will be empty."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6249 ../../sources/gorilla.tcl:7824
-#: ../../sources/gorilla.tcl:8886
+#: ../../sources/gorilla.tcl:6613 ../../sources/gorilla.tcl:7936
+#: ../../sources/gorilla.tcl:9047
 msgid "Error"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6249
+#: ../../sources/gorilla.tcl:6613
 msgid "Error while saving RC-File"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6499
+#: ../../sources/gorilla.tcl:6859
 msgid ""
 "Please create a new database, or open an existing\n"
 "database first."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6503
+#: ../../sources/gorilla.tcl:6863
 msgid "Current Master Password:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6517
+#: ../../sources/gorilla.tcl:6877
 msgid "New Master Password:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6520
+#: ../../sources/gorilla.tcl:6880
 msgid "Password Not Changed"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6521
+#: ../../sources/gorilla.tcl:6881
 msgid ""
 "You canceled the setting of a new password.\n"
 "Therefore, the existing password remains in effect."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6526
+#: ../../sources/gorilla.tcl:6886
 msgid "Master password changed."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6579
-#, tcl-format
-msgid ""
-"gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', "
-"'URL'"
-msgstr ""
-
-#: ../../sources/gorilla.tcl:6587
+#: ../../sources/gorilla.tcl:6977
 #, tcl-format
 msgid "Can not copy %s to clipboard: no %s defined."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6613
+#: ../../sources/gorilla.tcl:7006
 #, tcl-format
 msgid "Copied %s to clipboard."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6756
+#: ../../sources/gorilla.tcl:7192
 msgid "Password Gorilla"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6758
+#: ../../sources/gorilla.tcl:7194
 msgid ""
 "Gorilla will protect your passwords and help you to manage them with a "
 "pwsafe 3.2 compatible database"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6766
+#: ../../sources/gorilla.tcl:7202
 msgid "Contributors"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6767
+#: ../../sources/gorilla.tcl:7203
 #, tcl-format
 msgid "Gorilla artwork contributed by %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6768
+#: ../../sources/gorilla.tcl:7204
 #, tcl-format
 msgid "German translation by %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6769
+#: ../../sources/gorilla.tcl:7205
 #, tcl-format
 msgid "Russian translation by %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6770
+#: ../../sources/gorilla.tcl:7206
 #, tcl-format
 msgid "Italian translation by %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6771
+#: ../../sources/gorilla.tcl:7207
 #, tcl-format
 msgid "French translation by %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6772
+#: ../../sources/gorilla.tcl:7208
 #, tcl-format
 msgid "Spanish translation by %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6773
+#: ../../sources/gorilla.tcl:7209
 #, tcl-format
 msgid "Portuguese translation by %s"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6776
+#: ../../sources/gorilla.tcl:7215
 #, tcl-format
-msgid "Using %s sha256 extension."
+msgid "Used C extensions:%s."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6793
+#: ../../sources/gorilla.tcl:7232
 msgid "About Password Gorilla"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6821
+#: ../../sources/gorilla.tcl:7260
 msgid "Password Gorilla License"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6919
+#: ../../sources/gorilla.tcl:7358
 msgid "Find Text:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6924
+#: ../../sources/gorilla.tcl:7363
 msgid "Find Options ..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6926
+#: ../../sources/gorilla.tcl:7365
 msgid "Any field"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:6938
+#: ../../sources/gorilla.tcl:7377
 msgid "Case sensitive find"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7144
+#: ../../sources/gorilla.tcl:7585
 msgid "Text not found."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7616
+#: ../../sources/gorilla.tcl:7703
 msgid "Please select a login entry first."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7810
+#: ../../sources/gorilla.tcl:7922
 msgid "The selected login does not contain a URL value."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7812
+#: ../../sources/gorilla.tcl:7924
 msgid "Browser launching is not configured. See help."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7819
+#: ../../sources/gorilla.tcl:7931
 msgid "Browser parameter lacks '%url%' string. See help."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7824
+#: ../../sources/gorilla.tcl:7936
 msgid "Error launching browser, the OS error message is:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7824
+#: ../../sources/gorilla.tcl:7936
 msgid "Oh well..."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:7826
+#: ../../sources/gorilla.tcl:7938
 msgid "Launched browser:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8031
+#: ../../sources/gorilla.tcl:8137
 msgid "Generate gorilladoc.html"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8302
+#: ../../sources/gorilla.tcl:8408
 msgid "Conflict Merge Tool"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8339
+#: ../../sources/gorilla.tcl:8479
 #, tcl-format
 msgid "Conflict %d"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8348
+#: ../../sources/gorilla.tcl:8498
 msgid "Combine and Save"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8349
+#: ../../sources/gorilla.tcl:8499
 msgid "Reset Values"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8350
+#: ../../sources/gorilla.tcl:8500
 msgid "Ignore Conflict"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8403
+#: ../../sources/gorilla.tcl:8554
 msgid "No existing merge conflicts were found."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8474
+#: ../../sources/gorilla.tcl:8633
 msgid "Current"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8475
+#: ../../sources/gorilla.tcl:8634
 msgid "Merged"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8599
+#: ../../sources/gorilla.tcl:8758
 msgid "A selection is required for:"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8820
+#: ../../sources/gorilla.tcl:8981
 msgid "Http Error"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8831
+#: ../../sources/gorilla.tcl:8992
 #, tcl-format
 msgid "Downloading %s: "
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8845
+#: ../../sources/gorilla.tcl:9006
 msgid "Http error"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8853
+#: ../../sources/gorilla.tcl:9014
 msgid "Download Error"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8853
+#: ../../sources/gorilla.tcl:9014
 msgid "Downloaded File has wrong size."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8857
+#: ../../sources/gorilla.tcl:9018
 msgid "Download finished"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8858
+#: ../../sources/gorilla.tcl:9019
 #, tcl-format
 msgid ""
 "The new version was successfully downloaded as\n"
 "%s."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8886
+#: ../../sources/gorilla.tcl:9047
 msgid "Unknown windowing system"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8893
+#: ../../sources/gorilla.tcl:9054
 msgid "Connection error"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8898
+#: ../../sources/gorilla.tcl:9059
 msgid "No new version available"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8903
+#: ../../sources/gorilla.tcl:9064
 #, tcl-format
 msgid "You are running version %s."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8905
+#: ../../sources/gorilla.tcl:9066
 #, tcl-format
 msgid "There is a new version %s for %s."
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8906
+#: ../../sources/gorilla.tcl:9067
 msgid "Shall I download the new version?"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8910
+#: ../../sources/gorilla.tcl:9071
 msgid "New version available"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8910
+#: ../../sources/gorilla.tcl:9071
 msgid "Executable"
 msgstr ""
 
-#: ../../sources/gorilla.tcl:8910
+#: ../../sources/gorilla.tcl:9071
 msgid "Sourcecode"
 msgstr ""
 
@@ -1434,11 +1552,6 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#: ../../sources/viewhelp.tcl:118 ../../sources/viewhelp.tcl:424
-#: ../../sources/viewhelp.tcl:448
-msgid "History"
-msgstr ""
-
 #: ../../sources/viewhelp.tcl:118 ../../sources/viewhelp.tcl:427
 #: ../../sources/viewhelp.tcl:443
 msgid "Index"
@@ -1452,106 +1565,108 @@ msgstr ""
 msgid "Search!"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:333
+#: ../../sources/pwsafe/pwsafe-db.tcl:369
 msgid ""
 "Unable to find unused character with which to quote preference string.\n"
 "Normally this should not happen."
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:364
+#: ../../sources/pwsafe/pwsafe-db.tcl:400
 #, tcl-format
 msgid "unknown preference type: %s"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:389
+#: ../../sources/pwsafe/pwsafe-db.tcl:425
 msgid "premature end of preference"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:417
+#: ../../sources/pwsafe/pwsafe-db.tcl:453
 #, tcl-format
 msgid "expected number for value, got %s"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:425
+#: ../../sources/pwsafe/pwsafe-db.tcl:461
 #, tcl-format
 msgid "end delimiter '%s' not found in saved DB preference"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:430
+#: ../../sources/pwsafe/pwsafe-db.tcl:466
 msgid "premature end of string value"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:467
-#: ../../sources/pwsafe/pwsafe-db.tcl:485
-#: ../../sources/pwsafe/pwsafe-db.tcl:504
+#: ../../sources/pwsafe/pwsafe-db.tcl:503
+#: ../../sources/pwsafe/pwsafe-db.tcl:521
+#: ../../sources/pwsafe/pwsafe-db.tcl:540
 #, tcl-format
 msgid "no such preference: %s"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:525
-#: ../../sources/pwsafe/pwsafe-db.tcl:544
-#: ../../sources/pwsafe/pwsafe-db.tcl:554
-#: ../../sources/pwsafe/pwsafe-db.tcl:573
+#: ../../sources/pwsafe/pwsafe-db.tcl:561
+#: ../../sources/pwsafe/pwsafe-db.tcl:580
+#: ../../sources/pwsafe/pwsafe-db.tcl:590
+#: ../../sources/pwsafe/pwsafe-db.tcl:609
 msgid "group name can not be empty"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:629
-#: ../../sources/pwsafe/pwsafe-db.tcl:643
-#: ../../sources/pwsafe/pwsafe-db.tcl:659
-#: ../../sources/pwsafe/pwsafe-db.tcl:680
+#: ../../sources/pwsafe/pwsafe-db.tcl:665
+#: ../../sources/pwsafe/pwsafe-db.tcl:679
+#: ../../sources/pwsafe/pwsafe-db.tcl:695
+#: ../../sources/pwsafe/pwsafe-db.tcl:709
 #, tcl-format
 msgid "record %d does not exist"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:661
+#: ../../sources/pwsafe/pwsafe-db.tcl:697
 #, tcl-format
 msgid "record %d does not have field %s"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-db.tcl:732
+#: ../../sources/pwsafe/pwsafe-db.tcl:754
 #, tcl-format
 msgid "no header field %s"
+msgstr ""
+
+#: ../../sources/pwsafe/pwsafe.tcl:169 ../../sources/pwsafe/pwsafe.tcl:214
+#, tcl-format
+msgid "invalid version %s"
 msgstr ""
 
 #: ../../sources/pwsafe/pwsafe-v2.tcl:52
 msgid "less than 8 bytes remaining for length field"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v2.tcl:59
-#: ../../sources/pwsafe/pwsafe-v2.tcl:487
-#: ../../sources/pwsafe/pwsafe-v3.tcl:71
-#: ../../sources/pwsafe/pwsafe-v3.tcl:556
+#: ../../sources/pwsafe/pwsafe-v2.tcl:60 ../../sources/pwsafe/pwsafe-v2.tcl:502
+#: ../../sources/pwsafe/pwsafe-v3.tcl:72 ../../sources/pwsafe/pwsafe-v3.tcl:657
 msgid "oops"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v2.tcl:67 ../../sources/pwsafe/pwsafe-v3.tcl:79
+#: ../../sources/pwsafe/pwsafe-v2.tcl:68 ../../sources/pwsafe/pwsafe-v3.tcl:80
 #, tcl-format
 msgid "field length %d looks insane"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v2.tcl:89
-#: ../../sources/pwsafe/pwsafe-v3.tcl:110
+#: ../../sources/pwsafe/pwsafe-v2.tcl:90 ../../sources/pwsafe/pwsafe-v3.tcl:112
 msgid "out of data"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v2.tcl:176
+#: ../../sources/pwsafe/pwsafe-v2.tcl:177
 msgid "V1 name field looks suspect"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v2.tcl:328
-#: ../../sources/pwsafe/pwsafe-v2.tcl:640
-#: ../../sources/pwsafe/pwsafe-v3.tcl:309
-#: ../../sources/pwsafe/pwsafe-v3.tcl:744
+#: ../../sources/pwsafe/pwsafe-v2.tcl:336
+#: ../../sources/pwsafe/pwsafe-v2.tcl:655
+#: ../../sources/pwsafe/pwsafe-v3.tcl:405
+#: ../../sources/pwsafe/pwsafe-v3.tcl:884
 msgid "this object can not be reused"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v2.tcl:363
-#: ../../sources/pwsafe/pwsafe-v3.tcl:367
+#: ../../sources/pwsafe/pwsafe-v2.tcl:377
+#: ../../sources/pwsafe/pwsafe-v3.tcl:463
 msgid "end of file while reading header"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v2.tcl:373
-#: ../../sources/pwsafe/pwsafe-v3.tcl:395
+#: ../../sources/pwsafe/pwsafe-v2.tcl:387
+#: ../../sources/pwsafe/pwsafe-v3.tcl:494
 msgid "wrong password"
 msgstr ""
 
@@ -1563,15 +1678,10 @@ msgstr ""
 msgid "less than 16 bytes remaining for first block"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v3.tcl:346
+#: ../../sources/pwsafe/pwsafe-v3.tcl:442
 msgid "file does not have PWS3 magic"
 msgstr ""
 
-#: ../../sources/pwsafe/pwsafe-v3.tcl:375
+#: ../../sources/pwsafe/pwsafe-v3.tcl:471
 msgid "Failed to scan key stretch iteration count from binary data."
-msgstr ""
-
-#: ../../sources/pwsafe/pwsafe.tcl:170 ../../sources/pwsafe/pwsafe.tcl:216
-#, tcl-format
-msgid "invalid version %s"
 msgstr ""
