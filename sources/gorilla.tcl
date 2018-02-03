@@ -2144,7 +2144,8 @@ namespace eval ::gorilla::LoginDialog {
 
 		set widget(history) [ttk::treeview $pane2.history \
 			-style gorilla.Treeview \
-			-columns {Date Password} -show headings \
+			-columns {Seconds Date Password} -show headings \
+			-displaycolumns {Date Password} \
 			-yscrollcommand [list $pane2.vsb set]]
 		ttk::scrollbar $pane2.vsb -orient vertical \
 			-command [list $widget(history) yview]
@@ -2158,7 +2159,15 @@ namespace eval ::gorilla::LoginDialog {
 		set f [ ttk::frame $pane2.bf ]
 		ttk::label $f.withdolbl -text [mc "With selected do:"]
 		set widget(hist-delete) [ \
-			ttk::button $f.hdel   -text [mc Delete] -state disabled]
+			ttk::button $f.hdel   -text [mc Delete] -state disabled \
+				-command [list namespace inscope ${pvns} {
+					variable widget
+					if {[llength [$widget(history) selection]] == 0} { return }
+					$widget(history) delete [$widget(history) selection]
+					variable historymodified
+					set historymodified 1
+				}]]
+					
 		set widget(hist-revert) [ \
 			ttk::button $f.revert -text [mc Revert] -state disabled \
 				-command [list ::apply { {password history} { 
@@ -2167,7 +2176,6 @@ namespace eval ::gorilla::LoginDialog {
 					$password delete 0 end
 					$password insert end [$history set $id Password]
 				} } $widget(password) $widget(history)]
-
 		]
 
 		ttk::label $f.maxlbl -text [ mc "Max saved:" ]
@@ -2487,6 +2495,7 @@ proc build-gui-callbacks { pvns widgets } {
 			variable widget
 			variable maxhistory    $::gorilla::preference(historyMaxSize)
 			variable historyactive $::gorilla::preference(historyActive)
+			variable historymodified 0
 
 			foreach item { group title url user password } {
 				variable $item
@@ -2525,7 +2534,7 @@ proc build-gui-callbacks { pvns widgets } {
 				set maxhistory    [ dict get $history maxsize ]
 				foreach item [ lreverse [ dict get $history passwords ] ] {
 					lassign $item numdate oldpass
-					-m:history- insert {} end -values [ list [ clock format $numdate -format "%Y-%m-%d %H:%M:%S" ] $oldpass ]
+					-m:history- insert {} end -values [list $numdate [clock format $numdate -format "%Y-%m-%d %H:%M:%S"] $oldpass]
 				}
 			}
 
@@ -2541,9 +2550,14 @@ proc build-gui-callbacks { pvns widgets } {
 			# rn - the db record number into which to
 			#      insert the state data
 
+			# varlist is used below to check and populate these fields
+			# from the dialog into the Itcl db record - that is why it
+			# is created separately
+			
 			set varlist { group title user password url }
 
-			foreach var [ concat $varlist history historyactive maxhistory ] {
+			foreach var [concat $varlist history historyactive \
+					maxhistory historymodified widget] {
 				variable $var
 			}
 
@@ -2557,10 +2571,10 @@ proc build-gui-callbacks { pvns widgets } {
 				}
 			}
 
-			set history [ dbget history $rn [ dict create \
-			active    $::gorilla::preference(historyActive) \
-			maxsize   $::gorilla::preference(historyMaxSize) \
-			passwords [ list ] ] ]
+			set history [dbget history $rn [dict create \
+				active    $::gorilla::preference(historyActive) \
+				maxsize   $::gorilla::preference(historyMaxSize) \
+				passwords [list]]]
 
 			# handle stage 1 history update first (so "active" value is set correctly)
 			#show-hist-dict $history PopulateRecord-B4
@@ -2577,6 +2591,22 @@ proc build-gui-callbacks { pvns widgets } {
 				dbset history $rn $history
 			}
 			#show-hist-dict $history PopulateRecord-AF
+
+			if {$historymodified} {
+				# Extract the history data from the ttk::treeview widget.
+				# The lreverse is here because the ttk::treeview stores the
+				# history records in reverse order of their storage in the
+				# Itcl db
+				set histtemp [list]
+				foreach item [lreverse [$widget(history) children {}]] {
+				  set temp [$widget(history) set $item]
+				  lappend histtemp [list \
+				  	[dict get $temp Seconds] [dict get $temp Password]]
+				}
+				dict set history passwords $histtemp
+				dbset history $rn $history
+				set modified 1
+			}
 
 			foreach element [ list {*}$varlist notes ] {
 
@@ -2635,7 +2665,7 @@ proc build-gui-callbacks { pvns widgets } {
 		proc Ok { } {
 
 			foreach var { title group rn treenode url user historyactive
-			maxhistory } {
+					maxhistory history } {
 				variable $var
 			}
 
