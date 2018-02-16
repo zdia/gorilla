@@ -247,7 +247,7 @@ itcl::class pwsafe::db {
 		set nextrecordnumber 0
 		set recordnumbers [list]
 		set engine [namespace current]::[itwofish::ecb #auto \
-		[pwsafe::int::randomString 16]]
+			[pwsafe::int::randomString 16]]
 		set password [encryptField $password_]
 		array set preferences {}
 		array set header {}
@@ -361,7 +361,7 @@ itcl::class pwsafe::db {
 					# 35 is # in ascii/utf-8 - the next char after "
 					set ascii 35
 					while { ( -1 != [ string first $delim $prefValue ] )
-					&& ( $ascii != 34 ) } {
+						&& ( $ascii != 34 ) } {
 						set delim [ format %c $ascii ]
 						set ascii [ expr { ($ascii + 1) % 256 } ]
 					}
@@ -406,7 +406,7 @@ itcl::class pwsafe::db {
 
 			incr i
 			while {$i < [string length $newPreferences] && \
-			[string is space [string index $newPreferences $i]]} {
+				[string is space [string index $newPreferences $i]]} {
 				incr i
 			}
 
@@ -416,7 +416,7 @@ itcl::class pwsafe::db {
 
 			set prefNumberString ""
 			while {$i < [string length $newPreferences] && \
-			[string is digit [string index $newPreferences $i]]} {
+				[string is digit [string index $newPreferences $i]]} {
 				append prefNumberString [string index $newPreferences $i]
 				incr i
 			}
@@ -434,7 +434,7 @@ itcl::class pwsafe::db {
 			#
 
 			while {$i < [string length $newPreferences] && \
-			[string is space [string index $newPreferences $i]]} {
+				[string is space [string index $newPreferences $i]]} {
 				incr i
 			}
 
@@ -445,7 +445,7 @@ itcl::class pwsafe::db {
 			if {$prefType == "B" || $prefType == "I"} {
 				set prefValString ""
 				while {$i < [string length $newPreferences] && \
-				[string is digit [string index $newPreferences $i]]} {
+					[string is digit [string index $newPreferences $i]]} {
 					append prefValString [string index $newPreferences $i]
 					incr i
 				}

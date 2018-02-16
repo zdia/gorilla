@@ -224,7 +224,7 @@ itcl::class pwsafe::v2::reader {
 			set filePos [$source tell]
 
 			if {$filePos != -1 && $fileSize != -1 && \
-			$fileSize != 0 && $filePos <= $fileSize} {
+				$fileSize != 0 && $filePos <= $fileSize} {
 				set percent [expr {100.0*double($filePos)/double($fileSize)}]
 			} else {
 				set percent -1
@@ -488,8 +488,8 @@ itcl::class pwsafe::v2::writer {
 		} elseif {[expr {$fieldDataLength % 8}] != 0} {
 			set padLength [expr {7-($fieldDataLength % 8)}]
 			append data [string range \
-			"\x00\x00\x00\x00\x00\x00\x00\x00" \
-			0 $padLength]
+				"\x00\x00\x00\x00\x00\x00\x00\x00" \
+				0 $padLength]
 		}
 
 		#

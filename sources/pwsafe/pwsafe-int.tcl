@@ -134,8 +134,8 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
 		# by an AND: value & 0xffffffff)
 		for {set t 0} {$t < 20} {incr t} {
 			set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
-			(($B & $C) | ((~$B) & $D)) \
-			+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+				(($B & $C) | ((~$B) & $D)) \
+				+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
 			set E $D
 			set D $C
 			set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
@@ -144,8 +144,8 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
 		}
 		for {} {$t<40} {incr t} {
 			set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
-			($B ^ $C ^ $D) \
-			+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+				($B ^ $C ^ $D) \
+				+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
 			set E $D
 			set D $C
 			set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
@@ -154,8 +154,8 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
 		}
 		for {} {$t<60} {incr t} {
 			set TEMP [expr {(((($A << 5) & 0xffffffff) | (($A >> 27) & 0x1f)) + \
-			(($B & $C) | ($B & $D) | ($C & $D)) \
-			+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+				(($B & $C) | ($B & $D) | ($C & $D)) \
+				+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
 			set E $D
 			set D $C
 			set C [expr {(($B << 30)  & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]
@@ -164,8 +164,8 @@ proc pwsafe::int::sha1isz {msg {isz 0}} {
 		}
 		for {} {$t<80} {incr t} {
 			set TEMP [expr {(((($A << 5) & 0xffffffff)| (($A >> 27) & 0x1f)) + \
-			($B ^ $C ^ $D) \
-			+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
+				($B ^ $C ^ $D) \
+				+ $E + [lindex $W $t] + [lindex $sha1isz_K $t]) & 0xffffffff}]
 			set E $D
 			set D $C
 			set C [expr {(($B << 30) & 0xffffffff) | (($B >> 2) & 0x3fffffff)}]

@@ -303,7 +303,7 @@ itcl::class pwsafe::v3::reader {
 					#
 
 					if {[info exists ::tcl_platform(platform)] && \
-					[string equal $::tcl_platform(platform) "macintosh"]} {
+						[string equal $::tcl_platform(platform) "macintosh"]} {
 						incr fieldValue 2082844800
 					}
 				}
@@ -814,7 +814,7 @@ itcl::class pwsafe::v3::writer {
 						#
 
 						if {[info exists ::tcl_platform(platform)] && \
-						[string equal $::tcl_platform(platform) "macintosh"]} {
+							[string equal $::tcl_platform(platform) "macintosh"]} {
 							incr fieldValue -2082844800
 						}
 
@@ -845,8 +845,8 @@ itcl::class pwsafe::v3::writer {
 
 						# header
 						set output [ format "%1d%2x%2x" [ expr { $active ? 1 : 0 } ] \
-						$maxsize \
-						[ llength $passwords ] ]
+							$maxsize \
+							[ llength $passwords ] ]
 
 						# passwords
 						foreach item $passwords {
