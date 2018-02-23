@@ -7041,6 +7041,8 @@ proc gorilla::Find {} {
 		
 	} else {
 		wm deiconify $top
+		focus $top.text.e
+		$top.text.e selection range 0 end
 		# Dialog_Wait
 	}
 
