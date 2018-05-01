@@ -1341,6 +1341,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 		bind $aframe.pw.pw <KeyPress> "+::gorilla::CollectTicks"
 		bind $aframe.pw.pw <KeyRelease> "+::gorilla::CollectTicks"
 		bind $aframe.pw.pw <[ expr { [tk windowingsystem] == "aqua" ? "Command" : "Control" } ]-BackSpace> { %W delete 0 end }
+		bind $top <Key-Escape> [list set ::gorilla::guimutex 2]
 
 		pack $aframe.pw.pw -side left -padx 10 -pady 10 -fill x -expand yes
 
@@ -2073,6 +2074,7 @@ namespace eval ::gorilla::LoginDialog {
 
 		ttk::button $frt.ok -width 16 -text [ mc "OK" ] -command [ list namespace inscope $pvns Ok ]
 		ttk::button $frt.c -width 16 -text [ mc "Cancel" ] -command [ namespace code [ list DestroyLoginDialog $top ] ]
+		bind $top <Key-Escape> [namespace code [list DestroyLoginDialog $top]]
 
 		pack $frt.ok $frt.c -side top -padx 10 -pady 5
 		pack $frt -side top -pady 20
@@ -2858,6 +2860,8 @@ proc gorilla::MoveDialog {type} {
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 10 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
+		bind $top <Key-Escape> [list set ::gorilla::guimutex 2]
+
 		pack $but1 $but2 -side left -pady 10 -padx 20
 		pack $top.buts -side bottom -pady 10 -fill y -expand yes
 
@@ -5497,6 +5501,7 @@ proc gorilla::GetPassword {confirm title} {
 		bind $top.password.e <Return> "set ::gorilla::guimutex 1"
 		bind $top.buts.b1 <Return> "set ::gorilla::guimutex 1"
 		bind $top.buts.b2 <Return> "set ::gorilla::guimutex 2"
+		bind $top <Key-Escape> [list set ::gorilla::guimutex 2]
 
 		if {$confirm} {
 			bind $top.confirm.e <Return> "set ::gorilla::guimutex 1"
@@ -5705,6 +5710,7 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 			-command "set ::gorilla::guimutex 2"]
 		pack $but1 $but2 -side left -pady 10 -padx 20
 		pack $top.buts -padx 10
+		bind $top <Key-Escape> [list set ::gorilla::guimutex 2]
 
 		bind $top.lower <Return> "set ::gorilla::guimutex 1"
 		bind $top.upper <Return> "set ::gorilla::guimutex 1"
@@ -5714,7 +5720,6 @@ proc gorilla::PasswordPolicyDialog {title settings} {
 		bind $top.easy <Return> "set ::gorilla::guimutex 1"
 		bind $top.buts.b1 <Return> "set ::gorilla::guimutex 1"
 		bind $top.buts.b2 <Return> "set ::gorilla::guimutex 2"
-
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyPasswordPolicyDialog
 	} else {
@@ -6003,6 +6008,7 @@ proc gorilla::DatabasePreferencesDialog {} {
 			-command "set ::gorilla::guimutex 2"]
 		pack $but1 $but2 -side left -padx 20
 		pack $top.buts -side top -pady 10
+		bind $top <Key-Escape> [list set ::gorilla::guimutex 2]
 
 		bind $top.uni <Return> "set ::gorilla::guimutex 1"
 		set ::gorilla::toplevel($top) $top
@@ -6417,6 +6423,8 @@ proc gorilla::PreferencesDialog {} {
 			-command "set ::gorilla::guimutex 1"]
 		set but2 [ttk::button $top.buts.b2 -width 15 -text [mc "Cancel"] \
 			-command "set ::gorilla::guimutex 2"]
+		bind $top <Key-Escape> [list set ::gorilla::guimutex 2]
+
 		pack $but1 $but2 -side left -pady 10 -padx 20
 		pack $top.buts -side top -ipady 10 -fill both
 
@@ -7252,6 +7260,7 @@ proc gorilla::About {} {
 		wm title $top [mc "About Password Gorilla"]
 
 		bind $top <Return> "gorilla::DestroyAboutDialog"
+		bind $top <Key-Escape> [list gorilla::DestroyAboutDialog]
 
 		set ::gorilla::toplevel($top) $top
 		wm protocol $top WM_DELETE_WINDOW gorilla::DestroyAboutDialog
@@ -7311,6 +7320,7 @@ proc gorilla::ShowTextFile {top title fileName} {
 		set botframe [ttk::frame $top.botframe]
 		set botbut [ttk::button $botframe.but -width 10 -text [mc "Close"] \
 			-command "gorilla::DestroyTextFileDialog $top"]
+		bind $top <Key-Escape> [list gorilla::DestroyTextFileDialog $top]
 		pack $botbut
 		pack $botframe -side top -fill x -pady 10
 
@@ -7802,6 +7812,8 @@ proc gorilla::ShowTextFile {top title fileName} {
 		set buttonframe [ ttk::frame $top.bf -padding {10 10} ]
 
 		ttk::button $buttonframe.close -text [mc "Close"] -command "gorilla::DestroyDialog $top"
+		bind $top <Key-Escape> [list gorilla::DestroyDialog $top]
+
 		ttk::button $buttonframe.showpassw -text [mc "Show Password"] \
 			-command [ list ::apply { { button entry rn } {
 				if { [ $button cget -text ] eq [ mc "Show Password" ] } {

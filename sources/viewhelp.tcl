@@ -187,6 +187,8 @@ proc ::Help::DoDisplay { top } {
 		
 		frame $top.bottom -bd 2 -relief ridge
 		button $top.b -text [mc "Close"] -command "gorilla::CloseDialog $top"
+		bind $top <Key-Escape> [list gorilla::CloseDialog $top]
+
 		pack $top.bottom -side bottom -fill both
 		pack $top.b -side bottom -expand 1 -pady 10 -in $top.bottom
 	
