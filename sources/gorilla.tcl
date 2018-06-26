@@ -593,7 +593,6 @@ proc gorilla::InitGui {} {
 	# suche alle Einträge mit dem Tag tag und finde den Index
 	# .mbar.file entryconfigure 2 -state disabled
 
-	wm title . "Password Gorilla"
 	wm iconname . "Gorilla"
 	wm iconphoto . $::gorilla::images(application)
 
@@ -1235,13 +1234,10 @@ proc gorilla::New {} {
 	. configure -cursor watch
 	update idletasks
 
-	wm title . [mc "Password Gorilla - <New Database>"]
-
 	# Aufräumarbeiten
 	if {[info exists ::gorilla::db]} {
 		itcl::delete object $::gorilla::db
 	}
-	set ::gorilla::dirty 0
 
 	# create an pwsafe object ::gorilla::db
 	# with accessible by methods like: GetPreference <name>
@@ -1293,7 +1289,7 @@ proc gorilla::New {} {
 	if {[$::gorilla::db getPreference "SaveImmediately"]} {
 		gorilla::SaveAs
 	}
-	UpdateMenu
+	MarkDatabaseAsClean
 }
 
 # ----------------------------------------------------------------------
@@ -1686,8 +1682,6 @@ proc gorilla::Open {{defaultFile ""}} {
 	set newdb [lindex $openInfo 2]
 	set nativeName [file nativename $fileName]
 
-	wm title . "Password Gorilla - $nativeName"
-
 	if {[info exists ::gorilla::db]} {
 		itcl::delete object $::gorilla::db
 	}
@@ -1695,8 +1689,6 @@ proc gorilla::Open {{defaultFile ""}} {
 	set ::gorilla::status [mc "Password database %s loaded." $nativeName ]
 	set ::gorilla::fileName $fileName
 	set ::gorilla::db $newdb
-	set ::gorilla::dirty 0
-
 	$::gorilla::widgets(tree) selection set ""
 	# delete all the tree
 	# $::gorilla::widgets(tree) delete [$::gorilla::widgets(tree) nodes root]
@@ -1712,7 +1704,7 @@ proc gorilla::Open {{defaultFile ""}} {
 
 	FocusRootNode
 	AddAllRecordsToTree
-	UpdateMenu
+	MarkDatabaseAsClean
 	return "Open"
 
 } ; # end gorilla::Open
@@ -3998,6 +3990,8 @@ proc gorilla::setup-default-dirname { } {
 
 # ----------------------------------------------------------------------
 # Mark database as dirty
+# Consolidates all the bits of functionality that go into marking the DB
+# dirty into one location.
 # ----------------------------------------------------------------------
 
 proc gorilla::MarkDatabaseAsDirty {} {
@@ -4016,6 +4010,38 @@ proc gorilla::MarkDatabaseAsDirty {} {
 	}
 
 	UpdateMenu
+	SetMainTitle	
+}
+
+# ----------------------------------------------------------------------
+# Mark database as clean
+# Consolidates all the bits of functionality that go into marking the DB
+# clean into one location.
+# ----------------------------------------------------------------------
+
+proc gorilla::MarkDatabaseAsClean {} {
+	set ::gorilla::dirty 0
+	$::gorilla::widgets(tree) item "RootNode" -tags black
+	UpdateMenu
+	SetMainTitle
+}
+
+# ----------------------------------------------------------------------
+# Updates the main window title bar text to show "Changed" to indicate
+# dirty or clean.
+# ----------------------------------------------------------------------
+
+proc gorilla::SetMainTitle {} {
+	set message [list [mc "Password Gorilla"]]
+	if {$::gorilla::dirty} {
+		lappend message ([mc Changed])
+	}
+	if {[info exists ::gorilla::fileName]} {
+		lappend message [file nativename $::gorilla::fileName]
+	} else {
+		lappend message "<[mc "New Database"]>"
+	}
+	wm title . [join $message " - "]
 }
 
 # ----------------------------------------------------------------------
@@ -4668,10 +4694,7 @@ proc gorilla::Save {} {
 
 	::gorilla::progress finished .status
 
-	set ::gorilla::dirty 0
-	$::gorilla::widgets(tree) item "RootNode" -tags black
-
-	UpdateMenu
+	MarkDatabaseAsClean
 
 	. configure -cursor $myOldCursor
 
@@ -4776,10 +4799,8 @@ proc gorilla::SaveAs {} {
 	# clean up
 
 	. configure -cursor $myOldCursor
-	set ::gorilla::dirty 0
-	$::gorilla::widgets(tree) item "RootNode" -tags black
+	MarkDatabaseAsClean
 
-	wm title . "Password Gorilla - $nativeName"
 	$::gorilla::widgets(tree) item "RootNode" -text $nativeName
 
 	# Add file to LRU preference
@@ -5330,7 +5351,6 @@ if {![info exists ::gorilla::toplevel($top)]} {
 	}
 }
 
-wm title $top "Password Gorilla"
 wm iconname $top "Gorilla"
 wm iconphoto $top $::gorilla::images(application)
 $aframe.title configure -text  [ ::gorilla::LockDirtyMessage ]
