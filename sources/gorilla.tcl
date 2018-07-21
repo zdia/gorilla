@@ -623,11 +623,16 @@ proc gorilla::InitGui {} {
 
 	ttk::label .status -relief sunken -padding [list 5 2]
 
+	# this widget will display a Unicode "black circle" (\u25cf)
+	# character whenever the currently loaded DB has unsaved changes
+	ttk::label .save_circle -relief sunken -padding [list 5 2] -width 1
+	bind .save_circle <ButtonRelease-1> ::gorilla::Save
+
 	## Arrange the tree, its scrollbars, and the status line in the toplevel
 	grid .tree   .vsb -sticky nsew
 	# .hsb does not do anything at the moment - therefore do not display it
 	#grid .hsb    x    -sticky news
-	grid .status -    -sticky news
+	grid .status .save_circle -sticky news
 	grid columnconfigure . 0 -weight 1
 	grid rowconfigure    . 0 -weight 1
 
@@ -4011,6 +4016,8 @@ proc gorilla::MarkDatabaseAsDirty {} {
 
 	UpdateMenu
 	SetMainTitle	
+	.save_circle configure -text \u25cf
+	::tooltip::tooltip .save_circle [mc "Save Changes"]
 }
 
 # ----------------------------------------------------------------------
@@ -4024,6 +4031,8 @@ proc gorilla::MarkDatabaseAsClean {} {
 	$::gorilla::widgets(tree) item "RootNode" -tags black
 	UpdateMenu
 	SetMainTitle
+	.save_circle configure -text ""
+	::tooltip::tooltip clear .save_circle
 }
 
 # ----------------------------------------------------------------------
@@ -4569,6 +4578,16 @@ proc gorilla::Merge {} {
 
 proc gorilla::Save {} {
 	ArrangeIdleTimeout
+
+	# The mods to add the .save_circle widget call this proc from the
+	# binding on that widget.  But with a new database, there is no
+	# filename yet.  So use existance of a filename to decide to perform
+	# a SaveAs instead of a Save.
+
+	if { ! [info exists ::gorilla::fileName]} {
+		::gorilla::SaveAs
+		return GORILLA_OK
+	}
 
 	#
 	# Test for write access to the pwsafe database
