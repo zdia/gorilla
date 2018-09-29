@@ -7984,37 +7984,37 @@ proc gorilla::ShowTextFile {top title fileName} {
 # ----------------------------------------------------------------------
 #
 
-proc gorilla::LaunchBrowser { rn } {
+proc gorilla::LaunchBrowser {rn} {
 
 	# add quotes around the URL value to protect it from most issues
 	# with {*} expansion
-	set URL \"[ dbget url $rn ]\"
-	if { $URL eq "" } {
-		set ::gorilla::status [ mc "The selected login does not contain a URL value." ]
-	} elseif { $::gorilla::preference(browser-exe) eq "" } {
-		set ::gorilla::status [ mc "Browser launching is not configured. See help." ]
+	set URL \"[dbget url $rn]\"
+	if {$URL eq ""} {
+		set ::gorilla::status [mc "The selected login does not contain a URL value."]
+	} elseif {$::gorilla::preference(browser-exe) eq ""} {
+		set ::gorilla::status [mc "Browser launching is not configured. See help."]
 	} else {
 		set param $::gorilla::preference(browser-param)
-		if { $param ne "" } {
-			if { [ string match "*%url%*" $param ] } {
-				set URL [ string map [ list %url% $URL ] $param ]
+		if {$param ne ""} {
+			if {[string match "*%url%*" $param]} {
+				set URL [string map [list %url% $URL] $param]
 			} else {
-				set ::gorilla::status [ mc "Browser parameter lacks '%url%' string. See help." ]
+				set ::gorilla::status [mc "Browser parameter lacks '%url%' string. See help."]
 				return
 			}
 		}
-		if { [ catch { exec $::gorilla::preference(browser-exe) {*}$URL & } mesg ] } {
-			tk_dialog .errorurl [ mc "Error" ] "[ mc "Error launching browser, the OS error message is:" ]\n\n$mesg" "" "" [ mc "Oh well..." ]
+		if {[catch {exec $::gorilla::preference(browser-exe) {*}$URL &} mesg]} {
+			tk_dialog .errorurl [mc "Error"] "[mc "Error launching browser, the OS error message is:"]\n\n$mesg" "" "" [mc "Oh well..."]
 		} else {
-			set ::gorilla::status "[ mc "Launched browser:" ] $::gorilla::preference(browser-exe)"
-			if { $::gorilla::preference(autocopyUserid) } {
+			set ::gorilla::status "[mc "Launched browser:"] $::gorilla::preference(browser-exe)"
+			if {$::gorilla::preference(autocopyUserid)} {
 				::gorilla::CopyToClipboard Username $::gorilla::preference(autoclearMultiplier)
 			}
 
 		}
 	}
 
-} ; # end proc gorilla::LaunchBrowser
+} ;# end proc gorilla::LaunchBrowser
 
 #
 # ----------------------------------------------------------------------
