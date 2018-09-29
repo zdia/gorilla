@@ -7986,18 +7986,21 @@ proc gorilla::ShowTextFile {top title fileName} {
 
 proc gorilla::LaunchBrowser {rn} {
 
-	# add quotes around the URL value to protect it from most issues
-	# with {*} expansion
-	set URL \"[dbget url $rn]\"
+	set URL [dbget url $rn]
 	if {$URL eq ""} {
 		set ::gorilla::status [mc "The selected login does not contain a URL value."]
 	} elseif {$::gorilla::preference(browser-exe) eq ""} {
 		set ::gorilla::status [mc "Browser launching is not configured. See help."]
 	} else {
-		set param $::gorilla::preference(browser-param)
-		if {$param ne ""} {
-			if {[string match "*%url%*" $param]} {
-				set URL [string map [list %url% $URL] $param]
+		set browser_param [list {*}$::gorilla::preference(browser-param)]
+		if {[llength $browser_param] == 0} {
+			set URL [list $URL] ;# convert URL string to list to protect it from {*} expansion
+		} else {
+			set idx [lsearch -glob $browser_param *%url%*]
+			if {$idx > -1} {
+				lset browser_param $idx \
+					[string map [list %url% $URL] [lindex $browser_param $idx]]
+				set URL $browser_param
 			} else {
 				set ::gorilla::status [mc "Browser parameter lacks '%url%' string. See help."]
 				return
