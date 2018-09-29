@@ -6820,13 +6820,11 @@ proc gorilla::LoadPreferencesFromRCFile {} {
 			continue
 		}
 
-		set temp [ split $line = ]
+		set idx [string first = $line]
+		if {$idx == -1} { continue }
 
-		if { [ llength $temp ] != 2 } {
-			continue
-		}
-
-		lassign $temp pref value
+		set pref [string range $line 0 $idx-1]
+		set value [string range $line $idx+1 end]
 
 		set pref [ string trim $pref ]
 		# the subst is to perform backslash substitutions upon the value of the preference
