@@ -361,6 +361,7 @@ proc gorilla::Init {} {
 
 		autoclearMultiplier    { 1       { {value} { expr { ( [ string is integer $value ] ) && ( $value >= 0 ) } } }         }
 		autocopyUserid         { 0       { {value} { string is boolean $value } }                                             }
+		autocopyLatency        { 50      { {value} { expr {[string is integer -strict $value] && ($value >= 0)}}}             }
 		backupPath             { {}      { {value} { file exists $value } }                                                   }
 		browser-exe            { {}      { {value} { return true } }                                                          }
 		browser-param          { {}      { {value} { return true } }                                                          }
@@ -6211,13 +6212,24 @@ proc gorilla::PreferencesDialog {} {
 
 		ttk::checkbutton $gpf.geo -text [mc "Remember sizes of dialog boxes"] \
 			-variable ::gorilla::prefTemp(rememberGeometries)
-		ttk::checkbutton $gpf.gac -text [ mc "Use Gorilla auto-copy" ] \
+
+		set f [ttk::frame $gpf.gac]
+		ttk::checkbutton $f.checkbutton -text [ mc "Use Gorilla auto-copy" ] \
 			-variable ::gorilla::prefTemp(gorillaAutocopy)
 		if { $::tcl_platform(platform) eq "x11" } {
-			::tooltip::tooltip $gpf.gac [ mc "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." ]
+			::tooltip::tooltip $f.checkbutton [ mc "Automatically copy password associated\nwith login to clipboard after pasting\nof user-name." ]
 		} else {
-			::tooltip::tooltip $gpf.gac [ mc "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." ]
+			::tooltip::tooltip $f.checkbutton [ mc "This option does not function on\nWindows(TM) or MacOS(TM) platforms.\nSee the help system for details." ]
 		}
+		ttk::label $f.prelabel -text [mc "Latency:"]
+		::tooltip::tooltip $f.prelabel [mc "Time delay during which auto-copy\ncontinues copying username to clipboard."]
+		ttk::spinbox $f.spinbox -from 0 -to 5000 -increment 1 -justify right \
+		             -width 4 -textvariable ::gorilla::prefTemp(autocopyLatency)
+		ttk::label $f.postlabel -text "ms"
+		pack $f.checkbutton -side left -padx {0 1m}
+		pack $f.prelabel -side left -padx {5m 0}
+		pack $f.spinbox $f.postlabel -side left -padx 1m
+
 		pack $gpf.bu $gpf.ts $gpf.bakpath $gpf.geo $gpf.gac -side top -anchor w -padx 10 -pady 5
 
 
@@ -6959,6 +6971,8 @@ proc gorilla::ChangePassword {} {
 
 namespace eval gorilla::CopyToClipboard {
 
+	variable copy_start_time 0
+
 	namespace path { ::gorilla }
 
 	variable activeSelection 0
@@ -7067,6 +7081,7 @@ namespace eval gorilla::CopyToClipboard {
 				}
 			}
 
+			variable copy_start_time [clock milliseconds]
 			ArrangeToClearClipboard $mult
 			set ::gorilla::status [ mc "Copied %s to clipboard." [ mc $what ] ]
 
@@ -7082,6 +7097,7 @@ namespace eval gorilla::CopyToClipboard {
 	proc XSelectionHandler {offset maxChars} {
 		variable activeSelection
 		variable activeSelectionData
+		variable copy_start_time
 
 		switch -exact -- $activeSelection {
 			None {
@@ -7089,7 +7105,8 @@ namespace eval gorilla::CopyToClipboard {
 			}
 			Username {
 				set data [ GetSelectedUsername ]
-				if { $::gorilla::preference(gorillaAutocopy) } {
+				if {    $::gorilla::preference(gorillaAutocopy)
+				    && (([clock milliseconds] - $copy_start_time) >= $::gorilla::preference(autocopyLatency))} {
 					after idle { after 200 { ::gorilla::CopyToClipboard Password } }
 				}
 			}

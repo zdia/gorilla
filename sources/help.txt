@@ -363,14 +363,30 @@ occurrence of a paste operation.  Without OS support to determine that a
 paste operation has occurred, Gorilla has no way to know when to
 subsequently copy a login's password to the clipboard.
 
- | Additionally, this option interacts badly with clipboard management
-applications, e.g. xclipboard.  Clipboard management programs function by
-performing an automatic paste as soon as data is placed into the clipboard,
-which fools Password Gorilla into believing that a paste into a web-site
-login field has occurred.  The result of this bad interaction is that the
-Password Gorilla status line will flash "Username copied..." followed
-immediately by "Password copied...".  If this occurs, there are only two
-solutions:
+'''Auto-copy Latency value'''
+
+ | The "Latency" value associated with the auto-copy check-box is an attempt
+to work around a bad interaction of the auto-copy system with clipboard
+management applications, e.g.  the xclipboard utility.  Clipboard management
+programs function by performing an automatic paste as soon as data is placed
+into the clipboard, which fools Password Gorilla into believing that a paste
+into a web-site login field has occurred.  The result of this bad
+interaction is that the Password Gorilla status line will flash "Username
+copied..." followed immediately by "Password copied...".  If this occurs,
+then increasing the Latency value from its default 50ms may work around the
+issue.
+
+ | The latency value specifies a length of time from the start of an
+auto-copy operation during which Password Gorilla will respond to a paste
+operation by again inserting the selected username into the clipboard.  The
+result is that paste operations during this time period are effectively
+ignored for the purposes of switching from copying the username to copying
+the password.  The range of the latency time is from zero to five seconds
+(5000ms).
+
+ | If the latency delay setting does not avoid a bad interaction of the
+auto-copy feature with clipboard handling applications, then there are only
+two other solutions:
 
  | 1) Disable this option in Password Gorilla
  | 2) Disable the clipboard manager program which is interfering
