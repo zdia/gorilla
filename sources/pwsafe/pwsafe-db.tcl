@@ -260,6 +260,9 @@ itcl::class pwsafe::db {
 	#
 
 	private method encryptField {data} {
+		# explicitly convert the Tcl string to binary before
+		# attempting to encrypt
+		set data [encoding convertto utf-8 $data]
 		set dataLen [string length $data]
 		set msg [pwsafe::int::randomString 4]
 		append msg [binary format I $dataLen]
@@ -292,7 +295,8 @@ itcl::class pwsafe::db {
 		set res [string range $decryptedMsg 8 [expr {7+$msgLen}]]
 		pwsafe::int::randomizeVar decryptedMsg
 
-		return $res
+		# undo the encoding performed in encryptField
+		return [encoding convertfrom utf-8 $res]
 	}
 
 	#
