@@ -437,7 +437,7 @@ msgstr "Data cambiamenti"
 
 #: ../../sources/gorilla.tcl:2420 ../../sources/gorilla.tcl:7789
 msgid "Hide Password"
-msgstr "Nascondi la password"
+msgstr "Nascondi password"
 
 #: ../../sources/gorilla.tcl:2445
 msgid "Password policy settings invalid."
