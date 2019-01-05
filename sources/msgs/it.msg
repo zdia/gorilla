@@ -9,7 +9,6 @@
 #
 # Project-Id-Version: Gorilla Password 1.5.3.7
 # Report-Msgid-Bugs-To: 
-# POT-Creation-Date: 2013-01-14 19:38+0100
 # PO-Revision-Date: 2013-01-26 00:16+0100
 # Last-Translator: Marco Ciampa <ciampix@libero.it>
 # Language-Team: Italian <it@li.org>
@@ -112,7 +111,7 @@ Cancel Annulla
 {Generate Password} {Genera password}
 {Override Password Policy} {Passa sopra ai criteri delle password}
 {Password Length} {Lunghezza password}
-{Hide Password} {Nascondi la password}
+{Hide Password} {Nascondi password}
 {Password policy settings invalid.} {Impostazioni criteri password non valide.}
 <unknown> <sconosciuto>
 {This login must have a title, url or username.} {Questo login deve avere un titolo, url o nomeutente.}
