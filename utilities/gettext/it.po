@@ -404,7 +404,7 @@ msgstr "Lunghezza password"
 
 #: ../../sources/gorilla.tcl:2199 ../../sources/gorilla.tcl:7728
 msgid "Hide Password"
-msgstr "Nascondi la password"
+msgstr "Nascondi password"
 
 #: ../../sources/gorilla.tcl:2224
 msgid "Password policy settings invalid."
