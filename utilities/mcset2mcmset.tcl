@@ -1,6 +1,6 @@
 #! /bin/sh
 # the next line restarts using wish \
-exec tclsh8.5 "$0" ${1+"$@"}
+exec tclsh "$0" ${1+"$@"}
 
 # Convert the output of GNU gettext msgfmt from plural calls to
 # ::msgcat::mcset into a single call to ::msgcat::mcmset
