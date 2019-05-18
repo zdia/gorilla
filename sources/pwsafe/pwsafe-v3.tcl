@@ -45,6 +45,9 @@ itcl::class pwsafe::v3::reader {
 	# Read one field; returns [list type data]; or empty list on eof
 	#
 
+        # An array used to find duplicate UUID values
+        protected variable UUIDS
+
 	protected method readField {} {
 		#
 		# first block contains field length and type
@@ -168,6 +171,20 @@ itcl::class pwsafe::v3::reader {
 					append fieldValue "-" [string range $tmp 12 15]
 					append fieldValue "-" [string range $tmp 16 19]
 					append fieldValue "-" [string range $tmp 20 31]
+					
+					# check for the Nil UUID - replace if found
+					if {$fieldValue eq "00000000-0000-0000-0000-000000000000"} {
+						#puts stderr "Replacing Nil UUID in header with an actual UUID"
+						set fieldValue [::gorilla::uuid]
+					}
+
+					# check for duplicate UUID's, replace subsequent duplicates with a new UUID
+					if {[info exists UUIDS($fieldValue)]} {
+						#puts stderr "Found duplicate UUID value $fieldValue, replacing with new UUID"
+						set fieldValue [::gorilla::uuid]
+					} 
+					set UUIDS($fieldValue) "H"
+
 				}
 			}
 
@@ -247,6 +264,20 @@ itcl::class pwsafe::v3::reader {
 					append fieldValue "-" [string range $tmp 12 15]
 					append fieldValue "-" [string range $tmp 16 19]
 					append fieldValue "-" [string range $tmp 20 31]
+
+					# check for the Nil UUID - replace if found
+					if {$fieldValue eq "00000000-0000-0000-0000-000000000000"} {
+						#puts stderr "Replacing Nil UUID in entry with an actual UUID"
+						set fieldValue [::gorilla::uuid]
+					}
+
+					# check for duplicate UUID's, replace subsequent duplicates with a new UUID
+					if {[info exists UUIDS($fieldValue)]} {
+						#puts stderr "Found duplicate entry UUID value $fieldValue, replacing with new UUID"
+						set fieldValue [::gorilla::uuid]
+					} 
+					set UUIDS($fieldValue) "E"
+
 				}
 				2 -
 				3 -
@@ -687,9 +718,9 @@ itcl::class pwsafe::v3::writer {
 
 		if {![$db hasHeaderField 1]} {
 			#
-			# Default dummy UUID. (Password Safe 3.01 ignores it. So do we.)
+			# If no UUID is present, then create a random one
 			#
-			$db setHeaderField 1 00000000-0000-0000-0000-000000000000
+			$db setHeaderField 1 [::gorilla::uuid]
 		}
 
 		#

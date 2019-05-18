@@ -2563,11 +2563,10 @@ proc build-gui-callbacks { pvns widgets } {
 			set modified 0
 			set now [clock seconds]
 
-			if { [ dbget uuid $rn ] eq "" } {
-				if { ! [ catch { package present uuid } ] } {
-					dbset uuid $rn [uuid::uuid generate]
-					set modified 1
-				}
+			if {([dbget uuid $rn] eq "") || 
+			    ([dbget uuid $rn] eq "00000000-0000-0000-0000-000000000000")} {
+				dbset uuid $rn [gorilla::uuid]
+				set modified 1
 			}
 
 			set history [dbget history $rn [dict create \
@@ -2647,9 +2646,6 @@ proc build-gui-callbacks { pvns widgets } {
 				}
 
 			} ; # end foreach element
-
-			# update UUID to match current user and url field contents
-			dbset uuid $rn [gorilla::uuid [dbget user $rn][dbget url $rn]]
 
 			if { $modified } {
 				dbset last-modified $rn $now
@@ -3864,13 +3860,17 @@ proc gorilla::Import { {input_file ""} } {
 				}
 
 				uuid {
-					# uuid is allowed to be empty, but if not empty it must be in
+					# uuid column is allowed to be empty, but if not empty it must be in
 					# this format: f29b9ef7-9e62-41e1-7dfd-14ae13986059
-					if { ( $value ne "" ) &&
-						( ! [ regexp {^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$} $value ] ) } {
+					# if empty, all zeros, or invalid, then a new uuid will be generated for the record
+					if {($value eq "") ||
+					    ($value eq "00000000-0000-0000-0000-000000000000")} {
+						set value [gorilla::uuid]
+					} elseif {( ! [regexp {^[[:xdigit:]]{8}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{4}-[[:xdigit:]]{12}$} $value])} {
 						#         puts "invalid uuid $value"
-						lappend error_lines [ list "Invalid UUID field" $line ]
+						lappend error_lines [list "Invalid UUID field" $line]
 						set no_errors 0
+						set value [gorilla::uuid]
 					}
 					dbset uuid $newrn $value
 				}
@@ -3911,7 +3911,7 @@ proc gorilla::Import { {input_file ""} } {
 
 			if { ( "uuid" ni $columns_present ) } {
 				#       puts "setting a new uuid"
-				dbset uuid $newrn [gorilla::uuid [dbget user $newrn][dbget url $newrn]]
+				dbset uuid $newrn [gorilla::uuid]
 			}
 
 			if { "title" ni $columns_present } {
@@ -9171,6 +9171,10 @@ proc gorilla::versionLookup {} {
 
 # ----------------------------------------------------------------------
 
+# May 18, 2019 - Issue # 203 reported issues with non-unique UUID's and the
+# Android PasswordSafe application.  Change to just generate a version 4
+# (random) UUID when a new UUID is requested.
+
 # January 31, 2016 - Tcllib 1.17 has changed how it derives UUID
 # values.  If it finds the 'nettool' package from Tcllib 1.17 it uses
 # 'nettool' to attempt to obtain machine information, specifically the
@@ -9183,61 +9187,25 @@ proc gorilla::versionLookup {} {
 # password records also fails.  What this means is that relying on the
 # Tcllib UUID package for Gorilla makes for a fragile situation where
 # UUID generation may fail, dependent upon the particular system upon
-# which Gorillia is running.  Therefore this change, which is to move
-# UUID generation into Gorilla.  As well, Tcllib generated type 1
-# UUID's.  This proc below generates type 5 UUID's.  Type 5 UUID's have
-# a desirable property for Gorilla, which is stated in this quote from
-# RFC 4122 (for type 3 and type 5 UUID's):
-#
-# o  The UUIDs generated at different times from the same name in the
-#    same namespace MUST be equal.
-#
-# Therefore, for the 'name' field of these UUID's, Gorilla will use a
-# concatenation of the username and URL fields of a database record to
-# generate the UUID, and for a namespace, it will use a type 4 randomly
-# generated UUID as the namespace.  This has the desirable property
-# that two database entries with the same username/URL combination will
-# have the same UUID, even if they are independently inserted into
-# different safes by separately running Gorilla instances.  This should
-# allow for an updated PWSafe merge feature to detect movement of
-# entries between groups and replicate the move in a destination safe
-# when a source safe is merged.
+# which Gorillia is running.
 
-proc gorilla::uuid {name} {
+proc ::gorilla::uuid {} {
 
-	# generate a type 5 (namespaced, sha1) UUID as defined by RFC 4122, using
-	# the parameter 'name' as the RFC name, and a hard coded UUID below as the
-	# RFC namespace
+	# generate a version 4 (random) UUID as defined by RFC 4122
 
-	if {[string length $name]==0} {
-		# an empty input name returns the RFC 4122 Nil UUID
-		return 00000000-0000-0000-0000-000000000000
-	}
-
-	# This hex value below is an arbitrary type 4 (random) UUID generated from
-	# /dev/random as per RFC 4122 and is used as a namespace UUID
-
-	set namespace_uuid [binary format H* 3ed9561831aa550f719d5747869cc84a]
-
-	# this generation step mirrors the C code in RFC 4122 in the
-	# uuid_create_sha1_from_name() function
-
-	set token [::sha1::SHA1Init]
-	::sha1::SHA1Update $token $namespace_uuid
-	::sha1::SHA1Update $token $name
-	set hash [::sha1::SHA1Final $token]
+	set uuid [::pwsafe::int::randomString 16]
 
 	set uuid_fields IuSuSucucua6
 
-	# pull apart the hash output into RFC 4122 fields so we can set the
-	# version and reserved bits as per the RFC - this mirrors the C code from
-	# RFC 4122 in the format_uuid_v3or5() function
+	# pull apart pure random output into RFC 4122 fields so we can set the
+	# version and reserved bits as per the RFC - this mirrors the C code
+	# from RFC 4122 in the format_uuid_v3or5() function
 
-	binary scan $hash $uuid_fields \
+	binary scan $uuid $uuid_fields \
 	time_low time_mid time_hi_and_version clk_seq_hi_res clk_seq_low node
 
-	# set the appropriate version as reserved bits as per the RFC
-	set time_hi_and_version [expr {($time_hi_and_version & 0x0fff) | (5<<12)}]
+	# set the appropriate version and reserved bits as per the RFC
+	set time_hi_and_version [expr {($time_hi_and_version & 0x0fff) | (4<<12)}]
 	set clk_seq_hi_res [expr {($clk_seq_hi_res & 0x3f) | 0x80}]
 
 	# put the values back together into a binary representation of the uuid
