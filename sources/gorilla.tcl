@@ -32,7 +32,7 @@ package require Tcl 8.5-
 package provide app-gorilla 1.0
 
 namespace eval ::gorilla {
-	variable Version "1.6.0-beta-1"
+	variable Version "1.6.0-beta-2"
 
 	# find the location of the install directory even when "executing" a symlink
 	# pointing to the gorilla.tcl file
