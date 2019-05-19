@@ -2028,7 +2028,8 @@ namespace eval ::gorilla::LoginDialog {
 		title    [ mc Title    ] entry    \
 		url      [ mc URL      ] entry    \
 		user     [ mc Username ] entry    \
-		password [ mc Password ] entry  ] {
+		password [ mc Password ] entry    \
+		email    [mc Email]      entry] {
 			grid [ make-label $pane1 $label ] \
 			[ set widget($child) [ ttk::$w $pane1.e-$child -width 40 -textvariable ${pvns}::$child ] ] \
 			-sticky news -pady 5
@@ -2500,7 +2501,7 @@ proc build-gui-callbacks { pvns widgets } {
 			variable historyactive $::gorilla::preference(historyActive)
 			variable historymodified 0
 
-			foreach item { group title url user password } {
+			foreach item {group title url user password email} {
 				variable $item
 				set $item [ dbget $item $in_rn ]
 			}
@@ -2557,7 +2558,7 @@ proc build-gui-callbacks { pvns widgets } {
 			# from the dialog into the Itcl db record - that is why it
 			# is created separately
 			
-			set varlist { group title user password url }
+			set varlist {group title user password url email}
 
 			foreach var [concat $varlist history historyactive \
 					maxhistory historymodified widget] {
