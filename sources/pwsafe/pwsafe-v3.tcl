@@ -45,8 +45,14 @@ itcl::class pwsafe::v3::reader {
 	# Read one field; returns [list type data]; or empty list on eof
 	#
 
-        # An array used to find duplicate UUID values
-        protected variable UUIDS
+	# An array used to find duplicate UUID values
+
+	protected variable UUIDS
+
+	# Counter of number of invalid UUIDs replaced - used to trigger a
+	# warning message to the user when a file open completes
+
+	protected variable uuids_replaced
 
 	protected method readField {} {
 		#
@@ -174,14 +180,14 @@ itcl::class pwsafe::v3::reader {
 					
 					# check for the Nil UUID - replace if found
 					if {$fieldValue eq "00000000-0000-0000-0000-000000000000"} {
-						#puts stderr "Replacing Nil UUID in header with an actual UUID"
 						set fieldValue [::gorilla::uuid]
+						incr uuids_replaced
 					}
 
 					# check for duplicate UUID's, replace subsequent duplicates with a new UUID
 					if {[info exists UUIDS($fieldValue)]} {
-						#puts stderr "Found duplicate UUID value $fieldValue, replacing with new UUID"
 						set fieldValue [::gorilla::uuid]
+						incr uuids_replaced
 					} 
 					set UUIDS($fieldValue) "H"
 
@@ -267,14 +273,14 @@ itcl::class pwsafe::v3::reader {
 
 					# check for the Nil UUID - replace if found
 					if {$fieldValue eq "00000000-0000-0000-0000-000000000000"} {
-						#puts stderr "Replacing Nil UUID in entry with an actual UUID"
 						set fieldValue [::gorilla::uuid]
+						incr uuids_replaced
 					}
 
 					# check for duplicate UUID's, replace subsequent duplicates with a new UUID
 					if {[info exists UUIDS($fieldValue)]} {
-						#puts stderr "Found duplicate entry UUID value $fieldValue, replacing with new UUID"
 						set fieldValue [::gorilla::uuid]
+						incr uuids_replaced
 					} 
 					set UUIDS($fieldValue) "E"
 
@@ -588,6 +594,15 @@ public method readFile {{percentvar ""}} {
 		$db configure -fileAuthHMAC $hmac
 	}
 
+	if {$uuids_replaced == 0} {
+		$db markAsClean
+	} else {
+		set dbWarnings [$db cget -warningsDuringOpen]
+		lappend dbWarnings [mc "%s invalid UUID values were repaired during open.\nThese changes are unsaved." $uuids_replaced]
+		$db configure -warningsDuringOpen $dbWarnings
+		$db markAsDirty
+	}
+
 	pwsafe::int::randomizeVar hmac myHmac
 	itcl::delete object $engine
 	set engine ""
@@ -598,6 +613,7 @@ constructor {db_ source_} {
 	set source $source_
 	set engine ""
 	set used 0
+	set uuids_replaced 0
 }
 
 destructor {
@@ -1024,6 +1040,7 @@ public method writeFile {{percentvar ""}} {
 
 	itcl::delete object $engine
 	set engine ""
+	$db markAsClean
 }
 
 constructor {db_ sink_} {
@@ -1031,6 +1048,7 @@ constructor {db_ sink_} {
 	set sink $sink_
 	set engine ""
 	set used 0
+	set uuids_replaced 0
 }
 
 destructor {

@@ -713,6 +713,7 @@ itcl::class pwsafe::v2::writer {
 		writeAllFields $pcvp
 		itcl::delete object $engine
 		set engine ""
+		$db markAsClean
 	}
 
 	constructor {db_ sink_} {

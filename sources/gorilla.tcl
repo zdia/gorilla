@@ -1612,7 +1612,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 
 	if {[llength $dbWarnings] > 0} {
 		set message $fileName
-		append message ": " [join $dbWarnings "\n"]
+		append message ":\n" [join $dbWarnings "\n"]
 		tk_messageBox -parent . \
 			-type ok -icon warning -title "File Warning" \
 			-message $message
@@ -1710,7 +1710,11 @@ proc gorilla::Open {{defaultFile ""}} {
 
 	FocusRootNode
 	AddAllRecordsToTree
-	MarkDatabaseAsClean
+	if {[$::gorilla::db isClean]} {
+		MarkDatabaseAsClean
+	} else {
+		MarkDatabaseAsDirty
+	}
 	return "Open"
 
 } ; # end gorilla::Open

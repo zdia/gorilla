@@ -221,6 +221,12 @@ itcl::class pwsafe::db {
 	protected variable nextrecordnumber
 
 	#
+	# Flag to track database clean/dirty (saved/unsaved changes) status
+	#
+
+	private variable isDirty
+
+	#
 	# The number of iterations for the key-stretching algorithm in the
 	# V3 format.
 	#
@@ -253,6 +259,7 @@ itcl::class pwsafe::db {
 		array set header {}
 		set keyStretchingIterations 2048
 		set warningsDuringOpen [list]
+		set isDirty 0
 	}
 
 	#
@@ -316,6 +323,7 @@ itcl::class pwsafe::db {
 
 	public method setPassword {newPassword} {
 		set password [encryptField $newPassword]
+		set isDirty 1
 	}
 
 	#
@@ -482,6 +490,7 @@ itcl::class pwsafe::db {
 
 			set preferences($prefType,$prefNumber) $prefValue
 		}
+		set isDirty 1
 
 	} ; # end setPreferencesFromString
 
@@ -538,6 +547,7 @@ itcl::class pwsafe::db {
 				} elseif {[info exists preferences($prefType,$prefNumber)]} {
 					unset preferences($prefType,$prefNumber)
 				}
+				set isDirty 1
 				return
 			}
 		}
@@ -625,6 +635,7 @@ itcl::class pwsafe::db {
 	public method createRecord {} {
 		set nn [incr nextrecordnumber]
 		lappend recordnumbers $nn
+		set isDirty 1
 		return $nn
 	}
 
@@ -637,6 +648,7 @@ itcl::class pwsafe::db {
 		if {$index != -1} {
 			set recordnumbers [lreplace $recordnumbers $index $index]
 			array unset records $rn,*
+			set isDirty 1
 		}
 	}
 
@@ -714,6 +726,7 @@ itcl::class pwsafe::db {
 		}
 
 		set records($rn,$field) [encryptField $value]
+		set isDirty 1
 	}
 
 	#
@@ -731,6 +744,7 @@ itcl::class pwsafe::db {
 			if {[llength [getFieldsForRecord $rn]] == 0} {
 				deleteRecord $rn
 			}
+			set isDirty 1
 		}
 	}
 
@@ -772,10 +786,12 @@ itcl::class pwsafe::db {
 			#
 
 			setPreferencesFromString $value
+			set isDirty 1
 			return
 		}
 
 		set header($field) $value
+		set isDirty 1
 	}
 
 	#
@@ -794,5 +810,29 @@ itcl::class pwsafe::db {
 		}
 
 		return [lsort -integer $fields]
+	}
+
+	#
+	# Get dirty status of current DB storage
+	#
+
+	public method isDirty {} {
+		return $isDirty
+	}
+
+	#
+	# Get clean status of current DB storage
+	#
+
+	public method isClean {} {
+		return [expr { ! $isDirty}]
+	}
+
+	public method markAsClean {} {
+		set isDirty 0
+	}
+
+	public method markAsDirty {} {
+		set isDirty 1
 	}
 }
