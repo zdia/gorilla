@@ -7828,6 +7828,7 @@ proc gorilla::ShowTextFile {top title fileName} {
 			user Username pass Password
 			lpc {Last Password Change}
 			mod {Last Modified}
+			email Email
 			uuid UUID } {
 
 			ttk::label $infoframe.${child}L -text [mc ${childname}]:
@@ -7861,6 +7862,7 @@ proc gorilla::ShowTextFile {top title fileName} {
 		$infoframe.passE  configure -text [ string repeat "*" [ string length [ set pass [ ::gorilla::dbget password $rn ] ] ] ]
 		$infoframe.userE  configure -text [ set uid [ ::gorilla::dbget user $rn ] ]
 		$infoframe.urlE   configure -text [ set url [ ::gorilla::dbget url  $rn ] ]
+		$infoframe.emailE configure -text [set email [::gorilla::dbget email $rn]]
 
 		$infoframe.notesE insert end [ ::gorilla::dbget notes $rn ]
 		$infoframe.notesE configure -state disabled
@@ -7901,6 +7903,8 @@ proc gorilla::ShowTextFile {top title fileName} {
 		bind $infoframe.passE <Double-Button-1> [ list ::apply $lambda $infoframe.passE Password $pass ]
 		bind $infoframe.urlL  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
 		bind $infoframe.urlE  <Double-Button-1> [ list ::apply $lambda $infoframe.urlE  URL      $url  ]
+		bind $infoframe.emailL <Double-Button-1> [list ::apply $lambda $infoframe.emailE Email $email]
+		bind $infoframe.emailE <Double-Button-1> [list ::apply $lambda $infoframe.emailE Email $email]
 
 		# Set up bindings to simulate an X11 style copy-upon-select for the notes
 		# text widget, and to also include PWGorilla's normal clearing of the
@@ -8073,7 +8077,7 @@ namespace eval ::gorilla::dbget {
 	# enumerating them.
 
 	foreach {procname recnum} [ list  uuid 1  group 2  title 3  user 4 username 4 \
-		notes 5  password 6  url 13 history 15 ] {
+		notes 5  password 6  url 13 history 15 email 20] {
 
 		proc $procname { rn {default ""} } [ string map [ list %recnum $recnum ] {
 			get-record %recnum $rn $default
@@ -8153,7 +8157,7 @@ namespace eval ::gorilla::dbset {
 		notes 5  password 6  create-time 7 \
 		last-pass-change 8   last-access 9 \
 		lifetime 10          last-modified 12 \
-		url 13 history 15 ] {
+		url 13 history 15 email 20] {
 
 		proc $procname { rn value } [ string map [ list %fieldnum $fieldnum ] {
 			$::gorilla::db setFieldValue $rn %fieldnum $value
@@ -8192,7 +8196,7 @@ namespace eval ::gorilla::dbunset {
 		notes 5  password 6  create-time 7 \
 		last-pass-change 8   last-access 9 \
 		lifetime 10          last-modified 12 \
-		url 13 history 15 ] {
+		url 13 history 15 email 20] {
 
 		proc $procname { rn } [ string map [ list %fieldnum $fieldnum ] {
 			$::gorilla::db unsetFieldValue $rn %fieldnum
