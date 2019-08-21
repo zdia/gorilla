@@ -5374,6 +5374,7 @@ proc gorilla::LockDatabase {} {
 		set ::gorilla::toplevel($top) $top
 
 		wm protocol $top WM_DELETE_WINDOW gorilla::CloseLockedDatabaseDialog
+		wm title $top [mc "Password Gorilla"]
 	} else {
 		set aframe $top.right
 		if { ! $::gorilla::preference(iconifyOnAutolock)} {
