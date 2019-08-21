@@ -5281,7 +5281,7 @@ proc gorilla::LockDatabase {} {
 			normal -
 			iconic -
 			zoomed {
-				set withdrawn($tl) [ list $ws [ wm geometry $tl ] ]
+				set withdrawn($tl) [list $ws [wm geometry $tl]]
 				wm withdraw $tl
 			}
 		}
@@ -5296,186 +5296,191 @@ proc gorilla::LockDatabase {} {
 		rename ::tk::mac::ShowPreferences ""
 	}
 
-	if { $::gorilla::preference(keepBackupFile) } {
+	if {$::gorilla::preference(keepBackupFile)} {
 
-		if { ![info exists ::gorilla::fileName] } {
+		if { ![info exists ::gorilla::fileName]} {
 			set nosave [tk_dialog .nosave [mc "Database not saved!"] \
 			[mc "This database has not been saved. Do you want to save it now?"] \
-				"" 0 [mc Yes] [mc No] ]
-			if {$nosave} { set message GORILLA_OK
-		} else { set message [gorilla::SaveAs] }
-
-	} else { set message [ gorilla::SaveBackup $::gorilla::fileName ] }
-
-	if { $message ne "GORILLA_OK" } {
-		gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
-	}
-} ;# endif $::gorilla::preference(keepBackupFile)
-
-set top .lockedDialog
-if {![info exists ::gorilla::toplevel($top)]} {
-
-	toplevel $top -class "Gorilla"
-	TryResizeFromPreference $top
-
-	if {$::gorilla::preference(gorillaIcon)} {
-		ttk::label $top.splash -image $::gorilla::images(splash)
-		pack $top.splash -side left -fill both
-
-		ttk::separator $top.vsep -orient vertical
-		pack $top.vsep -side left -fill y -padx 3
-	}
-
-	set aframe [ttk::frame $top.right -padding {10 10}]
-
-	# Titel packen
-	# ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
-	ttk::label $aframe.title -anchor center
-	pack $aframe.title -side top -fill x -pady 10
-
-	ttk::labelframe $aframe.file -text [mc "Database:"]
-	ttk::entry $aframe.file.f -width 40 -state disabled
-	pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
-	pack $aframe.file -side top -pady 5 -fill x -expand yes
-
-	ttk::frame $aframe.mitte
-	ttk::labelframe $aframe.mitte.pw -text [mc "Password:"]
-	entry $aframe.mitte.pw.pw -width 20 -show "*"
-		# -background #FFFFCC
-	pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
-
-	pack $aframe.mitte.pw -side left -pady 5 -expand 0
-
-	ttk::frame $aframe.mitte.buts
-	set but1 [ttk::button $aframe.mitte.buts.b1 -width 10 -text [ mc "OK" ] \
-		-command "set ::gorilla::lockedMutex 1"]
-	set but2 [ttk::button $aframe.mitte.buts.b2 -width 10 -text [mc "Exit"] \
-		-command "set ::gorilla::lockedMutex 2"]
-	pack $but1 $but2 -side left -pady 10 -padx 10
-	pack $aframe.mitte.buts -side right
-
-	pack $aframe.mitte -side top -fill x -expand 1 -pady 15
-
-	ttk::label $aframe.info -relief sunken -anchor w -padding [list 5 5 5 5]
-	pack $aframe.info -side bottom -fill x -expand yes
-
-	bind $aframe.mitte.pw.pw <Return> "set ::gorilla::lockedMutex 1"
-	bind $aframe.mitte.pw.pw <[ expr { [tk windowingsystem] == "aqua" ? "Command" : "Control" } ]-BackSpace> { %W delete 0 end }
-	bind $aframe.mitte.buts.b1 <Return> "set ::gorilla::lockedMutex 1"
-	bind $aframe.mitte.buts.b2 <Return> "set ::gorilla::lockedMutex 2"
-
-	pack $aframe -side right -fill both -expand yes
-
-	set ::gorilla::toplevel($top) $top
-
-	wm protocol $top WM_DELETE_WINDOW gorilla::CloseLockedDatabaseDialog
-} else {
-	set aframe $top.right
-	if { ! $::gorilla::preference(iconifyOnAutolock) } {
-		wm deiconify $top
-	}
-}
-
-wm iconname $top "Gorilla"
-wm iconphoto $top $::gorilla::images(application)
-$aframe.title configure -text  [ ::gorilla::LockDirtyMessage ]
-
-# and setup a pair of variable write traces to toggle the title text
-#
-# the toggle happens upon
-# 1) database marked dirty/clean
-# 2) open/close of edit password dialogs
-
-trace add variable ::gorilla::dirty write [ namespace code [ list ::gorilla::LockDirtyHandler $aframe.title ] ]
-trace add variable ::gorilla::LoginDialog::arbiter write [ namespace code [ list ::gorilla::LockDirtyHandler $aframe.title ] ]
-
-$aframe.mitte.pw.pw delete 0 end
-$aframe.info configure -text [mc "Enter the Master Password."]
-
-if {[info exists ::gorilla::fileName]} {
-	$aframe.file.f configure -state normal
-	$aframe.file.f delete 0 end
-	$aframe.file.f insert 0 [file nativename $::gorilla::fileName]
-	$aframe.file.f configure -state disabled
-} else {
-	$aframe.file.f configure -state normal
-	$aframe.file.f delete 0 end
-	$aframe.file.f insert 0 [mc "<New Database>"]
-	$aframe.file.f configure -state disabled
-}
-
-#
-# Run dialog
-#
-
-focus $aframe.mitte.pw.pw
-# synchronize Tk's event-loop with Aqua's event-loop
-update idletasks
-
-if {[catch { grab $top } oops]} {
-	set ::gorilla::status [mc "error: %s" $oops]
-}
-
-if { $::gorilla::preference(iconifyOnAutolock) } {
-	wm iconify $top
-}
-
-if { ! $::gorilla::DEBUG(TEST) } {
-	while {42} {
-		set ::gorilla::lockedMutex 0
-		vwait ::gorilla::lockedMutex
-
-		if {$::gorilla::lockedMutex == 1} {
-			if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
-				break
+				"" 0 [mc Yes] [mc No]]
+			if {$nosave} {
+				set message GORILLA_OK
+			} else { 
+				set message [gorilla::SaveAs]
 			}
 
-			tk_messageBox -parent $top \
-				-type ok -icon error -default ok \
-				-title [ mc "Wrong Password" ] \
-				-message [ mc "That password is not correct." ]
+		} else { 
+			set message [gorilla::SaveBackup $::gorilla::fileName]
+		}
 
-			# clear the PW entry upon invalid PW
-			$aframe.mitte.pw.pw delete 0 end
+		if {$message ne "GORILLA_OK"} {
+			gorilla::ErrorPopup  [lindex $message 0] [lindex $message 1]
+		}
+	} ;# endif $::gorilla::preference(keepBackupFile)
 
-		} elseif {$::gorilla::lockedMutex == 2} {
-			#
-			# This may return, if the database was modified, and the user
-			# answers "Cancel" to the question whether to save the database
-			# or not.
-			#
+	set top .lockedDialog
+	if {![info exists ::gorilla::toplevel($top)]} {
 
-			gorilla::Exit
+		toplevel $top -class "Gorilla"
+		TryResizeFromPreference $top
+
+		if {$::gorilla::preference(gorillaIcon)} {
+			ttk::label $top.splash -image $::gorilla::images(splash)
+			pack $top.splash -side left -fill both
+
+			ttk::separator $top.vsep -orient vertical
+			pack $top.vsep -side left -fill y -padx 3
+		}
+
+		set aframe [ttk::frame $top.right -padding {10 10}]
+
+		# Titel packen
+		# ttk::label $aframe.title -anchor center -font {Helvetica 12 bold}
+		ttk::label $aframe.title -anchor center
+		pack $aframe.title -side top -fill x -pady 10
+
+		ttk::labelframe $aframe.file -text [mc "Database:"]
+		ttk::entry $aframe.file.f -width 40 -state disabled
+		pack $aframe.file.f -side left -padx 10 -pady 5 -fill x -expand yes
+		pack $aframe.file -side top -pady 5 -fill x -expand yes
+
+		ttk::frame $aframe.mitte
+		ttk::labelframe $aframe.mitte.pw -text [mc "Password:"]
+		entry $aframe.mitte.pw.pw -width 20 -show "*"
+			# -background #FFFFCC
+		pack $aframe.mitte.pw.pw -side left -padx 10 -pady 5 -fill x -expand 0
+
+		pack $aframe.mitte.pw -side left -pady 5 -expand 0
+
+		ttk::frame $aframe.mitte.buts
+		set but1 [ttk::button $aframe.mitte.buts.b1 -width 10 -text [ mc "OK" ] \
+			-command "set ::gorilla::lockedMutex 1"]
+		set but2 [ttk::button $aframe.mitte.buts.b2 -width 10 -text [mc "Exit"] \
+			-command "set ::gorilla::lockedMutex 2"]
+		pack $but1 $but2 -side left -pady 10 -padx 10
+		pack $aframe.mitte.buts -side right
+
+		pack $aframe.mitte -side top -fill x -expand 1 -pady 15
+
+		ttk::label $aframe.info -relief sunken -anchor w -padding [list 5 5 5 5]
+		pack $aframe.info -side bottom -fill x -expand yes
+
+		bind $aframe.mitte.pw.pw <Return> "set ::gorilla::lockedMutex 1"
+		bind $aframe.mitte.pw.pw <[ expr { [tk windowingsystem] == "aqua" ? "Command" : "Control" } ]-BackSpace> { %W delete 0 end }
+		bind $aframe.mitte.buts.b1 <Return> "set ::gorilla::lockedMutex 1"
+		bind $aframe.mitte.buts.b2 <Return> "set ::gorilla::lockedMutex 2"
+
+		pack $aframe -side right -fill both -expand yes
+
+		set ::gorilla::toplevel($top) $top
+
+		wm protocol $top WM_DELETE_WINDOW gorilla::CloseLockedDatabaseDialog
+	} else {
+		set aframe $top.right
+		if { ! $::gorilla::preference(iconifyOnAutolock)} {
+			wm deiconify $top
 		}
 	}
-}
 
-# restore all closed window statuses and positions
-foreach tl [array names withdrawn] {
-	wm state    $tl [ lindex $withdrawn($tl) 0 ]
-	wm geometry $tl [ lindex $withdrawn($tl) 1 ]
-}
+	wm iconname $top "Gorilla"
+	wm iconphoto $top $::gorilla::images(application)
+	$aframe.title configure -text  [::gorilla::LockDirtyMessage]
 
-if {$oldGrab != ""} {
-	catch {grab $oldGrab}
-} else {
-	catch {grab release $top}
-}
+	# and setup a pair of variable write traces to toggle the title text
+	#
+	# the toggle happens upon
+	# 1) database marked dirty/clean
+	# 2) open/close of edit password dialogs
 
-if { [tk windowingsystem] eq "aqua"} {
-	# restore saved menu entry states
-	eval $stateofmenus
-	eval $::gorilla::MacShowPreferences
-}
+	trace add variable ::gorilla::dirty write [namespace code [list ::gorilla::LockDirtyHandler $aframe.title]]
+	trace add variable ::gorilla::LoginDialog::arbiter write [namespace code [list ::gorilla::LockDirtyHandler $aframe.title]]
 
-wm withdraw $top
-set ::gorilla::status [mc "Welcome back."]
+	$aframe.mitte.pw.pw delete 0 end
+	$aframe.info configure -text [mc "Enter the Master Password."]
 
-set ::gorilla::isLocked 0
-wm deiconify .
-raise .
-ArrangeIdleTimeout
-return GORILLA_OK
+	if {[info exists ::gorilla::fileName]} {
+		$aframe.file.f configure -state normal
+		$aframe.file.f delete 0 end
+		$aframe.file.f insert 0 [file nativename $::gorilla::fileName]
+		$aframe.file.f configure -state disabled
+	} else {
+		$aframe.file.f configure -state normal
+		$aframe.file.f delete 0 end
+		$aframe.file.f insert 0 [mc "<New Database>"]
+		$aframe.file.f configure -state disabled
+	}
+
+	#
+	# Run dialog
+	#
+
+	focus $aframe.mitte.pw.pw
+	# synchronize Tk's event-loop with Aqua's event-loop
+	update idletasks
+
+	if {[catch {grab $top} oops]} {
+		set ::gorilla::status [mc "error: %s" $oops]
+	}
+
+	if { $::gorilla::preference(iconifyOnAutolock) } {
+		wm iconify $top
+	}
+
+	if { ! $::gorilla::DEBUG(TEST) } {
+		while {42} {
+			set ::gorilla::lockedMutex 0
+			vwait ::gorilla::lockedMutex
+
+			if {$::gorilla::lockedMutex == 1} {
+				if {[$::gorilla::db checkPassword [$aframe.mitte.pw.pw get]]} {
+					break
+				}
+
+				tk_messageBox -parent $top \
+					-type ok -icon error -default ok \
+					-title [mc "Wrong Password"] \
+					-message [mc "That password is not correct."]
+
+				# clear the PW entry upon invalid PW
+				$aframe.mitte.pw.pw delete 0 end
+
+			} elseif {$::gorilla::lockedMutex == 2} {
+				#
+				# This may return, if the database was modified, and the user
+				# answers "Cancel" to the question whether to save the database
+				# or not.
+				#
+
+				gorilla::Exit
+			}
+		}
+	}
+
+	# restore all closed window statuses and positions
+	foreach tl [array names withdrawn] {
+		wm state    $tl [lindex $withdrawn($tl) 0]
+		wm geometry $tl [lindex $withdrawn($tl) 1]
+	}
+
+	if {$oldGrab != ""} {
+		catch {grab $oldGrab}
+	} else {
+		catch {grab release $top}
+	}
+
+	if { [tk windowingsystem] eq "aqua"} {
+		# restore saved menu entry states
+		eval $stateofmenus
+		eval $::gorilla::MacShowPreferences
+	}
+
+	wm withdraw $top
+	set ::gorilla::status [mc "Welcome back."]
+
+	set ::gorilla::isLocked 0
+	wm deiconify .
+	raise .
+	ArrangeIdleTimeout
+	return GORILLA_OK
 }
 
 # ----------------------------------------------------------------------
