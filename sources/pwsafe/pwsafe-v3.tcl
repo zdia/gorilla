@@ -376,16 +376,16 @@ itcl::class pwsafe::v3::reader {
 
 					set fieldValue [ encoding convertfrom utf-8 $fieldValue ]
 
-					if { [ string length $fieldValue ] < 5 } {
-						error "Insufficient data in password history field to scan header."
+					if {[string length $fieldValue] < 5} {
+						error "Insufficient data in password history field to scan header.\nExpected >= 5 got [string length $fieldValue]\nActual header: [::gorilla::hexdump -utf8 $fieldValue]"
 					}
 
-					if { 3 != [ scan [ string range $fieldValue 0 4 ] %1d%2x%2x active maxsize currentsize ] } {
-						error "Failure to scan correct number of fields from history header."
+					if {3 != [set z [scan [string range $fieldValue 0 4] %1d%2x%2x active maxsize currentsize]]} {
+						error "Failure to scan correct number of fields from history header.\nExpected 3 but got $z.\nHeader contents: [::gorilla::hexdump -utf-8 $fieldValue]"
 					}
 
-					if { ! [ string is boolean -strict $active ] } {
-						error "Active field from history record is not a valid boolean value."
+					if { ! [string is boolean -strict $active]} {
+						error "Active field from history record is not a valid boolean value.\nActual value: [::gorilla::hexdump -utf8 $active]"
 					}
 
 					set history [ dict create active $active maxsize $maxsize passwords [ list ] ]

@@ -9236,6 +9236,42 @@ proc ::gorilla::uuid {} {
 
 # ----------------------------------------------------------------------
 
+# small helper proc for debugging purposes
+# Options: -utf8 or -utf-8 -- optionally convert argument to utf-8 character
+#                             encoding before hex conversion
+# Returns: hex encoded version of passed argument
+
+proc ::gorilla::hexdump {args} {
+
+	switch -exact -- [llength $args] {
+		1 {
+			set value [lindex $args 0]
+		}
+
+		2 {
+			switch -exact -- [lindex $args 0] {
+				-utf8 -
+				-utf-8 {
+					set value [encoding convertto utf-8 [lindex $args 1]]
+				}
+
+				default {
+					error "gorilla::hexdump: Usage: hexdump [-utf8|-utf-8] string"
+				}
+			}
+		}
+
+		default {
+			error "gorilla::hexdump: Usage: hexdump [-utf8|-utf-8] string"
+		}
+	}
+
+	return 0x[binary scan $value H* z ; set z]"
+
+} ;# end ::gorilla::hexdump
+
+# ----------------------------------------------------------------------
+
 #
 # ----------------------------------------------------------------------
 # Init
