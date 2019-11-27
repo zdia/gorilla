@@ -345,282 +345,282 @@ itcl::class pwsafe::v3::reader {
 					}
 				}
 				15 { # Password History
-				# Format of the data within this field is
-				# fmmnnTLPTLP...TLP
-				# where:
-				# f  = 0,1 - history off/on for this record
-				# mm = 2 hex digits - max size of history - max = 255
-				# nn = 2 hex digits - current size of history
-				# T  = Time password was set (time_t written as %08x)
-				# L  = 4 hex digit length
-				# P  = Password bytes
-				#
-				# The PasswordSafe formatV3.txt file is ambigious as to how the P
-				# elements are encoded.  The entire field itself is typed Text,
-				# implying UTF-8 encoding for the entire field.  The documentation
-				# is also unclear as to whether the L length field is length of P
-				# in bytes, or length of P in characters.  With UTF-8 encoding,
-				# count of bytes do not always equal count of characters.  It says
-				# "in TCHAR" but fails to define TCHAR.  This implies "total
-				# characters" but is not clear as to that fact.
+					# Format of the data within this field is
+					# fmmnnTLPTLP...TLP
+					# where:
+					# f  = 0,1 - history off/on for this record
+					# mm = 2 hex digits - max size of history - max = 255
+					# nn = 2 hex digits - current size of history
+					# T  = Time password was set (time_t written as %08x)
+					# L  = 4 hex digit length
+					# P  = Password bytes
+					#
+					# The PasswordSafe formatV3.txt file is ambigious as to how the P
+					# elements are encoded.  The entire field itself is typed Text,
+					# implying UTF-8 encoding for the entire field.  The documentation
+					# is also unclear as to whether the L length field is length of P
+					# in bytes, or length of P in characters.  With UTF-8 encoding,
+					# count of bytes do not always equal count of characters.  It says
+					# "in TCHAR" but fails to define TCHAR.  This implies "total
+					# characters" but is not clear as to that fact.
 
-				# what is stored in the database object is a dict containing three
-				# keys:
-				# active    - equal to the "f" field above
-				# maxsize   - maximum length value ("mm" above)
-				# passwords - list of lists - each sublist being the T and P from
-				# above
+					# what is stored in the database object is a dict containing three
+					# keys:
+					# active    - equal to the "f" field above
+					# maxsize   - maximum length value ("mm" above)
+					# passwords - list of lists - each sublist being the T and P from
+					# above
 
-				# The passwords list is stored in increasing T order.  Within the
-				# list, T is the decimal integer count of seconds from the epoch
+					# The passwords list is stored in increasing T order.  Within the
+					# list, T is the decimal integer count of seconds from the epoch
 
-				set fieldValue [ encoding convertfrom utf-8 $fieldValue ]
+					set fieldValue [ encoding convertfrom utf-8 $fieldValue ]
 
-				if { [ string length $fieldValue ] < 5 } {
-					error "Insufficient data in password history field to scan header."
-				}
-
-				if { 3 != [ scan [ string range $fieldValue 0 4 ] %1d%2x%2x active maxsize currentsize ] } {
-					error "Failure to scan correct number of fields from history header."
-				}
-
-				if { ! [ string is boolean -strict $active ] } {
-					error "Active field from history record is not a valid boolean value."
-				}
-
-				set history [ dict create active $active maxsize $maxsize passwords [ list ] ]
-
-				# now scan "currentsize" number of records
-				set cursor 5
-				for {set i 0} {$i < $currentsize} {incr i} {
-					if { $cursor > [ string length $fieldValue ] } {
-						error "End of field data parsing password history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
+					if { [ string length $fieldValue ] < 5 } {
+						error "Insufficient data in password history field to scan header."
 					}
 
-					scan [ string range $fieldValue $cursor $cursor+7 ] "%8x" settime
-					incr cursor 8
-
-					if { $cursor > [ string length $fieldValue ] } {
-						error "End of field data parsing password set time from history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
+					if { 3 != [ scan [ string range $fieldValue 0 4 ] %1d%2x%2x active maxsize currentsize ] } {
+						error "Failure to scan correct number of fields from history header."
 					}
 
-					scan [ string range $fieldValue $cursor $cursor+3 ] "%4x" plen
-					incr cursor 4
-
-					if { $cursor > [ string length $fieldValue ] } {
-						error "End of field data parsing password length from history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
+					if { ! [ string is boolean -strict $active ] } {
+						error "Active field from history record is not a valid boolean value."
 					}
 
-					set password [ string range $fieldValue $cursor [ expr {$cursor+$plen-1} ] ]
-					incr cursor $plen
+					set history [ dict create active $active maxsize $maxsize passwords [ list ] ]
 
-					if { $cursor > [ string length $fieldValue ] } {
-						error "End of field data extracting password from history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
-					}
+					# now scan "currentsize" number of records
+					set cursor 5
+					for {set i 0} {$i < $currentsize} {incr i} {
+						if { $cursor > [ string length $fieldValue ] } {
+							error "End of field data parsing password history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
+						}
 
-					if {[info exists ::tcl_platform(platform)] && \
-					[string equal $::tcl_platform(platform) "macintosh"]} {
-						incr settime 2082844800
-					}
+						scan [ string range $fieldValue $cursor $cursor+7 ] "%8x" settime
+						incr cursor 8
 
-					dict lappend history passwords [ list $settime $password ]
+						if { $cursor > [ string length $fieldValue ] } {
+							error "End of field data parsing password set time from history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
+						}
 
-				} ; # end for i from 0 to currentsize
-				set fieldValue $history
-				unset history
+						scan [ string range $fieldValue $cursor $cursor+3 ] "%4x" plen
+						incr cursor 4
+
+						if { $cursor > [ string length $fieldValue ] } {
+							error "End of field data parsing password length from history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
+						}
+
+						set password [ string range $fieldValue $cursor [ expr {$cursor+$plen-1} ] ]
+						incr cursor $plen
+
+						if { $cursor > [ string length $fieldValue ] } {
+							error "End of field data extracting password from history.\ncursor=$cursor length=[ string length $fieldValue ] count=$currentsize i=$i"
+						}
+
+						if {[info exists ::tcl_platform(platform)] && \
+						[string equal $::tcl_platform(platform) "macintosh"]} {
+							incr settime 2082844800
+						}
+
+						dict lappend history passwords [ list $settime $password ]
+
+					} ; # end for i from 0 to currentsize
+					set fieldValue $history
+					unset history
 				# end of switch arm 15
+				}
 			}
+
+			$db setFieldValue $recordnumber $fieldType $fieldValue
+			pwsafe::int::randomizeVar fieldType fieldValue
+		}
+	}
+
+	public method readFile {{percentvar ""}} {
+		if {$used} {
+			return -code error -errorcode [ list GORILLA ONLYONCE [ mc "this object can not be reused" ] ]
 		}
 
-		$db setFieldValue $recordnumber $fieldType $fieldValue
-		pwsafe::int::randomizeVar fieldType fieldValue
-	}
-}
+		set used 1
 
-public method readFile {{percentvar ""}} {
-	if {$used} {
-		return -code error -errorcode [ list GORILLA ONLYONCE [ mc "this object can not be reused" ] ]
-	}
+		if {$percentvar != ""} {
+			upvar $percentvar pcv
+			set pcvp "pcv"
+		} else {
+			set pcvp ""
+		}
 
-	set used 1
-
-	if {$percentvar != ""} {
-		upvar $percentvar pcv
-		set pcvp "pcv"
-	} else {
-		set pcvp ""
-	}
-
-	#
-	# The file is laid out as follows:
-	#
-	# TAG|SALT|ITER|H(P')|B1|B2|B3|B4|IV|
-	#
-	# TAG is the sequence of 4 ASCII characters "PWS3"
-	#
-	# SALT is a 256 bit random value
-	#
-	# ITER is the number of iterations for the password stretching.
-	#
-	# P' is the "stretched key" H_<ITER>(Password,SALT)
-	#
-	# B1 and B2 are two 128-bit blocks encrypted with Twofish using
-	# P' as the key, in ECB mode.
-	#
-	# B3 and B4 are two 128-bit blocks encrypted with Twofish using
-	# P' as the key, in ECB mode.
-	#
-	# IV is the 128-bit random initial value for CBC mode.
-	#
-
-	set tag [$source read 4]
-
-	if {$tag != "PWS3"} {
-		return -code error -errorcode [ list GORILLA BADCONTENT [ mc "file does not have PWS3 magic" ] ]
-	}
-
-	set salt [$source read 32]
-	set biter [$source read 4]
-	set hskey [$source read 32]
-	set b1 [$source read 16]
-	set b2 [$source read 16]
-	set b3 [$source read 16]
-	set b4 [$source read 16]
-	set iv [$source read 16]
-
-	if {[string length $salt] != 32 || \
-	[string length $biter] != 4 || \
-	[string length $hskey] != 32 || \
-	[string length $b1] != 16 || \
-	[string length $b2] != 16 || \
-	[string length $b3] != 16 || \
-	[string length $b4] != 16 || \
-	[string length $iv] != 16} {
-		pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv
-		return -code error -errorcode [ list GORILLA BADCONTENT [ mc "end of file while reading header" ] ]
-	}
-
-	#
-	# Verify the password
-	#
-
-	if {[binary scan $biter i iter] != 1} {
-		return -code error -errorcode [ list GORILLA BADCONTENT [ mc "Failed to scan key stretch iteration count from binary data." ] ]
-	}
-
-	if {$iter < 2048} {
 		#
-		# Low security. Warn.
+		# The file is laid out as follows:
+		#
+		# TAG|SALT|ITER|H(P')|B1|B2|B3|B4|IV|
+		#
+		# TAG is the sequence of 4 ASCII characters "PWS3"
+		#
+		# SALT is a 256 bit random value
+		#
+		# ITER is the number of iterations for the password stretching.
+		#
+		# P' is the "stretched key" H_<ITER>(Password,SALT)
+		#
+		# B1 and B2 are two 128-bit blocks encrypted with Twofish using
+		# P' as the key, in ECB mode.
+		#
+		# B3 and B4 are two 128-bit blocks encrypted with Twofish using
+		# P' as the key, in ECB mode.
+		#
+		# IV is the 128-bit random initial value for CBC mode.
 		#
 
-		set dbWarnings [$db cget -warningsDuringOpen]
-		lappend dbWarnings "File only uses low-security $iter iterations\
-		for key stretching; at least 2048 recommended."
-		$db configure -warningsDuringOpen $dbWarnings
-	}
+		set tag [$source read 4]
 
-	$db configure -keyStretchingIterations $iter
-	# puts "calling computeStretchedKey ... with Password=[hex [$db getPassword]]"
-	set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp]
-	# puts "myskey=[hex $myskey] iter=$iter"
-	set myhskey [sha2::sha256 -bin $myskey]
-	# puts "hskey=[hex $hskey] iter=$iter"
-	# puts "myhskey=[hex $myhskey]"
-	if {![string equal $hskey $myhskey]} {
-		pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
-		return -code error -errorcode [ list GORILLA BADPASS [ mc "wrong password" ] ] ]
-	}
+		if {$tag != "PWS3"} {
+			return -code error -errorcode [ list GORILLA BADCONTENT [ mc "file does not have PWS3 magic" ] ]
+		}
 
-	pwsafe::int::randomizeVar salt hskey myhskey
+		set salt [$source read 32]
+		set biter [$source read 4]
+		set hskey [$source read 32]
+		set b1 [$source read 16]
+		set b2 [$source read 16]
+		set b3 [$source read 16]
+		set b4 [$source read 16]
+		set iv [$source read 16]
 
-	#
-	# The real key is encrypted using Twofish in ECB mode, using
-	# the stretched passphrase as its key.
-	#
+		if {[string length $salt] != 32 || \
+		[string length $biter] != 4 || \
+		[string length $hskey] != 32 || \
+		[string length $b1] != 16 || \
+		[string length $b2] != 16 || \
+		[string length $b3] != 16 || \
+		[string length $b4] != 16 || \
+		[string length $iv] != 16} {
+			pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv
+			return -code error -errorcode [ list GORILLA BADCONTENT [ mc "end of file while reading header" ] ]
+		}
 
-	set hdrEngine [itwofish::ecb \#auto $myskey]
-	pwsafe::int::randomizeVar myskey
-	#
-	# Decrypt the real key from b1 and b2, and the key L that is
-	# used to calculate the HMAC
-	#
-	set key [$hdrEngine decryptBlock $b1]
-	append key [$hdrEngine decryptBlock $b2]
-	pwsafe::int::randomizeVar b1 b2
+		#
+		# Verify the password
+		#
 
-	set hmacKey [$hdrEngine decryptBlock $b3]
-	append hmacKey [$hdrEngine decryptBlock $b4]
+		if {[binary scan $biter i iter] != 1} {
+			return -code error -errorcode [ list GORILLA BADCONTENT [ mc "Failed to scan key stretch iteration count from binary data." ] ]
+		}
 
-	set hmacEngine [sha2::HMACInit $hmacKey]
-	pwsafe::int::randomizeVar b3 b4 hmacKey
-	itcl::delete object $hdrEngine
+		if {$iter < 2048} {
+			#
+			# Low security. Warn.
+			#
 
-	#
-	# Create decryption engine using key and initialization vector
-	#
+			set dbWarnings [$db cget -warningsDuringOpen]
+			lappend dbWarnings "File only uses low-security $iter iterations\
+			for key stretching; at least 2048 recommended."
+			$db configure -warningsDuringOpen $dbWarnings
+		}
 
-	set engine [itwofish::cbc \#auto $key $iv]
-	pwsafe::int::randomizeVar key iv
+		$db configure -keyStretchingIterations $iter
+		# puts "calling computeStretchedKey ... with Password=[hex [$db getPassword]]"
+		set myskey [pwsafe::int::computeStretchedKey $salt [$db getPassword] $iter $pcvp]
+		# puts "myskey=[hex $myskey] iter=$iter"
+		set myhskey [sha2::sha256 -bin $myskey]
+		# puts "hskey=[hex $hskey] iter=$iter"
+		# puts "myhskey=[hex $myhskey]"
+		if {![string equal $hskey $myhskey]} {
+			pwsafe::int::randomizeVar salt hskey b1 b2 b3 b4 iv myskey myhskey
+			return -code error -errorcode [ list GORILLA BADPASS [ mc "wrong password" ] ] ]
+		}
 
-	#
-	# Read data
-	#
+		pwsafe::int::randomizeVar salt hskey myhskey
 
-	if {[catch {
-		readHeaderFields
-		readAllFields $pcvp
-	} result oops]} {
-		sha2::HMACFinal $hmacEngine
+		#
+		# The real key is encrypted using Twofish in ECB mode, using
+		# the stretched passphrase as its key.
+		#
+
+		set hdrEngine [itwofish::ecb \#auto $myskey]
+		pwsafe::int::randomizeVar myskey
+		#
+		# Decrypt the real key from b1 and b2, and the key L that is
+		# used to calculate the HMAC
+		#
+		set key [$hdrEngine decryptBlock $b1]
+		append key [$hdrEngine decryptBlock $b2]
+		pwsafe::int::randomizeVar b1 b2
+
+		set hmacKey [$hdrEngine decryptBlock $b3]
+		append hmacKey [$hdrEngine decryptBlock $b4]
+
+		set hmacEngine [sha2::HMACInit $hmacKey]
+		pwsafe::int::randomizeVar b3 b4 hmacKey
+		itcl::delete object $hdrEngine
+
+		#
+		# Create decryption engine using key and initialization vector
+		#
+
+		set engine [itwofish::cbc \#auto $key $iv]
+		pwsafe::int::randomizeVar key iv
+
+		#
+		# Read data
+		#
+
+		if {[catch {
+			readHeaderFields
+			readAllFields $pcvp
+		} result oops]} {
+			sha2::HMACFinal $hmacEngine
+			itcl::delete object $engine
+			set engine ""
+			return -options $oops
+		}
+
+		#
+		# Read and validate HMAC
+		#
+		set hmac [$source read 32]
+		set myHmac [sha2::HMACFinal $hmacEngine]
+		# puts "hmac [hex $hmac]"
+		# puts "myHmac [hex $myHmac]"
+
+		if {![string equal $hmac $myHmac]} {
+			set dbWarnings [$db cget -warningsDuringOpen]
+			lappend dbWarnings "Database authentication failed. File may\
+			have been tampered with."
+			$db configure -warningsDuringOpen $dbWarnings
+		} else {
+			# only store the HMAC when the authentication passes
+			$db configure -fileAuthHMAC $hmac
+		}
+
+		if {$uuids_replaced == 0} {
+			$db markAsClean
+		} else {
+			set dbWarnings [$db cget -warningsDuringOpen]
+			lappend dbWarnings [mc "%s invalid UUID values were repaired during open.\nThese changes are unsaved." $uuids_replaced]
+			$db configure -warningsDuringOpen $dbWarnings
+			$db markAsDirty
+		}
+
+		pwsafe::int::randomizeVar hmac myHmac
 		itcl::delete object $engine
 		set engine ""
-		return -options $oops
 	}
 
-	#
-	# Read and validate HMAC
-	#
-	set hmac [$source read 32]
-	set myHmac [sha2::HMACFinal $hmacEngine]
-	# puts "hmac [hex $hmac]"
-	# puts "myHmac [hex $myHmac]"
-
-	if {![string equal $hmac $myHmac]} {
-		set dbWarnings [$db cget -warningsDuringOpen]
-		lappend dbWarnings "Database authentication failed. File may\
-		have been tampered with."
-		$db configure -warningsDuringOpen $dbWarnings
-	} else {
-		# only store the HMAC when the authentication passes
-		$db configure -fileAuthHMAC $hmac
+	constructor {db_ source_} {
+		set db $db_
+		set source $source_
+		set engine ""
+		set used 0
+		set uuids_replaced 0
 	}
 
-	if {$uuids_replaced == 0} {
-		$db markAsClean
-	} else {
-		set dbWarnings [$db cget -warningsDuringOpen]
-		lappend dbWarnings [mc "%s invalid UUID values were repaired during open.\nThese changes are unsaved." $uuids_replaced]
-		$db configure -warningsDuringOpen $dbWarnings
-		$db markAsDirty
+	destructor {
+		if {$engine != ""} {
+			itcl::delete object $engine
+		}
 	}
-
-	pwsafe::int::randomizeVar hmac myHmac
-	itcl::delete object $engine
-	set engine ""
-}
-
-constructor {db_ source_} {
-	set db $db_
-	set source $source_
-	set engine ""
-	set used 0
-	set uuids_replaced 0
-}
-
-destructor {
-	if {$engine != ""} {
-		itcl::delete object $engine
-	}
-}
 }
 
 #
