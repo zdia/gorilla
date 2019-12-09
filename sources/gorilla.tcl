@@ -4790,15 +4790,14 @@ proc gorilla::SaveAs {} {
 	# Query user for file name
 	#
 
-	set fileName [ filename_query Save -parent . \
-		-title [ mc "Save password database ..." ] ]
+	set fileName [filename_query Save -parent . \
+		-title [mc "Save password database ..."] \
+		-defaultextension $defaultExtension]
 
 	if {$fileName == ""} {
 		return 0
 	}
 
-	# -defaultextension seems not to work on Linux
-	# set fileName [gorilla::CheckDefaultExtension $fileName $defaultExtension]
 	set nativeName [file nativename $fileName]
 
 	set myOldCursor [. cget -cursor]
