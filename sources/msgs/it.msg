@@ -9,8 +9,8 @@
 #
 # Project-Id-Version: Gorilla Password 1.5.3.7
 # Report-Msgid-Bugs-To: 
-# PO-Revision-Date: 2013-01-26 00:16+0100
-# Last-Translator: Marco Ciampa <ciampix@libero.it>
+# PO-Revision-Date: 2020-02-07 18:34+0100
+# Last-Translator: Marco Ciampa <ciampix@posteo.net>
 # Language-Team: Italian <it@li.org>
 # Language: it
 # MIME-Version: 1.0
@@ -36,7 +36,7 @@ Import Importa
 Preferences Preferenze
 Exit Esci
 Edit Modifica
-{Copy Username} {Copia nome utente}
+{Copy Username} {Copia nomeutente}
 {Copy Password} {Copia password}
 {Copy URL} {Copia URL}
 {Clear Clipboard} {Cancella gli appunti}
@@ -63,30 +63,30 @@ License Licenza
 {Look for Update} {Controllo aggiornamenti}
 About Informazioni
 {Open URL} {Apri URL}
-{Copy Username to Clipboard} {Copia nome utente negli appunti}
+{Copy Username to Clipboard} {Copia nomeutente negli appunti}
 {Copy Password to Clipboard} {Copia password negli appunti}
 {Copy URL to Clipboard} {Copia URL negli appunti}
 {Move Login to:} {Sposta login a:}
 {Save changes?} {Salvare i cambiamenti?}
 {The current password database is modified. Do you want to save the current database before creating the new database?} {L'archivio corrente è stato modificato. Salvare l'archivio corrente prima di crearne uno nuovo?}
 {New Database: Choose Master Password} {Nuovo archivio: scegliere la password principale}
-{Password Gorilla - <New Database>} {Password Gorilla - <Nuovo archivio>}
 {<New Database>} {<Nuovo archivio>}
 {Add logins using <Add Login> in the <Login> menu.} {Aggiungi un nuovo login tramite il menu <Login>.}
 Database: Archivio:
 Password: Password:
 OK OK
-{Select a database, and enter its password. Click "New" to create a new database.} {Selezionare un archivio e inserire la password. Clic su "Nuovo" per creare un nuovo archivio password.}
+{Select a database, and enter its password. Click "New" to create a new database.} {Selezionare un archivio e battere la password. "Nuovo" per creare un nuovo archivio.}
 {Select a database, and enter its password.} {Selezionare un archivio e inserire la password.}
 {No File} {Nessun file}
 {Please select a password database.} {Seleziona un archivio password.}
-{The password database %s can not be read.} {L'archivio password %s non è leggibile.}
-{The password database %s does not exist.} {L'archivio password %s non esiste.}
-{Error Accessing File} {Errore durante l'accesso al file}
 {Please be patient. Verifying password ...} {Verifica password. Attendere prego ...}
 {Opening ... %d %%} {Apertura di ... %d %%}
+{The password database does not exist.} {L'archivio delle password non esiste.}
+{Permission to read the password database was denied.} {Non hai i permessi per leggere l'archivio delle password.}
 {Error Opening Database} {Errore durante l'apertura dell'archivio}
-{Can not open password database "%s": %s} {Impossibile aprire l'archivio database "%s": %s}
+{Can not open password database "%s":
+%s} {Impossibile aprire l'archivio delle password "%s":
+%s}
 {Browse for a password database ...} {Seleziona un archivio password ...}
 {The current password database is modified. Do you want to save the database?
  "Yes" saves the database, and continues to the "Open File" dialog.
@@ -97,12 +97,14 @@ OK OK
  "Annulla" ritorna al menu principale.}
 {Open Password Database} {Apri archivio password}
 {Password database %s loaded.} {Archivio password %s caricato.}
+{Hide History} {Nascondi cronologia}
 {Add/Edit/View Login} {Nuovo/modifica/mostra login}
 Group Gruppo
 Title Titolo
 URL URL
-Username {Nome utente}
+Username Nomeutente
 Password Password
+Email Email
 Notes Note
 {Last Password Change} {Ultimo cambiamento password}
 {Last Modified} {Ultimo modificato}
@@ -110,7 +112,14 @@ Cancel Annulla
 {Show Password} {Mostra password}
 {Generate Password} {Genera password}
 {Override Password Policy} {Passa sopra ai criteri delle password}
+{Show History} {Mostra cronologia}
+{Log Password Changes} {Registra i cambiamenti password}
 {Password Length} {Lunghezza password}
+{With selected do:} {Con i selezionati esegui:}
+Delete Cancella
+Revert Ripristina
+{Max saved:} {Salvati max:}
+{Date Changed} {Data cambiamenti}
 {Hide Password} {Nascondi password}
 {Password policy settings invalid.} {Impostazioni criteri password non valide.}
 <unknown> <sconosciuto>
@@ -150,8 +159,8 @@ Name Nome
 {Group name unchanged.} {Nome del gruppo non modificato.}
 {Group renamed.} {Gruppo rinominato.}
 {Export Security Warning} {Avvertimento di sicurezza all'esportazione}
-{You are about to export the password database to a plain-text file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {Si sta per esportare l'archivio delle password su di un file di testo in chiaro. Il file non sarà criptato né protetto da password. Chiunque ne quadagni l'accesso potrà leggere il file, ed apprendere i nomi utenti e le password. Assicurarsii di salvare il file in un posto sicuro. Continuare?}
-{Export password database as text ...} {Esporta l'archivio delle password come testo ...}
+{You are about to export the password database to a plain-text (CSV) file. The file will not be encrypted or password-protected. Anybody with access can read the file, and learn your user names and passwords. Make sure to store the file in a secure location. Do you want to continue?} {Si sta per esportare l'archivio delle password su di un file di testo (CSV). Il file non sarà criptato né protetto da password. Chiunque ne quadagni l'accesso potrà leggere il file, ed apprendere i nomi utenti e le password. Assicurarsi di salvare il file in un posto sicuro. Continuare?}
+{Export password database as CSV ...} {Esporta l'archivio delle password come CSV ...}
 {Error Exporting Database} {Errore durante l'esportazione dell'archivio}
 {Failed to export password database to} {Fallita l'esportazione dell'archivio password su}
 {Exporting ...} {Esportazione ...}
@@ -177,6 +186,10 @@ Salvare una registrazione dei record saltati?}
 {Some records skipped during import} {Alcuni record saltati durante l'importazione}
 {Enter a file into which to save the log} {Inserire un file nel quale salvare la registrazione}
 {record(s) successfully imported.} {record importati con successo.}
+{Save Changes} {Salva i cambiamenti}
+{Password Gorilla} {Password Gorilla}
+Changed Cambiato
+{New Database} {Nuovo archivio}
 {Merge Password Database} {Fondi l'archivio password}
 Merging Fusione
 {Merging (%d %% done)} {Fusione (eseguito %d %%)}
@@ -200,7 +213,23 @@ Conflicts Conflitti
 {Warning: Can not save to} {Attenzione: impossibile salvare su}
 {because the file permissions are set for read-only access.} {dato che i permessi sul file sono impostati per la sola lettura.}
 {Please change the file permissions to read-write and hit 'Retry' or hit 'Cancel' and use 'File'->'Save As' to save into a different file.} {Cambiare i permessi al file per consentire la lettura e scrittura e premere 'Riprova' o premere 'Annulla' e usare 'File'->'Salva come' per salvare in un file differente.}
+{Unknown issue while testing write access to file %s} {Problema sconosciuto durante la verifica dell'accesso in scrittura al file %s}
 {Warning: Read-only password file} {Attenzione: file delle password in sola lettura}
+{Another application has modified file:} {Un'altra applicazione ha modificato il file:}
+{The file was last modified at: %s} {Ultima modifica del file: %s}
+{Continuing with a save will overwrite any new data
+that has been added to the file by the other application.} {Continuando con un salvataggio si sovrascriveranno ogni
+nuovo dato aggiunto al file dall'altra applicazione.}
+{You may want to abort and perform a 'merge' with the
+file first to avoid losing data.} {Potresti voler interrompere ed eseguire prima una 'unione'
+con il file per evitare di perdere dati.}
+{What would you like to do?:} {Cosa vuoi fare?}
+{Shared file conflict} {Conflitto di condivisione file}
+{Overwrite the file.
+(destructive)} {Sovrascrivi il file.
+(distruttivo)}
+{Abort without saving} {Annulla senza salvare}
+{Password database save ABORTED.} {Salvataggio archivio password ABORTITO.}
 {Saving ... %d %%} {Salvataggio di ... %d %%}
 {Error Saving Backup of Database} {Errore durante il salvataggio della copia di sicurezza dell'archivio}
 {Failed to save password database as
@@ -213,7 +242,6 @@ Conflicts Conflitti
 {Save password database ...} {Salvataggio archivio password ...}
 {Error Saving Database} {Errore durante il salvataggio dell'archivio}
 {Failed to save password database as "%s": %s} {Fallito il salvataggio dell'archivio password come "%s": %s}
-{Password database saved with backup copy} {Archivio password salvato con copia di sicurezza}
 {No valid directory. - 
 Please define a valid backup directory
 in the Preferences menu.} {Nessuna directory valida - 
@@ -229,6 +257,10 @@ dell'archivio password come "%s":
 %s}
 {The current password database is modified. Do you want to save the database? <Yes> saves the database and exits. <No> discards all changes and exits. <Cancel> returns to the main menu.} {L'archivio delle password corrente è stato modificato. Salvare l'archivio? <Sì> salva l'archivio e esce. <No> abbandona tutte le modifiche e esce. <Annulla> ritorna al menu principale.}
 {Clipboard cleared.} {Appunti cancellati.}
+{Database not saved!} {Archivio non salvato!}
+{This database has not been saved. Do you want to save it now?} {Questo archivio non è stato salvato. Vuoi salvarlo ora?}
+Yes Sì
+No No
 {Enter the Master Password.} {Inserisci la password principale.}
 {error: %s} {errore: %s}
 {Wrong Password} {Password errata}
@@ -271,22 +303,26 @@ Remember Ricorda
 {database names} {Nomi archivi}
 Clear Cancella
 {Backup database on save} {Copia di sicurezza dell'archivio al salvataggio}
+{Time stamp backup} {Salvataggio marcatore temporale}
+{Backup path:} {Percorso copia di sicurezza:}
+{Choose a directory} {Scegliere una cartella}
 {Remember sizes of dialog boxes} {Ricorda le dimensioni delle finestre di dialogo}
 {Use Gorilla auto-copy} {Usa l'auto-copia di Gorilla}
 {Automatically copy password associated
 with login to clipboard after pasting
 of user-name.} {Copia automatica della password associata
 con il login negli appunti dopo aver incollato
-il nome utente.}
+il nomeutente.}
 {This option does not function on
 Windows(TM) or MacOS(TM) platforms.
 See the help system for details.} {Quest'opzione non funziona sulle
 piattaforme Windows(TM) o MacOS(TM).
 Consultare la guida per i dettagli.}
+Latency: Latenza:
+{Time delay during which auto-copy
+continues copying username to clipboard.} {Ritardo di tempo durante il quale l'auto-copia
+continua a copiare il nomeutente negli appunti.}
 Defaults {Valori predefiniti}
-{Time stamp backup} {Salvataggio marcatore temporale}
-{Backup path:} {Percorso copia di sicurezza:}
-{Choose a directory} {Scegliere una cartella}
 {Note: these defaults will be applied to new databases. To change a setting for an existing database, go to "Customize" in the "Security" menu.} {Nota: queste impostazioni predefinite verranno applicate ai nuovi archivi. Per cambiare un'impostazione per un archivio esistente, selezionare "Personalizza" nel menu "Sicurezza".}
 {Include password field} {Includi il campo "Password"}
 {Include "Notes" field} {Includi il campo "Notes"}
@@ -294,7 +330,7 @@ Defaults {Valori predefiniti}
 {Show security warning} {Mostra l'avviso di sicurezza}
 Display Mostra
 Language: Lingua:
-Size Dimensione
+Size Dimens.
 {Show Gorilla Icon} {Mostra l'icona del Gorilla}
 {Iconify upon auto-lock} {Riduci ad icona durante l'auto blocco}
 {Hide login name in tree view} {Nascondi i nomi di login nella vista ad albero}
@@ -306,11 +342,11 @@ Browser Browser
 {Command line parameter (if any) to pass (optional):} {(Eventuale) Parametro da passare alla riga di comando (opzionale):}
 {Find Browser} {Trova il browser}
 {If a command line parameter is provided, it must contain the character sequence: %url%. This sequence will be replaced with the actual URL during launch. See the help system for details.} {Se viene fornito un parametro in riga di comando, questo deve contenere la sequenza di caratteri %url% . Questa sequenza verrà rimpiazzata dall'URL usato durante l'avvio del browser. Consultare la guida per i dettagli.}
-{Also copy username to clipboard} {Inoltre, copia il nome utente negli appunti.}
+{Also copy username to clipboard} {E copia il nomeutente negli appunti}
 {When selected the username
 from the login entry will also
 be copied to the clipboard
-when opening a browser.} {Impostando il nome utente nella voce
+when opening a browser.} {Impostando il nomeutente nella voce
 di login, all'apertura del browser, esso
 verrà copiato anche negli appunti.}
 {Determines how Password
@@ -327,6 +363,13 @@ Da zero a venti.
 
 Consultare la guida per i dettagli.}
 {Clipboard autoclear multiplier} {Moltiplicatore autocancellazione appunti}
+History Cronologia
+{Save history of password changes} {Cronologia salvataggi cambiamenti password}
+{Default saved entries per password record:} {Voci salvate predefinite per record password:}
+(limit=255) (limite=255)
+{These settings affect the default values given to new password records and to existing records with no history entries.} {Queste impostazioni influenzano i valori predefiniti dati ai nuovi record di password e ai record esistenti senza voci di cronologia.}
+{To change the settings for an existing password record with history entries, please edit the login record.} {Per modificare le impostazioni di un record di password esistente con voci di cronologia, modificare il record di login.}
+{The history feature is only available with PasswordSafe version 3 format files.} {La funzione cronologia è disponibile solo con i file in formato PasswordSafe versione 3.}
 {History deleted. After a restart the list will be empty.} {Cronologia cancellata. Dopo il riavvio l'elenco sarà vuoto.}
 Error Errore
 {Error while saving RC-File} {Errore durante il salvataggio del file RC}
@@ -340,10 +383,8 @@ uno esistente.}
 Therefore, the existing password remains in effect.} {L'impostazione della nuova password è stata annullata.
 Di conseguenza, la password esistente rimane in effetto.}
 {Master password changed.} {Password principale modificata.}
-{gorilla::CopyToClipboard: parameter %s not one of 'Username', 'Password', 'URL'} {gorilla::CopyToClipboard: il parametro %s non è 'Username', 'Password' o 'URL'}
 {Can not copy %s to clipboard: no %s defined.} {Impossibile copiare %s negli appunti: %s non è definito.}
 {Copied %s to clipboard.} {Copiato %s negli appunti.}
-{Password Gorilla} {Password Gorilla}
 {Gorilla will protect your passwords and help you to manage them with a pwsafe 3.2 compatible database} {Gorilla protegge le vostre password o vi aiuta a gestire un archivio password compatibile con Pwsafe 3.2.}
 Contributors Contributi
 {Gorilla artwork contributed by %s} {Grafica del Gorilla a cura di %s}
@@ -353,11 +394,11 @@ Contributors Contributi
 {French translation by %s} {Traduzione in francese di %s}
 {Spanish translation by %s} {Traduzione in spagnolo di %s}
 {Portuguese translation by %s} {Traduzione in portoghese di %s}
-{Using %s sha256 extension.} {In uso l'estensione %s di sha256.}
+{Used C extensions:%s.} {Usate estensioni C:%s.}
 {About Password Gorilla} {Informazioni su Password Gorilla}
 {Password Gorilla License} {Licenza di Password Gorilla}
-{Find Text:} {Trova il testo:}
-{Find Options ...} {Opzioni di ricerca}
+{Find Text:} {Trova testo:}
+{Find Options ...} {Opzioni di ricerca ...}
 {Any field} {Qualsiasi campo}
 {Case sensitive find} {Ricerca con confronto maiuscole/minuscole}
 {Text not found.} {Testo non trovato.}
@@ -400,7 +441,6 @@ Back Indietro
 Search Cerca
 Previous Precedente
 Next Successivo
-History Cronistoria
 Index Indice
 {Table of Contents} Sommario
 Search! Cerca!
@@ -417,6 +457,7 @@ Questo solitamente non dovrebbe accadere.}
 {record %d does not exist} {il record %d non esiste}
 {record %d does not have field %s} {il record %d non ha il campo %s}
 {no header field %s} {nessun campo intestazione %s}
+{invalid version %s} {versione non valida %s}
 {less than 8 bytes remaining for length field} {rimangono per il campo lunghezza meno di 8 bytes}
 oops oops
 {field length %d looks insane} {il campo lunghezza %d sembra irragionevole}
@@ -429,5 +470,7 @@ oops oops
 {less than 16 bytes remaining for first block} {rimangono meno di 16 byte per il primo blocco}
 {file does not have PWS3 magic} {il file non possiede il marcatore magic PWS3}
 {Failed to scan key stretch iteration count from binary data.} {Fallita la ricerca del contatore iterazioni "key stretch" dai dati binari.}
-{invalid version %s} {versione non valida %s}
+{%s invalid UUID values were repaired during open.
+These changes are unsaved.} {%s valori UUID non validi sono stati riparati all'apertura.
+Questi cambiamenti non sono stati salvati.}
 }
