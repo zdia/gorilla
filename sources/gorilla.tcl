@@ -2085,7 +2085,7 @@ namespace eval ::gorilla::LoginDialog {
 		set frb [ ttk::frame $bf.pws ] ; # frame right - bottom
 
 		set widget(showhide) [ ttk::button $frb.show -width 16 -text [ mc "Show Password" ] -command [ list namespace inscope $pvns ShowPassword ] ]
-		set widget(genpass)  [ ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword ] ]
+		set widget(genpass)  [ ttk::button $frb.gen -width 16 -text [ mc "Generate Password" ] -command [ list namespace inscope $pvns MakeNewPassword $top ] ]
 		ttk::checkbutton $frb.override -text [ mc "Override Password Policy" ] -variable ${pvns}::overridePasswordPolicy
 
 		set ${pvns}::overridePasswordPolicy 0
@@ -2432,11 +2432,24 @@ proc build-gui-callbacks { pvns widgets } {
 
 		# = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = - = -
 
-		proc MakeNewPassword { } {
+		proc MakeNewPassword { top } {
 
 			variable overridePasswordPolicy
 			variable PassPolicy
 			variable password
+
+			# Existing Password Overwrite Check
+			if { [string length $password] > 0 } {
+				set answer [tk_messageBox  \
+				-parent $top \
+				-type yesno -icon warning -default no \
+				-title [mc "Overwrite Existing Password?"] \
+				-message [mc "Existing password detected. Are you sure you want overwrite it?"]]
+				
+				if {$answer == "no"} {
+					return
+				}
+			} ; # end if overwrite
 
 			if { $overridePasswordPolicy } {
 				set policy [ array get PassPolicy ]
