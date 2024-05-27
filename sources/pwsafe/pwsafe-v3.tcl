@@ -59,7 +59,7 @@ itcl::class pwsafe::v3::reader {
 		# first block contains field length and type
 		#
 		set encryptedFirstBlock [$source read 16]
-		# puts "encryptedFirstBlock=[hex $encryptedFirstBlock]"
+		#puts stderr "encryptedFirstBlock(1)=[hex $encryptedFirstBlock]"
 
 		if {$encryptedFirstBlock == "PWS3-EOFPWS3-EOF"} {
 			# EOF marker
@@ -75,11 +75,12 @@ itcl::class pwsafe::v3::reader {
 		}
 		# puts "pswsafe::v3::reader using engine=[namespace current]::$engine"
 		set decryptedFirstBlock [[namespace current]::$engine decrypt $encryptedFirstBlock]
-		# puts "decryptedFirstBlock=[hex $decryptedFirstBlock]"
+		#puts stderr "decryptedFirstBlock=[hex $decryptedFirstBlock]"
 		if {[binary scan $decryptedFirstBlock ic fieldLength fieldType] != 2} {
 			# FIXME - determine a better message that "oops" for here
 			return -code error -errorcode [ list [ mc "oops" ] ]
 		}
+		#puts stderr "fieldLength=$fieldLength fieldType=$fieldType"
 
 		#
 		# field length sanity check
@@ -94,8 +95,11 @@ itcl::class pwsafe::v3::reader {
 		#
 
 		if {$fieldLength <= 11} {
+		        #puts stderr "extract from decryptedFirstBlock=[hex $decryptedFirstBlock] str range 5 [expr {$fieldLength + 4}]"
 			set fieldData [string range $decryptedFirstBlock 5 [expr {$fieldLength + 4}]]
+			#puts stderr "fieldData='$fieldData' hex=[hex $fieldData]"
 			pwsafe::int::randomizeVar decryptedFirstBlock
+			#puts stderr "fieldData='$fieldData' hex=[hex $fieldData]"
 			return [list $fieldType $fieldData]
 		}
 
@@ -193,7 +197,7 @@ itcl::class pwsafe::v3::reader {
 
 				}
 			}
-
+			#puts stderr "setHeaderField(1) fieldType='$fieldType' fieldValue='$fieldValue'"
 			$db setHeaderField $fieldType $fieldValue
 		}
 

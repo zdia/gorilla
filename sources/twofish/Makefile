@@ -36,7 +36,7 @@ endif
 CFLAGS := -std=c99 -Wall -fPIC -O3 -fomit-frame-pointer \
           $(shell pkg-config --cflags tcl) -DUSE_TCL_STUBS $(CPU)
 
-LDFLAGS := -fPIC -shared $(shell pkg-config --libs tcl) -ltclstub8.5
+LDFLAGS := -fPIC -shared $(shell pkg-config --libs tcl) -ltclstub8.6
 
 CC := gcc
 
