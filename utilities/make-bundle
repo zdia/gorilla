@@ -43,6 +43,7 @@ popd > /dev/null
 
 GORILLA_DIR=$ROOT/sources
 DEST=$ROOT/Gorilla.app
+EXTRA_DIR=$ROOT/utilities/make-osx-bundle
 GORILLA_VERSION=$(grep "variable Version " $GORILLA_DIR/gorilla.tcl | perl -ne '/Version "([\d.]+)"/ && print $1')
 
 echo "Full path = $ROOT"
@@ -68,8 +69,8 @@ rm -rf $DEST/Contents/Resources/Wish.icns
 rm -rf $DEST/Contents/Resources/Wish.sdef
 mkdir -p $DEST/Contents/Resources/Scripts
 cp -R $GORILLA_DIR/* $DEST/Contents/Resources/Scripts/
-cp $ROOT/utilities/osx/AppMain.tcl $DEST/Contents/Resources/Scripts/
-sed -e "s/%VERSION%/$GORILLA_VERSION/g" $ROOT/utilities/osx/Info.plist > $DEST/Contents/Info.plist
+cp $EXTRA_DIR/AppMain.tcl $DEST/Contents/Resources/Scripts/
+sed -e "s/%VERSION%/$GORILLA_VERSION/g" $EXTRA_DIR/Info.plist > $DEST/Contents/Info.plist
 cp $ROOT/utilities/pics/gorilla.icns $DEST/Contents/Resources/Gorilla.icns
 
 echo normal exit
