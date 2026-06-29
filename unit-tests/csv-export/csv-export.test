@@ -15,7 +15,7 @@
 package require tcltest 2.2
 # set argv ""
 # eval ::tcltest::configure $argv
-set testname [info script]
+set ::testname [info script]
 # puts "------------------------------------------------------------------"
 # puts "Running $testname for Password Gorilla ..."
 
@@ -45,8 +45,8 @@ namespace eval ::gorilla::test {
 	# global setup
 	set ::gorilla::preference(exportShowWarning) 0
 
-	test $testname-1.0 {create and test testexport.csv} \
-		-setup { set ::DEBUG(CSVEXPORT) 1 
+	test $::testname-1.0 {create and test testexport.csv} \
+		-setup { set ::gorilla::DEBUG(CSVEXPORT) 1 
 			set prefback [ array get ::gorilla::preference ]
 			# set expected export options for the test
 			array set ::gorilla::preference {exportIncludePassword 1 exportIncludeNotes 1 exportFieldSeparator , exportAsUnicode 1}
@@ -55,7 +55,7 @@ namespace eval ::gorilla::test {
 			gorilla::Export
 			return [viewFile testexport.csv ./]
 		} \
-		-cleanup { set ::DEBUG(CSVEXPORT) 0 
+		-cleanup { set ::gorilla::DEBUG(CSVEXPORT) 0 
 			array set ::gorilla::preference $prefback } \
 		-result [viewFile normexport.csv ./]
 

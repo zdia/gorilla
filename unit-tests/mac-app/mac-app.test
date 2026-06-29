@@ -1,0 +1,115 @@
+# mac-app.test:  tests for the macOS app bundle of Password Gorilla
+#
+# This file contains tests to verify that the macOS .app bundle
+# is correctly structured and self-contained.
+#
+# Dependencies:
+#		package tcltest 2.2
+#
+# Note: Only test failures will be reported
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+# -------------------------------------------------------------------------
+
+package require tcltest 2.2
+set argv ""
+eval ::tcltest::configure $argv
+
+# work in a safe environment for testing purposes
+
+namespace eval ::gorilla::test {
+	namespace import ::tcltest::*
+
+	# CATEGORY: MAC-APP
+	# -----------------
+
+	set appDir [file normalize [file join [tcltest::workingDirectory] .. "Password Gorilla.app"]]
+
+	test mac-app-1.1 {App bundle exists} \
+		-body { file isdirectory $appDir } \
+		-result 1
+
+	test mac-app-1.2 {Info.plist exists} \
+		-body { file exists [file join $appDir Contents Info.plist] } \
+		-result 1
+
+	test mac-app-1.3 {Executable exists} \
+		-body { file exists [file join $appDir Contents MacOS "Password Gorilla"] } \
+		-result 1
+
+	test mac-app-1.4 {Executable is executable} \
+		-body { file executable [file join $appDir Contents MacOS "Password Gorilla"] } \
+		-result 1
+
+	test mac-app-1.5 {Icon file exists} \
+		-body { file exists [file join $appDir Contents Resources PasswordGorilla.icns] } \
+		-result 1
+
+	test mac-app-1.6 {AppMain.tcl exists} \
+		-body { file exists [file join $appDir Contents Resources Scripts AppMain.tcl] } \
+		-result 1
+
+	test mac-app-1.7 {Bundled sources exist} \
+		-body { file exists [file join $appDir Contents Resources sources gorilla.tcl] } \
+		-result 1
+
+	test mac-app-1.8 {Bundled Tcl library exists} \
+		-body { file isdirectory [file join $appDir Contents lib tcl9.0] } \
+		-result 1
+
+	test mac-app-1.9 {Bundled Tk library exists} \
+		-body { file isdirectory [file join $appDir Contents lib tk9.0] } \
+		-result 1
+
+	test mac-app-1.10 {Bundled frameworks exist} \
+		-body {
+			set ok 1
+			foreach lib {libtcl9.0.dylib libtcl9tk9.0.dylib libtommath.1.dylib} {
+				if {![file exists [file join $appDir Contents Frameworks $lib]]} {
+					set ok 0
+				}
+			}
+			return $ok } \
+		-result 1
+
+	test mac-app-1.11 {No hardcoded homebrew paths in executable} \
+		-body {
+			set f [open [file join $appDir Contents MacOS "Password Gorilla"] r]
+			fconfigure $f -translation binary
+			set data [read $f]
+			close $f
+			return [expr {[string first "/opt/homebrew" $data] == -1}] } \
+		-result 1
+
+	test mac-app-1.12 {Application icon is gorilla not key} \
+		-body {
+			set srcDir [file normalize [file join [tcltest::workingDirectory] .. sources]]
+			set gorilla [file join $srcDir gorilla.tcl]
+			set f [open $gorilla r]
+			set data [read $f]
+			close $f
+			return [expr {[string first "gorilla-48x48.gif" $data] != -1}] } \
+		-result 1
+
+	test mac-app-1.13 {wm iconphoto skipped on macOS} \
+		-body {
+			set srcDir [file normalize [file join [tcltest::workingDirectory] .. sources]]
+			set gorilla [file join $srcDir gorilla.tcl]
+			set f [open $gorilla r]
+			set data [read $f]
+			close $f
+			return [expr {[string first "ne \"aqua\"" $data] != -1}] } \
+		-result 1
+
+} ;# end of namespace eval ::gorilla::test
+
+namespace delete ::gorilla::test

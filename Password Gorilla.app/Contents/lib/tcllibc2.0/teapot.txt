@@ -1,0 +1,21 @@
+Package tcllibc 2.0
+Meta platform macos26-arm
+Meta build::date 2025-11-13
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::by {critcl 3.3.1} brew {critcl 3.3.1} brew
+Meta generated::date critcl
+Meta license BSD licensed.
+Meta author {Andreas Kupries}
+Meta require {Tcl 8.5 9} {Tcl 8.5 9} {Tcl 8.5 9} {Tcl 8.5 9} {Tcl 8.5 9}
+Meta require {Tcl 8.5 9} {Tcl 8.5 9} {Tcl 8.5 9} {Tcl 8.5 9} {Tcl 8.5 9}
+Meta require {Tcl 8.5 9} {Tcl 8.5 9}
+Meta entrytclcommand {eval "[list proc __critcl_load__ {dir} { ;     source [file join $dir critcl-rt.tcl] ;     set path [file join $dir [::critcl::runtime::MapPlatform]] ;     set ext [info sharedlibextension] ;     set lib [file join $path "tcllibc$ext"] ;     load $lib Tcllibc ;     package provide tcllibc 2.0 ;     catch {rename __critcl_load__ {}}}] ; [list __critcl_load__ $dir]"}
+Meta included critcl-rt.tcl macos-arm/tcllibc.dylib

@@ -1,0 +1,206 @@
+# pendulum.tcl --
+#
+# This demonstration illustrates how Tcl/Tk can be used to construct
+# simulations of physical systems.
+
+if {![info exists widgetDemo]} {
+    error "This script should be run from the \"widget\" demo."
+}
+
+package require tk
+
+set w .pendulum
+catch {destroy $w}
+toplevel $w
+wm title $w "Pendulum Animation Demonstration"
+wm iconname $w "pendulum"
+positionWindow $w
+
+label $w.msg -font $font -wraplength 4i -justify left -text "This demonstration shows how Tcl/Tk can be used to carry out animations that are linked to simulations of physical systems. In the left canvas is a graphical representation of the physical system itself, a simple pendulum, and in the right canvas is a graph of the phase space of the system, which is a plot of the angle (relative to the vertical) against the angular velocity. The pendulum bob may be repositioned by clicking and dragging anywhere on the left canvas."
+pack $w.msg
+
+## See Code / Dismiss buttons
+set btns [addSeeDismiss $w.buttons $w]
+pack $btns -side bottom -fill x
+
+# Create some structural widgets
+pack [panedwindow $w.p] -fill both -expand 1
+$w.p add [labelframe $w.p.l1 -text "Pendulum Simulation"] -stretch always
+$w.p add [labelframe $w.p.l2 -text "Phase Space"] -stretch always
+
+# Create the canvas containing the graphical representation of the
+# simulated system.
+canvas $w.c -width 240p -height 150p -background white -bd 1.5p -relief sunken
+$w.c create text 3p 3p -anchor nw -text "Click to Adjust Bob Start Position"
+# Coordinates of these items don't matter; they will be set properly below
+$w.c create line 0 25 320 25   -tags plate -fill grey50 -width 1.5p
+$w.c create oval 155 20 165 30 -tags pivot -fill grey50 -outline {}
+$w.c create line 1 1 1 1       -tags rod   -fill black  -width 2.25p
+$w.c create oval 1 1 2 2       -tags bob   -fill yellow -outline black
+pack $w.c -in $w.p.l1 -fill both -expand true
+
+# Create the canvas containing the phase space graph; this consists of
+# a line that gets gradually paler as it ages, which is an extremely
+# effective visual trick.
+canvas $w.k -width 240p -height 150p -background white -bd 1.5p -relief sunken
+$w.k create line 120p 150p 120p 0 -fill grey75 -arrow last -tags y_axis
+$w.k create line 0 75p 240p 75p -fill grey75 -arrow last -tags x_axis
+for {set i 90} {$i>=0} {incr i -10} {
+    # Coordinates of these items don't matter; they will be set properly below
+    $w.k create line 0 0 1 1 -smooth true -tags graph$i -fill grey$i
+}
+
+$w.k create text 0 0 -anchor ne -text "θ"  -tags label_theta
+$w.k create text 0 0 -anchor ne -text "δθ" -tags label_dtheta
+pack $w.k -in $w.p.l2 -fill both -expand true
+
+# Initialize some variables
+set points {}
+set Theta  45.0
+set dTheta  0.0
+set pi      3.1415926535897933
+set tkScl  [tk scaling]
+set length [expr {round(111*$tkScl)}]			;# 111p -> pixels
+set xHome  [expr {round(120*$tkScl)}]			;# 120p -> pixels
+set yHome  [expr {round( 18*$tkScl)}]			;#  18p -> pixels
+set rBob   [expr {round( 12*$tkScl)}]			;#  12p -> pixels
+set rPivot [expr {round(  3*$tkScl)}]			;#   3p -> pixels
+
+# This procedure makes the pendulum appear at the correct place on the
+# canvas. If the additional arguments "at $x $y" are passed (the 'at'
+# is really just syntactic sugar) instead of computing the position of
+# the pendulum from the length of the pendulum rod and its angle, the
+# length and angle are computed in reverse from the given location
+# (which is taken to be the centre of the pendulum bob.)
+proc showPendulum {canvas {at {}} {x {}} {y {}}} {
+    global Theta dTheta pi length xHome yHome rBob
+
+    if {$at eq "at" && ($x!=$xHome || $y!=$yHome)} {
+	set dTheta 0.0
+	set x2 [expr {$x - $xHome}]
+	set y2 [expr {$y - $yHome}]
+	set length [expr {hypot($x2, $y2)}]
+	set Theta  [expr {atan2($x2, $y2) * 180/$pi}]
+    } else {
+	set angle [expr {$Theta * $pi/180}]
+	set x [expr {$xHome + $length*sin($angle)}]
+	set y [expr {$yHome + $length*cos($angle)}]
+    }
+    $canvas coords rod $xHome $yHome $x $y
+    $canvas coords bob [expr {$x - $rBob}] [expr {$y - $rBob}] \
+		       [expr {$x + $rBob}] [expr {$y + $rBob}]
+}
+showPendulum $w.c
+
+# Update the phase-space graph according to the current angle and the
+# rate at which the angle is changing (the first derivative with
+# respect to time.)
+proc showPhase {canvas} {
+    global Theta dTheta points psw psh
+    set sclFactor [expr {$tk::scalingPct / 100.0}]
+
+    lappend points [expr {$Theta + $psw}] [expr {-20*$sclFactor*$dTheta + $psh}]
+    if {[llength $points] > 100} {
+	set points [lrange $points end-99 end]
+    }
+    for {set i 0} {$i<100} {incr i 10} {
+	set list [lrange $points end-[expr {$i-1}] end-[expr {$i-12}]]
+	if {[llength $list] >= 4} {
+	    $canvas coords graph$i $list
+	    $canvas scale graph$i $psw $psh $sclFactor $sclFactor
+	}
+    }
+}
+
+# Set up some bindings on the canvases.  Note that when the user
+# clicks we stop the animation until they release the mouse
+# button. Also note that both canvases are sensitive to <Configure>
+# events, which allows them to find out when they have been resized by
+# the user.
+bind $w.c <Destroy> {
+    after cancel $animationCallbacks(pendulum)
+    unset animationCallbacks(pendulum)
+}
+bind $w.c <Button-1> {
+    after cancel $animationCallbacks(pendulum)
+    showPendulum %W at %x %y
+}
+bind $w.c <B1-Motion> {
+    showPendulum %W at %x %y
+}
+bind $w.c <ButtonRelease-1> {
+    showPendulum %W at %x %y
+    set animationCallbacks(pendulum) [after 15 repeat [winfo toplevel %W]]
+}
+bind $w.c <Configure> {
+    %W coords plate 0 18p %w 18p
+    set xHome [expr {%w/2}]
+    %W coords pivot [expr {$xHome - $rPivot}] 15p [expr {$xHome + $rPivot}] 21p
+}
+bind $w.k <Configure> {
+    set psh [expr {%h/2}]
+    set psw [expr {%w/2}]
+    %W coords x_axis	   1.5p $psh [expr {%w - round(1.5*$tkScl)}] $psh
+    %W coords y_axis	   $psw [expr {%h - round(1.5*$tkScl)}] $psw 1.5p
+    %W coords label_dtheta [expr {$psw - round(3*$tkScl)}] 4.5p
+    %W coords label_theta  [expr {%w - round(4.5*$tkScl)}] \
+			   [expr {$psh + round(3*$tkScl)}]
+}
+
+# This procedure is the "business" part of the simulation that does
+# simple numerical integration of the formula for a simple rotational
+# pendulum.
+proc recomputeAngle {} {
+    global Theta dTheta pi length
+    set scaling [expr {3000.0/$length/$length}]
+
+    # To estimate the integration accurately, we really need to
+    # compute the end-point of our time-step.  But to do *that*, we
+    # need to estimate the integration accurately!  So we try this
+    # technique, which is inaccurate, but better than doing it in a
+    # single step.  What we really want is bound up in the
+    # differential equation:
+    #       ..             - sin theta
+    #      theta + theta = -----------
+    #                         length
+    # But my math skills are not good enough to solve this!
+
+    # first estimate
+    set firstDDTheta [expr {-sin($Theta * $pi/180)*$scaling}]
+    set midDTheta [expr {$dTheta + $firstDDTheta}]
+    set midTheta [expr {$Theta + ($dTheta + $midDTheta)/2}]
+    # second estimate
+    set midDDTheta [expr {-sin($midTheta * $pi/180)*$scaling}]
+    set midDTheta [expr {$dTheta + ($firstDDTheta + $midDDTheta)/2}]
+    set midTheta [expr {$Theta + ($dTheta + $midDTheta)/2}]
+    # Now we do a double-estimate approach for getting the final value
+    # first estimate
+    set midDDTheta [expr {-sin($midTheta * $pi/180)*$scaling}]
+    set lastDTheta [expr {$midDTheta + $midDDTheta}]
+    set lastTheta [expr {$midTheta + ($midDTheta + $lastDTheta)/2}]
+    # second estimate
+    set lastDDTheta [expr {-sin($lastTheta * $pi/180)*$scaling}]
+    set lastDTheta [expr {$midDTheta + ($midDDTheta + $lastDDTheta)/2}]
+    set lastTheta [expr {$midTheta + ($midDTheta + $lastDTheta)/2}]
+    # Now put the values back in our globals
+    set dTheta $lastDTheta
+    set Theta $lastTheta
+}
+
+# This method ties together the simulation engine and the graphical
+# display code that visualizes it.
+proc repeat w {
+    global animationCallbacks
+
+    # Simulate
+    recomputeAngle
+
+    # Update the display
+    showPendulum $w.c
+    showPhase $w.k
+
+    # Reschedule ourselves
+    set animationCallbacks(pendulum) [after 15 [list repeat $w]]
+}
+# Start the simulation after a short pause
+set animationCallbacks(pendulum) [after 500 [list repeat $w]]

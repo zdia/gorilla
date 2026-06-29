@@ -101,12 +101,24 @@ if {[catch {package require Tcl 8.5-}]} {
 
 if {[catch {file home}]} {
   # no "file home" subcommand exists, so we are on pre 9.0
-  proc ::tcl::file::home {} {
-    file normalize ~
+  if {[catch {namespace ensemble configure file -map} nsmap]} {
+    # file is not an ensemble (Tcl 8.5)
+    rename file ::tcl::original_file
+    proc file {subcommand args} {
+      if {$subcommand eq "home"} {
+        return [::tcl::original_file normalize ~]
+      }
+      return [::tcl::original_file $subcommand {*}$args]
+    }
+  } else {
+    # file is an ensemble (Tcl 8.6)
+    namespace eval ::tcl::file {}
+    proc ::tcl::file::home {} {
+      file normalize ~
+    }
+    lappend nsmap home ::tcl::file::home
+    namespace ensemble configure file -map $nsmap
   }
-  set nsmap [namespace ensemble configure file -map]
-  lappend nsmap home ::tcl::file::home
-  namespace ensemble configure file -map $nsmap
 }
 
 # ----------------------------------------------------------------------
@@ -567,7 +579,7 @@ proc gorilla::InitGui {} {
  
 	wm title . "Password Gorilla"
 	wm iconname . "Gorilla"
-	wm iconphoto . $::gorilla::images(application) 
+	if {[tk windowingsystem] ne "aqua"} { wm iconphoto . $::gorilla::images(application) }
 	
 	if {[info exists ::gorilla::preference(geometry,.)]} {
 		TryResizeFromPreference .
@@ -1359,7 +1371,7 @@ proc gorilla::OpenDatabase {title {defaultFile ""} {allowNew 0}} {
 	}
 
 	wm title $top $title
-	wm iconphoto $top $::gorilla::images(application)
+	if {[tk windowingsystem] ne "aqua"} { wm iconphoto $top $::gorilla::images(application) }
 
 	$aframe.pw.pw delete 0 end
 
@@ -7318,7 +7330,7 @@ proc gorilla::getAvailableLanguages {  } {
 # ----------------------------------------------------------------------
 #
 
-set ::gorilla::images(application) [image create photo -file [file join $::gorilla::PicsDir application.gif]]
+set ::gorilla::images(application) [image create photo -file [file join $::gorilla::PicsDir gorilla-48x48.gif]]
 
 set ::gorilla::images(browse) [image create photo -file [file join $::gorilla::PicsDir browse.gif]]
 

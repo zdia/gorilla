@@ -1,0 +1,71 @@
+# csv-export.test:  tests for the CSV export module in Password Gorilla
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+
+# -------------------------------------------------------------------------
+
+package require tcltest 2.2
+# set argv ""
+# eval ::tcltest::configure $argv
+set ::testname [info script]
+# puts "------------------------------------------------------------------"
+# puts "Running $testname for Password Gorilla ..."
+
+# ------------- sample -----------------
+#
+# proc TestProcedure { item } { return $item }
+# 
+# test gorilla-0.2 {initial test} \
+# 	-setup { set item FALSE } \
+# 	-body { TestProcedure $item } \
+# 	-result OK \
+# 	-cleanup { unset item }
+# 
+
+
+# -------------------------------------------------------------------------
+# work in a safe environment for testing purposes
+
+namespace eval ::gorilla::test {
+	namespace import ::tcltest::*
+	
+	# CATEGORY: CSV-EXPORT
+	# --------------------
+
+	# Test database contains special characters and utf8 sensible characters
+
+	# global setup
+	set ::gorilla::preference(exportShowWarning) 0
+
+	test $::testname-1.0 {create and test testexport.csv} \
+		-setup { set ::gorilla::DEBUG(CSVEXPORT) 1 
+			set prefback [ array get ::gorilla::preference ]
+			# set expected export options for the test
+			array set ::gorilla::preference {exportIncludePassword 1 exportIncludeNotes 1 exportFieldSeparator , exportAsUnicode 1}
+		} \
+		-body {
+			gorilla::Export
+			return [viewFile testexport.csv ./]
+		} \
+		-cleanup { set ::gorilla::DEBUG(CSVEXPORT) 0 
+			array set ::gorilla::preference $prefback } \
+		-result [viewFile normexport.csv ./]
+
+	# global cleanup
+	set ::gorilla::preference(exportShowWarning) 1
+	removeFile testexport.csv .
+
+} ;# end of namespace eval ::gorilla::test
+
+# ----------------------------------------------------------------------
+# cleanup
+namespace delete ::gorilla::test
+# puts "Tests for unit $testname finished."

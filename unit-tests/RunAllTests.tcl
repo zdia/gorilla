@@ -19,7 +19,7 @@ tcltest::singleProcess 1	;# caller environment will be used
 tcltest::verbose { pass }
 
 # set testFolderList [list csv-import csv-export merge lock-database]
-set testFolderList [ list csv-import csv-export lock-database backup ]
+set testFolderList [ list csv-import csv-export lock-database backup mac-app ]
 
 foreach testFolder $testFolderList {
 	cd [file join [tcltest::workingDirectory] $testFolder]

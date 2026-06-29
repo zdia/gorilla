@@ -40,7 +40,7 @@
 package require tcltest 2.2
 # set argv ""
 # eval ::tcltest::configure $argv
-set testname [info script]
+set ::testname [info script]
 # puts "------------------------------------------------------------------"
 # puts "Running $testname for Password Gorilla ..."
 
@@ -67,19 +67,19 @@ namespace eval ::gorilla::test {
 
 	# cd [testsDirectory]
 
-	test $testname-1.2 {File Open Error} \
+	test $::testname-1.2 {File Open Error} \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import unknown.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result GORILLA_OPENERROR
 
-	test $testname-1.3 {Package Load Error} \
+	test $::testname-1.3 {Package Load Error} \
 		-setup { } \
 		-body { return [package require csv] } \
 		-cleanup { package forget csv } \
-		-result 0.7.2
+		-result 0.10
 
-	test $testname-1.4 {Undefined Columns Error} \
+	test $::testname-1.4 {Undefined Columns Error} \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import14.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
@@ -87,55 +87,55 @@ namespace eval ::gorilla::test {
 
 # could not produce FIRSTLINEERROR
 
-	test $testname-1.5 {No Columns Error} \
+	test $::testname-1.5 {No Columns Error} \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import15.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result GORILLA_NODATA
 
-	test $testname-1.6 {Column Capital Letter Error} \
+	test $::testname-1.6 {Column Capital Letter Error} \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import16.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result GORILLA_UNDEFINEDCOLUMNS
 
-	test $testname-1.7 { Comma Line End Error} \
+	test $::testname-1.7 { Comma Line End Error} \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import17.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result GORILLA_UNDEFINEDCOLUMNS
 
-	test $testname-1.8 { Space before Comma Error} \
+	test $::testname-1.8 { Space before Comma Error} \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import18.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result GORILLA_UNDEFINEDCOLUMNS
 
-	test $testname-1.9 { Unequal number of columns Error } \
+	test $::testname-1.9 { Unequal number of columns Error } \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import19.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result "Unequal number of columns"
 
-	test $testname-1.10 { Adding default groupname } \
+	test $::testname-1.10 { Adding default groupname } \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import110.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result GORILLA_ADDDEFAULTGROUP
 
-	test $testname-1.11 { Invalid group name } \
+	test $::testname-1.11 { Invalid group name } \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import111.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result "Invalid group name"
 
-	test $testname-1.12 { Invalid UUID field } \
+	test $::testname-1.12 { Invalid UUID field } \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body { gorilla::Import import112.csv } \
     -cleanup { set ::gorilla::DEBUG(CSVIMPORT) 0 } \
     -result "Invalid UUID field"
 
-	test $testname-1.13 { Invalid time field } \
+	test $::testname-1.13 { Invalid time field } \
     -setup { set ::gorilla::DEBUG(CSVIMPORT) 1 } \
     -body {
 			set err [gorilla::Import import113.csv]
@@ -150,7 +150,7 @@ namespace eval ::gorilla::test {
 	
 	# test delete rn after error
 	
-	test $testname-1.1 {General Ok Test} \
+	test $::testname-1.1 {General Ok Test} \
 		-setup { } \
 		-body { gorilla::Import import11.csv } \
 		-cleanup { } \
@@ -160,7 +160,7 @@ namespace eval ::gorilla::test {
 	# testdb.psafe3 is supposed to have been loaded
 	# ----------------------------------------------------------------------
 	
-	test $testname-2.1 { saved title } \
+	test $::testname-2.1 { saved title } \
 		-body {
 			set entries [list ]
 			foreach i {9 10 11} {
@@ -169,7 +169,7 @@ namespace eval ::gorilla::test {
 			return $entries } \
 		-result "Title11 Title12 Title2"
 	
-	test $testname-2.2 { saved group } \
+	test $::testname-2.2 { saved group } \
 		-body {
 			set entries [list ]
 			foreach i {9 10 11} {
@@ -178,7 +178,7 @@ namespace eval ::gorilla::test {
 			return $entries } \
 		-result "{Group 1.Sub Group 1} {Group 1.Sub Group 2} {Group 2}"
 	
-	test $testname-2.3 { saved user } \
+	test $::testname-2.3 { saved user } \
 		-body {
 			set entries [list ]
 			foreach i {9 10 11} {

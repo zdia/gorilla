@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleName</key>
+	<string>Password Gorilla</string>
+	<key>CFBundleDisplayName</key>
+	<string>Password Gorilla</string>
+	<key>CFBundleIdentifier</key>
+	<string>org.gorilla.passwordgorilla</string>
+	<key>CFBundleVersion</key>
+	<string>1.5.3.7</string>
+	<key>CFBundleShortVersionString</key>
+	<string>1.5.3.7</string>
+	<key>CFBundleExecutable</key>
+	<string>Password Gorilla</string>
+	<key>CFBundleIconFile</key>
+	<string>PasswordGorilla</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>psafe3</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>Password Safe v3 Database</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+		</dict>
+	</array>
+</dict>
+</plist>
